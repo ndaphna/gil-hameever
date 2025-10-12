@@ -1174,7 +1174,8 @@ blockquote.quote-box:hover {
    NEXT STEPS CARD - Premium WOW Effect
    ============================================ */
 
-.next-steps-card {
+.next-steps-card,
+.completion-card {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 240, 250, 0.95) 100%);
   border: 3px solid transparent;
   background-clip: padding-box;
@@ -1186,7 +1187,8 @@ blockquote.quote-box:hover {
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.next-steps-card::before {
+.next-steps-card::before,
+.completion-card::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1222,12 +1224,15 @@ blockquote.quote-box:hover {
   animation: pulse 2s ease-in-out infinite;
 }
 
-.next-steps-card:hover {
+.next-steps-card:hover,
+.completion-card:hover {
   transform: translateY(-6px) scale(1.01);
   box-shadow: 0 20px 60px rgba(255, 0, 128, 0.3);
 }
 
-.next-steps-card h2 {
+.next-steps-card h2,
+.completion-card h2,
+.completion-card h3 {
   text-align: center;
   color: var(--magenta);
   font-size: 28px;
@@ -1237,7 +1242,8 @@ blockquote.quote-box:hover {
   text-shadow: 0 2px 4px rgba(255, 0, 128, 0.1);
 }
 
-.next-steps-card p {
+.next-steps-card p,
+.completion-card p {
   text-align: center;
   line-height: 1.9;
   margin: 16px 0;
@@ -1247,7 +1253,9 @@ blockquote.quote-box:hover {
   z-index: 1;
 }
 
-.next-steps-card .highlight {
+.next-steps-card .highlight,
+.completion-card .highlight-text,
+.completion-card .celebration-text {
   background: linear-gradient(135deg, rgba(255, 0, 128, 0.15) 0%, rgba(157, 78, 221, 0.15) 100%);
   padding: 16px 24px;
   border-radius: 12px;
@@ -1259,7 +1267,8 @@ blockquote.quote-box:hover {
   box-shadow: 0 4px 16px rgba(255, 0, 128, 0.1);
 }
 
-.next-steps-card .button-group {
+.next-steps-card .button-group,
+.completion-card .button-group {
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1268,7 +1277,8 @@ blockquote.quote-box:hover {
   z-index: 1;
 }
 
-.next-steps-card .cta-button {
+.next-steps-card .cta-button,
+.completion-card .cta-button {
   width: 100%;
   font-size: 18px;
   padding: 20px 32px;
@@ -1277,7 +1287,8 @@ blockquote.quote-box:hover {
   overflow: hidden;
 }
 
-.next-steps-card .cta-button::before {
+.next-steps-card .cta-button::before,
+.completion-card .cta-button::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -1290,17 +1301,20 @@ blockquote.quote-box:hover {
   transition: width 0.6s, height 0.6s;
 }
 
-.next-steps-card .cta-button:hover::before {
+.next-steps-card .cta-button:hover::before,
+.completion-card .cta-button:hover::before {
   width: 300px;
   height: 300px;
 }
 
-.next-steps-card .cta-button:hover {
+.next-steps-card .cta-button:hover,
+.completion-card .cta-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 10px 36px rgba(255, 0, 128, 0.35);
 }
 
-.next-steps-card .cta-button.secondary {
+.next-steps-card .cta-button.secondary,
+.completion-card .cta-button.secondary {
   background: linear-gradient(135deg, var(--purple-light) 0%, var(--purple) 100%);
 }
 
@@ -1619,29 +1633,37 @@ blockquote.quote-box:hover {
     font-size: 17px;
   }
 
-  .next-steps-card {
+  .next-steps-card,
+  .completion-card {
     padding: 36px 24px !important;
   }
 
-  .next-steps-card h2 {
+  .next-steps-card h2,
+  .completion-card h2,
+  .completion-card h3 {
     font-size: 24px;
   }
 
-  .next-steps-card p {
+  .next-steps-card p,
+  .completion-card p {
     font-size: 16px;
   }
 
-  .next-steps-card .highlight {
+  .next-steps-card .highlight,
+  .completion-card .highlight-text,
+  .completion-card .celebration-text {
     font-size: 17px;
     padding: 14px 20px;
   }
 
-  .next-steps-card .button-group {
+  .next-steps-card .button-group,
+  .completion-card .button-group {
     flex-direction: row;
     gap: 12px;
   }
 
-  .next-steps-card .cta-button {
+  .next-steps-card .cta-button,
+  .completion-card .cta-button {
     font-size: 17px;
   }
 
@@ -1835,30 +1857,38 @@ blockquote.quote-box:hover {
     padding: 20px;
   }
 
-  .next-steps-card {
+  .next-steps-card,
+  .completion-card {
     padding: 56px 40px !important;
   }
 
-  .next-steps-card h2 {
+  .next-steps-card h2,
+  .completion-card h2,
+  .completion-card h3 {
     font-size: 30px;
   }
 
-  .next-steps-card p {
+  .next-steps-card p,
+  .completion-card p {
     font-size: 18px;
     line-height: 2;
   }
 
-  .next-steps-card .highlight {
+  .next-steps-card .highlight,
+  .completion-card .highlight-text,
+  .completion-card .celebration-text {
     font-size: 19px;
     padding: 18px 28px;
   }
 
-  .next-steps-card .button-group {
+  .next-steps-card .button-group,
+  .completion-card .button-group {
     flex-direction: row;
     gap: 20px;
   }
 
-  .next-steps-card .cta-button {
+  .next-steps-card .cta-button,
+  .completion-card .cta-button {
     font-size: 19px;
     padding: 22px 40px;
   }
@@ -2003,32 +2033,41 @@ blockquote.quote-box:hover {
     padding: 14px;
   }
 
-  .next-steps-card {
+  .next-steps-card,
+  .completion-card {
     padding: 32px 20px !important;
   }
 
-  .next-steps-card h2 {
+  .next-steps-card h2,
+  .completion-card h2,
+  .completion-card h3 {
     font-size: 22px;
   }
 
-  .next-steps-card::after {
+  .next-steps-card::after,
+  .completion-card::after {
     font-size: 36px;
   }
 
-  .next-steps-card p {
+  .next-steps-card p,
+  .completion-card p {
     font-size: 15px;
   }
 
-  .next-steps-card .highlight {
+  .next-steps-card .highlight,
+  .completion-card .highlight-text,
+  .completion-card .celebration-text {
     font-size: 16px;
     padding: 12px 16px;
   }
 
-  .next-steps-card .button-group {
+  .next-steps-card .button-group,
+  .completion-card .button-group {
     gap: 12px;
   }
 
-  .next-steps-card .cta-button {
+  .next-steps-card .cta-button,
+  .completion-card .cta-button {
     font-size: 16px;
     padding: 16px 24px;
   }

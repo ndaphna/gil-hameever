@@ -324,9 +324,8 @@ export default function CertaintyPeaceSecurityPage() {
             <p>👉 שייכות, אחוות נשים, חיבור רגשי – הגיע הזמן לזוז מהישרדות... לחיבורים.</p>
             
             <div className="button-group">
-              <a href="#" className="cta-button disabled">
+              <a href="/belonging-sisterhood-emotional-connection" className="cta-button">
                 שלב 3 במפת דרכים
-                <span className="coming-soon-badge">בקרוב</span>
               </a>
               <a href="/menopause-roadmap" className="cta-button secondary">
                 חזרה למפת הדרכים

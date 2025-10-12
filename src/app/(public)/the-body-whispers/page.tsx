@@ -403,9 +403,8 @@ export default function TheBodyWhispersPage() {
             <p className="highlight">וודאות, שקט, ביטחון - בואי נבין מה את צריכה באמת.</p>
             
             <div className="button-group">
-              <a href="#" className="cta-button disabled">
+              <a href="/certainty-peace-security" className="cta-button">
                 שלב 2 במפת דרכים
-                <span className="coming-soon-badge">בקרוב</span>
               </a>
               <a href="/menopause-roadmap" className="cta-button secondary">
                 חזרה למפת הדרכים
