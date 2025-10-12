@@ -141,7 +141,7 @@ h1 {
   font-weight: 700;
   margin: 0 0 24px 0;
   color: var(--black);
-  text-align: right;
+  text-align: center;
 }
 
 h2 {
@@ -248,6 +248,12 @@ li {
   z-index: 10;
   padding: 30px 0;
   width: 100%;
+}
+
+.hero-content h1 {
+  text-align: center !important;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .decoration-circle {
@@ -446,17 +452,168 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
-   LISTS - Styled Lists
+   LISTS - Styled Lists & Icon Lists
    ============================================ */
 
-.styled-list {
+.styled-list,
+.icon-list ul,
+.checklist ul,
+.questions-list,
+.examples-list,
+.resources-list {
   list-style: none;
   padding: 0;
   margin: 20px 0;
   text-align: right;
 }
 
-.styled-list li {
+/* Icon List with divs */
+.icon-list,
+.checklist {
+  margin: 20px 0;
+}
+
+.icon-item,
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 16px;
+  text-align: right;
+  line-height: 1.8;
+}
+
+.icon-item .icon,
+.check-item .check-icon {
+  flex-shrink: 0;
+  font-size: 20px;
+  margin-left: 8px;
+  line-height: 1.8;
+  height: 1.8em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-item p,
+.check-item p,
+.check-item div {
+  flex: 1;
+  margin: 0;
+  text-align: right;
+}
+
+/* ============================================
+   TOOL ITEMS - Premium Interactive Cards
+   ============================================ */
+
+.tool-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 242, 250, 0.6) 100%);
+  border-radius: 16px;
+  border: 2px solid transparent;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.tool-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 0;
+  height: 100%;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.08) 0%, rgba(157, 78, 221, 0.08) 100%);
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+.tool-item:hover {
+  transform: translateY(-4px);
+  border-color: var(--magenta);
+  box-shadow: 0 12px 32px rgba(255, 0, 128, 0.15);
+  background: var(--white);
+}
+
+.tool-item:hover::before {
+  width: 100%;
+}
+
+.tool-icon {
+  flex-shrink: 0;
+  font-size: 32px;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--light-pink) 0%, var(--soft-pink) 100%);
+  border-radius: 12px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.tool-item:hover .tool-icon {
+  transform: scale(1.1) rotate(5deg);
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  box-shadow: 0 8px 24px rgba(255, 0, 128, 0.3);
+}
+
+.tool-content {
+  flex: 1;
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+.tool-content h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--magenta-dark);
+  transition: color 0.3s ease;
+}
+
+.tool-item:hover .tool-content h4 {
+  color: var(--magenta);
+}
+
+.tool-content p {
+  margin: 0;
+  line-height: 1.7;
+  color: var(--black);
+  font-size: 15px;
+}
+
+/* CTA Box */
+.cta-box {
+  margin-top: 32px;
+  padding: 24px;
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.05) 0%, rgba(157, 78, 221, 0.05) 100%);
+  border-radius: 16px;
+  border: 2px solid var(--light-pink);
+  text-align: center;
+}
+
+.cta-box p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.styled-list li,
+.icon-list ul li,
+.checklist ul li,
+.questions-list li,
+.examples-list li,
+.resources-list li {
   padding: 8px 0 !important;
   padding-right: 24px !important;
   position: relative;
@@ -467,7 +624,12 @@ h1, h2, h3, h4, h5, h6 {
   display: block !important;
 }
 
-.styled-list li::before {
+.styled-list li::before,
+.icon-list ul li::before,
+.checklist ul li::before,
+.questions-list li::before,
+.examples-list li::before,
+.resources-list li::before {
   content: '●' !important;
   position: absolute !important;
   right: 8px !important;
@@ -809,11 +971,49 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 50%;
   }
 
-  .styled-list li {
+  .icon-item .icon,
+  .check-item .check-icon {
+    font-size: 22px;
+  }
+
+  .tool-item {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .tool-icon {
+    font-size: 36px;
+    width: 64px;
+    height: 64px;
+  }
+
+  .tool-content h4 {
+    font-size: 19px;
+  }
+
+  .tool-content p {
+    font-size: 16px;
+  }
+
+  .cta-box {
+    padding: 28px;
+  }
+
+  .styled-list li,
+  .icon-list ul li,
+  .checklist ul li,
+  .questions-list li,
+  .examples-list li,
+  .resources-list li {
     padding-right: 28px !important;
   }
 
-  .styled-list li::before {
+  .styled-list li::before,
+  .icon-list ul li::before,
+  .checklist ul li::before,
+  .questions-list li::before,
+  .examples-list li::before,
+  .resources-list li::before {
     right: 10px !important;
   }
 
@@ -876,11 +1076,57 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 1.3rem;
   }
 
-  .styled-list li {
+  .icon-item .icon,
+  .check-item .check-icon {
+    font-size: 24px;
+  }
+
+  .tool-item {
+    padding: 28px;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+
+  .tool-icon {
+    font-size: 40px;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+  }
+
+  .tool-content h4 {
+    font-size: 20px;
+    margin-bottom: 10px;
+  }
+
+  .tool-content p {
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .cta-box {
+    padding: 32px;
+  }
+
+  .cta-box p {
+    font-size: 17px;
+  }
+
+  .styled-list li,
+  .icon-list ul li,
+  .checklist ul li,
+  .questions-list li,
+  .examples-list li,
+  .resources-list li {
     padding-right: 32px !important;
   }
 
-  .styled-list li::before {
+  .styled-list li::before,
+  .icon-list ul li::before,
+  .checklist ul li::before,
+  .questions-list li::before,
+  .examples-list li::before,
+  .resources-list li::before {
     right: 12px !important;
   }
 
