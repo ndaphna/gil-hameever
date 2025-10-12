@@ -595,35 +595,35 @@ h1, h2, h3, h4, h5, h6 {
 .tool-content p,
 .topic-desc {
   margin: 0;
-  line-height: 1.5;
+  line-height: 1.4;                /* צמצום line-height */
   color: var(--black);
-  font-size: 14px;  /* הקטנה ל-14px */
-  padding-right: 32px;  /* יישור עם הטקסט */
+  font-size: 13px;                 /* הקטנה נוספת */
+  padding-right: 28px;             /* יישור מדויק עם topic-text */
 }
 
 /* Topic Row specific - split layout */
 .topic-row {
   flex-direction: column;
-  gap: 6px;
-  padding: 14px 20px !important;  /* הקטנה של 35% מ-20px */
-  margin-bottom: 12px !important;
+  gap: 4px;                        /* צמצום המרווח */
+  padding: 10px 16px !important;   /* הקטנה נוספת של 30% */
+  margin-bottom: 10px !important;
 }
 
 .topic-title {
   display: flex !important;
   align-items: flex-start !important;
-  gap: 10px;
-  font-size: 16px;  /* הקטנה ל-16px */
+  gap: 8px;                        /* צמצום המרווח */
+  font-size: 15px;                 /* הקטנה נוספת */
   font-weight: 700;
   color: var(--magenta-dark);
-  margin: 0 0 4px 0;
-  line-height: 1.4;
+  margin: 0 0 2px 0;               /* צמצום המרווח */
+  line-height: 1.3;
   text-align: right;
 }
 
 .topic-icon {
   flex-shrink: 0 !important;
-  font-size: 22px;  /* הקטנה ל-22px */
+  font-size: 20px;                 /* הקטנה נוספת */
   line-height: 1 !important;
   align-self: flex-start !important;
   margin-top: 0 !important;
@@ -633,7 +633,7 @@ h1, h2, h3, h4, h5, h6 {
 .topic-text {
   flex: 1;
   text-align: right;
-  line-height: 1.4;
+  line-height: 1.3;
   align-self: flex-start !important;
 }
 
