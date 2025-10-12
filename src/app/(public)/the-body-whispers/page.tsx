@@ -157,13 +157,13 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">סקירה ברורה של כל התסמינים האפשריים. מגלי חום ועד ערפל מוחי, יובש בנרתיק, דפיקות לב, כאבי מפרקים ועוד. למה זה קורה, ומתי כדאי לבדוק.</div>
               </div>
-              <div className="topic-row">
+              <a href="/heat-waves" id="heat-waves" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">🔥</span>
                   <span className="topic-text">גלי חום והזעות לילה</span>
                 </div>
                 <div className="topic-desc">העמקה על אחד התסמינים הכי מזוהים עם גיל המעבר, ואיזה פתרונות באמת עובדים (כולל טבעיים).</div>
-              </div>
+              </a>
               <div className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💤</span>
