@@ -192,13 +192,15 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">הסבר ידידותי על טיפולים הורמונליים, תחליפים טבעיים והחלטות מושכלות.</div>
               </div>
-              <div className="topic-row">
-                <div className="topic-title">
-                  <span className="topic-icon">🧘</span>
-                  <span className="topic-text">פעילות גופנית</span>
+              <a href="/physical-activity" style={{textDecoration: 'none', color: 'inherit'}}>
+                <div className="topic-row">
+                  <div className="topic-title">
+                    <span className="topic-icon">🧘</span>
+                    <span className="topic-text">פעילות גופנית</span>
+                  </div>
+                  <div className="topic-desc">מה עוזר לשמור על אנרגיה ואיזון, איך להרגיש חיה שוב, ואיך להתחיל גם אם מעולם לא התאמנת.</div>
                 </div>
-                <div className="topic-desc">מה עוזר לשמור על אנרגיה ואיזון, איך להרגיש חיה שוב, ואיך להתחיל גם אם מעולם לא התאמנת.</div>
-              </div>
+              </a>
             </div>
 
             <p className="note">💡 לכל נושא תמצאי דף ידע ממוקד עם סיכום + טיפים + המלצות באהבה.</p>
