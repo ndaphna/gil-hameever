@@ -621,9 +621,12 @@ h1, h2, h3, h4, h5, h6 {
 .topic-icon {
   flex-shrink: 0 !important;
   font-size: 28px;
-  line-height: 1 !important;
+  line-height: 0.8 !important;
   align-self: flex-start !important;
   vertical-align: top !important;
+  display: inline-block !important;
+  margin-top: -4px !important;
+  padding-top: 0 !important;
 }
 
 .topic-text {
