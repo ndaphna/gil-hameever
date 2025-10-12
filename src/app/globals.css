@@ -1084,6 +1084,107 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1.02);
 }
 
+/* ============================================
+   QUOTE BOX - Elegant with Personality
+   ============================================ */
+
+.quote-box {
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.08) 0%, rgba(199, 125, 255, 0.05) 100%);
+  border-radius: 20px;
+  padding: 28px 24px;
+  margin: 24px 0;
+  position: relative;
+  border: 2px solid rgba(157, 78, 221, 0.2);
+  box-shadow: 0 4px 24px rgba(157, 78, 221, 0.1);
+  transition: all 0.4s ease;
+}
+
+.quote-box::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  font-size: 80px;
+  font-family: Georgia, serif;
+  color: var(--purple-light);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+.quote-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(157, 78, 221, 0.15);
+  border-color: rgba(157, 78, 221, 0.4);
+}
+
+.quote-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--purple);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: right;
+}
+
+.quote-box blockquote {
+  margin: 0;
+  padding: 0;
+  font-style: italic;
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--black);
+  text-align: right;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   CHECKLIST - Modern & Clean
+   ============================================ */
+
+.checklist {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.check-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 14px;
+  border-right: 4px solid var(--magenta);
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
+.check-item:hover {
+  background: rgba(255, 255, 255, 1);
+  transform: translateX(-4px);
+  box-shadow: 0 4px 20px rgba(255, 0, 128, 0.1);
+}
+
+.check-item .check-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  line-height: 1 !important;
+  align-self: flex-start !important;
+}
+
+.check-item div,
+.check-item p {
+  flex: 1;
+  text-align: right;
+  line-height: 1.7;
+  color: var(--black);
+  margin: 0;
+}
+
 .download-list {
   list-style: none;
   padding: 0;
@@ -1287,6 +1388,60 @@ h1, h2, h3, h4, h5, h6 {
     padding: 28px;
   }
 
+  .quote-box {
+    padding: 24px 20px;
+  }
+
+  .quote-box::before {
+    font-size: 60px;
+    top: -5px;
+  }
+
+  .quote-title {
+    font-size: 17px;
+  }
+
+  .quote-box blockquote {
+    font-size: 16px;
+  }
+
+  .check-item {
+    padding: 16px 18px;
+  }
+
+  .check-item .check-icon {
+    font-size: 20px;
+  }
+
+  .exercise {
+    padding: 24px 20px;
+  }
+
+  .exercise h3 {
+    font-size: 17px;
+  }
+
+  .story-card {
+    padding: 32px 24px;
+  }
+
+  .story-card::before,
+  .story-card::after {
+    font-size: 35px;
+  }
+
+  .story-content {
+    padding: 20px 22px;
+  }
+
+  .story-content p {
+    font-size: 16px;
+  }
+
+  .story-content .final-thought {
+    font-size: 17px;
+  }
+
   .styled-list li,
   .icon-list ul li,
   .checklist ul li,
@@ -1405,6 +1560,76 @@ h1, h2, h3, h4, h5, h6 {
 
   .cta-box p {
     font-size: 17px;
+  }
+
+  .quote-box {
+    padding: 32px 28px;
+  }
+
+  .quote-box::before {
+    font-size: 90px;
+  }
+
+  .quote-title {
+    font-size: 19px;
+  }
+
+  .quote-box blockquote {
+    font-size: 18px;
+    line-height: 1.9;
+  }
+
+  .check-item {
+    padding: 20px 24px;
+  }
+
+  .check-item .check-icon {
+    font-size: 24px;
+  }
+
+  .check-item div,
+  .check-item p {
+    font-size: 17px;
+    line-height: 1.8;
+  }
+
+  .exercise {
+    padding: 32px 28px;
+    margin-bottom: 28px;
+  }
+
+  .exercise h3 {
+    font-size: 19px;
+  }
+
+  .exercise p {
+    font-size: 17px;
+  }
+
+  .story-card {
+    padding: 48px 36px;
+  }
+
+  .story-card h2 {
+    font-size: 26px;
+  }
+
+  .story-content {
+    padding: 28px 32px;
+  }
+
+  .story-content p {
+    font-size: 18px;
+    line-height: 2;
+  }
+
+  .story-content .simple-rules li {
+    font-size: 18px;
+  }
+
+  .story-content .final-thought {
+    font-size: 19px;
+    padding: 20px;
   }
 
   .styled-list li,
