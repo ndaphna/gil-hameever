@@ -857,6 +857,111 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1 !important;
 }
 
+/* ============================================
+   PRACTICE EXERCISES - Premium Cards
+   ============================================ */
+
+.exercise {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 248, 252, 0.8) 100%);
+  border: 2px solid rgba(255, 0, 128, 0.1);
+  border-radius: 20px;
+  padding: 28px 24px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 20px rgba(255, 0, 128, 0.08);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.exercise::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--magenta) 0%, var(--purple) 100%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.exercise:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(255, 0, 128, 0.15);
+  border-color: rgba(255, 0, 128, 0.25);
+}
+
+.exercise:hover::before {
+  opacity: 1;
+}
+
+.exercise h3 {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin: 0 0 16px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--magenta-dark);
+  line-height: 1.4;
+  text-align: right;
+}
+
+.exercise h3 .emoji-icon {
+  flex-shrink: 0;
+  font-size: 24px;
+  line-height: 1 !important;
+  align-self: flex-start !important;
+  margin-top: 0;
+}
+
+.exercise h3 .text-content {
+  flex: 1;
+  text-align: right;
+  line-height: 1.4;
+}
+
+.exercise p {
+  text-align: right;
+  line-height: 1.8;
+  margin: 12px 0;
+  color: var(--black);
+}
+
+.exercise strong {
+  color: var(--magenta-dark);
+  font-weight: 700;
+}
+
+.exercise em {
+  color: var(--purple);
+  font-style: italic;
+}
+
+.comparison-box,
+.example-box {
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  border-right: 3px solid var(--magenta);
+}
+
+.quote-inline {
+  font-style: italic;
+  color: var(--purple);
+  border-right: 3px solid var(--purple-light);
+  padding-right: 16px;
+  margin: 16px 0;
+}
+
+.subtitle-text {
+  font-weight: 600;
+  color: var(--magenta-dark);
+  font-size: 16px;
+  margin: 8px 0 16px 0;
+}
+
 .download-list {
   list-style: none;
   padding: 0;
