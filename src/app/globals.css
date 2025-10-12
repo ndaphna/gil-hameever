@@ -1128,7 +1128,8 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
 }
 
-.quote-box blockquote {
+.quote-box blockquote,
+blockquote.quote-box {
   margin: 0;
   padding: 0;
   font-style: italic;
@@ -1138,6 +1139,35 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
   position: relative;
   z-index: 1;
+}
+
+/* When quote-box is used as blockquote directly */
+blockquote.quote-box {
+  background: linear-gradient(135deg, rgba(157, 78, 221, 0.08) 0%, rgba(199, 125, 255, 0.05) 100%);
+  border-radius: 20px;
+  padding: 28px 24px;
+  margin: 24px 0;
+  border: 2px solid rgba(157, 78, 221, 0.2);
+  box-shadow: 0 4px 24px rgba(157, 78, 221, 0.1);
+  transition: all 0.4s ease;
+}
+
+blockquote.quote-box::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  right: 20px;
+  font-size: 80px;
+  font-family: Georgia, serif;
+  color: var(--purple-light);
+  opacity: 0.3;
+  line-height: 1;
+}
+
+blockquote.quote-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 32px rgba(157, 78, 221, 0.15);
+  border-color: rgba(157, 78, 221, 0.4);
 }
 
 /* ============================================
