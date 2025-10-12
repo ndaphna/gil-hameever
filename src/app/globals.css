@@ -1703,6 +1703,74 @@ h1, h2, h3, h4, h5, h6 {
     font-size: 12px;
     padding: 6px 16px;
   }
+
+  .quote-box {
+    padding: 20px 16px;
+  }
+
+  .quote-box::before {
+    font-size: 50px;
+  }
+
+  .quote-title {
+    font-size: 16px;
+  }
+
+  .quote-box blockquote {
+    font-size: 15px;
+  }
+
+  .check-item {
+    padding: 14px 16px;
+    gap: 12px;
+  }
+
+  .check-item .check-icon {
+    font-size: 18px;
+  }
+
+  .exercise {
+    padding: 20px 16px;
+  }
+
+  .exercise h3 {
+    font-size: 16px;
+  }
+
+  .exercise p {
+    font-size: 15px;
+  }
+
+  .comparison-box,
+  .example-box {
+    padding: 12px 16px;
+  }
+
+  .story-card {
+    padding: 24px 16px;
+  }
+
+  .story-card h2 {
+    font-size: 20px;
+  }
+
+  .story-card::before,
+  .story-card::after {
+    font-size: 30px;
+  }
+
+  .story-content {
+    padding: 16px 18px;
+  }
+
+  .story-content p {
+    font-size: 15px;
+  }
+
+  .story-content .final-thought {
+    font-size: 16px;
+    padding: 14px;
+  }
 }
 
 /* ============================================
