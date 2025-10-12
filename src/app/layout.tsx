@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Assistant, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import Navigation from "./components/Navigation";
 
 const assistant = Assistant({
   variable: "--font-assistant",
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "גיל המיוערת",
+  title: "מנופאוזית וטוב לה",
   description: "אתר ואפליקציה בעברית לנשים בישראל",
 };
 
@@ -29,23 +30,7 @@ export default function RootLayout({
       <body
         className={`${assistant.variable} ${geistMono.variable} antialiased`}
       >
-        <header className="border-b border-neutral-200 dark:border-neutral-800">
-          <nav className="max-w-5xl mx-auto flex items-center gap-4 p-4 text-sm">
-            <a href="/" className="hover:underline">דף הבית</a>
-            <a href="/about" className="hover:underline">אודות</a>
-            <a href="/menopause-roadmap" className="hover:underline">מפת דרכים</a>
-            <a href="/pricing" className="hover:underline">מחירים</a>
-            <a href="/members" className="hover:underline">איזור חברות</a>
-            <div className="ml-auto flex items-center gap-2">
-              <form action="/api/login" method="post">
-                <button className="btn btn-primary">התחברות</button>
-              </form>
-              <form action="/api/logout" method="post">
-                <button className="btn btn-secondary">התנתקות</button>
-              </form>
-            </div>
-          </nav>
-        </header>
+        <Navigation />
         {children}
       </body>
     </html>
