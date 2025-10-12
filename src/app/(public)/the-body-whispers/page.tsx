@@ -171,13 +171,13 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">מה קורה להורמונים בלילה, וטיפים אפקטיביים לשינה טובה.</div>
               </a>
-              <div className="topic-row">
+              <a href="/weight-gain" id="weight-gain" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">⚖️</span>
                   <span className="topic-text">עלייה במשקל ותזונה</span>
                 </div>
                 <div className="topic-desc">שומן בטני, איך זה קורה גם כשאת לא אוכלת יותר מבעבר, ואיך להתמודד בלי דיאטות קיצון ובלי ייסורי מצפון.</div>
-              </div>
+              </a>
               <div className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💗</span>
