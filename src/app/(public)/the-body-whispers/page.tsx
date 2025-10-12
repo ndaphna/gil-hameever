@@ -185,13 +185,13 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">על הגוף המשתנה, תקשורת זוגית, ומה אפשר לעשות.</div>
               </div>
-              <div className="topic-row">
+              <a href="/hormones" id="hormones" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💊</span>
                   <span className="topic-text">הורמונים - כן או לא?</span>
                 </div>
                 <div className="topic-desc">הסבר ידידותי על טיפולים הורמונליים, תחליפים טבעיים והחלטות מושכלות.</div>
-              </div>
+              </a>
               <a href="/physical-activity" style={{textDecoration: 'none', color: 'inherit'}}>
                 <div className="topic-row">
                   <div className="topic-title">
