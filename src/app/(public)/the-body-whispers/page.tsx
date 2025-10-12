@@ -151,31 +151,52 @@ export default function TheBodyWhispersPage() {
 
             <div className="topics-table">
               <div className="topic-row">
-                <div className="topic-title">❓ מה עובר עליי בעצם?</div>
+                <div className="topic-title">
+                  <span className="topic-icon">❓</span>
+                  <span className="topic-text">מה עובר עליי בעצם?</span>
+                </div>
                 <div className="topic-desc">סקירה ברורה של כל התסמינים האפשריים. מגלי חום ועד ערפל מוחי, יובש בנרתיק, דפיקות לב, כאבי מפרקים ועוד. למה זה קורה, ומתי כדאי לבדוק.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">🔥 גלי חום והזעות לילה</div>
+                <div className="topic-title">
+                  <span className="topic-icon">🔥</span>
+                  <span className="topic-text">גלי חום והזעות לילה</span>
+                </div>
                 <div className="topic-desc">העמקה על אחד התסמינים הכי מזוהים עם גיל המעבר, ואיזה פתרונות באמת עובדים (כולל טבעיים).</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">💤 שינה בגיל המעבר</div>
+                <div className="topic-title">
+                  <span className="topic-icon">💤</span>
+                  <span className="topic-text">שינה בגיל המעבר</span>
+                </div>
                 <div className="topic-desc">מה קורה להורמונים בלילה, וטיפים אפקטיביים לשינה טובה.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">⚖️ עלייה במשקל ותזונה</div>
+                <div className="topic-title">
+                  <span className="topic-icon">⚖️</span>
+                  <span className="topic-text">עלייה במשקל ותזונה</span>
+                </div>
                 <div className="topic-desc">שומן בטני, איך זה קורה גם כשאת לא אוכלת יותר מבעבר, ואיך להתמודד בלי דיאטות קיצון ובלי ייסורי מצפון.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">💗 ירידה בחשק ובמיניות</div>
+                <div className="topic-title">
+                  <span className="topic-icon">💗</span>
+                  <span className="topic-text">ירידה בחשק ובמיניות</span>
+                </div>
                 <div className="topic-desc">על הגוף המשתנה, תקשורת זוגית, ומה אפשר לעשות.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">💊 הורמונים - כן או לא?</div>
+                <div className="topic-title">
+                  <span className="topic-icon">💊</span>
+                  <span className="topic-text">הורמונים - כן או לא?</span>
+                </div>
                 <div className="topic-desc">הסבר ידידותי על טיפולים הורמונליים, תחליפים טבעיים והחלטות מושכלות.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">🧘 פעילות גופנית</div>
+                <div className="topic-title">
+                  <span className="topic-icon">🧘</span>
+                  <span className="topic-text">פעילות גופנית</span>
+                </div>
                 <div className="topic-desc">מה עוזר לשמור על אנרגיה ואיזון, איך להרגיש חיה שוב, ואיך להתחיל גם אם מעולם לא התאמנת.</div>
               </div>
             </div>
