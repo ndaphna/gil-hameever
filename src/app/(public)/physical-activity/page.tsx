@@ -167,9 +167,9 @@ export default function PhysicalActivityPage() {
           </div>
 
           {/* Back Links */}
-          <div className="content-card back-links-card fade-in">
+          <div className="next-steps-card fade-in">
             <div className="button-group">
-              <a href="/the-body-whispers" className="cta-button">
+              <a href="/the-body-whispers#physical-activity" className="cta-button">
                 🧏🏻‍♀️ חזרה לשלב 1 במפת דרכים
               </a>
               <a href="/menopause-roadmap" className="cta-button secondary">

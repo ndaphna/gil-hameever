@@ -166,7 +166,7 @@ export default function MenopauseRoadmapPage() {
         <div className="decoration-circle"></div>
         <div className="container">
           <div className="hero-content">
-            <h1>מפת הדרכים למנופאוזית המתחילה</h1>
+      <h1>מפת הדרכים למנופאוזית המתחילה</h1>
             <div className="questions-container">
               <p className="hero-question">&quot;למה אני לא מזהה את עצמי יותר?&quot;</p>
               <p className="hero-question">&quot;איך הגוף שלי משתגע – בלי שליטה?&quot;</p>
@@ -352,8 +352,8 @@ export default function MenopauseRoadmapPage() {
               <button className="cta-button pulse-button">
                 <span className="button-text">בואי נתחיל במסע שלך</span>
                 <span className="button-subtext">לחצי על השלב שמתאים לך ברגע זה</span>
-              </button>
-            </div>
+        </button>
+      </div>
           </div>
           </div>
         </div>
