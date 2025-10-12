@@ -485,14 +485,15 @@ h1, h2, h3, h4, h5, h6 {
 
 .icon-item .icon,
 .check-item .check-icon {
-  flex-shrink: 0;
+  flex-shrink: 0 !important;
   font-size: 20px;
   margin-left: 8px;
-  line-height: 1.8;
-  height: 1.8em;
+  line-height: 1 !important;
   display: flex;
-  align-items: center;
+  align-items: flex-start !important;
   justify-content: center;
+  align-self: flex-start !important;
+  padding-top: 0 !important;
 }
 
 .icon-item p,
@@ -622,15 +623,19 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
 }
 
-.topic-icon {
+.topic-icon,
+.tool-icon,
+.icon,
+.check-icon {
   flex-shrink: 0 !important;
   font-size: 20px;
   line-height: 1 !important;
   align-self: flex-start !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
+  vertical-align: top !important;
   position: relative;
-  top: -2px;                       /* דחיפה למעלה */
+  top: 0;                          /* יישור טבעי למעלה */
 }
 
 .topic-text {
