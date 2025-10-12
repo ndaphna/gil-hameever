@@ -221,11 +221,10 @@ export default function SelfWorthPage() {
               עברת דרך ארוכה, ועכשיו אנחנו מגיעות לשלב החמישי והאחרון במפת הדרכים.<br />
               שלב שמוקדש למה שצברת – ולמה שאת מוכנה לחלוק עם העולם.
             </p>
-            <p className="highlight-text">
-              רוצה להמשיך לשלב 5?
-            </p>
+            <p className="highlight">רוצה להמשיך לשלב 5?</p>
+            <p>👉 תבונה ונתינה - השלב שבו את כבר מלאה יותר, ויכולה להשפיע על העולם בדרך שלך.</p>
+            
             <div className="button-group">
-              <p>👉 תבונה ונתינה - השלב שבו את כבר מלאה יותר, ויכולה להשפיע על העולם בדרך שלך.</p>
               <a href="/wisdom-giving" className="cta-button">שלב 5 במפת דרכים</a>
               <a href="/menopause-roadmap" className="cta-button secondary">🗺️ חזרה למפת הדרכים</a>
             </div>
