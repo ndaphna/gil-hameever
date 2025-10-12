@@ -146,7 +146,7 @@ export default function TheBodyWhispersPage() {
               במקום לשקוע באינסוף מאמרים מבלבלים, ריכזתי עבורך את המידע הכי חשוב, הכי ברור, והכי בגובה העיניים.
             </p>
 
-            <h3>✨ הנושאים המרכזיים:</h3>
+            <h3 id="key-topics">✨ הנושאים המרכזיים:</h3>
             <p className="subtitle-small">[כל נושא הוא קישור לדף ייעודי ממוקד]</p>
 
             <div className="topics-table">
@@ -164,13 +164,13 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">העמקה על אחד התסמינים הכי מזוהים עם גיל המעבר, ואיזה פתרונות באמת עובדים (כולל טבעיים).</div>
               </a>
-              <div className="topic-row">
+              <a href="/menopausal-sleep" id="menopausal-sleep" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💤</span>
                   <span className="topic-text">שינה בגיל המעבר</span>
                 </div>
                 <div className="topic-desc">מה קורה להורמונים בלילה, וטיפים אפקטיביים לשינה טובה.</div>
-              </div>
+              </a>
               <div className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">⚖️</span>
