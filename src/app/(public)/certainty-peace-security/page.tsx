@@ -126,23 +126,38 @@ export default function CertaintyPeaceSecurityPage() {
             
             <div className="topics-table">
               <div className="topic-row">
-                <div className="topic-title">⚠️ מה זה בכלל &quot;וויסות רגשי&quot;?</div>
+                <div className="topic-title">
+                  <span className="topic-icon">⚠️</span>
+                  <span className="topic-text">מה זה בכלל &quot;וויסות רגשי&quot;?</span>
+                </div>
                 <div className="topic-desc">הסבר פשוט על המערכת הסימפתטית, והקשר בין הורמונים לרגש.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">🧯 התקפי חרדה קלים או פתאומיים</div>
+                <div className="topic-title">
+                  <span className="topic-icon">🧯</span>
+                  <span className="topic-text">התקפי חרדה קלים או פתאומיים</span>
+                </div>
                 <div className="topic-desc">למה הם מופיעים דווקא עכשיו, ואיך להוריד מהם את העוקץ.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">🧍‍♀️ להציב גבולות – בלי רגשות אשם</div>
+                <div className="topic-title">
+                  <span className="topic-icon">🧍‍♀️</span>
+                  <span className="topic-text">להציב גבולות – בלי רגשות אשם</span>
+                </div>
                 <div className="topic-desc">איך לזהות מתי את אומרת &quot;כן&quot; כשבא לך להגיד &quot;לא&quot;, ואיך לתקן את זה.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">📆 בניית שגרה בטוחה</div>
+                <div className="topic-title">
+                  <span className="topic-icon">📆</span>
+                  <span className="topic-text">בניית שגרה בטוחה</span>
+                </div>
                 <div className="topic-desc">למה ריטואלים קטנים הם עוגן רגשי, ואיך ליצור כאלה שמתאימים לך.</div>
               </div>
               <div className="topic-row">
-                <div className="topic-title">🔄 המעבר מאימפולסיביות לרוגע</div>
+                <div className="topic-title">
+                  <span className="topic-icon">🔄</span>
+                  <span className="topic-text">המעבר מאימפולסיביות לרוגע</span>
+                </div>
                 <div className="topic-desc">כלים קטנים לשים שנייה בין הגירוי לתגובה. זה כל ההבדל.</div>
               </div>
             </div>

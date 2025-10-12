@@ -595,44 +595,45 @@ h1, h2, h3, h4, h5, h6 {
 .tool-content p,
 .topic-desc {
   margin: 0;
-  line-height: 1.7;
+  line-height: 1.5;
   color: var(--black);
-  font-size: 15px;
+  font-size: 14px;  /* הקטנה ל-14px */
+  padding-right: 32px;  /* יישור עם הטקסט */
 }
 
 /* Topic Row specific - split layout */
 .topic-row {
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  padding: 14px 20px !important;  /* הקטנה של 35% מ-20px */
+  margin-bottom: 12px !important;
 }
 
 .topic-title {
   display: flex !important;
   align-items: flex-start !important;
-  gap: 12px;
-  font-size: 18px;
+  gap: 10px;
+  font-size: 16px;  /* הקטנה ל-16px */
   font-weight: 700;
   color: var(--magenta-dark);
-  margin: 0;
-  line-height: 1.6;
+  margin: 0 0 4px 0;
+  line-height: 1.4;
   text-align: right;
 }
 
 .topic-icon {
   flex-shrink: 0 !important;
-  font-size: 28px;
-  line-height: 0.8 !important;
+  font-size: 22px;  /* הקטנה ל-22px */
+  line-height: 1 !important;
   align-self: flex-start !important;
-  vertical-align: top !important;
-  display: inline-block !important;
-  margin-top: -4px !important;
+  margin-top: 0 !important;
   padding-top: 0 !important;
 }
 
 .topic-text {
   flex: 1;
   text-align: right;
-  line-height: 1.6;
+  line-height: 1.4;
   align-self: flex-start !important;
 }
 
