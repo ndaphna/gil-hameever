@@ -968,8 +968,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .story-card {
   background: linear-gradient(135deg, rgba(255, 248, 252, 1) 0%, rgba(255, 235, 248, 0.9) 100%);
-  border: 3px solid transparent;
-  border-image: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%) 1;
+  border: none;
   border-radius: 24px;
   padding: 40px 32px;
   position: relative;
@@ -1094,7 +1093,7 @@ h1, h2, h3, h4, h5, h6 {
   padding: 28px 24px;
   margin: 24px 0;
   position: relative;
-  border: 2px solid rgba(157, 78, 221, 0.2);
+  border: none;
   box-shadow: 0 4px 24px rgba(157, 78, 221, 0.1);
   transition: all 0.4s ease;
 }
@@ -1147,7 +1146,7 @@ blockquote.quote-box {
   border-radius: 20px;
   padding: 28px 24px;
   margin: 24px 0;
-  border: 2px solid rgba(157, 78, 221, 0.2);
+  border: none;
   box-shadow: 0 4px 24px rgba(157, 78, 221, 0.1);
   transition: all 0.4s ease;
 }
@@ -1167,7 +1166,6 @@ blockquote.quote-box::before {
 blockquote.quote-box:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 32px rgba(157, 78, 221, 0.15);
-  border-color: rgba(157, 78, 221, 0.4);
 }
 
 /* ============================================
