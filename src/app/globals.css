@@ -595,10 +595,11 @@ h1, h2, h3, h4, h5, h6 {
 .tool-content p,
 .topic-desc {
   margin: 0;
-  line-height: 1.4;                /* צמצום line-height */
+  line-height: 1.4;
   color: var(--black);
-  font-size: 13px;                 /* הקטנה נוספת */
-  padding-right: 28px;             /* יישור מדויק עם topic-text */
+  font-size: 13px;
+  padding-right: 28px;             /* יישור מדויק עם topic-text (8px icon gap + 20px icon width) */
+  text-align: right;
 }
 
 /* Topic Row specific - split layout */
@@ -612,22 +613,24 @@ h1, h2, h3, h4, h5, h6 {
 .topic-title {
   display: flex !important;
   align-items: flex-start !important;
-  gap: 8px;                        /* צמצום המרווח */
-  font-size: 15px;                 /* הקטנה נוספת */
+  gap: 8px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--magenta-dark);
-  margin: 0 0 2px 0;               /* צמצום המרווח */
+  margin: 0 0 1px 0;               /* צמצום ל-50% - 1px במקום 2px */
   line-height: 1.3;
   text-align: right;
 }
 
 .topic-icon {
   flex-shrink: 0 !important;
-  font-size: 20px;                 /* הקטנה נוספת */
+  font-size: 20px;
   line-height: 1 !important;
   align-self: flex-start !important;
   margin-top: 0 !important;
   padding-top: 0 !important;
+  position: relative;
+  top: -2px;                       /* דחיפה למעלה */
 }
 
 .topic-text {
@@ -635,6 +638,7 @@ h1, h2, h3, h4, h5, h6 {
   text-align: right;
   line-height: 1.3;
   align-self: flex-start !important;
+  padding-top: 0;
 }
 
 /* CTA Box */
