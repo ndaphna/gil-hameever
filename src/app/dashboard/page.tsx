@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import DashboardLayout from '../components/DashboardLayout';
 
 interface UserProfile {
   name: string | null;
@@ -45,66 +46,81 @@ export default function DashboardPage() {
     loadProfile();
   }, [router]);
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
   if (loading) {
     return (
-      <div className="auth-page">
-        <div className="loading">טוען...</div>
-      </div>
+      <DashboardLayout>
+        <div className="loading-container">
+          <div className="loading">טוען...</div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="dashboard-page">
+    <DashboardLayout>
+      <div className="dashboard-page">
       <div className="dashboard-container">
         <div className="dashboard-header">
-          <h1>שלום, {profile?.name || profile?.email || 'משתמשת יקרה'} 👋</h1>
-          <button onClick={handleLogout} className="logout-button">
-            התנתק
-          </button>
+          <h1>ברוכה הבאה לאזור האישי שלך! 👋</h1>
         </div>
 
         <div className="dashboard-grid">
-          {/* Subscription Card */}
+          {/* Welcome Card */}
+          <div className="dashboard-card welcome-card">
+            <h2>👋 שלום {profile?.name || profile?.email?.split('@')[0]}!</h2>
+            <p>זה האזור האישי שלך. כאן תוכלי:</p>
+            <ul className="feature-list">
+              <li>💬 לשוחח עם עליזה בצ'אט AI אישי</li>
+              <li>📔 לתעד רגשות ביומן היומי</li>
+              <li>🔮 לקבל תובנות מבוססות AI על המצב שלך</li>
+              <li>👤 לנהל את הפרופיל והמנוי שלך</li>
+            </ul>
+          </div>
+
+          {/* Subscription Status Card */}
           <div className="dashboard-card">
-            <h2>המנוי שלך</h2>
+            <h2>💎 סטטוס המנוי שלך</h2>
             <div className="subscription-info">
               <div className="tier-badge">{profile?.subscription_status}</div>
               <p className="tokens">
-                <strong>{profile?.current_tokens || 0}</strong> טוקנים נותרו
+                <strong>{profile?.current_tokens || 0}</strong> טוקנים זמינים
               </p>
             </div>
-            <a href="/profile" className="card-link">
-              נהל מנוי →
-            </a>
+            <p className="info-text">
+              השתמשי בסרגל הניווט מימין כדי לגשת לכל הכלים
+            </p>
           </div>
 
-          {/* Chat Card */}
-          <div className="dashboard-card clickable" onClick={() => router.push('/chat')}>
-            <div className="card-icon">💬</div>
-            <h2>שיחה עם עליזה</h2>
-            <p>התחילי שיחה חדשה או המשיכי שיחה קיימת</p>
-            <div className="card-link">פתחי צ'אט →</div>
+          {/* Quick Stats Card */}
+          <div className="dashboard-card">
+            <h2>📊 פעילות אחרונה</h2>
+            <div className="stats-grid">
+              <div className="stat-item">
+                <div className="stat-icon">💬</div>
+                <div className="stat-info">
+                  <div className="stat-number">0</div>
+                  <div className="stat-label">שיחות</div>
+                </div>
+              </div>
+              <div className="stat-item">
+                <div className="stat-icon">📔</div>
+                <div className="stat-info">
+                  <div className="stat-number">0</div>
+                  <div className="stat-label">רשומות יומן</div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Journal Card */}
-          <div className="dashboard-card clickable" onClick={() => router.push('/journal')}>
-            <div className="card-icon">📔</div>
-            <h2>היומן שלי</h2>
-            <p>תעדי את הרגשות והחוויות שלך</p>
-            <div className="card-link">פתחי יומן →</div>
-          </div>
-
-          {/* Profile Card */}
-          <div className="dashboard-card clickable" onClick={() => router.push('/profile')}>
-            <div className="card-icon">👤</div>
-            <h2>הפרופיל שלי</h2>
-            <p>עדכני פרטים אישיים והגדרות</p>
-            <div className="card-link">ערוך פרופיל →</div>
+          {/* Next Steps Card */}
+          <div className="dashboard-card next-steps-card">
+            <h2>🚀 מה עושים עכשיו?</h2>
+            <p>מומלץ להתחיל עם:</p>
+            <ol className="steps-list">
+              <li>השלמת הפרופיל האישי שלך</li>
+              <li>פתיחת שיחה ראשונה עם עליזה</li>
+              <li>כתיבת רשומה ראשונה ביומן</li>
+            </ol>
           </div>
         </div>
       </div>
@@ -135,24 +151,7 @@ export default function DashboardPage() {
           font-weight: 700;
           color: var(--black);
           margin: 0;
-          text-align: right;
-        }
-
-        .logout-button {
-          padding: 10px 24px;
-          background: white;
-          border: 2px solid #e5e5e5;
-          border-radius: 8px;
-          font-size: 14px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-family: inherit;
-        }
-
-        .logout-button:hover {
-          border-color: var(--magenta);
-          color: var(--magenta);
+          text-align: center;
         }
 
         .dashboard-grid {
@@ -238,6 +237,90 @@ export default function DashboardPage() {
           font-size: 24px;
         }
 
+        .feature-list {
+          list-style: none;
+          padding: 0;
+          margin: 16px 0 0 0;
+          text-align: right;
+        }
+
+        .feature-list li {
+          padding: 8px 0;
+          color: var(--black);
+          font-size: 16px;
+        }
+
+        .steps-list {
+          margin: 16px 0 0 0;
+          padding-right: 24px;
+          text-align: right;
+        }
+
+        .steps-list li {
+          padding: 8px 0;
+          color: var(--black);
+          font-size: 16px;
+        }
+
+        .info-text {
+          color: var(--gray);
+          font-size: 14px;
+          margin-top: 12px;
+          text-align: right;
+        }
+
+        .stats-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 16px;
+          margin-top: 16px;
+        }
+
+        .stat-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 16px;
+          background: var(--gray-light);
+          border-radius: 8px;
+        }
+
+        .stat-icon {
+          font-size: 32px;
+        }
+
+        .stat-info {
+          text-align: right;
+        }
+
+        .stat-number {
+          font-size: 24px;
+          font-weight: 700;
+          color: var(--magenta);
+        }
+
+        .stat-label {
+          font-size: 14px;
+          color: var(--gray);
+        }
+
+        .welcome-card {
+          grid-column: 1 / -1;
+          background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+          color: white;
+        }
+
+        .welcome-card h2,
+        .welcome-card p,
+        .welcome-card li {
+          color: white;
+        }
+
+        .next-steps-card {
+          background: linear-gradient(135deg, #f0f7ff 0%, #e8f4ff 100%);
+          border: 2px solid var(--magenta);
+        }
+
         .loading {
           text-align: center;
           padding: 40px;
@@ -254,8 +337,16 @@ export default function DashboardPage() {
             grid-template-columns: 1fr;
           }
         }
+
+        .loading-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
       `}</style>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 

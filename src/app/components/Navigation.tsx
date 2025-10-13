@@ -2,11 +2,16 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabase';
+import { useRouter } from 'next/navigation';
 import './Navigation.css';
 
 export default function Navigation() {
+  const router = useRouter();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState<string | null>(null);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -21,6 +26,27 @@ export default function Navigation() {
     setIsRoadmapOpen(!isRoadmapOpen);
   };
 
+  // Check authentication status
+  useEffect(() => {
+    async function checkAuth() {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+      setUserEmail(session?.user?.email || null);
+    }
+    
+    checkAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+      setUserEmail(session?.user?.email || null);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   // Prevent body scroll when mobile menu is open
   useEffect(() => {
     if (isMenuOpen) {
@@ -33,6 +59,12 @@ export default function Navigation() {
       document.body.style.overflow = 'unset';
     };
   }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    router.push('/');
+    closeMenu();
+  };
 
   return (
     <header className="main-header">
@@ -105,17 +137,24 @@ export default function Navigation() {
             </div>
 
             <Link href="/pricing" onClick={closeMenu}>מחירים</Link>
-            <Link href="/members" onClick={closeMenu}>איזור חברות</Link>
           </div>
 
-          {/* Auth Buttons */}
+          {/* Auth Button - Dynamic based on login status */}
           <div className={`nav-auth ${isMenuOpen ? 'active' : ''}`}>
-            <form action="/api/login" method="post">
-              <button className="btn btn-primary" type="submit">התחברות</button>
-            </form>
-            <form action="/api/logout" method="post">
-              <button className="btn btn-secondary" type="submit">התנתקות</button>
-            </form>
+            {isLoggedIn ? (
+              <>
+                <Link href="/dashboard" className="btn btn-dashboard" onClick={closeMenu}>
+                  האזור האישי
+                </Link>
+                <button className="btn btn-secondary" onClick={handleLogout}>
+                  התנתקות
+                </button>
+              </>
+            ) : (
+              <Link href="/login" className="btn btn-primary" onClick={closeMenu}>
+                התחברות
+              </Link>
+            )}
           </div>
         </div>
       </nav>

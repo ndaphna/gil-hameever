@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import DashboardLayout from '../components/DashboardLayout';
 
 interface UserProfile {
   id: string;
@@ -76,27 +77,22 @@ export default function ProfilePage() {
     }
   };
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut();
-    router.push('/login');
-  };
-
   if (loading) {
     return (
-      <div className="auth-page">
-        <div className="loading">טוען...</div>
-      </div>
+      <DashboardLayout>
+        <div className="loading-container">
+          <div className="loading">טוען...</div>
+        </div>
+      </DashboardLayout>
     );
   }
 
   return (
-    <div className="profile-page">
+    <DashboardLayout>
+      <div className="profile-page">
       <div className="profile-container">
         <div className="profile-header">
           <h1>הפרופיל שלי</h1>
-          <button onClick={() => router.push('/dashboard')} className="back-button">
-            ← חזרה ל-Dashboard
-          </button>
         </div>
 
         {message && (
@@ -153,14 +149,6 @@ export default function ProfilePage() {
             <button className="upgrade-button">שדרג מנוי</button>
           </div>
 
-          {/* Danger Zone */}
-          <div className="profile-card danger-card">
-            <h2>אזור מסוכן</h2>
-            <p>פעולות בלתי הפיכות</p>
-            <button onClick={handleLogout} className="logout-button-full">
-              התנתק מהחשבון
-            </button>
-          </div>
         </div>
       </div>
 
@@ -406,13 +394,21 @@ export default function ProfilePage() {
           color: var(--gray);
         }
 
+        .loading-container {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+        }
+
         @media (max-width: 768px) {
           .profile-header h1 {
             font-size: 24px;
           }
         }
       `}</style>
-    </div>
+      </div>
+    </DashboardLayout>
   );
 }
 

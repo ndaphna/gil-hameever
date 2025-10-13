@@ -222,6 +222,17 @@
   white-space: nowrap;
 }
 
+.btn-dashboard {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.btn-dashboard:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3) !important;
+}
+
 /* Overlay - Hidden on Desktop */
 .nav-overlay {
   display: none;

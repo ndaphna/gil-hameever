@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
@@ -10,6 +10,17 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  // Check if user is already logged in
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push('/dashboard');
+      }
+    }
+    checkUser();
+  }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,8 +37,10 @@ export default function LoginPage() {
 
       if (data.user) {
         setMessage('התחברת בהצלחה! מעביר אותך...');
-        router.push('/dashboard');
-        router.refresh();
+        // Use window.location for hard redirect to ensure proper session handling
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 500);
       }
     } catch (error: any) {
       setMessage(error.message || 'שגיאה בהתחברות');
