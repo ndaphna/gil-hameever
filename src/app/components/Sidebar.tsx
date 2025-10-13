@@ -65,14 +65,8 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     {
       href: '/profile',
       icon: '👤',
-      label: 'הפרופיל שלי',
-      description: 'הגדרות ופרטים אישיים'
-    },
-    {
-      href: '/subscription',
-      icon: '💎',
-      label: 'המנוי שלי',
-      description: 'ניהול מנוי וחיובים'
+      label: 'הפרופיל והמנוי שלי',
+      description: 'פרטים אישיים ומנוי'
     }
   ];
 

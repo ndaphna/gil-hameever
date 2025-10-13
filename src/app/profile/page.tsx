@@ -92,7 +92,7 @@ export default function ProfilePage() {
       <div className="profile-page">
       <div className="profile-container">
         <div className="profile-header">
-          <h1>הפרופיל שלי</h1>
+          <h1>הפרופיל והמנוי שלי</h1>
         </div>
 
         {message && (
@@ -129,24 +129,52 @@ export default function ProfilePage() {
             </form>
           </div>
 
-          {/* Subscription Card */}
-          <div className="profile-card">
-            <h2>מידע על מנוי</h2>
-            <div className="subscription-details">
-              <div className="detail-row">
-                <span className="label">סטטוס מנוי:</span>
-                <span className="tier-badge">{profile?.subscription_status}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">טוקנים נותרו:</span>
-                <span className="tokens-count">{profile?.current_tokens || 0}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">תאריך הצטרפות:</span>
-                <span>{new Date(profile?.created_at || '').toLocaleDateString('he-IL')}</span>
+          {/* Subscription & Billing Card */}
+          <div className="profile-card subscription-card">
+            <h2>💎 מנוי וחיובים</h2>
+            
+            {/* Current Plan */}
+            <div className="plan-section">
+              <h3>המנוי הנוכחי</h3>
+              <div className="subscription-details">
+                <div className="detail-row">
+                  <span className="label">סטטוס:</span>
+                  <span className="tier-badge">{profile?.subscription_status}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">טוקנים זמינים:</span>
+                  <span className="tokens-count">{profile?.current_tokens || 0}</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">תאריך חידוש:</span>
+                  <span>לא הוגדר</span>
+                </div>
+                <div className="detail-row">
+                  <span className="label">תאריך הצטרפות:</span>
+                  <span>{new Date(profile?.created_at || '').toLocaleDateString('he-IL')}</span>
+                </div>
               </div>
             </div>
-            <button className="upgrade-button">שדרג מנוי</button>
+
+            {/* Action Buttons */}
+            <div className="subscription-actions">
+              <button className="upgrade-button">
+                ⬆️ שדרג מנוי
+              </button>
+              <button className="manage-button">
+                💳 ניהול אמצעי תשלום
+              </button>
+              <button className="history-button">
+                📄 היסטוריית חיובים
+              </button>
+            </div>
+
+            {/* Plan Info */}
+            <div className="plan-info">
+              <p className="info-note">
+                💡 <strong>טיפ:</strong> שדרגי את המנוי שלך כדי לקבל יותר טוקנים ותכונות נוספות
+              </p>
+            </div>
           </div>
 
         </div>
@@ -349,11 +377,35 @@ export default function ProfilePage() {
           color: var(--magenta);
         }
 
-        .upgrade-button {
+        .subscription-card {
+          background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+          border: 2px solid var(--magenta);
+        }
+
+        .plan-section {
+          margin-bottom: 24px;
+        }
+
+        .plan-section h3 {
+          font-size: 16px;
+          font-weight: 700;
+          color: var(--black);
+          margin: 0 0 16px 0;
+          text-align: right;
+        }
+
+        .subscription-actions {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+
+        .upgrade-button,
+        .manage-button,
+        .history-button {
           width: 100%;
           padding: 14px 20px;
-          background: var(--purple);
-          color: white;
           border: none;
           border-radius: 8px;
           font-size: 16px;
@@ -361,30 +413,58 @@ export default function ProfilePage() {
           cursor: pointer;
           transition: all 0.3s ease;
           font-family: inherit;
+          text-align: center;
+        }
+
+        .upgrade-button {
+          background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+          color: white;
         }
 
         .upgrade-button:hover {
-          background: var(--purple-light);
-          transform: translateY(-1px);
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
         }
 
-        .logout-button-full {
-          width: 100%;
-          padding: 14px 20px;
+        .manage-button {
           background: white;
-          color: #cc0000;
-          border: 2px solid #cc0000;
-          border-radius: 8px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          font-family: inherit;
+          color: var(--black);
+          border: 2px solid #e5e5e5;
         }
 
-        .logout-button-full:hover {
-          background: #cc0000;
-          color: white;
+        .manage-button:hover {
+          border-color: var(--magenta);
+          color: var(--magenta);
+        }
+
+        .history-button {
+          background: white;
+          color: var(--gray);
+          border: 2px solid #e5e5e5;
+        }
+
+        .history-button:hover {
+          border-color: var(--purple);
+          color: var(--purple);
+        }
+
+        .plan-info {
+          background: white;
+          padding: 16px;
+          border-radius: 8px;
+          border: 1px solid #e5e5e5;
+        }
+
+        .info-note {
+          margin: 0;
+          color: var(--gray);
+          font-size: 14px;
+          line-height: 1.6;
+          text-align: right;
+        }
+
+        .info-note strong {
+          color: var(--magenta);
         }
 
         .loading {
