@@ -27,15 +27,17 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
           .eq('id', user.id)
           .single();
 
-        // Create profile if it doesn't exist
+        // Create profile if it doesn't exist - use API to bypass RLS
         if (!profile) {
-          await supabase
-            .from('user_profile')
-            .insert({
-              id: user.id,
+          await fetch('/api/create-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: user.id,
               email: user.email || '',
               name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
-            });
+            }),
+          });
 
           // Fetch the newly created profile
           const { data: newProfile } = await supabase

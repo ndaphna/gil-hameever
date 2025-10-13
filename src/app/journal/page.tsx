@@ -88,7 +88,7 @@ export default function JournalPage() {
         return;
       }
 
-      // Ensure user_profile exists
+      // Ensure user_profile exists - use API to bypass RLS
       const { data: profile } = await supabase
         .from('user_profile')
         .select('id')
@@ -97,16 +97,19 @@ export default function JournalPage() {
 
       // Create profile if it doesn't exist
       if (!profile) {
-        const { error: profileError } = await supabase
-          .from('user_profile')
-          .insert({
-            id: user.id,
+        const response = await fetch('/api/create-profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userId: user.id,
             email: user.email || '',
             name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
-          });
+          }),
+        });
 
-        if (profileError) {
-          console.error('Error creating profile:', profileError);
+        if (!response.ok) {
+          const errorData = await response.json();
+          console.error('Error creating profile:', errorData);
           throw new Error('לא הצלחנו ליצור פרופיל. אנא נסי שוב.');
         }
       }
