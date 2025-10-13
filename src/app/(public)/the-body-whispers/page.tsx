@@ -47,7 +47,7 @@ export default function TheBodyWhispersPage() {
           
           {/* Introduction */}
           <div className="content-card fade-in">
-            <p className="lead-text">
+            <p className="intro-text">
               <strong>כי כשמשהו משתנה – הגוף תמיד הראשון לדבר.</strong>
             </p>
             <p>
@@ -56,10 +56,12 @@ export default function TheBodyWhispersPage() {
             <p>
               לפעמים זה לילה בלי שינה, פתאום חם לך בטירוף, הדופק דופק בלי סיבה, מצב הרוח מתנדנד בלי אזהרה מוקדמת, או את פשוט מרגישה שמישהו הדליק תנור בתוך הגוף שלך...
             </p>
-            <p className="emphasis-box">
-              ואז מגיע הרגע הזה שאת שואלת את עצמך:<br />
-              <em>&quot;רגע… זו אני? זה גיל המעבר? או שאני פשוט מתחרפנת?&quot;</em>
-            </p>
+            <div className="highlight-box">
+              <p>ואז מגיע הרגע הזה שאת שואלת את עצמך:</p>
+              <p className="highlight-text">
+                <em>&quot;רגע… זו אני? זה גיל המעבר? או שאני פשוט מתחרפנת?&quot;</em>
+              </p>
+            </div>
             <p>
               <strong>אם הגעת לפה, כנראה שהגוף שלך כבר התחיל ללחוש.</strong><br />
               השאלה היא: האם את מוכנה לעצור לרגע, ולהקשיב לו?

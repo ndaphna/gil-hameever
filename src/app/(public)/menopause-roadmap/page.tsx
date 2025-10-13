@@ -159,8 +159,6 @@ export default function MenopauseRoadmapPage() {
 
   return (
     <div className="menopause-roadmap-page">
-      <a href="#main-content" className="skip-to-content">דלג לתוכן הראשי</a>
-      
       <section className="hero" id="main-content">
         <div className="decoration-circle"></div>
         <div className="decoration-circle"></div>
