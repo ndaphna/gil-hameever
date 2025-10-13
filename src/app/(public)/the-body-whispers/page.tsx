@@ -150,13 +150,13 @@ export default function TheBodyWhispersPage() {
             <p className="subtitle-small">[כל נושא הוא קישור לדף ייעודי ממוקד]</p>
 
             <div className="topics-table">
-              <div className="topic-row">
+              <a href="/what-going-on" id="what-going-on" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">❓</span>
                   <span className="topic-text">מה עובר עליי בעצם?</span>
                 </div>
                 <div className="topic-desc">סקירה ברורה של כל התסמינים האפשריים. מגלי חום ועד ערפל מוחי, יובש בנרתיק, דפיקות לב, כאבי מפרקים ועוד. למה זה קורה, ומתי כדאי לבדוק.</div>
-              </div>
+              </a>
               <a href="/heat-waves" id="heat-waves" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">🔥</span>
@@ -178,13 +178,13 @@ export default function TheBodyWhispersPage() {
                 </div>
                 <div className="topic-desc">שומן בטני, איך זה קורה גם כשאת לא אוכלת יותר מבעבר, ואיך להתמודד בלי דיאטות קיצון ובלי ייסורי מצפון.</div>
               </a>
-              <div className="topic-row">
+              <a href="/decreased-desire" id="decreased-desire" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💗</span>
                   <span className="topic-text">ירידה בחשק ובמיניות</span>
                 </div>
                 <div className="topic-desc">על הגוף המשתנה, תקשורת זוגית, ומה אפשר לעשות.</div>
-              </div>
+              </a>
               <a href="/hormones" id="hormones" className="topic-row">
                 <div className="topic-title">
                   <span className="topic-icon">💊</span>
