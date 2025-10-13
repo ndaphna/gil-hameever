@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     await supabase.auth.exchangeCodeForSession(code);
   }
 
-  // Redirect to home page after successful authentication
-  return NextResponse.redirect(new URL('/', requestUrl.origin));
+  // Redirect to dashboard after successful authentication
+  return NextResponse.redirect(new URL('/dashboard', requestUrl.origin));
 }
 

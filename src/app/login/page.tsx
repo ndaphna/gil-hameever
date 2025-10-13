@@ -26,7 +26,7 @@ export default function LoginPage() {
 
       if (data.user) {
         setMessage('התחברת בהצלחה! מעביר אותך...');
-        router.push('/');
+        router.push('/dashboard');
         router.refresh();
       }
     } catch (error: any) {
