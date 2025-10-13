@@ -7,7 +7,7 @@ import DashboardLayout from '../components/DashboardLayout';
 
 interface JournalEntry {
   id: string;
-  entry_date: string;
+  date: string;
   emotion: string;
   intensity: number;
   notes: string;
@@ -92,7 +92,7 @@ export default function JournalPage() {
         .from('emotion_entry')
         .insert({
           user_id: user.id,
-          entry_date: new Date().toISOString().split('T')[0],
+          date: new Date().toISOString().split('T')[0],
           emotion: selectedEmotion.value,
           intensity: selectedEmotion.intensity,
           notes: notes,
@@ -109,9 +109,10 @@ export default function JournalPage() {
       
       // Reload entries
       loadEntries();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error saving entry:', error);
-      alert('שגיאה בשמירת הרשומה');
+      const errorMessage = error?.message || error?.error_description || 'שגיאה לא ידועה';
+      alert(`שגיאה בשמירת הרשומה: ${errorMessage}`);
     } finally {
       setSaving(false);
     }
