@@ -4,20 +4,33 @@ import { useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 
-export default function LoginPage() {
+export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setMessage('');
 
+    if (password !== confirmPassword) {
+      setMessage('הסיסמאות אינן תואמות');
+      setLoading(false);
+      return;
+    }
+
+    if (password.length < 6) {
+      setMessage('הסיסמה חייבת להכיל לפחות 6 תווים');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
@@ -25,18 +38,19 @@ export default function LoginPage() {
       if (error) throw error;
 
       if (data.user) {
-        setMessage('התחברת בהצלחה! מעביר אותך...');
-        router.push('/');
-        router.refresh();
+        setMessage('נרשמת בהצלחה! בדקי את האימייל שלך לאישור.');
+        setTimeout(() => {
+          router.push('/login');
+        }, 2000);
       }
     } catch (error: any) {
-      setMessage(error.message || 'שגיאה בהתחברות');
+      setMessage(error.message || 'שגיאה בהרשמה');
     } finally {
       setLoading(false);
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleSignup = async () => {
     setLoading(true);
     try {
       const { error } = await supabase.auth.signInWithOAuth({
@@ -48,7 +62,7 @@ export default function LoginPage() {
 
       if (error) throw error;
     } catch (error: any) {
-      setMessage(error.message || 'שגיאה בהתחברות עם Google');
+      setMessage(error.message || 'שגיאה בהרשמה עם Google');
       setLoading(false);
     }
   };
@@ -57,15 +71,15 @@ export default function LoginPage() {
     <div className="auth-page">
       <div className="auth-container">
         <div className="auth-card">
-          <h1 className="auth-title">התחברות</h1>
+          <h1 className="auth-title">הרשמה</h1>
           
           {message && (
-            <div className={`message-box ${message.includes('שגיאה') ? 'error' : 'success'}`}>
+            <div className={`message-box ${message.includes('שגיאה') || message.includes('תואמות') || message.includes('6 תווים') ? 'error' : 'success'}`}>
               {message}
             </div>
           )}
 
-          <form onSubmit={handleLogin} className="auth-form">
+          <form onSubmit={handleSignup} className="auth-form">
             <div className="form-group">
               <label htmlFor="email">אימייל</label>
               <input
@@ -86,14 +100,29 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="הכניסי את הסיסמה שלך"
+                placeholder="בחרי סיסמה (לפחות 6 תווים)"
                 required
                 disabled={loading}
+                minLength={6}
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="confirmPassword">אישור סיסמה</label>
+              <input
+                id="confirmPassword"
+                type="password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                placeholder="הכניסי את הסיסמה שוב"
+                required
+                disabled={loading}
+                minLength={6}
               />
             </div>
 
             <button type="submit" className="auth-button primary" disabled={loading}>
-              {loading ? 'מתחברת...' : 'התחברי'}
+              {loading ? 'נרשמת...' : 'הירשמי'}
             </button>
           </form>
 
@@ -101,12 +130,12 @@ export default function LoginPage() {
             <span>או</span>
           </div>
 
-          <button onClick={handleGoogleLogin} className="auth-button google" disabled={loading}>
-            🔐 התחברי עם Google
+          <button onClick={handleGoogleSignup} className="auth-button google" disabled={loading}>
+            🔐 הירשמי עם Google
           </button>
 
           <div className="auth-footer">
-            עדיין לא רשומה? <a href="/signup">הירשמי כאן</a>
+            כבר רשומה? <a href="/login">התחברי כאן</a>
           </div>
         </div>
       </div>
