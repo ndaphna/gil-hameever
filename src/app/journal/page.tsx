@@ -96,7 +96,7 @@ export default function JournalPage() {
           emotion: selectedEmotion.value,
           intensity: selectedEmotion.intensity,
           notes: notes,
-          color: selectedColor.value,
+          // color: selectedColor.value, // TODO: Add color column to Supabase first
         });
 
       if (error) throw error;
@@ -163,13 +163,18 @@ export default function JournalPage() {
             </div>
           ) : (
             <div className="entries-grid">
-              {entries.map((entry) => (
+              {entries.map((entry) => {
+                // Map intensity to pastel color
+                const intensityColor = PASTEL_COLORS[Math.min(entry.intensity - 1, PASTEL_COLORS.length - 1)];
+                const cardColor = entry.color || intensityColor.value;
+                
+                return (
                 <div
                   key={entry.id}
                   className="entry-card"
                   style={{
-                    backgroundColor: entry.color || PASTEL_COLORS[0].value,
-                    borderColor: entry.color || PASTEL_COLORS[0].value,
+                    backgroundColor: cardColor,
+                    borderColor: cardColor,
                   }}
                 >
                   <div className="entry-header">
@@ -205,7 +210,8 @@ export default function JournalPage() {
                     })}
                   </div>
                 </div>
-              ))}
+                );
+              })}
             </div>
           )}
 
