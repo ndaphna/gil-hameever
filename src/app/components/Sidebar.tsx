@@ -21,11 +21,31 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
-        const { data: profile } = await supabase
+        let { data: profile } = await supabase
           .from('user_profile')
           .select('name, email, current_tokens')
           .eq('id', user.id)
           .single();
+
+        // Create profile if it doesn't exist
+        if (!profile) {
+          await supabase
+            .from('user_profile')
+            .insert({
+              id: user.id,
+              email: user.email || '',
+              name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
+            });
+
+          // Fetch the newly created profile
+          const { data: newProfile } = await supabase
+            .from('user_profile')
+            .select('name, email, current_tokens')
+            .eq('id', user.id)
+            .single();
+          
+          profile = newProfile;
+        }
 
         if (profile) {
           setUserName(profile.name || profile.email.split('@')[0]);

@@ -88,6 +88,29 @@ export default function JournalPage() {
         return;
       }
 
+      // Ensure user_profile exists
+      const { data: profile } = await supabase
+        .from('user_profile')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+
+      // Create profile if it doesn't exist
+      if (!profile) {
+        const { error: profileError } = await supabase
+          .from('user_profile')
+          .insert({
+            id: user.id,
+            email: user.email || '',
+            name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
+          });
+
+        if (profileError) {
+          console.error('Error creating profile:', profileError);
+          throw new Error('לא הצלחנו ליצור פרופיל. אנא נסי שוב.');
+        }
+      }
+
       const { error } = await supabase
         .from('emotion_entry')
         .insert({
