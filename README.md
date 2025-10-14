@@ -1,36 +1,176 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Talking to Aliza - שיחה עם עליזה
 
-## Getting Started
+פלטפורמה דיגיטלית לתמיכה במהלך גיל המעבר, עם יומן רגשות אישי וצ'אט AI.
 
-First, run the development server:
+---
 
+## ⚡ התחלה מהירה - Quick Start
+
+### 1. התקנת תלויות
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. הגדרת משתני סביבה (חובה!)
+**⚠️ לפני הרצה ראשונה - קראי את [`SETUP.md`](SETUP.md)**
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+צרי קובץ `.env.local` בתיקייה הראשית עם:
+```env
+NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. הגדרת בסיס נתונים
+הריצי את ה-SQL migrations ב-Supabase Dashboard:
+- ראי הוראות מפורטות ב-[`supabase/migrations/README.md`](supabase/migrations/README.md)
 
-## Learn More
+### 4. הרצת שרת הפיתוח
+```bash
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+פתחי [http://localhost:3000](http://localhost:3000) בדפדפן.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📁 מבנה הפרויקט
 
-## Deploy on Vercel
+```
+gil-hameever/
+├── src/
+│   ├── app/
+│   │   ├── (public)/          # עמודים ציבוריים (מאמרים, מידע)
+│   │   ├── (members)/         # עמודים למנויים בלבד
+│   │   ├── api/              # API routes (login, create-profile)
+│   │   ├── auth/             # Supabase auth callback
+│   │   ├── components/       # רכיבים משותפים
+│   │   ├── dashboard/        # דשבורד ראשי
+│   │   ├── journal/          # יומן רגשות ⭐
+│   │   ├── login/            # התחברות/הרשמה
+│   │   └── profile/          # פרופיל משתמש
+│   └── lib/
+│       ├── supabase.ts       # Supabase client
+│       └── supabase-server.ts # Server-side client
+├── supabase/
+│   └── migrations/           # SQL schema migrations
+├── SETUP.md                  # 📖 הוראות הגדרה מפורטות
+├── TROUBLESHOOTING.md        # 🔧 פתרון בעיות
+└── README.md                 # המסמך הזה
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🌟 פיצ׳רים מרכזיים
+
+### ✅ יומן רגשות
+- תיעוד רגשות יומיומי עם אימוג'ים
+- בחירת צבעים פסטליים לכל כרטיס
+- הצגה ויזואלית של ההיסטוריה הרגשית
+- מחיקה ועריכה של רשומות
+
+### ✅ מערכת משתמשים
+- התחברות/הרשמה עם Supabase Auth
+- יצירת פרופיל אוטומטית
+- RLS (Row Level Security) - כל משתמש רואה רק את הנתונים שלו
+
+### ✅ מאמרים ותכנים
+- מאמרים על גיל המעבר
+- מידע על תסמינים ופתרונות
+- ניווט נוח בין נושאים
+
+---
+
+## 🚨 פתרון בעיות נפוצות
+
+### "Error creating profile: {}"
+**פתרון:** קראי את [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) - מדריך מפורט
+
+**קיצור:**
+1. ✅ ודאי שיש קובץ `.env.local` עם כל המשתנים
+2. ✅ הריצי את `verify_and_fix_schema.sql` ב-Supabase
+3. ✅ אתחלי מחדש את שרת הפיתוח
+
+### לא רואה כרטיסים ביומן
+1. ✅ ודאי שהתחברת למערכת
+2. ✅ בדקי Console (F12) לשגיאות
+3. ✅ ודאי שהרצת את כל ה-migrations
+
+### הצבע של הכרטיס לא משתנה
+✅ **זה כבר תוקן!** ודאי שיש לך את הגרסה האחרונה של `journal/page.tsx`
+
+---
+
+## 🛠️ טכנולוגיות
+
+- **Framework:** Next.js 15.5.4 (App Router)
+- **Database:** Supabase (PostgreSQL)
+- **Auth:** Supabase Auth
+- **Styling:** CSS Modules + Styled JSX
+- **Language:** TypeScript
+- **Deployment:** Vercel (recommended)
+
+---
+
+## 📚 מסמכים נוספים
+
+- [`SETUP.md`](SETUP.md) - הוראות הגדרה מפורטות כולל משתני סביבה
+- [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md) - פתרון בעיות וחוקי בדיקה
+- [`supabase/migrations/README.md`](supabase/migrations/README.md) - הוראות migrations
+
+---
+
+## 🔐 אבטחה
+
+- ✅ RLS מופעל על כל הטבלאות
+- ✅ Service role key רק ב-API routes
+- ✅ `.env.local` לא מועלה ל-Git
+- ✅ Validation של משתמשים בכל endpoint
+
+---
+
+## 🚀 פריסה (Deployment)
+
+### Vercel (מומלץ)
+1. חברי את ה-repository ל-Vercel
+2. הוסיפי משתני סביבה ב-Vercel Dashboard:
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `SUPABASE_SERVICE_ROLE_KEY`
+3. Deploy!
+
+### הגדרות נוספות
+ראי [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
+
+---
+
+## 🤝 תרומה לפרויקט
+
+לפני שליחת Pull Request:
+1. ✅ ודאי שהקוד עובד מקומית
+2. ✅ בדקי שאין linter errors
+3. ✅ עדכני מסמכים אם נדרש
+4. ✅ בדקי שכל ה-migrations עובדים
+
+---
+
+## 📄 רישיון
+
+© 2024 Talking to Aliza. All rights reserved.
+
+---
+
+## 📞 תמיכה
+
+אם נתקלת בבעיה:
+1. קראי את [`TROUBLESHOOTING.md`](TROUBLESHOOTING.md)
+2. בדקי את [`supabase/migrations/README.md`](supabase/migrations/README.md)
+3. הריצי את `check_database_status.sql`
+
+---
+
+## Learn More about Next.js
+
+- [Next.js Documentation](https://nextjs.org/docs)
+- [Learn Next.js](https://nextjs.org/learn)
+- [Next.js GitHub repository](https://github.com/vercel/next.js)

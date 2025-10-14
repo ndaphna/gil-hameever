@@ -1,6 +1,6 @@
 .dashboard-layout {
   display: flex;
-  min-height: 100vh;
+  height: calc(100vh - 65px);
   background: var(--gray-light);
   position: relative;
 }
@@ -9,6 +9,8 @@
 .dashboard-content {
   flex: 1;
   transition: margin-right 0.3s ease;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 /* Hamburger Toggle for Mobile */
@@ -81,4 +83,5 @@
     width: 20px;
   }
 }
+
 

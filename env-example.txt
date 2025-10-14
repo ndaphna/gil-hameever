@@ -1,0 +1,30 @@
+==============================================
+קובץ .env.local - העתיקי תוכן זה לקובץ חדש
+==============================================
+
+שם הקובץ: .env.local
+מיקום: gil-hameever/.env.local (בתיקייה הראשית!)
+
+תוכן להעתקה:
+----------------------------------------------
+
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-id.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+
+----------------------------------------------
+
+הוראות:
+1. צרי קובץ חדש בשם .env.local
+2. העתיקי את 3 השורות למעלה
+3. החליפי את הערכים בערכים האמיתיים מ-Supabase Dashboard
+4. שמרי את הקובץ
+5. אתחלי את השרת מחדש
+
+איפה למצוא את הערכים:
+👉 https://supabase.com/dashboard
+👉 בחרי את הפרויקט
+👉 Settings → API
+
+==============================================
+

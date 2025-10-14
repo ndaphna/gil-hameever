@@ -122,7 +122,7 @@ export default function JournalPage() {
           emotion: selectedEmotion.value,
           intensity: selectedEmotion.intensity,
           notes: notes,
-          // color: selectedColor.value, // TODO: Add color column to Supabase first
+          color: selectedColor.value,
         });
 
       if (error) throw error;
@@ -160,6 +160,20 @@ export default function JournalPage() {
       console.error('Error deleting entry:', error);
       alert('שגיאה במחיקת הרשומה');
     }
+  }
+
+  function handleEditEntry(entry: JournalEntry) {
+    // מצא את הרגש המתאים
+    const emotion = EMOTIONS.find(e => e.value === entry.emotion) || EMOTIONS[2];
+    const color = PASTEL_COLORS.find(c => c.value === entry.color) || PASTEL_COLORS[0];
+    
+    // הגדר את הטופס עם הנתונים הקיימים
+    setSelectedEmotion(emotion);
+    setSelectedColor(color);
+    setNotes(entry.notes);
+    setShowModal(true);
+    
+    // TODO: נצטרך להוסיף מצב עריכה כדי לדעת אם זה עריכה או הוספה חדשה
   }
 
   if (loading) {
@@ -212,13 +226,24 @@ export default function JournalPage() {
                         year: 'numeric',
                       })}
                     </div>
-                    <button
-                      className="delete-btn"
-                      onClick={() => handleDeleteEntry(entry.id)}
-                      aria-label="מחק רשומה"
-                    >
-                      ✕
-                    </button>
+                    <div className="entry-actions">
+                      <button
+                        className="action-btn edit-btn"
+                        onClick={() => handleEditEntry(entry)}
+                        aria-label="ערוך רשומה"
+                        title="ערוך"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        className="action-btn delete-btn"
+                        onClick={() => handleDeleteEntry(entry.id)}
+                        aria-label="מחק רשומה"
+                        title="מחק"
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </div>
                   
                   <div className="entry-emotion">
@@ -343,7 +368,6 @@ export default function JournalPage() {
 
         <style jsx>{`
           .journal-page {
-            min-height: 100vh;
             background: var(--gray-light);
             padding: 40px 20px 100px 20px;
           }
@@ -359,16 +383,22 @@ export default function JournalPage() {
           }
 
           .journal-header h1 {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--black);
-            margin: 0 0 12px 0;
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.5px;
           }
 
           .subtitle {
-            font-size: 16px;
+            font-size: 18px;
             color: var(--gray);
             margin: 0;
+            font-weight: 400;
+            line-height: 1.6;
           }
 
           .loading-container {
@@ -388,25 +418,43 @@ export default function JournalPage() {
           /* Empty State */
           .empty-state {
             text-align: center;
-            padding: 80px 20px;
+            padding: 100px 20px;
+            background: linear-gradient(135deg, rgba(255, 0, 128, 0.03) 0%, rgba(157, 78, 221, 0.03) 100%);
+            border-radius: 24px;
+            border: 2px dashed rgba(255, 0, 128, 0.1);
+            margin: 40px 0;
           }
 
           .empty-icon {
-            font-size: 80px;
-            margin-bottom: 24px;
+            font-size: 96px;
+            margin-bottom: 32px;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            animation: float 3s ease-in-out infinite;
+          }
+
+          @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
           }
 
           .empty-state h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--black);
-            margin: 0 0 12px 0;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 0 0 16px 0;
+            letter-spacing: -0.5px;
           }
 
           .empty-state p {
-            font-size: 16px;
+            font-size: 18px;
             color: var(--gray);
             margin: 0;
+            line-height: 1.6;
+            max-width: 400px;
+            margin: 0 auto;
           }
 
           /* Entries Grid */
@@ -419,30 +467,96 @@ export default function JournalPage() {
 
           .entry-card {
             background: white;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-            border: 2px solid;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 0, 128, 0.1);
             position: relative;
+            overflow: hidden;
+          }
+
+          .entry-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--magenta) 0%, var(--purple) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
           }
 
           .entry-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+            border-color: rgba(255, 0, 128, 0.2);
+          }
+
+          .entry-card:hover::before {
+            opacity: 1;
           }
 
           .entry-header {
             display: flex;
             justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+          }
+
+          .entry-actions {
+            display: flex;
+            gap: 8px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+          }
+
+          .entry-card:hover .entry-actions {
+            opacity: 1;
+          }
+
+          .action-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
             align-items: center;
-            margin-bottom: 16px;
+            justify-content: center;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: rgba(0, 0, 0, 0.05);
+            color: var(--gray);
+          }
+
+          .action-btn:hover {
+            background: rgba(255, 0, 128, 0.1);
+            color: var(--magenta);
+            transform: scale(1.1);
+          }
+
+          .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+          }
+
+          .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
           }
 
           .entry-date {
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
-            color: rgba(0, 0, 0, 0.7);
+            color: rgba(0, 0, 0, 0.6);
+            background: rgba(255, 0, 128, 0.08);
+            padding: 6px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
           }
 
           .delete-btn {
@@ -468,58 +582,78 @@ export default function JournalPage() {
           .entry-emotion {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 16px;
+            gap: 16px;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: rgba(255, 0, 128, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 0, 128, 0.1);
           }
 
           .entry-emotion .emotion-emoji {
-            font-size: 32px;
+            font-size: 36px;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
           }
 
           .entry-emotion .emotion-text {
-            font-size: 18px;
+            font-size: 20px;
             font-weight: 700;
-            color: rgba(0, 0, 0, 0.8);
+            color: var(--black);
+            letter-spacing: -0.3px;
           }
 
           .entry-notes {
-            font-size: 15px;
-            line-height: 1.6;
-            color: rgba(0, 0, 0, 0.7);
-            margin-bottom: 16px;
+            font-size: 16px;
+            line-height: 1.7;
+            color: rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
             white-space: pre-wrap;
             text-align: right;
+            background: rgba(0, 0, 0, 0.02);
+            padding: 16px;
+            border-radius: 12px;
+            border-right: 3px solid rgba(255, 0, 128, 0.2);
           }
 
           .entry-time {
-            font-size: 12px;
+            font-size: 13px;
             color: rgba(0, 0, 0, 0.5);
             text-align: left;
+            font-weight: 500;
+            background: rgba(0, 0, 0, 0.03);
+            padding: 6px 12px;
+            border-radius: 8px;
+            display: inline-block;
           }
 
           /* FAB */
           .fab {
             position: fixed;
-            bottom: 32px;
-            left: 32px;
-            width: 64px;
-            height: 64px;
+            bottom: 40px;
+            left: 40px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
             color: white;
             border: none;
-            box-shadow: 0 4px 16px rgba(255, 0, 128, 0.4);
+            box-shadow: 0 8px 24px rgba(255, 0, 128, 0.25);
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 100;
+            font-size: 28px;
           }
 
           .fab:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 24px rgba(255, 0, 128, 0.5);
+            transform: scale(1.15) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(255, 0, 128, 0.35);
+          }
+
+          .fab:active {
+            transform: scale(1.05);
           }
 
           .fab-icon {

@@ -204,7 +204,6 @@ export default function ProfilePage() {
 
       <style jsx>{`
         .profile-page {
-          min-height: 100vh;
           background: var(--gray-light);
           padding: 40px 20px;
         }

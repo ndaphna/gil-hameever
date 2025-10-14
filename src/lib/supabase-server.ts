@@ -6,3 +6,4 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 // Server-side client with service role key (admin access)
 export const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
 
+

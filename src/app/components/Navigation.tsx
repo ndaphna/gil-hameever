@@ -12,6 +12,7 @@ export default function Navigation() {
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -22,9 +23,22 @@ export default function Navigation() {
     setIsRoadmapOpen(false);
   };
 
+  const handleLinkClick = (href: string) => {
+    closeMenu();
+    // הוסף עיכוב קטן כדי שהתפריט יסגר לפני הניווט
+    setTimeout(() => {
+      router.push(href);
+    }, 100);
+  };
+
   const toggleRoadmap = () => {
     setIsRoadmapOpen(!isRoadmapOpen);
   };
+
+  // Mark as hydrated
+  useEffect(() => {
+    setIsHydrated(true);
+  }, []);
 
   // Check authentication status
   useEffect(() => {
@@ -68,6 +82,15 @@ export default function Navigation() {
 
   return (
     <header className="main-header">
+      {/* Overlay for mobile menu - מוצב לפני התפריט */}
+      {isMenuOpen && (
+        <div 
+          className="nav-overlay" 
+          onClick={closeMenu}
+          aria-hidden="true"
+        />
+      )}
+      
       <nav className="main-nav">
         <div className="nav-container">
           {/* Logo/Brand */}
@@ -91,82 +114,106 @@ export default function Navigation() {
 
           {/* Navigation Links */}
           <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-            <Link href="/" onClick={closeMenu}>דף הבית</Link>
-            <Link href="/about" onClick={closeMenu}>אודות</Link>
-            
-            {/* Dropdown Menu for Roadmap */}
-            <div 
-              className={`nav-dropdown ${isRoadmapOpen ? 'active' : ''}`}
-              onMouseEnter={() => setIsRoadmapOpen(true)}
-              onMouseLeave={() => setIsRoadmapOpen(false)}
-            >
-              <button 
-                className="nav-dropdown-toggle"
-                onClick={toggleRoadmap}
-                aria-expanded={isRoadmapOpen}
-              >
-                מפת דרכים
-                <span className={`dropdown-arrow ${isRoadmapOpen ? 'active' : ''}`}>▼</span>
-              </button>
-              <div className="nav-dropdown-menu">
-                <Link href="/menopause-roadmap" onClick={closeMenu}>
-                  <span className="stage-icon">🗺️</span>
-                  מפת הדרכים המלאה
-                </Link>
-                <Link href="/the-body-whispers" onClick={closeMenu}>
-                  <span className="stage-icon">🧏🏻‍♀️</span>
-                  שלב 1: הגוף לוחש
-                </Link>
-                <Link href="/certainty-peace-security" onClick={closeMenu}>
-                  <span className="stage-icon">🌳</span>
-                  שלב 2: וודאות, שקט, ביטחון
-                </Link>
-                <Link href="/belonging-sisterhood-emotional-connection" onClick={closeMenu}>
-                  <span className="stage-icon">🤝</span>
-                  שלב 3: שייכות ואחוות נשים
-                </Link>
-                <Link href="/self-worth" onClick={closeMenu}>
-                  <span className="stage-icon">🌟</span>
-                  שלב 4: ערך עצמי, משמעות
-                </Link>
-                <Link href="/wisdom-giving" onClick={closeMenu}>
-                  <span className="stage-icon">✨</span>
-                  שלב 5: תבונה ונתינה
-                </Link>
-              </div>
-            </div>
+            {!isHydrated ? (
+              // תפריט ברירת מחדל עד שה-hydration יסתיים
+              <>
+                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">דף הבית</button>
+                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn">אודות</button>
+                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
+              </>
+            ) : isLoggedIn ? (
+              // תפריט פנימי למשתמשים מחוברים
+              <>
+                <button onClick={() => handleLinkClick('/dashboard')} className="nav-link-btn">
+                  🏠 דף הבית
+                </button>
+                <button onClick={() => handleLinkClick('/chat')} className="nav-link-btn">
+                  💬 שיחה עם עליזה
+                </button>
+                <button onClick={() => handleLinkClick('/journal')} className="nav-link-btn">
+                  📔 היומן שלי
+                </button>
+                <button onClick={() => handleLinkClick('/insights')} className="nav-link-btn">
+                  🔮 תובנות עליזה
+                </button>
+                <button onClick={() => handleLinkClick('/profile')} className="nav-link-btn">
+                  👤 הפרופיל שלי
+                </button>
+                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">
+                  🌐 חזרה לאתר
+                </button>
+              </>
+            ) : (
+              // תפריט ציבורי למשתמשים לא מחוברים
+              <>
+                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">דף הבית</button>
+                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn">אודות</button>
+                
+                {/* Dropdown Menu for Roadmap */}
+                <div 
+                  className={`nav-dropdown ${isRoadmapOpen ? 'active' : ''}`}
+                  onMouseEnter={() => setIsRoadmapOpen(true)}
+                  onMouseLeave={() => setIsRoadmapOpen(false)}
+                >
+                  <button 
+                    className="nav-dropdown-toggle"
+                    onClick={toggleRoadmap}
+                    aria-expanded={isRoadmapOpen}
+                  >
+                    מפת דרכים
+                    <span className={`dropdown-arrow ${isRoadmapOpen ? 'active' : ''}`}>▼</span>
+                  </button>
+                  <div className="nav-dropdown-menu">
+                    <button onClick={() => handleLinkClick('/menopause-roadmap')} className="nav-dropdown-link">
+                      <span className="stage-icon">🗺️</span>
+                      מפת הדרכים המלאה
+                    </button>
+                    <button onClick={() => handleLinkClick('/the-body-whispers')} className="nav-dropdown-link">
+                      <span className="stage-icon">🧏🏻‍♀️</span>
+                      שלב 1: הגוף לוחש
+                    </button>
+                    <button onClick={() => handleLinkClick('/certainty-peace-security')} className="nav-dropdown-link">
+                      <span className="stage-icon">🌳</span>
+                      שלב 2: וודאות, שקט, ביטחון
+                    </button>
+                    <button onClick={() => handleLinkClick('/belonging-sisterhood-emotional-connection')} className="nav-dropdown-link">
+                      <span className="stage-icon">🤝</span>
+                      שלב 3: שייכות ואחוות נשים
+                    </button>
+                    <button onClick={() => handleLinkClick('/self-worth')} className="nav-dropdown-link">
+                      <span className="stage-icon">🌟</span>
+                      שלב 4: ערך עצמי, משמעות
+                    </button>
+                    <button onClick={() => handleLinkClick('/wisdom-giving')} className="nav-dropdown-link">
+                      <span className="stage-icon">✨</span>
+                      שלב 5: תבונה ונתינה
+                    </button>
+                  </div>
+                </div>
 
-            <Link href="/pricing" onClick={closeMenu}>מחירים</Link>
+                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
+              </>
+            )}
           </div>
 
           {/* Auth Button - Dynamic based on login status */}
           <div className={`nav-auth ${isMenuOpen ? 'active' : ''}`}>
-            {isLoggedIn ? (
-              <>
-                <Link href="/dashboard" className="btn btn-dashboard" onClick={closeMenu}>
-                  האזור האישי
-                </Link>
-                <button className="btn btn-secondary" onClick={handleLogout}>
-                  התנתקות
-                </button>
-              </>
-            ) : (
-              <Link href="/login" className="btn btn-primary" onClick={closeMenu}>
+            {!isHydrated ? (
+              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary">
                 התחברות
-              </Link>
+              </button>
+            ) : isLoggedIn ? (
+              <button className="btn btn-secondary" onClick={handleLogout}>
+                התנתקות
+              </button>
+            ) : (
+              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary">
+                התחברות
+              </button>
             )}
           </div>
         </div>
       </nav>
-
-      {/* Overlay for mobile menu */}
-      {isMenuOpen && (
-        <div 
-          className="nav-overlay" 
-          onClick={closeMenu}
-          aria-hidden="true"
-        />
-      )}
     </header>
   );
 }

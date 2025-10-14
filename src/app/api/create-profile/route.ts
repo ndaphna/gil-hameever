@@ -12,10 +12,19 @@ export async function POST(request: Request) {
       );
     }
 
+    // Verify environment variables are set
+    if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      console.error('Missing Supabase environment variables');
+      return NextResponse.json(
+        { error: 'Server configuration error. Please check environment variables.' },
+        { status: 500 }
+      );
+    }
+
     // Use service role key to bypass RLS
     const supabaseAdmin = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!,
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.SUPABASE_SERVICE_ROLE_KEY,
       {
         auth: {
           autoRefreshToken: false,
@@ -45,7 +54,8 @@ export async function POST(request: Request) {
         id: userId,
         email: email,
         name: name || email.split('@')[0] || 'משתמשת',
-        subscription_status: 'free',
+        subscription_tier: 'trial',
+        subscription_status: 'active',
         current_tokens: 500,
       })
       .select()
@@ -72,4 +82,5 @@ export async function POST(request: Request) {
     );
   }
 }
+
 
