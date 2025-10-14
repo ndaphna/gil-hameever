@@ -11,7 +11,7 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
 
   const toggleMenu = () => {
