@@ -100,17 +100,32 @@ export default function Navigation() {
             </Link>
           </div>
 
-          {/* Hamburger Button */}
-          <button 
-            className={`hamburger ${isMenuOpen ? 'active' : ''}`}
-            onClick={toggleMenu}
-            aria-label="תפריט ניווט"
-            aria-expanded={isMenuOpen}
-          >
-            <span></span>
-            <span></span>
-            <span></span>
-          </button>
+          {/* Mobile Menu Buttons */}
+          <div className="mobile-menu-buttons">
+            {/* Internal System Menu Button - רק למשתמשים מחוברים */}
+            {isHydrated && isLoggedIn && (
+              <button 
+                className="internal-menu-btn"
+                onClick={() => {/* TODO: פתיחת תפריט פנימי */}}
+                aria-label="תפריט מערכת פנימי"
+                title="תפריט מערכת פנימי"
+              >
+                ⚙️
+              </button>
+            )}
+            
+            {/* Hamburger Button */}
+            <button 
+              className={`hamburger ${isMenuOpen ? 'active' : ''}`}
+              onClick={toggleMenu}
+              aria-label="תפריט ניווט"
+              aria-expanded={isMenuOpen}
+            >
+              <span></span>
+              <span></span>
+              <span></span>
+            </button>
+          </div>
 
           {/* Navigation Links */}
           <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
@@ -120,28 +135,6 @@ export default function Navigation() {
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn">דף הבית</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn">אודות</button>
                 <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
-              </>
-            ) : isLoggedIn ? (
-              // תפריט פנימי למשתמשים מחוברים
-              <>
-                <button onClick={() => handleLinkClick('/dashboard')} className="nav-link-btn">
-                  🏠 דף הבית
-                </button>
-                <button onClick={() => handleLinkClick('/chat')} className="nav-link-btn">
-                  💬 שיחה עם עליזה
-                </button>
-                <button onClick={() => handleLinkClick('/journal')} className="nav-link-btn">
-                  📔 היומן שלי
-                </button>
-                <button onClick={() => handleLinkClick('/insights')} className="nav-link-btn">
-                  🔮 תובנות עליזה
-                </button>
-                <button onClick={() => handleLinkClick('/profile')} className="nav-link-btn">
-                  👤 הפרופיל שלי
-                </button>
-                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">
-                  🌐 חזרה לאתר
-                </button>
               </>
             ) : (
               // תפריט ציבורי למשתמשים לא מחוברים
@@ -192,6 +185,13 @@ export default function Navigation() {
                 </div>
 
                 <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
+                
+                {/* כפתור אזור אישי - רק למשתמשים מחוברים */}
+                {isHydrated && isLoggedIn && (
+                  <button onClick={() => handleLinkClick('/dashboard')} className="nav-link-btn personal-area-btn">
+                    🏠 אזור אישי
+                  </button>
+                )}
               </>
             )}
           </div>

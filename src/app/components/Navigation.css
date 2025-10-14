@@ -44,6 +44,33 @@
   color: var(--color-pink-strong);
 }
 
+/* Mobile Menu Buttons */
+.mobile-menu-buttons {
+  display: none;
+  align-items: center;
+  gap: 12px;
+}
+
+.internal-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(255, 0, 128, 0.2);
+}
+
+.internal-menu-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+}
+
 /* Hamburger Button - Mobile Only */
 .hamburger {
   display: none;
@@ -109,6 +136,19 @@
 .nav-link-btn:hover {
   color: var(--color-pink);
   background: var(--color-pink-light);
+}
+
+.personal-area-btn {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  color: white !important;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(255, 0, 128, 0.2);
+}
+
+.personal-area-btn:hover {
+  background: linear-gradient(135deg, var(--purple) 0%, var(--magenta) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
 }
 
 /* Dropdown Menu */
@@ -284,7 +324,11 @@
     font-size: 16px;
   }
 
-  /* Show Hamburger */
+  /* Show Mobile Menu Buttons */
+  .mobile-menu-buttons {
+    display: flex;
+  }
+  
   .hamburger {
     display: flex;
   }

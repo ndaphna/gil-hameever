@@ -13,6 +13,7 @@ export function useJournal() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [editingEntry, setEditingEntry] = useState<JournalEntry | null>(null);
   
   // Form state
   const [formData, setFormData] = useState<JournalFormData>({
@@ -67,18 +68,34 @@ export function useJournal() {
         return;
       }
 
-      const { error } = await supabase
-        .from('emotion_entry')
-        .insert({
-          user_id: user.id,
-          date: getTodayDateString(),
-          emotion: formData.selectedEmotion.value,
-          intensity: formData.selectedEmotion.intensity,
-          notes: formData.notes,
-          color: formData.selectedColor.value,
-        });
+      if (editingEntry) {
+        // עריכה - עדכון רשומה קיימת
+        const { error } = await supabase
+          .from('emotion_entry')
+          .update({
+            emotion: formData.selectedEmotion.value,
+            intensity: formData.selectedEmotion.intensity,
+            notes: formData.notes,
+            color: formData.selectedColor.value,
+          })
+          .eq('id', editingEntry.id);
 
-      if (error) throw error;
+        if (error) throw error;
+      } else {
+        // הוספה - יצירת רשומה חדשה
+        const { error } = await supabase
+          .from('emotion_entry')
+          .insert({
+            user_id: user.id,
+            date: getTodayDateString(),
+            emotion: formData.selectedEmotion.value,
+            intensity: formData.selectedEmotion.intensity,
+            notes: formData.notes,
+            color: formData.selectedColor.value,
+          });
+
+        if (error) throw error;
+      }
     });
 
     if (result.success) {
@@ -88,6 +105,7 @@ export function useJournal() {
         selectedColor: PASTEL_COLORS[0],
         notes: '',
       });
+      setEditingEntry(null);
       setShowModal(false);
       
       // Reload entries
@@ -129,9 +147,8 @@ export function useJournal() {
       selectedColor: color,
       notes: entry.notes,
     });
+    setEditingEntry(entry);
     setShowModal(true);
-    
-    // TODO: נצטרך להוסיף מצב עריכה כדי לדעת אם זה עריכה או הוספה חדשה
   }
 
   return {
@@ -145,5 +162,6 @@ export function useJournal() {
     handleSaveEntry,
     handleDeleteEntry,
     handleEditEntry,
+    editingEntry,
   };
 }

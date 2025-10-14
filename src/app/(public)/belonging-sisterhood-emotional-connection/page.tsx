@@ -244,7 +244,7 @@ export default function BelongingSisterhoodEmotionalConnectionPage() {
               כשאת מרגישה שוב מחוברת, לאחרות ולעצמך,<br />
               יכול להתחיל שלב חדש: הגשמה, משמעות, ביטוי עצמי.
             </p>
-            <p className="highlight">זה הזמן שלך לעלות לשלב הבא במפת הדרכים.</p>
+            <p className="next-step-text">זה הזמן שלך לעלות לשלב הבא במפת הדרכים.</p>
             <p><strong>רוצה להמשיך לשלב 4?</strong></p>
             <p>👉 ערך עצמי, משמעות, התעוררות – את לא רק אמא, בת זוג, עובדת. את את!</p>
             

@@ -8,6 +8,7 @@ interface JournalModalProps {
   setFormData: (data: JournalFormData) => void;
   onSave: () => void;
   saving: boolean;
+  isEditing?: boolean;
 }
 
 export default function JournalModal({ 
@@ -16,7 +17,8 @@ export default function JournalModal({
   formData, 
   setFormData, 
   onSave, 
-  saving 
+  saving,
+  isEditing = false
 }: JournalModalProps) {
   if (!isOpen) return null;
 
@@ -24,7 +26,7 @@ export default function JournalModal({
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>הוספת רשומה חדשה</h2>
+          <h2>{isEditing ? 'עריכת רשומה' : 'הוספת רשומה חדשה'}</h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
@@ -89,7 +91,7 @@ export default function JournalModal({
             onClick={onSave}
             disabled={saving || !formData.notes.trim()}
           >
-            {saving ? 'שומר...' : 'שמור רשומה'}
+            {saving ? 'שומר...' : (isEditing ? 'עדכן רשומה' : 'שמור רשומה')}
           </button>
         </div>
       </div>

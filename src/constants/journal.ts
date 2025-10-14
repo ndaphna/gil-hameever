@@ -1,18 +1,18 @@
 import { Emotion, PastelColor } from '@/types/journal';
 
 export const PASTEL_COLORS: PastelColor[] = [
-  { name: 'ורוד', value: '#FFD1DC', light: '#FFF0F3' },
-  { name: 'סגול', value: '#E0BBE4', light: '#F5EAF7' },
-  { name: 'כחול', value: '#B4D4FF', light: '#E8F2FF' },
-  { name: 'ירוק', value: '#C1F0C1', light: '#E8F8E8' },
-  { name: 'צהוב', value: '#FFF5BA', light: '#FFFCE8' },
-  { name: 'אפרסק', value: '#FFDAB9', light: '#FFF3E6' },
+  { name: 'ורוד', value: '#F8F0F2', light: '#FDF8FA' },
+  { name: 'סגול', value: '#F0E8F2', light: '#F8F4F9' },
+  { name: 'כחול', value: '#E8F2FF', light: '#F4F8FF' },
+  { name: 'ירוק', value: '#F0F8F0', light: '#F8FCF8' },
+  { name: 'צהוב', value: '#FFFEF0', light: '#FFFEF8' },
+  { name: 'אפרסק', value: '#FFF8F0', light: '#FFFCF8' },
 ];
 
 export const EMOTIONS: Emotion[] = [
-  { value: 'עצובה מאוד', intensity: 1, emoji: '😢', color: '#B4D4FF' },
-  { value: 'עצובה', intensity: 2, emoji: '😔', color: '#C9E4FF' },
-  { value: 'רגועה', intensity: 3, emoji: '😌', color: '#E0BBE4' },
-  { value: 'טוב', intensity: 4, emoji: '🙂', color: '#C1F0C1' },
-  { value: 'מאושרת', intensity: 5, emoji: '😊', color: '#FFF5BA' },
+  { value: 'עצובה מאוד', intensity: 1, emoji: '😢', color: '#F0F4F8' },
+  { value: 'עצובה', intensity: 2, emoji: '😔', color: '#F2F4F8' },
+  { value: 'רגועה', intensity: 3, emoji: '😌', color: '#F4F2F8' },
+  { value: 'טוב', intensity: 4, emoji: '🙂', color: '#F6F8F4' },
+  { value: 'מאושרת', intensity: 5, emoji: '😊', color: '#F8F6F2' },
 ];

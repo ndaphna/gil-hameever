@@ -171,7 +171,7 @@ export default function MenopauseRoadmapPage() {
               <p className="hero-question">&quot;האם זהו? זה הסוף של מי שהייתי?&quot;</p>
             </div>
             <p className="subtitle">אם השאלות האלו רצות לך בראש, את לא לבד.<br />
-            ברוכה הבאה לשלב בחיים שאף אחד לא הכין אותך אליו באמת: <span className="highlight">גיל המעבר</span>.</p>
+            ברוכה הבאה לשלב בחיים שאף אחד לא הכין אותך אליו באמת: <span className="menopause-text">גיל המעבר</span>.</p>
             <button className="cta-button">גלי את המפה שלך</button>
           </div>
       </div>

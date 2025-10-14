@@ -18,6 +18,7 @@ export default function JournalPage() {
     handleSaveEntry,
     handleDeleteEntry,
     handleEditEntry,
+    editingEntry,
   } = useJournal();
 
   if (loading) {
@@ -35,7 +36,7 @@ export default function JournalPage() {
       <div className="journal-page">
         <div className="journal-container">
           <div className="journal-header">
-            <h1>📔 היומן שלי</h1>
+            <h1>היומן שלי</h1>
             <p className="subtitle">מרחב אישי לתיעוד רגשות, תחושות וחוויות</p>
           </div>
 
@@ -76,6 +77,7 @@ export default function JournalPage() {
             setFormData={setFormData}
             onSave={handleSaveEntry}
             saving={saving}
+            isEditing={!!editingEntry}
           />
         </div>
       </div>

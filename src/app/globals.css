@@ -1420,6 +1420,86 @@ blockquote.quote-box:hover {
   font-size: 1.1em;
 }
 
+/* סגנון ספציפי לטקסט "זה הזמן שלך לעלות לשלב הבא" */
+.next-step-text {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
+  text-align: center;
+  margin: 20px auto;
+  padding: 0;
+  border: none !important;
+  box-shadow: none !important;
+  position: relative;
+  display: block;
+}
+
+.next-step-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 300px;
+  height: 50%;
+  background: #FFD700;
+  border-radius: 2px;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+/* סגנון כללי למרקר צהוב - לשימוש בכל מקום */
+.text-highlight {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
+  position: relative;
+  display: inline;
+}
+
+.text-highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #FFD700;
+  border-radius: 2px;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+/* סגנון ספציפי לטקסט "גיל המעבר" */
+.menopause-text {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
+  position: relative;
+  display: inline;
+}
+
+.menopause-text::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #FFD700;
+  border-radius: 2px;
+  z-index: -1;
+  opacity: 0.8;
+}
+
+
 .intro-text {
   font-size: 1.2rem;
   line-height: 1.85;
