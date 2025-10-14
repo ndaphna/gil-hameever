@@ -13,17 +13,6 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <div className="dashboard-layout">
-      {/* Hamburger for mobile */}
-      <button 
-        className="sidebar-toggle"
-        onClick={() => setSidebarOpen(true)}
-        aria-label="פתח תפריט"
-      >
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
       {/* Sidebar */}
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 

@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import Sidebar from './Sidebar';
 import './Navigation.css';
 
 export default function Navigation() {
@@ -13,6 +14,7 @@ export default function Navigation() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -29,6 +31,10 @@ export default function Navigation() {
     setTimeout(() => {
       router.push(href);
     }, 100);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
   };
 
   const toggleRoadmap = () => {
@@ -81,15 +87,21 @@ export default function Navigation() {
   };
 
   return (
-    <header className="main-header">
-      {/* Overlay for mobile menu - מוצב לפני התפריט */}
-      {isMenuOpen && (
-        <div 
-          className="nav-overlay" 
-          onClick={closeMenu}
-          aria-hidden="true"
-        />
+    <>
+      {/* Sidebar for internal system */}
+      {isHydrated && isLoggedIn && (
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
+      
+      <header className="main-header">
+        {/* Overlay for mobile menu - מוצב לפני התפריט */}
+        {isMenuOpen && (
+          <div 
+            className="nav-overlay" 
+            onClick={closeMenu}
+            aria-hidden="true"
+          />
+        )}
       
       <nav className="main-nav">
         <div className="nav-container">
@@ -106,9 +118,9 @@ export default function Navigation() {
             {isHydrated && isLoggedIn && (
               <button 
                 className="internal-menu-btn"
-                onClick={() => {/* TODO: פתיחת תפריט פנימי */}}
-                aria-label="תפריט מערכת פנימי"
-                title="תפריט מערכת פנימי"
+                onClick={toggleSidebar}
+                aria-label="תפריט מערכת פנימית"
+                title="תפריט מערכת פנימית"
               >
                 ⚙️
               </button>
@@ -215,6 +227,7 @@ export default function Navigation() {
         </div>
       </nav>
     </header>
+    </>
   );
 }
 

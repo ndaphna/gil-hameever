@@ -150,7 +150,7 @@ export default function DashboardPage() {
       <style jsx>{`
         .dashboard-page {
           background: var(--gray-light);
-          padding: 40px 20px;
+          padding: 30px 20px;
         }
 
         .dashboard-container {
@@ -162,13 +162,13 @@ export default function DashboardPage() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          margin-bottom: 40px;
+          margin-bottom: 30px;
           flex-wrap: wrap;
           gap: 20px;
         }
 
         .dashboard-header h1 {
-          font-size: 32px;
+          font-size: 28px;
           font-weight: 700;
           color: var(--black);
           margin: 0;
@@ -177,16 +177,17 @@ export default function DashboardPage() {
 
         .dashboard-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-          gap: 24px;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 20px;
         }
 
         .dashboard-card {
           background: white;
-          border-radius: 12px;
-          padding: 32px;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+          border-radius: 16px;
+          padding: 20px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           transition: all 0.3s ease;
+          border: 1px solid rgba(0, 0, 0, 0.05);
         }
 
         .dashboard-card.clickable {
@@ -199,23 +200,24 @@ export default function DashboardPage() {
         }
 
         .dashboard-card h2 {
-          font-size: 20px;
+          font-size: 18px;
           font-weight: 700;
           color: var(--black);
-          margin: 0 0 16px 0;
+          margin: 0 0 12px 0;
           text-align: right;
         }
 
         .dashboard-card p {
           color: var(--gray);
-          margin: 0 0 16px 0;
+          margin: 0 0 12px 0;
           text-align: right;
-          line-height: 1.6;
+          line-height: 1.5;
+          font-size: 14px;
         }
 
         .card-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
+          font-size: 32px;
+          margin-bottom: 12px;
           text-align: right;
         }
 
@@ -225,6 +227,7 @@ export default function DashboardPage() {
           text-decoration: none;
           display: inline-block;
           text-align: right;
+          font-size: 14px;
         }
 
         .card-link:hover {
@@ -232,7 +235,7 @@ export default function DashboardPage() {
         }
 
         .subscription-info {
-          margin-bottom: 16px;
+          margin-bottom: 12px;
           text-align: right;
         }
 
@@ -240,74 +243,74 @@ export default function DashboardPage() {
           display: inline-block;
           background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
           color: white;
-          padding: 6px 16px;
-          border-radius: 20px;
-          font-size: 14px;
+          padding: 4px 12px;
+          border-radius: 16px;
+          font-size: 12px;
           font-weight: 600;
-          margin-bottom: 12px;
+          margin-bottom: 8px;
         }
 
         .tokens {
-          font-size: 16px;
+          font-size: 14px;
           color: var(--gray);
-          margin: 8px 0;
+          margin: 6px 0;
         }
 
         .tokens strong {
           color: var(--black);
-          font-size: 24px;
+          font-size: 20px;
         }
 
         .feature-list {
           list-style: none;
           padding: 0;
-          margin: 16px 0 0 0;
+          margin: 12px 0 0 0;
           text-align: right;
         }
 
         .feature-list li {
-          padding: 8px 0;
+          padding: 6px 0;
           color: var(--black);
-          font-size: 16px;
+          font-size: 15px;
         }
 
         .steps-list {
-          margin: 16px 0 0 0;
-          padding-right: 24px;
+          margin: 12px 0 0 0;
+          padding-right: 20px;
           text-align: right;
         }
 
         .steps-list li {
-          padding: 8px 0;
+          padding: 6px 0;
           color: var(--black);
-          font-size: 16px;
+          font-size: 14px;
         }
 
         .info-text {
           color: var(--gray);
-          font-size: 14px;
-          margin-top: 12px;
+          font-size: 12px;
+          margin-top: 10px;
           text-align: right;
         }
 
         .stats-grid {
           display: grid;
           grid-template-columns: repeat(2, 1fr);
-          gap: 16px;
-          margin-top: 16px;
+          gap: 12px;
+          margin-top: 12px;
         }
 
         .stat-item {
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 16px;
+          gap: 10px;
+          padding: 10px;
           background: var(--gray-light);
           border-radius: 8px;
         }
 
         .stat-icon {
-          font-size: 32px;
+          font-size: 24px;
         }
 
         .stat-info {
@@ -315,13 +318,13 @@ export default function DashboardPage() {
         }
 
         .stat-number {
-          font-size: 24px;
+          font-size: 20px;
           font-weight: 700;
           color: var(--magenta);
         }
 
         .stat-label {
-          font-size: 14px;
+          font-size: 12px;
           color: var(--gray);
         }
 
@@ -329,6 +332,8 @@ export default function DashboardPage() {
           grid-column: 1 / -1;
           background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
           color: white;
+          padding: 20px;
+          margin-bottom: 0;
         }
 
         .welcome-card h2,
@@ -339,23 +344,28 @@ export default function DashboardPage() {
 
         .next-steps-card {
           background: linear-gradient(135deg, #f0f7ff 0%, #e8f4ff 100%);
-          border: 2px solid var(--magenta);
+          border-left: 3px solid var(--magenta);
         }
 
         .loading {
           text-align: center;
-          padding: 40px;
-          font-size: 18px;
+          padding: 30px;
+          font-size: 16px;
           color: var(--gray);
         }
 
         @media (max-width: 768px) {
           .dashboard-header h1 {
-            font-size: 24px;
+            font-size: 22px;
           }
 
           .dashboard-grid {
             grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .dashboard-card {
+            padding: 16px;
           }
         }
 
@@ -363,7 +373,7 @@ export default function DashboardPage() {
           display: flex;
           align-items: center;
           justify-content: center;
-          min-height: 100vh;
+          min-height: 50vh;
         }
       `}</style>
       </div>
