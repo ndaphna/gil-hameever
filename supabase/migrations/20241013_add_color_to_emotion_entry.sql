@@ -6,3 +6,4 @@ ADD COLUMN color text;
 COMMENT ON COLUMN emotion_entry.color IS 'Pastel color chosen by user for the journal entry card';
 
 
+

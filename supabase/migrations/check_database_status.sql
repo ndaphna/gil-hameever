@@ -145,3 +145,4 @@ SELECT
     ELSE '✗ SOME USERS MISSING PROFILES - RUN verify_and_fix_schema.sql'
   END as profile_status;
 
+

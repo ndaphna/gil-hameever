@@ -1,0 +1,20 @@
+[33m3472375[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m תיקון כפתורי תפריט - כפתור חדש פותח סיידבר, כפתור אזור אישי בתפריט ציבורי, הסרת כפתור מוסתר
+[33m104df86[m תיקון עיצוב יומן - כותרת יוקרתית, מודל קומפקטי, צבעי רגשות רכים
+[33mfe76a65[m Major refactor: Clean architecture and improved code organization
+[33m297441b[m Fix mobile navigation, scrollbar issues, and hydration errors
+[33m7086a3d[m Fix profile creation with server-side API - Add /api/create-profile route with service role key - Bypass RLS restrictions for profile creation - All components now use API for profile creation - Auto-creates profile with default values (500 tokens, free tier) - Resolves foreign key constraint errors completely
+[33mec58cdf[m Auto-create user_profile on first access - Fix foreign key constraint errors - Dashboard, Profile, Journal and Sidebar now create profile if missing - Ensures all user data is properly stored in Supabase - Fixes 'violates foreign key constraint' error
+[33mcc67a2b[m Fix database schema consistency issues - Fix field name mismatch: entry_date -> date - Fix user_profile trigger to use correct field names - Add comprehensive migration to align schema - Better error handling in journal save - Add auto-creation of user_profile for existing users
+[33mcdf96bf[m Fix journal entry save - remove color field temporarily - Color now derived from emotion intensity - Add migration file for future color column addition - Journal entries now save successfully
+[33mca16b6e[m Add personal daily journal with emotion tracking - Card-based journal entries with pastel colors - Emotion slider from sad to happy (5 levels) - Color picker with 6 pastel colors - Free text notes for feelings and experiences - FAB for adding new entries - Beautiful modal interface - CRUD operations with Supabase - Responsive grid layout
+[33mbcbf5c2[m Merge subscription into profile page - Remove separate subscription from sidebar - Update profile page with comprehensive billing section - Add subscription actions: upgrade, payment methods, history - Improved UX with all account settings in one place
+[33m1843e4f[m Add Sidebar navigation and update auth flow - Dynamic login/logout in navbar - New Sidebar component for dashboard area - DashboardLayout wrapper - Updated Dashboard and Profile pages - Improved UX with sidebar navigation
+[33m3509ab2[m Add Dashboard, Profile pages and improved auth middleware
+[33m299d9ea[m Add database schema: tables, RLS policies, and auto-triggers
+[33mfc0824f[m Add Supabase authentication: minimalist login & signup pages
+[33m43a4d7a[m Improve introduction container design in the-body-whispers page
+[33m49f261e[m Add new pages: decreased-desire and what-going-on with full content and navigation links
+[33m503bdeb[m Add complete content to hormones page
+[33m31b9990[m Create hormones page and link from stage 1
+[33m875f04c[m Add complete content to weight-gain page
+[33mf3b42c1[m Create weight-gain page and link from stage 1

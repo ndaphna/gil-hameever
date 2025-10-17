@@ -217,3 +217,4 @@ ALTER TABLE public.emotion_entry ADD COLUMN color TEXT;
    - תוצאות `check_database_status.sql`
    - צילום מסך של השגיאה
 
+

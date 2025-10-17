@@ -99,3 +99,4 @@ npm run dev
 - ❌ **לעולם** אל תשתמשי ב-`service_role key` בצד הלקוח (client-side)
 - ✅ השתמשי ב-`service_role key` רק ב-API routes (בתיקיית `/api`)
 
+

@@ -26,3 +26,4 @@ export interface JournalFormData {
   selectedColor: PastelColor;
   notes: string;
 }
+
