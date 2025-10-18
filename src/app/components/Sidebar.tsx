@@ -11,7 +11,7 @@ interface SidebarProps {
   onClose?: () => void;
 }
 
-export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
+export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [userName, setUserName] = useState<string>('');
   const [tokens, setTokens] = useState<number>(0);
@@ -103,7 +103,7 @@ export default function Sidebar({ isOpen = true, onClose }: SidebarProps) {
       )}
 
       {/* Sidebar */}
-      <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
+      <aside className={`sidebar ${isOpen ? 'open' : ''}`} style={{ display: isOpen ? 'flex' : 'none' }}>
         {/* User Info */}
         <div className="sidebar-header">
           <div className="user-avatar">

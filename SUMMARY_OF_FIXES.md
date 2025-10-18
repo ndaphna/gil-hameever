@@ -204,3 +204,4 @@ if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_
 אבל ברוב המקרים - פשוט לעקוב אחר QUICKFIX.md יפתור הכל! 💪
 
 
+

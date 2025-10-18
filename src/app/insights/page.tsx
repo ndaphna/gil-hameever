@@ -96,72 +96,67 @@ export default function InsightsPage() {
 
   return (
     <DashboardLayout>
-      <div className="insights-container">
-      <div className="insights-header">
-        <div className="insights-title">
-          <span className="insights-icon">🔮</span>
-          <h1>תובנות עליזה</h1>
-        </div>
-        <p className="insights-subtitle">
-          ניתוח AI אישי של הנתונים שלך לגיל המעבר
-        </p>
-      </div>
-
-      <div className="insights-content">
-        <div className="insights-filters">
-          <h3>קטגוריות</h3>
-          <div className="category-filters">
-            {categories.map(category => (
-              <button
-                key={category.id}
-                onClick={() => setSelectedCategory(category.id)}
-                className={`category-filter ${selectedCategory === category.id ? 'active' : ''}`}
-              >
-                <span className="category-icon">{category.icon}</span>
-                <span className="category-label">{category.label}</span>
-              </button>
-            ))}
+      <div className="insights-page">
+        <div className="insights-container">
+          <div className="insights-header">
+            <h1>תובנות עליזה</h1>
+            <p className="subtitle">ניתוח AI אישי של הנתונים שלך לגיל המעבר</p>
           </div>
-        </div>
 
-        <div className="insights-grid">
-          {isLoading ? (
-            <div className="loading-container">
-              <div className="loading-spinner"></div>
-              <p>טוען תובנות...</p>
-            </div>
-          ) : filteredInsights.length === 0 ? (
-            <div className="no-insights">
-              <span className="no-insights-icon">📊</span>
-              <h3>אין תובנות זמינות</h3>
-              <p>התחילי להשתמש ביומן כדי לקבל תובנות אישיות</p>
-            </div>
-          ) : (
-            filteredInsights.map(insight => (
-              <div key={insight.id} className="insight-card">
-                <div 
-                  className="insight-header"
-                  style={{ backgroundColor: getCategoryColor(insight.category) }}
+          <div className="insights-filters">
+            <h3>קטגוריות</h3>
+            <div className="category-filters">
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`category-filter ${selectedCategory === category.id ? 'active' : ''}`}
                 >
-                  <span className="insight-icon">{insight.icon}</span>
-                  <div className="insight-meta">
-                    <span className="insight-category">
-                      {categories.find(c => c.id === insight.category)?.label}
-                    </span>
-                    <span className="insight-date">
-                      {new Date(insight.date).toLocaleDateString('he-IL')}
-                    </span>
+                  <span className="category-icon">{category.icon}</span>
+                  <span className="category-label">{category.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="insights-grid">
+            {isLoading ? (
+              <div className="loading-container">
+                <div className="loading-spinner"></div>
+                <p>טוען תובנות...</p>
+              </div>
+            ) : filteredInsights.length === 0 ? (
+              <div className="no-insights">
+                <span className="no-insights-icon">📊</span>
+                <h3>אין תובנות זמינות</h3>
+                <p>התחילי להשתמש ביומן כדי לקבל תובנות אישיות</p>
+              </div>
+            ) : (
+              filteredInsights.map(insight => (
+                <div key={insight.id} className="insight-card">
+                  <div 
+                    className="insight-header"
+                    style={{ backgroundColor: getCategoryColor(insight.category) }}
+                  >
+                    <span className="insight-icon">{insight.icon}</span>
+                    <div className="insight-meta">
+                      <span className="insight-category">
+                        {categories.find(c => c.id === insight.category)?.label}
+                      </span>
+                      <span className="insight-date">
+                        {new Date(insight.date).toLocaleDateString('he-IL')}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="insight-content">
+                    <h3 className="insight-title">{insight.title}</h3>
+                    <p className="insight-description">{insight.description}</p>
                   </div>
                 </div>
-                <div className="insight-content">
-                  <h3 className="insight-title">{insight.title}</h3>
-                  <p className="insight-description">{insight.description}</p>
-                </div>
-              </div>
-            ))
-          )}
+              ))
+            )}
+          </div>
         </div>
-      </div>
       </div>
     </DashboardLayout>
   );

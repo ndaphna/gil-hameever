@@ -27,3 +27,4 @@ export interface JournalFormData {
   notes: string;
 }
 
+

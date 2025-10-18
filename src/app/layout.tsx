@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Assistant, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navigation from "./components/Navigation";
+import AccessibilityBubble from "../components/AccessibilityBubble";
 
 const assistant = Assistant({
   variable: "--font-assistant",
@@ -31,7 +32,10 @@ export default function RootLayout({
         className={`${assistant.variable} ${geistMono.variable} antialiased`}
       >
         <Navigation />
-        {children}
+        <main id="main-content">
+          {children}
+        </main>
+        <AccessibilityBubble />
       </body>
     </html>
   );

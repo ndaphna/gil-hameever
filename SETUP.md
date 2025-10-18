@@ -100,3 +100,4 @@ npm run dev
 - ✅ השתמשי ב-`service_role key` רק ב-API routes (בתיקיית `/api`)
 
 
+

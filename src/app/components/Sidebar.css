@@ -1,10 +1,10 @@
 .sidebar {
   position: fixed;
-  top: 0;
+  top: 64px; /* Start below main header */
   right: -320px;
   width: 320px;
-  height: 100vh;
-  max-height: 100vh;
+  height: calc(100vh - 64px); /* Adjust height to account for header */
+  max-height: calc(100vh - 64px);
   background: white;
   box-shadow: -2px 0 12px rgba(0, 0, 0, 0.1);
   transition: right 0.3s ease;
@@ -13,10 +13,14 @@
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
+  visibility: hidden;
+  opacity: 0;
 }
 
 .sidebar.open {
   right: 0;
+  visibility: visible;
+  opacity: 1;
 }
 
 /* Sidebar Header */

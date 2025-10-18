@@ -177,3 +177,4 @@ export function getRelativeTime(date: Date | string): string {
   if (diffInSeconds < 31536000) return `לפני ${Math.floor(diffInSeconds / 2592000)} חודשים`;
   return `לפני ${Math.floor(diffInSeconds / 31536000)} שנים`;
 }
+

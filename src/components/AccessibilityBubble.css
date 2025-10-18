@@ -1,0 +1,596 @@
+/* ============================================
+   ACCESSIBILITY BUBBLE STYLES
+   ============================================ */
+
+/* Accessibility Bubble Button */
+.accessibility-bubble {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(255, 0, 128, 0.3);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+}
+
+.accessibility-bubble:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(255, 0, 128, 0.4);
+}
+
+.accessibility-bubble:focus {
+  outline: 3px solid var(--magenta);
+  outline-offset: 2px;
+}
+
+.accessibility-icon {
+  font-size: 28px;
+  line-height: 1;
+}
+
+/* Accessibility Panel */
+.accessibility-panel {
+  position: fixed;
+  bottom: 90px;
+  left: 20px;
+  width: 320px;
+  max-height: 80vh;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.15);
+  z-index: 1001;
+  overflow: hidden;
+  border: 2px solid var(--light-pink);
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.accessibility-header {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accessibility-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.accessibility-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background-color 0.2s ease;
+}
+
+.accessibility-close:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.accessibility-close:focus {
+  outline: 2px solid white;
+  outline-offset: 2px;
+}
+
+.accessibility-content {
+  padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.accessibility-group {
+  margin-bottom: 20px;
+}
+
+.accessibility-group label {
+  display: block;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.accessibility-group select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 2px solid var(--gray-light);
+  border-radius: 8px;
+  background: white;
+  font-size: 14px;
+  color: var(--black);
+  transition: border-color 0.2s ease;
+}
+
+.accessibility-group select:focus {
+  outline: none;
+  border-color: var(--magenta);
+}
+
+.accessibility-group small {
+  display: block;
+  color: var(--gray);
+  font-size: 12px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+/* Checkbox Styling */
+.checkbox-label {
+  display: flex !important;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.checkbox-label input[type="checkbox"] {
+  display: none;
+}
+
+.checkmark {
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--gray-light);
+  border-radius: 4px;
+  margin-left: 10px;
+  position: relative;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark {
+  background: var(--magenta);
+  border-color: var(--magenta);
+}
+
+.checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.checkbox-label:hover .checkmark {
+  border-color: var(--magenta);
+}
+
+/* Actions */
+.accessibility-actions {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--gray-light);
+}
+
+.accessibility-reset {
+  background: var(--gray-light);
+  color: var(--black);
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.accessibility-reset:hover {
+  background: var(--gray);
+  color: white;
+}
+
+.accessibility-reset:focus {
+  outline: 2px solid var(--magenta);
+  outline-offset: 2px;
+}
+
+/* Skip Link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--magenta);
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 600;
+  z-index: 1002;
+  transition: top 0.2s ease;
+  display: none;
+}
+
+.skip-link:focus {
+  top: 6px;
+  display: block;
+}
+
+/* ============================================
+   ACCESSIBILITY TABS
+   ============================================ */
+
+.accessibility-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--gray-light);
+  margin-bottom: 20px;
+}
+
+.tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--gray);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.tab-button:hover {
+  color: var(--magenta);
+  background: var(--light-pink);
+}
+
+.tab-button.active {
+  color: var(--magenta);
+  border-bottom-color: var(--magenta);
+  background: var(--light-pink);
+}
+
+.tab-button:focus {
+  outline: 2px solid var(--magenta);
+  outline-offset: -2px;
+}
+
+/* ============================================
+   ACCESSIBILITY CHECKER
+   ============================================ */
+
+.accessibility-checker {
+  padding: 0;
+}
+
+.checker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--gray-light);
+}
+
+.checker-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--black);
+}
+
+.check-button {
+  background: var(--magenta);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.check-button:hover:not(:disabled) {
+  background: var(--magenta-dark);
+}
+
+.check-button:disabled {
+  background: var(--gray);
+  cursor: not-allowed;
+}
+
+.issues-list {
+  max-height: 300px;
+  overflow-y: auto;
+  margin-bottom: 16px;
+}
+
+.no-issues {
+  text-align: center;
+  color: var(--magenta);
+  font-weight: 500;
+  padding: 20px;
+  background: var(--light-pink);
+  border-radius: 8px;
+  margin: 0;
+}
+
+.issue {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  border-right: 3px solid;
+}
+
+.issue-error {
+  background: #ffebee;
+  border-color: #f44336;
+}
+
+.issue-warning {
+  background: #fff3e0;
+  border-color: #ff9800;
+}
+
+.issue-info {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.issue-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.issue-type {
+  font-size: 16px;
+  margin-left: 8px;
+}
+
+.issue-message {
+  font-weight: 500;
+  color: var(--black);
+  font-size: 14px;
+}
+
+.issue-fix {
+  font-size: 12px;
+  color: var(--gray);
+  font-style: italic;
+}
+
+.highlight-button {
+  background: var(--purple);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.highlight-button:hover {
+  background: var(--purple-light);
+}
+
+.checker-summary {
+  padding-top: 16px;
+  border-top: 1px solid var(--gray-light);
+  text-align: center;
+}
+
+.checker-summary p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--gray);
+}
+
+/* ============================================
+   ACCESSIBILITY SETTINGS APPLIED TO DOCUMENT
+   ============================================ */
+
+/* Font Size Settings */
+.font-normal {
+  font-size: 16px;
+}
+
+.font-large {
+  font-size: 18px;
+}
+
+.font-large h1 { font-size: clamp(32px, 8vw, 48px); }
+.font-large h2 { font-size: clamp(24px, 6vw, 36px); }
+.font-large h3 { font-size: clamp(20px, 5vw, 28px); }
+.font-large p { font-size: 18px; }
+.font-large .btn { font-size: 18px; }
+.font-large .cta-button { font-size: 18px; }
+
+.font-extra-large {
+  font-size: 20px;
+}
+
+.font-extra-large h1 { font-size: clamp(36px, 9vw, 56px); }
+.font-extra-large h2 { font-size: clamp(28px, 7vw, 42px); }
+.font-extra-large h3 { font-size: clamp(24px, 6vw, 32px); }
+.font-extra-large p { font-size: 20px; }
+.font-extra-large .btn { font-size: 20px; }
+.font-extra-large .cta-button { font-size: 20px; }
+
+/* Contrast Settings */
+.contrast-high {
+  --black: #000000;
+  --gray: #333333;
+  --magenta: #CC0066;
+  --magenta-dark: #990044;
+  --purple: #6600AA;
+  --purple-light: #8800CC;
+}
+
+.contrast-high body {
+  background: #FFFFFF;
+  color: #000000;
+}
+
+.contrast-high .content-card {
+  background: #FFFFFF;
+  border: 2px solid #000000;
+}
+
+.contrast-high .cta-button {
+  background: #000000;
+  color: #FFFFFF;
+  border: 2px solid #000000;
+}
+
+.contrast-high .cta-button:hover {
+  background: #333333;
+}
+
+/* Cursor Size Settings */
+.cursor-large * {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" fill="%23000"/></svg>'), auto !important;
+}
+
+.cursor-large button,
+.cursor-large a,
+.cursor-large input,
+.cursor-large select,
+.cursor-large textarea {
+  cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24"><path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z" fill="%23000"/></svg>'), pointer !important;
+}
+
+/* Screen Reader Mode */
+.screen-reader-mode .accessibility-bubble {
+  display: none;
+}
+
+.screen-reader-mode .accessibility-panel {
+  display: none;
+}
+
+/* Keyboard Navigation */
+.keyboard-navigation *:focus {
+  outline: 3px solid var(--magenta) !important;
+  outline-offset: 2px !important;
+}
+
+.keyboard-navigation .accessibility-bubble:focus,
+.keyboard-navigation .accessibility-close:focus,
+.keyboard-navigation .accessibility-reset:focus {
+  outline: 3px solid var(--magenta) !important;
+  outline-offset: 2px !important;
+}
+
+/* Reduced Motion */
+.reduced-motion * {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.reduced-motion .accessibility-panel {
+  animation: none;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .accessibility-panel {
+    width: 280px;
+    left: 10px;
+    bottom: 80px;
+  }
+  
+  .accessibility-bubble {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    left: 15px;
+    font-size: 20px;
+  }
+  
+  .accessibility-icon {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 480px) {
+  .accessibility-panel {
+    width: calc(100vw - 20px);
+    left: 10px;
+    right: 10px;
+  }
+}
+
+/* ============================================
+   HIGH CONTRAST MODE SUPPORT
+   ============================================ */
+
+@media (prefers-contrast: high) {
+  .accessibility-bubble {
+    border: 2px solid #000000;
+  }
+  
+  .accessibility-panel {
+    border: 2px solid #000000;
+  }
+  
+  .accessibility-group select {
+    border: 2px solid #000000;
+  }
+}
+
+/* ============================================
+   REDUCED MOTION SUPPORT
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  .accessibility-bubble {
+    transition: none;
+  }
+  
+  .accessibility-panel {
+    animation: none;
+  }
+  
+  .accessibility-bubble:hover {
+    transform: none;
+  }
+}

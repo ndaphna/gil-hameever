@@ -1,42 +1,60 @@
+/* Insights Page Styles - Same structure as Journal */
+.insights-page {
+  background: var(--gray-light);
+  padding: 40px 20px 100px 20px;
+}
+
 .insights-container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .insights-header {
-  text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 40px;
+  text-align: right;
+  padding: 40px 0;
+  border-bottom: 1px solid var(--gray-light);
+  position: relative;
 }
 
-.insights-title {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+.insights-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border-radius: 2px;
 }
 
-.insights-title h1 {
-  margin: 0;
-  font-size: 2.5rem;
+.insights-header h1 {
+  font-size: 28px;
   font-weight: 700;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--black);
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+  text-align: right;
+  position: relative;
+  padding-right: 40px;
 }
 
-.insights-icon {
-  font-size: 3rem;
+.insights-header h1::before {
+  content: "🔮";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
 }
 
-.insights-subtitle {
-  font-size: 1.2rem;
-  color: #6c757d;
+.insights-header .subtitle {
+  font-size: 16px;
+  color: var(--gray-dark);
   margin: 0;
-  font-weight: 400;
+  line-height: 1.5;
+  text-align: right;
 }
 
 .insights-content {
@@ -310,3 +328,4 @@
     justify-content: center;
   }
 }
+

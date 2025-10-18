@@ -1,12 +1,52 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
+
+export async function DELETE(request: NextRequest) {
+  try {
+    const { conversationId, userId } = await request.json();
+
+    if (!conversationId) {
+      return NextResponse.json({ error: 'Conversation ID is required' }, { status: 400 });
+    }
+
+    if (!userId) {
+      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+    }
+
+    // Delete all messages in the conversation first
+    await supabaseAdmin
+      .from('message')
+      .delete()
+      .eq('thread_id', conversationId)
+      .eq('user_id', userId);
+
+    // Delete the conversation
+    const { error } = await supabaseAdmin
+      .from('thread')
+      .delete()
+      .eq('id', conversationId)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Error deleting conversation:', error);
+      return NextResponse.json({ error: 'Failed to delete conversation' }, { status: 500 });
+    }
+
+    return NextResponse.json({ success: true });
+
+  } catch (error) {
+    console.error('Delete conversation API error:', error);
+    return NextResponse.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,18 +72,18 @@ export async function POST(request: NextRequest) {
     }
 
     // Get conversation history if conversationId exists
-    let conversationHistory = [];
+    let conversationHistory: any[] = [];
     if (conversationId) {
       const { data: messages } = await supabaseAdmin
-        .from('chat_messages')
-        .select('content, is_user')
-        .eq('conversation_id', conversationId)
+        .from('message')
+        .select('content, role')
+        .eq('thread_id', conversationId)
         .order('created_at', { ascending: true })
         .limit(10); // Last 10 messages for context
 
       if (messages) {
         conversationHistory = messages.map(msg => ({
-          role: msg.is_user ? 'user' : 'assistant',
+          role: msg.role,
           content: msg.content
         }));
       }
@@ -85,46 +125,57 @@ export async function POST(request: NextRequest) {
     const aiResponse = completion.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
 
     // Save messages to database
-    const { data: conversation } = await supabaseAdmin
-      .from('conversations')
-      .select('id')
-      .eq('id', conversationId)
-      .single();
-
     let currentConversationId = conversationId;
     
-    if (!conversation) {
-      // Create new conversation
+    if (!conversationId) {
+      // Create new conversation ONLY if no conversationId provided (first message)
+      const title = message.length > 30 
+        ? message.substring(0, 30) + '...' 
+        : message;
+        
       const { data: newConversation } = await supabaseAdmin
-        .from('conversations')
+        .from('thread')
         .insert({
           user_id: userId,
-          title: message.substring(0, 50) + (message.length > 50 ? '...' : ''),
+          title: title,
           created_at: new Date().toISOString()
         })
         .select('id')
         .single();
       
       currentConversationId = newConversation?.id;
+    } else {
+      // Verify conversation exists
+      const { data: conversation } = await supabaseAdmin
+        .from('thread')
+        .select('id')
+        .eq('id', conversationId)
+        .single();
+        
+      if (!conversation) {
+        return NextResponse.json({ error: 'Conversation not found' }, { status: 404 });
+      }
     }
 
     // Save user message
     await supabaseAdmin
-      .from('chat_messages')
+      .from('message')
       .insert({
-        conversation_id: currentConversationId,
+        thread_id: currentConversationId,
+        user_id: userId,
         content: message,
-        is_user: true,
+        role: 'user',
         created_at: new Date().toISOString()
       });
 
     // Save AI response
     await supabaseAdmin
-      .from('chat_messages')
+      .from('message')
       .insert({
-        conversation_id: currentConversationId,
+        thread_id: currentConversationId,
+        user_id: userId,
         content: aiResponse,
-        is_user: false,
+        role: 'assistant',
         created_at: new Date().toISOString()
       });
 

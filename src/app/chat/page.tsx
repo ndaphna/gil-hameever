@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../components/DashboardLayout';
 import './Chat.css';
@@ -12,6 +12,14 @@ interface Message {
   timestamp: Date;
 }
 
+interface Conversation {
+  id: string;
+  title: string;
+  created_at: string;
+  last_message?: string;
+  last_message_time?: string;
+}
+
 export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -19,16 +27,22 @@ export default function ChatPage() {
   const [userTokens, setUserTokens] = useState(0);
   const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [isNewConversation, setIsNewConversation] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom when messages change
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   useEffect(() => {
     loadUserTokens();
-    // הוסף הודעת ברוכים הבאים
-    setMessages([{
-      id: '1',
-      content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
-      isUser: false,
-      timestamp: new Date()
-    }]);
+    loadChatHistory();
   }, []);
 
   const loadUserTokens = async () => {
@@ -47,6 +61,192 @@ export default function ChatPage() {
     }
   };
 
+  const loadChatHistory = async () => {
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log('👤 User auth check:', { user: user?.id, error: userError });
+      
+      if (userError) {
+        console.warn('❌ User auth error:', userError);
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+        setIsNewConversation(true);
+        return;
+      }
+      
+      if (!user) {
+        console.log('❌ No user found - showing welcome message');
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+        setIsNewConversation(true);
+        return;
+      }
+
+      // טען את כל השיחות הקיימות מהטבלה thread
+      console.log('🔍 Loading conversations for user:', user.id);
+      console.log('🔍 Supabase client:', supabase);
+      
+      const { data: conversationsData, error: conversationsError } = await supabase
+        .from('thread')
+        .select('id, title, created_at, updated_at')
+        .eq('user_id', user.id)
+        .order('updated_at', { ascending: false });
+
+      console.log('📊 Conversations data:', conversationsData);
+      console.log('❌ Conversations error:', conversationsError);
+      console.log('📈 Data length:', conversationsData?.length || 0);
+
+      if (conversationsError) {
+        console.warn('❌ Error loading conversations:', conversationsError);
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+        setIsNewConversation(true);
+        return;
+      }
+
+      if (conversationsData && conversationsData.length > 0) {
+        console.log('✅ Found conversations:', conversationsData.length);
+        // השיחות כבר מכילות את המידע הנדרש
+        const conversationsWithMessages = conversationsData;
+
+        setConversations(conversationsWithMessages);
+
+        // טען את השיחה האחרונה
+        const latestConversation = conversationsWithMessages[0];
+        setCurrentConversationId(latestConversation.id);
+        await loadConversationMessages(latestConversation.id);
+      } else {
+        console.log('❌ No conversations found - showing welcome message');
+        // אם אין שיחות קיימות, הוסף הודעת ברוכים הבאים
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+        setIsNewConversation(true);
+      }
+    } catch (error) {
+      console.error('❌ Error loading chat history:', error);
+      // במקרה של שגיאה, הוסף הודעת ברוכים הבאים
+      setMessages([{
+        id: '1',
+        content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+        isUser: false,
+        timestamp: new Date()
+      }]);
+      setIsNewConversation(true);
+    }
+  };
+
+  const loadConversationMessages = async (conversationId: string) => {
+    try {
+      console.log('🔍 Loading messages for conversation:', conversationId);
+      const { data: messages } = await supabase
+        .from('message')
+        .select('content, role, created_at')
+        .eq('thread_id', conversationId)
+        .order('created_at', { ascending: true });
+
+      console.log('📊 Messages data:', messages);
+      console.log('📈 Messages count:', messages?.length || 0);
+
+      if (messages && messages.length > 0) {
+        console.log('✅ Found messages, formatting...');
+        const formattedMessages: Message[] = messages.map((msg, index) => ({
+          id: `history-${conversationId}-${index}`,
+          content: msg.content,
+          isUser: msg.role === 'user',
+          timestamp: new Date(msg.created_at)
+        }));
+        setMessages(formattedMessages);
+      } else {
+        console.log('❌ No messages found - showing welcome message');
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+      }
+    } catch (error) {
+      console.error('❌ Error loading conversation messages:', error);
+    }
+  };
+
+  const selectConversation = async (conversationId: string) => {
+    setCurrentConversationId(conversationId);
+    setIsNewConversation(false);
+    await loadConversationMessages(conversationId);
+  };
+
+  const deleteConversation = async (conversationId: string) => {
+    if (!confirm('האם אתה בטוח שברצונך למחוק את השיחה?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          conversationId: conversationId,
+          userId: userId
+        }),
+      });
+
+      if (response.ok) {
+        // Remove from local state
+        setConversations(prev => prev.filter(conv => conv.id !== conversationId));
+        
+        // If this was the current conversation, clear it
+        if (currentConversationId === conversationId) {
+          setCurrentConversationId(null);
+          setMessages([{
+            id: '1',
+            content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+            isUser: false,
+            timestamp: new Date()
+          }]);
+          setIsNewConversation(true);
+        }
+        
+        console.log('✅ Conversation deleted successfully');
+      } else {
+        console.error('❌ Failed to delete conversation');
+        alert('שגיאה במחיקת השיחה');
+      }
+    } catch (error) {
+      console.error('❌ Error deleting conversation:', error);
+      alert('שגיאה במחיקת השיחה');
+    }
+  };
+
+  const startNewConversation = () => {
+    setCurrentConversationId(null);
+    setIsNewConversation(true);
+    setMessages([{
+      id: '1',
+      content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+      isUser: false,
+      timestamp: new Date()
+    }]);
+  };
+
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -62,6 +262,41 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
+      // אם זו שיחה חדשה, צור שם אוטומטי על בסיס ההודעה הראשונה
+      let conversationId = currentConversationId;
+      if (isNewConversation) {
+        // צור שם קצר על בסיס ההודעה הראשונה
+        const title = inputMessage.length > 30 
+          ? inputMessage.substring(0, 30) + '...' 
+          : inputMessage;
+        
+        // צור שיחה חדשה עם השם
+        const { data: newConversation } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: userId,
+            title: title,
+            created_at: new Date().toISOString()
+          })
+          .select('id')
+          .single();
+        
+        if (newConversation) {
+          conversationId = newConversation.id;
+          setCurrentConversationId(conversationId);
+          setIsNewConversation(false);
+          
+          // עדכן את רשימת השיחות
+          setConversations(prev => [{
+            id: newConversation.id,
+            title: title,
+            created_at: new Date().toISOString(),
+            last_message: inputMessage,
+            last_message_time: new Date().toISOString()
+          }, ...prev]);
+        }
+      }
+
       // Call OpenAI API
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -70,7 +305,7 @@ export default function ChatPage() {
         },
         body: JSON.stringify({
           message: inputMessage,
-          conversationId: currentConversationId,
+          conversationId: conversationId,
           userId: userId
         }),
       });
@@ -91,7 +326,15 @@ export default function ChatPage() {
 
       setMessages(prev => [...prev, aiResponse]);
       setUserTokens(data.tokensRemaining);
-      setCurrentConversationId(data.conversationId);
+      
+      // עדכן את השיחה הנוכחית ברשימה
+      if (conversationId) {
+        setConversations(prev => prev.map(conv => 
+          conv.id === conversationId 
+            ? { ...conv, last_message: data.response, last_message_time: new Date().toISOString() }
+            : conv
+        ));
+      }
       
     } catch (error) {
       console.error('Error sending message:', error);
@@ -121,72 +364,126 @@ export default function ChatPage() {
   return (
     <DashboardLayout>
       <div className="chat-container">
-      <div className="chat-header">
-        <div className="chat-title">
-          <span className="chat-icon">💬</span>
-          <h1>שיחה עם עליזה</h1>
-        </div>
-        <div className="tokens-display">
-          <span className="token-icon">✨</span>
-          <span className="token-count">{userTokens}</span>
-          <span className="token-label">טוקנים</span>
-        </div>
-      </div>
-
-      <div className="chat-messages">
-        {messages.map((message) => (
-          <div key={message.id} className={`message ${message.isUser ? 'user-message' : 'ai-message'}`}>
-            <div className="message-content">
-              {message.content}
-            </div>
-            <div className="message-time">
-              {message.timestamp.toLocaleTimeString('he-IL', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              })}
-            </div>
+        <div className="chat-header">
+          <div className="chat-title">
+            <span className="chat-icon">💬</span>
+            <h1>שיחה עם עליזה</h1>
           </div>
-        ))}
-        
-        {isLoading && (
-          <div className="message ai-message">
-            <div className="message-content">
-              <div className="typing-indicator">
-                <span></span>
-                <span></span>
-                <span></span>
+          <div className="tokens-display">
+            <span className="token-icon">✨</span>
+            <span className="token-count">{userTokens}</span>
+            <span className="token-label">טוקנים</span>
+          </div>
+        </div>
+
+        <div className="chat-layout">
+          <div className="chat-main">
+            <div className="chat-messages">
+              {messages.map((message) => (
+                <div key={message.id} className={`message ${message.isUser ? 'user-message' : 'ai-message'}`}>
+                  <div className="message-content">
+                    {message.content}
+                  </div>
+                  <div className="message-time">
+                    {message.timestamp.toLocaleTimeString('he-IL', { 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </div>
+                </div>
+              ))}
+              
+              {isLoading && (
+                <div className="message ai-message">
+                  <div className="message-content">
+                    <div className="typing-indicator">
+                      <span></span>
+                      <span></span>
+                      <span></span>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Auto-scroll anchor */}
+              <div ref={messagesEndRef} />
+            </div>
+
+            <div className="chat-input-container">
+              <div className="chat-input-wrapper">
+                <textarea
+                  value={inputMessage}
+                  onChange={(e) => setInputMessage(e.target.value)}
+                  onKeyPress={handleKeyPress}
+                  placeholder="כתבי את השאלה שלך כאן..."
+                  className="chat-input"
+                  rows={1}
+                  disabled={isLoading || userTokens === 0}
+                />
+                <button
+                  onClick={handleSendMessage}
+                  disabled={!inputMessage.trim() || isLoading || userTokens === 0}
+                  className="send-button"
+                >
+                  {isLoading ? '⏳' : '📤'}
+                </button>
               </div>
+              
+              {userTokens === 0 && (
+                <div className="no-tokens-message">
+                  <p>אין לך טוקנים זמינים. אנא רכשי טוקנים נוספים כדי להמשיך לשוחח עם עליזה.</p>
+                </div>
+              )}
             </div>
           </div>
-        )}
-      </div>
 
-      <div className="chat-input-container">
-        <div className="chat-input-wrapper">
-          <textarea
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="כתבי את השאלה שלך כאן..."
-            className="chat-input"
-            rows={1}
-            disabled={isLoading || userTokens === 0}
-          />
-          <button
-            onClick={handleSendMessage}
-            disabled={!inputMessage.trim() || isLoading || userTokens === 0}
-            className="send-button"
-          >
-            {isLoading ? '⏳' : '📤'}
-          </button>
-        </div>
-        
-        {userTokens === 0 && (
-          <div className="no-tokens-message">
-            <p>אין לך טוקנים זמינים. אנא רכשי טוקנים נוספים כדי להמשיך לשוחח עם עליזה.</p>
+          <div className="chat-sidebar">
+            <div className="conversations-header">
+              <h3>שיחות קודמות</h3>
+              <button 
+                className="new-conversation-btn"
+                onClick={startNewConversation}
+                title="שיחה חדשה"
+              >
+                ➕
+              </button>
+            </div>
+            
+            <div className="conversations-list">
+              {conversations.map((conversation) => (
+                <div
+                  key={conversation.id}
+                  className={`conversation-item ${currentConversationId === conversation.id ? 'active' : ''}`}
+                >
+                  <div 
+                    className="conversation-content"
+                    onClick={() => selectConversation(conversation.id)}
+                  >
+                    <div className="conversation-title">{conversation.title}</div>
+                    <div className="conversation-preview">
+                      {conversation.last_message?.substring(0, 50)}
+                      {conversation.last_message && conversation.last_message.length > 50 ? '...' : ''}
+                    </div>
+                    <div className="conversation-time">
+                      {new Date(conversation.last_message_time || conversation.created_at).toLocaleDateString('he-IL')}
+                    </div>
+                  </div>
+                  
+                  <button
+                    className="delete-conversation-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      deleteConversation(conversation.id);
+                    }}
+                    title="מחק שיחה"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
       </div>
     </DashboardLayout>
   );

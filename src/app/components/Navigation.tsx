@@ -3,18 +3,26 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
 import './Navigation.css';
 
 export default function Navigation() {
   const router = useRouter();
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Check if user is on internal pages
+  const isInternalPage = pathname?.startsWith('/dashboard') || 
+                        pathname?.startsWith('/chat') || 
+                        pathname?.startsWith('/journal') || 
+                        pathname?.startsWith('/insights') || 
+                        pathname?.startsWith('/profile');
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -49,22 +57,32 @@ export default function Navigation() {
   // Check authentication status
   useEffect(() => {
     async function checkAuth() {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsLoggedIn(!!session);
-      setUserEmail(session?.user?.email || null);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsLoggedIn(!!session);
+        setUserEmail(session?.user?.email || null);
+      } catch (error) {
+        console.warn('Auth check failed:', error);
+        setIsLoggedIn(false);
+        setUserEmail(null);
+      }
     }
     
     checkAuth();
 
     // Subscribe to auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsLoggedIn(!!session);
-      setUserEmail(session?.user?.email || null);
-    });
+    try {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        setIsLoggedIn(!!session);
+        setUserEmail(session?.user?.email || null);
+      });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+      return () => {
+        subscription.unsubscribe();
+      };
+    } catch (error) {
+      console.warn('Auth subscription failed:', error);
+    }
   }, []);
 
   // Prevent body scroll when mobile menu is open
@@ -82,14 +100,18 @@ export default function Navigation() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    router.push('/');
+    // Update local state immediately
+    setIsLoggedIn(false);
+    setUserEmail(null);
+    // Force page refresh to ensure clean state
+    window.location.href = '/';
     closeMenu();
   };
 
   return (
     <>
-      {/* Sidebar for internal system */}
-      {isHydrated && isLoggedIn && (
+      {/* Sidebar for internal system - only show on internal pages */}
+      {isHydrated && isLoggedIn && isInternalPage && (
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
       
@@ -103,11 +125,11 @@ export default function Navigation() {
           />
         )}
       
-      <nav className="main-nav">
+      <nav className="main-nav" role="navigation" aria-label="ניווט ראשי">
         <div className="nav-container">
           {/* Logo/Brand */}
           <div className="nav-brand">
-            <Link href="/" onClick={closeMenu}>
+            <Link href="/" onClick={closeMenu} aria-label="מנופאוזית וטוב לה - דף הבית">
               מנופאוזית וטוב לה
             </Link>
           </div>
@@ -140,68 +162,71 @@ export default function Navigation() {
           </div>
 
           {/* Navigation Links */}
-          <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
+          <div className={`nav-links ${isMenuOpen ? 'active' : ''}`} role="menubar" aria-label="תפריט ניווט">
             {!isHydrated ? (
               // תפריט ברירת מחדל עד שה-hydration יסתיים
               <>
-                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">דף הבית</button>
-                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn">אודות</button>
-                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
+                <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
+                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
+                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מחירים">מחירים</button>
               </>
             ) : (
               // תפריט ציבורי למשתמשים לא מחוברים
               <>
-                <button onClick={() => handleLinkClick('/')} className="nav-link-btn">דף הבית</button>
-                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn">אודות</button>
+                <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
+                <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
                 
                 {/* Dropdown Menu for Roadmap */}
                 <div 
                   className={`nav-dropdown ${isRoadmapOpen ? 'active' : ''}`}
                   onMouseEnter={() => setIsRoadmapOpen(true)}
                   onMouseLeave={() => setIsRoadmapOpen(false)}
+                  role="menuitem"
                 >
                   <button 
                     className="nav-dropdown-toggle"
                     onClick={toggleRoadmap}
                     aria-expanded={isRoadmapOpen}
+                    aria-haspopup="true"
+                    aria-label="פתח תפריט מפת דרכים"
                   >
                     מפת דרכים
-                    <span className={`dropdown-arrow ${isRoadmapOpen ? 'active' : ''}`}>▼</span>
+                    <span className={`dropdown-arrow ${isRoadmapOpen ? 'active' : ''}`} aria-hidden="true">▼</span>
                   </button>
-                  <div className="nav-dropdown-menu">
-                    <button onClick={() => handleLinkClick('/menopause-roadmap')} className="nav-dropdown-link">
-                      <span className="stage-icon">🗺️</span>
+                  <div className="nav-dropdown-menu" role="menu" aria-label="תפריט מפת דרכים">
+                    <button onClick={() => handleLinkClick('/menopause-roadmap')} className="nav-dropdown-link" role="menuitem" aria-label="עבור למפת הדרכים המלאה">
+                      <span className="stage-icon" aria-hidden="true">🗺️</span>
                       מפת הדרכים המלאה
                     </button>
-                    <button onClick={() => handleLinkClick('/the-body-whispers')} className="nav-dropdown-link">
-                      <span className="stage-icon">🧏🏻‍♀️</span>
+                    <button onClick={() => handleLinkClick('/the-body-whispers')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 1: הגוף לוחש">
+                      <span className="stage-icon" aria-hidden="true">🧏🏻‍♀️</span>
                       שלב 1: הגוף לוחש
                     </button>
-                    <button onClick={() => handleLinkClick('/certainty-peace-security')} className="nav-dropdown-link">
-                      <span className="stage-icon">🌳</span>
+                    <button onClick={() => handleLinkClick('/certainty-peace-security')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 2: וודאות, שקט, ביטחון">
+                      <span className="stage-icon" aria-hidden="true">🌳</span>
                       שלב 2: וודאות, שקט, ביטחון
                     </button>
-                    <button onClick={() => handleLinkClick('/belonging-sisterhood-emotional-connection')} className="nav-dropdown-link">
-                      <span className="stage-icon">🤝</span>
+                    <button onClick={() => handleLinkClick('/belonging-sisterhood-emotional-connection')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 3: שייכות ואחוות נשים">
+                      <span className="stage-icon" aria-hidden="true">🤝</span>
                       שלב 3: שייכות ואחוות נשים
                     </button>
-                    <button onClick={() => handleLinkClick('/self-worth')} className="nav-dropdown-link">
-                      <span className="stage-icon">🌟</span>
+                    <button onClick={() => handleLinkClick('/self-worth')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 4: ערך עצמי, משמעות">
+                      <span className="stage-icon" aria-hidden="true">🌟</span>
                       שלב 4: ערך עצמי, משמעות
                     </button>
-                    <button onClick={() => handleLinkClick('/wisdom-giving')} className="nav-dropdown-link">
-                      <span className="stage-icon">✨</span>
+                    <button onClick={() => handleLinkClick('/wisdom-giving')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 5: תבונה ונתינה">
+                      <span className="stage-icon" aria-hidden="true">✨</span>
                       שלב 5: תבונה ונתינה
                     </button>
                   </div>
                 </div>
 
-                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn">מחירים</button>
+                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מחירים">מחירים</button>
                 
                 {/* כפתור אזור אישי - רק למשתמשים מחוברים */}
                 {isHydrated && isLoggedIn && (
-                  <button onClick={() => handleLinkClick('/dashboard')} className="nav-link-btn personal-area-btn">
-                    🏠 אזור אישי
+                  <button onClick={() => handleLinkClick('/dashboard')} className="nav-link-btn personal-area-btn" role="menuitem" aria-label="עבור לאזור האישי">
+                    <span aria-hidden="true">🏠</span> אזור אישי
                   </button>
                 )}
               </>
@@ -211,15 +236,15 @@ export default function Navigation() {
           {/* Auth Button - Dynamic based on login status */}
           <div className={`nav-auth ${isMenuOpen ? 'active' : ''}`}>
             {!isHydrated ? (
-              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary">
+              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary" aria-label="התחברות לאתר">
                 התחברות
               </button>
             ) : isLoggedIn ? (
-              <button className="btn btn-secondary" onClick={handleLogout}>
+              <button className="btn btn-secondary" onClick={handleLogout} aria-label="התנתקות מהאתר">
                 התנתקות
               </button>
             ) : (
-              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary">
+              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary" aria-label="התחברות לאתר">
                 התחברות
               </button>
             )}

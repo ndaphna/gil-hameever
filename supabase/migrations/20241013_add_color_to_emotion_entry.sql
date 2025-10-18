@@ -7,3 +7,4 @@ COMMENT ON COLUMN emotion_entry.color IS 'Pastel color chosen by user for the jo
 
 
 
+
