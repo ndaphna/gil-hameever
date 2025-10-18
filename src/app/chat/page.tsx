@@ -46,18 +46,26 @@ export default function ChatPage() {
   }, []);
 
   const loadUserTokens = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      setUserId(user.id);
-      const { data: profile } = await supabase
-        .from('user_profile')
-        .select('current_tokens')
-        .eq('id', user.id)
-        .single();
-      
-      if (profile) {
-        setUserTokens(profile.current_tokens || 0);
+    try {
+      const { data: { user }, error } = await supabase.auth.getUser();
+      if (user && !error) {
+        setUserId(user.id);
+        const { data: profile } = await supabase
+          .from('user_profile')
+          .select('current_tokens')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          setUserTokens(profile.current_tokens || 0);
+        }
+      } else {
+        // Set default tokens if no user
+        setUserTokens(50);
       }
+    } catch (error) {
+      console.log('Token loading failed, using default');
+      setUserTokens(50);
     }
   };
 
@@ -66,20 +74,9 @@ export default function ChatPage() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       console.log('👤 User auth check:', { user: user?.id, error: userError });
       
-      if (userError) {
-        console.warn('❌ User auth error:', userError);
-        setMessages([{
-          id: '1',
-          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
-          isUser: false,
-          timestamp: new Date()
-        }]);
-        setIsNewConversation(true);
-        return;
-      }
-      
-      if (!user) {
-        console.log('❌ No user found - showing welcome message');
+      // Always show welcome message, don't redirect on auth errors
+      if (userError || !user) {
+        console.log('❌ Auth issue - showing welcome message without redirect');
         setMessages([{
           id: '1',
           content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
@@ -364,17 +361,17 @@ export default function ChatPage() {
   return (
     <DashboardLayout>
       <div className="chat-container">
-        <div className="chat-header">
-          <div className="chat-title">
-            <span className="chat-icon">💬</span>
-            <h1>שיחה עם עליזה</h1>
-          </div>
-          <div className="tokens-display">
-            <span className="token-icon">✨</span>
-            <span className="token-count">{userTokens}</span>
-            <span className="token-label">טוקנים</span>
-          </div>
-        </div>
+            <div className="chat-header">
+              <div className="chat-title">
+                <span className="chat-icon">💜</span>
+                <h1>שיחה עם עליזה</h1>
+              </div>
+              <div className="tokens-display">
+                <span className="token-icon">✨</span>
+                <span className="token-count">{userTokens}</span>
+                <span className="token-label">טוקנים זמינים</span>
+              </div>
+            </div>
 
         <div className="chat-layout">
           <div className="chat-main">
@@ -411,27 +408,28 @@ export default function ChatPage() {
 
             <div className="chat-input-container">
               <div className="chat-input-wrapper">
-                <textarea
-                  value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
-                  onKeyPress={handleKeyPress}
-                  placeholder="כתבי את השאלה שלך כאן..."
-                  className="chat-input"
-                  rows={1}
-                  disabled={isLoading || userTokens === 0}
-                />
+                    <textarea
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      placeholder="שלום עליזה, איך אני יכולה לעזור לך היום?"
+                      className="chat-input"
+                      rows={1}
+                      disabled={isLoading || userTokens === 0}
+                    />
                 <button
                   onClick={handleSendMessage}
                   disabled={!inputMessage.trim() || isLoading || userTokens === 0}
                   className="send-button"
+                  title={isLoading ? 'שולח...' : 'שלח הודעה'}
                 >
-                  {isLoading ? '⏳' : '📤'}
+                  {isLoading ? '⏳' : '➤'}
                 </button>
               </div>
               
               {userTokens === 0 && (
                 <div className="no-tokens-message">
-                  <p>אין לך טוקנים זמינים. אנא רכשי טוקנים נוספים כדי להמשיך לשוחח עם עליזה.</p>
+                  <p>✨ אין לך טוקנים זמינים כרגע. אנא רכשי טוקנים נוספים כדי להמשיך את השיחה המרתקת עם עליזה.</p>
                 </div>
               )}
             </div>
@@ -439,13 +437,13 @@ export default function ChatPage() {
 
           <div className="chat-sidebar">
             <div className="conversations-header">
-              <h3>שיחות קודמות</h3>
+              <h3>השיחות שלי</h3>
               <button 
                 className="new-conversation-btn"
                 onClick={startNewConversation}
-                title="שיחה חדשה"
+                title="התחל שיחה חדשה"
               >
-                ➕
+                ✨
               </button>
             </div>
             
@@ -469,16 +467,16 @@ export default function ChatPage() {
                     </div>
                   </div>
                   
-                  <button
-                    className="delete-conversation-btn"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      deleteConversation(conversation.id);
-                    }}
-                    title="מחק שיחה"
-                  >
-                    🗑️
-                  </button>
+                      <button
+                        className="delete-conversation-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteConversation(conversation.id);
+                        }}
+                        title="מחק שיחה"
+                      >
+                        ✕
+                      </button>
                 </div>
               ))}
             </div>

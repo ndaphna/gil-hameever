@@ -6,6 +6,8 @@ const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
 });
 
+console.log('OpenAI API Key exists:', !!process.env.OPENAI_API_KEY);
+
 export async function DELETE(request: NextRequest) {
   try {
     const { conversationId, userId } = await request.json();
@@ -114,15 +116,15 @@ export async function POST(request: NextRequest) {
       { role: 'user', content: message }
     ];
 
-    // Call OpenAI API
-    const completion = await openai.chat.completions.create({
-      model: 'gpt-4',
-      messages: messages,
-      max_tokens: 300,
-      temperature: 0.7,
-    });
+        // Call OpenAI API
+        const completion = await openai.chat.completions.create({
+          model: 'gpt-4',
+          messages: messages,
+          max_tokens: 300,
+          temperature: 0.7,
+        });
 
-    const aiResponse = completion.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
+        const aiResponse = completion.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
 
     // Save messages to database
     let currentConversationId = conversationId;
