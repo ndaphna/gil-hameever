@@ -1,0 +1,657 @@
+/* Aliza Insights Styles */
+.aliza-insights {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.aliza-insights-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px;
+}
+
+.loading-container {
+  text-align: center;
+  background: white;
+  padding: 3rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.aliza-avatar {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  animation: bounce 2s infinite;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 1rem auto;
+}
+
+.loading-container h3 {
+  margin: 1rem 0 0.5rem 0;
+  color: #333;
+  font-size: 1.3rem;
+}
+
+.loading-container p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+/* Aliza Header */
+.aliza-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  color: #2c3e50;
+  padding: 3rem;
+  border-radius: 24px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.aliza-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+.aliza-avatar-large {
+  font-size: 3.5rem;
+  animation: gentle-float 4s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.aliza-intro h2 {
+  margin: 0 0 0.75rem 0;
+  font-size: 2rem;
+  font-weight: 300;
+  color: #2c3e50;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.aliza-intro p {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #6c757d;
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 500px;
+}
+
+/* Summary Cards */
+.insights-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.summary-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: transform 0.3s ease;
+}
+
+.summary-card:hover {
+  transform: translateY(-2px);
+}
+
+.summary-icon {
+  font-size: 2rem;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 50%;
+  color: white;
+}
+
+.summary-content h4 {
+  margin: 0 0 0.25rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.summary-content p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Insights Section */
+.insights-section {
+  margin-bottom: 2rem;
+}
+
+.section-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.section-header h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.section-header p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  max-height: 80vh;
+  padding-right: 0.5rem;
+}
+
+/* Custom scrollbar for insights grid */
+.insights-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.insights-grid::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 3px;
+}
+
+.insights-grid::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.insights-grid::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Firefox scrollbar for insights grid */
+.insights-grid {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f8f9fa;
+}
+
+.insight-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+}
+
+.insight-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.insight-card.high {
+  border-left-color: #ff6b6b;
+}
+
+.insight-card.medium {
+  border-left-color: #f9ca24;
+}
+
+.insight-card.low {
+  border-left-color: #4ecdc4;
+}
+
+.insight-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.insight-icons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.category-icon, .type-icon {
+  font-size: 1.2rem;
+}
+
+.insight-priority {
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.insight-content {
+  padding: 1.5rem;
+}
+
+.insight-title {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.insight-description {
+  margin: 0 0 1rem 0;
+  color: #6c757d;
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+.actionable-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.75rem;
+  background: #e8f5e8;
+  color: #2d5a2d;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.insight-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+  font-size: 0.85rem;
+}
+
+.insight-category {
+  color: #6c757d;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.insight-date {
+  color: #adb5bd;
+}
+
+/* Aliza Message */
+.aliza-message {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  color: #2c3e50;
+  padding: 2.5rem;
+  border-radius: 24px;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  position: relative;
+  overflow: hidden;
+}
+
+.aliza-message::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #f093fb 0%, #f5576c 50%, #667eea 100%);
+  border-radius: 24px 24px 0 0;
+}
+
+.message-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.aliza-avatar-small {
+  font-size: 1.5rem;
+}
+
+.message-header h4 {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.message-content p {
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+  font-size: 1.05rem;
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.message-content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Modal Styles */
+.insight-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+/* Modal Container - handles rounded corners */
+.insight-modal-container {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+  background: white;
+  max-width: 600px;
+  width: 100%;
+  max-height: 80vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Modal Content - handles scrolling */
+.insight-modal-content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  padding: 0;
+}
+
+/* Custom scrollbar for modal content */
+.insight-modal-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.insight-modal-content::-webkit-scrollbar-track {
+  background: #f8f9fa;
+  border-radius: 3px;
+}
+
+.insight-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 3px;
+  transition: background 0.3s ease;
+}
+
+.insight-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Firefox scrollbar for modal content */
+.insight-modal-content {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f8f9fa;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 50%;
+  transition: background-color 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: #f8f9fa;
+}
+
+.modal-content {
+  padding: 1.5rem;
+}
+
+/* Ensure modal header stays fixed */
+.modal-header {
+  flex-shrink: 0;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.insight-details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.detail-label {
+  font-size: 0.85rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.detail-value {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.insight-description-full {
+  margin-bottom: 1.5rem;
+}
+
+.insight-description-full h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.1rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.insight-description-full p {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.aliza-message-detail {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  color: #2c3e50;
+  padding: 1.5rem;
+  border-radius: 15px;
+  margin-bottom: 1.5rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.aliza-message-detail .message-header h4 {
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.aliza-message-detail p {
+  color: #6c757d;
+  font-weight: 400;
+}
+
+.actionable-section {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 15px;
+  border-left: 4px solid #4ecdc4;
+}
+
+.actionable-section h4 {
+  margin: 0 0 1rem 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.actionable-section ul {
+  margin: 0;
+  padding-right: 1.5rem;
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.actionable-section li {
+  margin-bottom: 0.5rem;
+}
+
+/* Animations */
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes gentle-float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(1deg);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .aliza-insights {
+    padding: 1rem;
+  }
+  
+  .aliza-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+  
+  .aliza-avatar-large {
+    font-size: 3rem;
+  }
+  
+  .aliza-intro h2 {
+    font-size: 1.5rem;
+  }
+  
+  .insights-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .insights-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .insight-modal {
+    margin: 1rem;
+    max-height: 90vh;
+  }
+  
+  .insight-details {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .aliza-insights {
+    padding: 0.5rem;
+  }
+  
+  .aliza-header {
+    padding: 1.5rem;
+  }
+  
+  .aliza-intro h2 {
+    font-size: 1.3rem;
+  }
+  
+  .aliza-intro p {
+    font-size: 1rem;
+  }
+  
+  .insight-card {
+    margin-bottom: 1rem;
+  }
+  
+  .modal-content {
+    padding: 1rem;
+  }
+}

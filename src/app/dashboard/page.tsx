@@ -22,9 +22,28 @@ export default function DashboardPage() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
+        console.log('Dashboard: User check result:', user);
+        
+        // Check for mock login if no Supabase user
         if (!user) {
-          router.push('/login');
-          return;
+          const mockLogin = localStorage.getItem('mock-login');
+          if (mockLogin === 'true') {
+            console.log('Dashboard: Using mock login');
+            // Create a mock user profile
+            const mockProfile: UserProfile = {
+              name: localStorage.getItem('user-email')?.split('@')[0] || 'משתמשת',
+              email: localStorage.getItem('user-email') || '',
+              subscription_status: 'active',
+              current_tokens: 100
+            };
+            setProfile(mockProfile);
+            setLoading(false);
+            return;
+          } else {
+            console.log('Dashboard: No user found, redirecting to login');
+            router.push('/login');
+            return;
+          }
         }
 
         let { data: profileData } = await supabase
@@ -68,6 +87,24 @@ export default function DashboardPage() {
     loadProfile();
   }, [router]);
 
+  const handleLogout = async () => {
+    try {
+      // Clear mock login if exists
+      localStorage.removeItem('mock-login');
+      localStorage.removeItem('user-email');
+      
+      // Try Supabase logout
+      await supabase.auth.signOut();
+      
+      // Redirect to login
+      router.push('/login');
+    } catch (error) {
+      console.error('Error during logout:', error);
+      // Still redirect to login even if logout fails
+      router.push('/login');
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -94,28 +131,24 @@ export default function DashboardPage() {
             <ul className="feature-list">
               <li>💬 לשוחח עם עליזה בצ'אט AI אישי</li>
               <li>📔 לתעד רגשות ביומן היומי</li>
-              <li>🔮 לקבל תובנות מבוססות AI על המצב שלך</li>
-              <li>👤 לנהל את הפרופיל והמנוי שלך</li>
+              <li>🔮 לקבל תובנות מבוססות AI</li>
             </ul>
           </div>
 
           {/* Subscription Status Card */}
           <div className="dashboard-card">
-            <h2>💎 סטטוס המנוי שלך</h2>
+            <h2>💎 סטטוס המנוי</h2>
             <div className="subscription-info">
               <div className="tier-badge">{profile?.subscription_status}</div>
               <p className="tokens">
-                <strong>{profile?.current_tokens || 0}</strong> טוקנים זמינים
+                <strong>{profile?.current_tokens || 0}</strong> טוקנים
               </p>
             </div>
-            <p className="info-text">
-              השתמשי בסרגל הניווט מימין כדי לגשת לכל הכלים
-            </p>
           </div>
 
           {/* Quick Stats Card */}
           <div className="dashboard-card">
-            <h2>📊 פעילות אחרונה</h2>
+            <h2>📊 פעילות</h2>
             <div className="stats-grid">
               <div className="stat-item">
                 <div className="stat-icon">💬</div>
@@ -128,7 +161,7 @@ export default function DashboardPage() {
                 <div className="stat-icon">📔</div>
                 <div className="stat-info">
                   <div className="stat-number">0</div>
-                  <div className="stat-label">רשומות יומן</div>
+                  <div className="stat-label">רשומות</div>
                 </div>
               </div>
             </div>
@@ -136,12 +169,11 @@ export default function DashboardPage() {
 
           {/* Next Steps Card */}
           <div className="dashboard-card next-steps-card">
-            <h2>🚀 מה עושים עכשיו?</h2>
-            <p>מומלץ להתחיל עם:</p>
+            <h2>🚀 צעדים הבאים</h2>
             <ol className="steps-list">
-              <li>השלמת הפרופיל האישי שלך</li>
-              <li>פתיחת שיחה ראשונה עם עליזה</li>
-              <li>כתיבת רשומה ראשונה ביומן</li>
+              <li>השלמת הפרופיל</li>
+              <li>שיחה עם עליזה</li>
+              <li>כתיבת יומן</li>
             </ol>
           </div>
         </div>
@@ -154,7 +186,6 @@ export default function DashboardPage() {
         }
 
         .dashboard-container {
-          max-width: 1200px;
           margin: 0 auto;
         }
 
@@ -179,6 +210,7 @@ export default function DashboardPage() {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
           gap: 20px;
+          align-items: start;
         }
 
         .dashboard-card {
@@ -188,6 +220,10 @@ export default function DashboardPage() {
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
           transition: all 0.3s ease;
           border: 1px solid rgba(0, 0, 0, 0.05);
+          display: flex;
+          flex-direction: column;
+          height: 200px;
+          justify-content: flex-start;
         }
 
         .dashboard-card.clickable {
@@ -200,19 +236,21 @@ export default function DashboardPage() {
         }
 
         .dashboard-card h2 {
-          font-size: 18px;
+          font-size: 16px;
           font-weight: 700;
           color: var(--black);
-          margin: 0 0 12px 0;
+          margin: 0 0 8px 0;
           text-align: right;
+          flex-shrink: 0;
         }
 
         .dashboard-card p {
           color: var(--gray);
-          margin: 0 0 12px 0;
+          margin: 0 0 8px 0;
           text-align: right;
-          line-height: 1.5;
-          font-size: 14px;
+          line-height: 1.4;
+          font-size: 13px;
+          flex-shrink: 0;
         }
 
         .card-icon {
@@ -237,6 +275,10 @@ export default function DashboardPage() {
         .subscription-info {
           margin-bottom: 12px;
           text-align: right;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
         }
 
         .tier-badge {
@@ -264,26 +306,32 @@ export default function DashboardPage() {
         .feature-list {
           list-style: none;
           padding: 0;
-          margin: 12px 0 0 0;
+          margin: 8px 0 0 0;
           text-align: right;
+          flex: 1;
+          overflow: hidden;
         }
 
         .feature-list li {
-          padding: 6px 0;
+          padding: 4px 0;
           color: var(--black);
-          font-size: 15px;
+          font-size: 14px;
         }
 
         .steps-list {
           margin: 12px 0 0 0;
           padding-right: 20px;
           text-align: right;
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
         }
 
         .steps-list li {
-          padding: 6px 0;
+          padding: 4px 0;
           color: var(--black);
-          font-size: 14px;
+          font-size: 13px;
         }
 
         .info-text {
@@ -298,19 +346,21 @@ export default function DashboardPage() {
           grid-template-columns: repeat(2, 1fr);
           gap: 12px;
           margin-top: 12px;
+          flex: 1;
+          align-content: flex-start;
         }
 
         .stat-item {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 10px;
+          gap: 8px;
+          padding: 8px;
           background: var(--gray-light);
           border-radius: 8px;
         }
 
         .stat-icon {
-          font-size: 24px;
+          font-size: 20px;
         }
 
         .stat-info {
@@ -334,6 +384,8 @@ export default function DashboardPage() {
           color: white;
           padding: 20px;
           margin-bottom: 0;
+          max-height: 200px;
+          overflow: hidden;
         }
 
         .welcome-card h2,

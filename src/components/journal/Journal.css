@@ -5,7 +5,6 @@
 }
 
 .journal-container {
-  max-width: 1200px;
   margin: 0 auto;
 }
 
@@ -267,7 +266,8 @@
 .fab {
   position: fixed;
   bottom: 40px;
-  left: 40px;
+  left: 50%;
+  transform: translateX(-50%);
   width: 72px;
   height: 72px;
   border-radius: 50%;
@@ -280,17 +280,17 @@
   align-items: center;
   justify-content: center;
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 100;
+  z-index: 10000;
   font-size: 28px;
 }
 
 .fab:hover {
-  transform: scale(1.15) translateY(-2px);
+  transform: translateX(-50%) scale(1.15) translateY(-2px);
   box-shadow: 0 12px 32px rgba(255, 0, 128, 0.35);
 }
 
 .fab:active {
-  transform: scale(1.05);
+  transform: translateX(-50%) scale(1.05);
 }
 
 .fab-icon {

@@ -1,25 +1,52 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
-import JournalEntryCard from '@/components/journal/JournalEntryCard';
-import JournalModal from '@/components/journal/JournalModal';
-import { useJournal } from '@/hooks/useJournal';
-import '@/components/journal/Journal.css';
+import MenopauseJournal from '@/components/journal/MenopauseJournal';
+import { supabase } from '@/lib/supabase';
+import '@/components/journal/MenopauseJournal.css';
 
 export default function JournalPage() {
-  const {
-    entries,
-    loading,
-    showModal,
-    saving,
-    formData,
-    setFormData,
-    setShowModal,
-    handleSaveEntry,
-    handleDeleteEntry,
-    handleEditEntry,
-    editingEntry,
-  } = useJournal();
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      console.log('Journal: User check result:', user);
+      
+      // Check for mock login if no Supabase user
+      if (!user) {
+        const mockLogin = localStorage.getItem('mock-login');
+        if (mockLogin === 'true') {
+          console.log('Journal: Using mock login');
+          // Create a mock user ID for mock login
+          const mockUserId = 'mock-user-' + Date.now();
+          setUserId(mockUserId);
+          setLoading(false);
+          return;
+        } else {
+          console.log('Journal: No user found, redirecting to login');
+          router.push('/login');
+          return;
+        }
+      }
+
+      setUserId(user.id);
+    } catch (error) {
+      console.error('Error checking user:', error);
+      router.push('/login');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -31,56 +58,13 @@ export default function JournalPage() {
     );
   }
 
+  if (!userId) {
+    return null;
+  }
+
   return (
     <DashboardLayout>
-      <div className="journal-page">
-        <div className="journal-container">
-          <div className="journal-header">
-            <h1>היומן שלי</h1>
-            <p className="subtitle">מרחב אישי לתיעוד רגשות, תחושות וחוויות</p>
-          </div>
-
-          {/* Entries Grid */}
-          {entries.length === 0 ? (
-            <div className="empty-state">
-              <div className="empty-icon">📝</div>
-              <h2>היומן שלך ריק</h2>
-              <p>התחילי לתעד את המסע שלך בלחיצה על הכפתור למטה</p>
-            </div>
-          ) : (
-            <div className="entries-grid">
-              {entries.map((entry) => (
-                <JournalEntryCard
-                  key={entry.id}
-                  entry={entry}
-                  onEdit={handleEditEntry}
-                  onDelete={handleDeleteEntry}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* FAB */}
-          <button 
-            className="fab" 
-            onClick={() => setShowModal(true)}
-            aria-label="הוסף רשומה חדשה"
-          >
-            <span className="fab-icon">+</span>
-          </button>
-
-          {/* Modal */}
-          <JournalModal
-            isOpen={showModal}
-            onClose={() => setShowModal(false)}
-            formData={formData}
-            setFormData={setFormData}
-            onSave={handleSaveEntry}
-            saving={saving}
-            isEditing={!!editingEntry}
-          />
-        </div>
-      </div>
+      <MenopauseJournal userId={userId} />
     </DashboardLayout>
   );
 }

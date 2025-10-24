@@ -190,16 +190,36 @@ export function useChat(userId: string | null) {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
+        let errorMessage = 'Failed to send message';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (jsonError) {
+          // If response is not JSON (e.g., HTML error page)
+          console.error('Response is not JSON:', await response.text());
+          errorMessage = 'Server returned non-JSON response. Please check your configuration.';
+        }
+        
         setState(prev => ({ 
           ...prev, 
-          error: errorData.error || 'Failed to send message', 
+          error: errorMessage, 
           loading: false 
         }));
         return false;
       }
 
-      const aiResponse = await response.json();
+      let aiResponse;
+      try {
+        aiResponse = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        setState(prev => ({ 
+          ...prev, 
+          error: 'Invalid response from server. Please check your configuration.', 
+          loading: false 
+        }));
+        return false;
+      }
 
       // Save AI response
       const { data: aiMessage, error: aiError } = await supabase
@@ -255,4 +275,5 @@ export function useChat(userId: string | null) {
     loadConversations
   };
 }
+
 

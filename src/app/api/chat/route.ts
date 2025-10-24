@@ -7,6 +7,7 @@ const openai = new OpenAI({
 });
 
 console.log('OpenAI API Key exists:', !!process.env.OPENAI_API_KEY);
+console.log('OpenAI API Key length:', process.env.OPENAI_API_KEY?.length || 0);
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -116,13 +117,29 @@ export async function POST(request: NextRequest) {
       { role: 'user', content: message }
     ];
 
+        // Check if OpenAI API key is available
+        if (!process.env.OPENAI_API_KEY) {
+          console.error('OpenAI API key is missing');
+          return NextResponse.json({ 
+            error: 'OpenAI API key is not configured. Please check your environment variables.' 
+          }, { status: 500 });
+        }
+
         // Call OpenAI API
-        const completion = await openai.chat.completions.create({
-          model: 'gpt-4',
-          messages: messages,
-          max_tokens: 300,
-          temperature: 0.7,
-        });
+        let completion;
+        try {
+          completion = await openai.chat.completions.create({
+            model: 'gpt-4',
+            messages: messages,
+            max_tokens: 300,
+            temperature: 0.7,
+          });
+        } catch (openaiError: any) {
+          console.error('OpenAI API error:', openaiError);
+          return NextResponse.json({ 
+            error: `OpenAI API error: ${openaiError.message || 'Unknown error'}` 
+          }, { status: 500 });
+        }
 
         const aiResponse = completion.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
 
@@ -195,9 +212,15 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('Chat API error:', error);
-    return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
-    );
+    
+    // Return a fallback response instead of error
+    const fallbackResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+    
+    return NextResponse.json({
+      response: fallbackResponse,
+      conversationId: null,
+      tokensRemaining: 0,
+      error: 'Technical issue - using fallback response'
+    });
   }
 }

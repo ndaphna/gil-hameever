@@ -59,6 +59,18 @@ export default function Navigation() {
     async function checkAuth() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
+        
+        // Check for mock login if no Supabase session
+        if (!session) {
+          const mockLogin = localStorage.getItem('mock-login');
+          if (mockLogin === 'true') {
+            console.log('Navigation: Using mock login');
+            setIsLoggedIn(true);
+            setUserEmail(localStorage.getItem('user-email'));
+            return;
+          }
+        }
+        
         setIsLoggedIn(!!session);
         setUserEmail(session?.user?.email || null);
       } catch (error) {
@@ -73,6 +85,17 @@ export default function Navigation() {
     // Subscribe to auth changes
     try {
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+        // Check for mock login if no Supabase session
+        if (!session) {
+          const mockLogin = localStorage.getItem('mock-login');
+          if (mockLogin === 'true') {
+            console.log('Navigation: Auth change - using mock login');
+            setIsLoggedIn(true);
+            setUserEmail(localStorage.getItem('user-email'));
+            return;
+          }
+        }
+        
         setIsLoggedIn(!!session);
         setUserEmail(session?.user?.email || null);
       });
@@ -99,6 +122,23 @@ export default function Navigation() {
   }, [isMenuOpen]);
 
   const handleLogout = async () => {
+    // Check if this is mock login
+    const mockLogin = localStorage.getItem('mock-login');
+    if (mockLogin === 'true') {
+      console.log('Navigation: Logging out from mock login');
+      // Clear mock login data
+      localStorage.removeItem('mock-login');
+      localStorage.removeItem('user-email');
+      // Update local state immediately
+      setIsLoggedIn(false);
+      setUserEmail(null);
+      // Force page refresh to ensure clean state
+      window.location.href = '/';
+      closeMenu();
+      return;
+    }
+    
+    // Regular Supabase logout
     await supabase.auth.signOut();
     // Update local state immediately
     setIsLoggedIn(false);

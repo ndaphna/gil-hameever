@@ -178,3 +178,4 @@ export function getRelativeTime(date: Date | string): string {
   return `לפני ${Math.floor(diffInSeconds / 31536000)} שנים`;
 }
 
+

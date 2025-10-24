@@ -13,8 +13,7 @@
 .dashboard-content {
   flex: 1;
   transition: all 0.3s ease;
-  overflow-x: hidden;
-  overflow-y: auto; /* Allow vertical scrolling */
+  overflow: hidden; /* No scrolling at all */
   padding: 20px;
   margin: 0;
   display: flex;
@@ -24,7 +23,7 @@
 }
 
 /* Desktop - Sidebar always visible */
-@media (min-width: 1024px) {
+@media (min-width: 1050px) {
   .dashboard-layout {
     padding-right: 320px;
   }
@@ -32,12 +31,12 @@
   .dashboard-content {
     flex: 1;
     height: calc(100vh - 64px); /* Fixed height */
-    overflow-y: auto; /* Allow vertical scrolling */
+    overflow: hidden; /* No scrolling at all */
   }
 }
 
 /* Tablet and Mobile */
-@media (max-width: 1023px) {
+@media (max-width: 1049px) {
   .dashboard-layout {
     padding-right: 0;
   }
@@ -46,7 +45,18 @@
     width: 100%;
     flex: 1;
     height: calc(100vh - 64px); /* Fixed height */
-    overflow-y: auto; /* Allow vertical scrolling */
+    overflow: hidden; /* No scrolling at all */
+    padding: 0; /* No padding in mobile */
+  }
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 0 !important;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
   }
 }
 

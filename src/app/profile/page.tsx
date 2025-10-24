@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
+import NotificationSettings from '@/components/notifications/NotificationSettings';
 
 interface UserProfile {
   id: string;
@@ -21,15 +22,36 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
+  const [activeTab, setActiveTab] = useState<'profile' | 'notifications'>('profile');
 
   useEffect(() => {
     async function loadProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
+        // Check for mock login if no Supabase user
         if (!user) {
-          router.push('/login');
-          return;
+          const mockLogin = localStorage.getItem('mock-login');
+          if (mockLogin === 'true') {
+            console.log('Profile: Using mock login');
+            // Create a mock user profile
+            const mockProfile: UserProfile = {
+              id: 'mock-user-' + Date.now(),
+              name: localStorage.getItem('user-email')?.split('@')[0] || 'משתמשת',
+              email: localStorage.getItem('user-email') || 'inbald@sapir.ac.il',
+              subscription_status: 'active',
+              current_tokens: 100,
+              created_at: new Date().toISOString()
+            };
+            setProfile(mockProfile);
+            setFullName(mockProfile.name || '');
+            setLoading(false);
+            return;
+          } else {
+            console.log('Profile: No user found, redirecting to login');
+            router.push('/login');
+            return;
+          }
         }
 
         let { data: profileData } = await supabase
@@ -80,6 +102,26 @@ export default function ProfilePage() {
     setMessage('');
 
     try {
+      // Check if this is a mock user
+      if (profile && profile.id.startsWith('mock-user-')) {
+        console.log('Profile: Mock user - simulating save');
+        // For mock users, just update local state
+        setProfile({ ...profile, name: fullName });
+        setMessage('הפרופיל עודכן בהצלחה (mock)');
+        
+        // Update localStorage with new name
+        const currentEmail = localStorage.getItem('user-email') || 'inbald@sapir.ac.il';
+        const emailDomain = currentEmail.split('@')[1];
+        const newEmail = `${fullName}@${emailDomain}`;
+        localStorage.setItem('user-email', newEmail);
+        
+        // Dispatch custom event to notify other components
+        window.dispatchEvent(new CustomEvent('profileUpdated'));
+        
+        setSaving(false);
+        return;
+      }
+      
       const { error } = await supabase
         .from('user_profile')
         .update({ name: fullName })
@@ -115,6 +157,22 @@ export default function ProfilePage() {
       <div className="profile-container">
         <div className="profile-header">
           <h1>הפרופיל והמנוי שלי</h1>
+          
+          {/* Tabs */}
+          <div className="profile-tabs">
+            <button 
+              className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+              onClick={() => setActiveTab('profile')}
+            >
+              פרטים אישיים
+            </button>
+            <button 
+              className={`tab-button ${activeTab === 'notifications' ? 'active' : ''}`}
+              onClick={() => setActiveTab('notifications')}
+            >
+              הגדרות התראות
+            </button>
+          </div>
         </div>
 
         {message && (
@@ -123,33 +181,34 @@ export default function ProfilePage() {
           </div>
         )}
 
-        <div className="profile-grid">
-          {/* Personal Info Card */}
-          <div className="profile-card">
-            <h2>פרטים אישיים</h2>
-            <form onSubmit={handleSave}>
-              <div className="form-group">
-                <label>אימייל</label>
-                <input type="email" value={profile?.email} disabled />
-              </div>
+        {activeTab === 'profile' && (
+          <div className="profile-grid">
+            {/* Personal Info Card */}
+            <div className="profile-card">
+              <h2>פרטים אישיים</h2>
+              <form onSubmit={handleSave}>
+                <div className="form-group">
+                  <label>אימייל</label>
+                  <input type="email" value={profile?.email} disabled />
+                </div>
 
-              <div className="form-group">
-                <label htmlFor="fullName">שם מלא</label>
-                <input
-                  id="fullName"
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  placeholder="הכניסי את שמך המלא"
-                  disabled={saving}
-                />
-              </div>
+                <div className="form-group">
+                  <label htmlFor="fullName">שם מלא</label>
+                  <input
+                    id="fullName"
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="הכניסי את שמך המלא"
+                    disabled={saving}
+                  />
+                </div>
 
-              <button type="submit" className="save-button" disabled={saving}>
-                {saving ? 'שומר...' : 'שמור שינויים'}
-              </button>
-            </form>
-          </div>
+                <button type="submit" className="save-button" disabled={saving}>
+                  {saving ? 'שומר...' : 'שמור שינויים'}
+                </button>
+              </form>
+            </div>
 
           {/* Subscription & Billing Card */}
           <div className="profile-card subscription-card">
@@ -200,6 +259,13 @@ export default function ProfilePage() {
           </div>
 
         </div>
+        )}
+
+        {activeTab === 'notifications' && (
+          <div className="notifications-section">
+            <NotificationSettings userId={profile?.id || ''} />
+          </div>
+        )}
       </div>
 
       <style jsx>{`
@@ -227,6 +293,42 @@ export default function ProfilePage() {
           font-weight: 700;
           color: var(--black);
           margin: 0;
+        }
+
+        .profile-tabs {
+          display: flex;
+          gap: 8px;
+          margin-top: 16px;
+        }
+
+        .tab-button {
+          padding: 12px 24px;
+          background: white;
+          border: 2px solid #e5e5e5;
+          border-radius: 8px;
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: inherit;
+        }
+
+        .tab-button:hover {
+          border-color: var(--magenta);
+          color: var(--magenta);
+        }
+
+        .tab-button.active {
+          background: var(--magenta);
+          color: white;
+          border-color: var(--magenta);
+        }
+
+        .notifications-section {
+          background: white;
+          border-radius: 12px;
+          padding: 24px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .back-button {

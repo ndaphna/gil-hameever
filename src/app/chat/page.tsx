@@ -74,17 +74,31 @@ export default function ChatPage() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       console.log('👤 User auth check:', { user: user?.id, error: userError });
       
-      // Always show welcome message, don't redirect on auth errors
+      // Check for mock login if no Supabase user
       if (userError || !user) {
-        console.log('❌ Auth issue - showing welcome message without redirect');
-        setMessages([{
-          id: '1',
-          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
-          isUser: false,
-          timestamp: new Date()
-        }]);
-        setIsNewConversation(true);
-        return;
+        const mockLogin = localStorage.getItem('mock-login');
+        if (mockLogin === 'true') {
+          console.log('✅ Using mock login for chat');
+          setUserId('mock-user-' + Date.now());
+          setMessages([{
+            id: '1',
+            content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+            isUser: false,
+            timestamp: new Date()
+          }]);
+          setIsNewConversation(true);
+          return;
+        } else {
+          console.log('❌ Auth issue - showing welcome message without redirect');
+          setMessages([{
+            id: '1',
+            content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+            isUser: false,
+            timestamp: new Date()
+          }]);
+          setIsNewConversation(true);
+          return;
+        }
       }
 
       // טען את כל השיחות הקיימות מהטבלה thread
@@ -259,6 +273,33 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
+      // Check if this is a mock user
+      if (userId && userId.startsWith('mock-user-')) {
+        console.log('💬 Mock user - simulating chat response');
+        
+        // Simulate AI response for mock users
+        const mockResponses = [
+          'שלום! אני כאן לעזור לך עם כל שאלה בנושא גיל המעבר.',
+          'זה נהדר שאת פונה אליי! איך אני יכולה לעזור לך היום?',
+          'אני מבינה שזה יכול להיות תקופה מאתגרת. בואי נדבר על זה.',
+          'יש לי הרבה עצות מעשיות להתמודדות עם תסמיני גיל המעבר.',
+          'אני כאן בשבילך! כל שאלה או חשש שלך חשוב לי.'
+        ];
+        
+        const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
+        
+        const aiResponse: Message = {
+          id: (Date.now() + 1).toString(),
+          content: randomResponse,
+          isUser: false,
+          timestamp: new Date()
+        };
+        
+        setMessages(prev => [...prev, aiResponse]);
+        setIsLoading(false);
+        return;
+      }
+      
       // אם זו שיחה חדשה, צור שם אוטומטי על בסיס ההודעה הראשונה
       let conversationId = currentConversationId;
       if (isNewConversation) {
@@ -267,30 +308,46 @@ export default function ChatPage() {
           ? inputMessage.substring(0, 30) + '...' 
           : inputMessage;
         
-        // צור שיחה חדשה עם השם
-        const { data: newConversation } = await supabase
-          .from('conversations')
-          .insert({
-            user_id: userId,
-            title: title,
-            created_at: new Date().toISOString()
-          })
-          .select('id')
-          .single();
-        
-        if (newConversation) {
-          conversationId = newConversation.id;
+        // For mock users, create a mock conversation
+        if (userId && userId.startsWith('mock-user-')) {
+          conversationId = 'mock-conversation-' + Date.now();
           setCurrentConversationId(conversationId);
           setIsNewConversation(false);
           
           // עדכן את רשימת השיחות
           setConversations(prev => [{
-            id: newConversation.id,
+            id: conversationId || 'mock-conversation',
             title: title,
             created_at: new Date().toISOString(),
             last_message: inputMessage,
             last_message_time: new Date().toISOString()
           }, ...prev]);
+        } else {
+          // צור שיחה חדשה עם השם
+          const { data: newConversation } = await supabase
+            .from('conversations')
+            .insert({
+              user_id: userId,
+              title: title,
+              created_at: new Date().toISOString()
+            })
+            .select('id')
+            .single();
+          
+          if (newConversation) {
+            conversationId = newConversation.id;
+            setCurrentConversationId(conversationId);
+            setIsNewConversation(false);
+            
+            // עדכן את רשימת השיחות
+            setConversations(prev => [{
+              id: newConversation.id,
+              title: title,
+              created_at: new Date().toISOString(),
+              last_message: inputMessage,
+              last_message_time: new Date().toISOString()
+            }, ...prev]);
+          }
         }
       }
 
@@ -308,11 +365,25 @@ export default function ChatPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to send message');
+        let errorMessage = 'Failed to send message';
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } catch (jsonError) {
+          // If response is not JSON (e.g., HTML error page)
+          console.error('Response is not JSON:', await response.text());
+          errorMessage = 'Server returned non-JSON response. Please check your configuration.';
+        }
+        throw new Error(errorMessage);
       }
 
-      const data = await response.json();
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        throw new Error('Invalid response from server. Please check your configuration.');
+      }
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
@@ -336,10 +407,24 @@ export default function ChatPage() {
     } catch (error) {
       console.error('Error sending message:', error);
       
-      // Show error message to user
+      // Show specific error message to user
+      let errorContent = 'מצטערת, אירעה שגיאה. אנא נסי שוב מאוחר יותר.';
+      
+      if (error instanceof Error) {
+        if (error.message.includes('OpenAI API key')) {
+          errorContent = 'בעיה בהגדרת OpenAI. אנא בדקי את מפתח ה-API.';
+        } else if (error.message.includes('non-JSON response')) {
+          errorContent = 'בעיה בהגדרת השרת. אנא בדקי את ההגדרות.';
+        } else if (error.message.includes('Invalid response')) {
+          errorContent = 'בעיה בקבלת תגובה מהשרת. אנא בדקי את ההגדרות.';
+        } else {
+          errorContent = `מצטערת, אירעה שגיאה: ${error.message}`;
+        }
+      }
+      
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'מצטערת, אירעה שגיאה. אנא נסי שוב מאוחר יותר.',
+        content: errorContent,
         isUser: false,
         timestamp: new Date()
       };

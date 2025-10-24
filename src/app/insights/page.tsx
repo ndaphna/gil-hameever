@@ -1,162 +1,74 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../components/DashboardLayout';
+import AlizaInsights from '@/components/insights/AlizaInsights';
 import './Insights.css';
 
-interface Insight {
-  id: string;
-  title: string;
-  description: string;
-  category: string;
-  date: string;
-  icon: string;
-}
-
 export default function InsightsPage() {
-  const [insights, setInsights] = useState<Insight[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isLoading, setIsLoading] = useState(true);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    loadInsights();
+    checkUser();
   }, []);
 
-  const loadInsights = async () => {
-    setIsLoading(true);
+  const checkUser = async () => {
     try {
-      // סימולציה של נתונים - במקום אמיתי זה יבוא ממסד הנתונים
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const { data: { user } } = await supabase.auth.getUser();
       
-      const mockInsights: Insight[] = [
-        {
-          id: '1',
-          title: 'דפוסי שינה משופרים',
-          description: 'תבסס על היומן שלך, זיהיתי ששינה טובה יותר קשורה לפעילות גופנית קלה בערב.',
-          category: 'sleep',
-          date: '2024-01-15',
-          icon: '😴'
-        },
-        {
-          id: '2',
-          title: 'הקשר בין תזונה למצב רוח',
-          description: 'נראה שיש קשר חיובי בין אכילת ירקות ירוקים לבין שיפור במצב הרוח שלך.',
-          category: 'nutrition',
-          date: '2024-01-14',
-          icon: '🥗'
-        },
-        {
-          id: '3',
-          title: 'זמני מתח מוגברים',
-          description: 'הזמנים הכי קשים בשבוע הם ימי ראשון ורביעי. כדאי לתכנן פעילויות מרגיעות בימים אלה.',
-          category: 'stress',
-          date: '2024-01-13',
-          icon: '🧘'
-        },
-        {
-          id: '4',
-          title: 'השפעת פעילות גופנית',
-          description: '30 דקות הליכה יומית משפרת משמעותית את רמת האנרגיה שלך.',
-          category: 'exercise',
-          date: '2024-01-12',
-          icon: '🚶'
+      console.log('Insights: User check result:', user);
+      
+      // Check for mock login if no Supabase user
+      if (!user) {
+        const mockLogin = localStorage.getItem('mock-login');
+        if (mockLogin === 'true') {
+          console.log('Insights: Using mock login');
+          // Create a mock user ID for mock login
+          const mockUserId = 'mock-user-' + Date.now();
+          setUserId(mockUserId);
+          setLoading(false);
+          return;
+        } else {
+          console.log('Insights: No user found, redirecting to login');
+          router.push('/login');
+          return;
         }
-      ];
-      
-      setInsights(mockInsights);
+      }
+
+      setUserId(user.id);
     } catch (error) {
-      console.error('Error loading insights:', error);
+      console.error('Error checking user:', error);
+      router.push('/login');
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  const categories = [
-    { id: 'all', label: 'הכל', icon: '📊' },
-    { id: 'sleep', label: 'שינה', icon: '😴' },
-    { id: 'nutrition', label: 'תזונה', icon: '🥗' },
-    { id: 'stress', label: 'מתח', icon: '🧘' },
-    { id: 'exercise', label: 'פעילות גופנית', icon: '🚶' }
-  ];
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="insights-page">
+          <div className="loading-container">
+            <div className="loading-spinner"></div>
+            <p>טוען תובנות...</p>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
 
-  const filteredInsights = selectedCategory === 'all' 
-    ? insights 
-    : insights.filter(insight => insight.category === selectedCategory);
-
-  const getCategoryColor = (category: string) => {
-    const colors = {
-      sleep: '#667eea',
-      nutrition: '#f093fb',
-      stress: '#4facfe',
-      exercise: '#43e97b'
-    };
-    return colors[category as keyof typeof colors] || '#667eea';
-  };
+  if (!userId) {
+    return null;
+  }
 
   return (
     <DashboardLayout>
       <div className="insights-page">
-        <div className="insights-container">
-          <div className="insights-header">
-            <h1>תובנות עליזה</h1>
-            <p className="subtitle">ניתוח AI אישי של הנתונים שלך לגיל המעבר</p>
-          </div>
-
-          <div className="insights-filters">
-            <h3>קטגוריות</h3>
-            <div className="category-filters">
-              {categories.map(category => (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id)}
-                  className={`category-filter ${selectedCategory === category.id ? 'active' : ''}`}
-                >
-                  <span className="category-icon">{category.icon}</span>
-                  <span className="category-label">{category.label}</span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className="insights-grid">
-            {isLoading ? (
-              <div className="loading-container">
-                <div className="loading-spinner"></div>
-                <p>טוען תובנות...</p>
-              </div>
-            ) : filteredInsights.length === 0 ? (
-              <div className="no-insights">
-                <span className="no-insights-icon">📊</span>
-                <h3>אין תובנות זמינות</h3>
-                <p>התחילי להשתמש ביומן כדי לקבל תובנות אישיות</p>
-              </div>
-            ) : (
-              filteredInsights.map(insight => (
-                <div key={insight.id} className="insight-card">
-                  <div 
-                    className="insight-header"
-                    style={{ backgroundColor: getCategoryColor(insight.category) }}
-                  >
-                    <span className="insight-icon">{insight.icon}</span>
-                    <div className="insight-meta">
-                      <span className="insight-category">
-                        {categories.find(c => c.id === insight.category)?.label}
-                      </span>
-                      <span className="insight-date">
-                        {new Date(insight.date).toLocaleDateString('he-IL')}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="insight-content">
-                    <h3 className="insight-title">{insight.title}</h3>
-                    <p className="insight-description">{insight.description}</p>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+        <AlizaInsights userId={userId} />
       </div>
     </DashboardLayout>
   );

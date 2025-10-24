@@ -2,10 +2,39 @@
 .insights-page {
   background: var(--gray-light);
   padding: 40px 20px 100px 20px;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for insights page */
+.insights-page::-webkit-scrollbar {
+  width: 8px;
+}
+
+.insights-page::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.insights-page::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.insights-page::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Firefox scrollbar */
+.insights-page {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f1f1f1;
 }
 
 .insights-container {
-  max-width: 1200px;
   margin: 0 auto;
 }
 

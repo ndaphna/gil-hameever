@@ -68,6 +68,25 @@ const AccessibilityBubble: React.FC = () => {
     announceToScreenReader(`${settingName} שונה ל-${valueName}`);
   };
 
+  const handleButtonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    console.log('Accessibility button clicked!', { isOpen });
+    const newIsOpen = !isOpen;
+    console.log('Setting isOpen to:', newIsOpen);
+    setIsOpen(newIsOpen);
+  };
+
+  const handlePanelClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+  };
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setIsOpen(false);
+    }
+  };
+
   const resetSettings = () => {
     const defaultSettings: AccessibilitySettings = {
       fontSize: 'normal',
@@ -88,10 +107,11 @@ const AccessibilityBubble: React.FC = () => {
       {/* Accessibility Bubble Button */}
       <button
         className="accessibility-bubble"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleButtonClick}
         aria-label="פתח הגדרות נגישות"
         aria-expanded={isOpen}
         title="הגדרות נגישות"
+        type="button"
       >
         <span className="accessibility-icon" aria-hidden="true">
           ♿
@@ -100,13 +120,18 @@ const AccessibilityBubble: React.FC = () => {
 
       {/* Accessibility Panel */}
       {isOpen && (
-        <FocusManager isActive={isOpen} restoreFocus={true}>
-          <div 
-            className="accessibility-panel" 
-            role="dialog" 
-            aria-labelledby="accessibility-title"
-            ref={(el) => el && trapFocus(el)}
-          >
+        <div className="accessibility-backdrop" onClick={handleBackdropClick}>
+          <FocusManager isActive={isOpen} restoreFocus={true}>
+            <div 
+              className="accessibility-panel" 
+              role="dialog" 
+              aria-labelledby="accessibility-title"
+              onClick={handlePanelClick}
+              ref={(el) => {
+                console.log('Panel rendered!', el);
+                if (el) trapFocus(el);
+              }}
+            >
             <div className="accessibility-header">
               <h2 id="accessibility-title">הגדרות נגישות</h2>
               <button
@@ -247,6 +272,7 @@ const AccessibilityBubble: React.FC = () => {
             </div>
           </div>
         </FocusManager>
+        </div>
       )}
 
       {/* Skip to main content link */}

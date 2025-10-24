@@ -219,3 +219,4 @@ ALTER TABLE public.emotion_entry ADD COLUMN color TEXT;
 
 
 
+

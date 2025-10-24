@@ -167,3 +167,4 @@ const AccessibilityChecker: React.FC = () => {
 };
 
 export default AccessibilityChecker;
+

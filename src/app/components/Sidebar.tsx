@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
@@ -15,10 +15,67 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [userName, setUserName] = useState<string>('');
   const [tokens, setTokens] = useState<number>(0);
+  const [mounted, setMounted] = useState(false);
+
+  const menuItems = useMemo(() => [
+    {
+      href: '/dashboard',
+      icon: '🏠',
+      label: 'דף הבית',
+      description: 'סקירה כללית'
+    },
+    {
+      href: '/chat',
+      icon: '💬',
+      label: 'שיחה עם עליזה',
+      description: 'צ\'אט אישי'
+    },
+    {
+      href: '/journal',
+      icon: '📔',
+      label: 'היומן שלי',
+      description: 'יומן רגשות יומי'
+    },
+    {
+      href: '/insights',
+      icon: '🔮',
+      label: 'תובנות עליזה',
+      description: 'ניתוח AI אישי'
+    },
+    {
+      href: '/profile',
+      icon: '👤',
+      label: 'הפרופיל והמנוי שלי',
+      description: 'פרטים אישיים ומנוי'
+    }
+  ], []);
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+    
     async function loadUserData() {
       const { data: { user } } = await supabase.auth.getUser();
+      
+      // Check for mock login if no Supabase user
+      if (!user) {
+        const mockLogin = localStorage.getItem('mock-login');
+        if (mockLogin === 'true') {
+          console.log('Sidebar: Using mock login');
+          const mockEmail = localStorage.getItem('user-email') || 'inbald@sapir.ac.il';
+          setUserName(mockEmail.split('@')[0]);
+          setTokens(100);
+          return;
+        } else {
+          console.log('Sidebar: No user found');
+          setUserName('משתמשת');
+          setTokens(0);
+          return;
+        }
+      }
       
       if (user) {
         let { data: profile } = await supabase
@@ -57,40 +114,46 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     }
 
     loadUserData();
-  }, []);
+  }, [mounted]);
 
-  const menuItems = [
-    {
-      href: '/dashboard',
-      icon: '🏠',
-      label: 'דף הבית',
-      description: 'סקירה כללית'
-    },
-    {
-      href: '/chat',
-      icon: '💬',
-      label: 'שיחה עם עליזה',
-      description: 'צ\'אט אישי'
-    },
-    {
-      href: '/journal',
-      icon: '📔',
-      label: 'היומן שלי',
-      description: 'יומן רגשות יומי'
-    },
-    {
-      href: '/insights',
-      icon: '🔮',
-      label: 'תובנות עליזה',
-      description: 'ניתוח AI אישי'
-    },
-    {
-      href: '/profile',
-      icon: '👤',
-      label: 'הפרופיל והמנוי שלי',
-      description: 'פרטים אישיים ומנוי'
-    }
-  ];
+  // Listen for localStorage changes (for mock login updates)
+  useEffect(() => {
+    if (!mounted) return;
+    
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'user-email' && e.newValue) {
+        console.log('Sidebar: User email changed, updating name');
+        const newName = e.newValue.split('@')[0];
+        setUserName(newName);
+      }
+    };
+
+    // Listen for storage events
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Also listen for custom events (for same-tab updates)
+    const handleCustomStorageChange = () => {
+      const mockLogin = localStorage.getItem('mock-login');
+      if (mockLogin === 'true') {
+        const mockEmail = localStorage.getItem('user-email');
+        if (mockEmail) {
+          console.log('Sidebar: Custom storage change, updating name');
+          setUserName(mockEmail.split('@')[0]);
+        }
+      }
+    };
+
+    window.addEventListener('profileUpdated', handleCustomStorageChange);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('profileUpdated', handleCustomStorageChange);
+    };
+  }, [mounted]);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>
