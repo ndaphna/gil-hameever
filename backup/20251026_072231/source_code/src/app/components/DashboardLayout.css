@@ -1,0 +1,63 @@
+.dashboard-layout {
+  display: flex;
+  min-height: calc(100vh - 64px); /* Account for main header height */
+  background: var(--gray-light);
+  position: relative;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Main Content Area */
+.dashboard-content {
+  flex: 1;
+  transition: all 0.3s ease;
+  overflow: hidden; /* No scrolling at all */
+  padding: 20px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 64px); /* Fixed height */
+  box-sizing: border-box;
+}
+
+/* Desktop - Sidebar always visible */
+@media (min-width: 1050px) {
+  .dashboard-layout {
+    padding-right: 320px;
+  }
+  
+  .dashboard-content {
+    flex: 1;
+    height: calc(100vh - 64px); /* Fixed height */
+    overflow: hidden; /* No scrolling at all */
+  }
+}
+
+/* Tablet and Mobile */
+@media (max-width: 1049px) {
+  .dashboard-layout {
+    padding-right: 0;
+  }
+  
+  .dashboard-content {
+    width: 100%;
+    flex: 1;
+    height: calc(100vh - 64px); /* Fixed height */
+    overflow: hidden; /* No scrolling at all */
+    padding: 0; /* No padding in mobile */
+  }
+}
+
+/* Mobile specific */
+@media (max-width: 768px) {
+  .dashboard-content {
+    padding: 0 !important;
+    overflow: hidden !important;
+    overflow-x: hidden !important;
+    overflow-y: hidden !important;
+  }
+}
+
+

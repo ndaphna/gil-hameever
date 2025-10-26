@@ -1,0 +1,76 @@
+# Environment Variables Template for Gil Hameever
+# Generated: 2025-01-26 07:22:31
+# 
+# IMPORTANT: Replace the placeholder values with your actual credentials
+# Keep this file secure and never commit it to version control
+
+# ============================================
+# SUPABASE CONFIGURATION
+# ============================================
+# Get these from your Supabase project settings
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+
+# ============================================
+# OPENAI CONFIGURATION
+# ============================================
+# Get this from OpenAI API settings
+OPENAI_API_KEY=your-openai-api-key-here
+
+# ============================================
+# APPLICATION CONFIGURATION
+# ============================================
+NODE_ENV=development
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+# ============================================
+# DATABASE CONFIGURATION (if using direct connection)
+# ============================================
+# DATABASE_URL=postgresql://postgres:password@localhost:5432/gil_hameever
+
+# ============================================
+# STRIPE CONFIGURATION (for payments)
+# ============================================
+# STRIPE_PUBLISHABLE_KEY=pk_test_your-stripe-publishable-key
+# STRIPE_SECRET_KEY=sk_test_your-stripe-secret-key
+# STRIPE_WEBHOOK_SECRET=whsec_your-webhook-secret
+
+# ============================================
+# EMAIL CONFIGURATION (for notifications)
+# ============================================
+# EMAIL_FROM=noreply@gilhameever.com
+# SMTP_HOST=smtp.your-provider.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@domain.com
+# SMTP_PASS=your-email-password
+
+# ============================================
+# WHATSAPP CONFIGURATION (for notifications)
+# ============================================
+# WHATSAPP_API_URL=https://graph.facebook.com/v18.0
+# WHATSAPP_ACCESS_TOKEN=your-whatsapp-access-token
+# WHATSAPP_PHONE_NUMBER_ID=your-phone-number-id
+
+# ============================================
+# SECURITY CONFIGURATION
+# ============================================
+# JWT_SECRET=your-jwt-secret-key
+# ENCRYPTION_KEY=your-encryption-key
+
+# ============================================
+# MONITORING & ANALYTICS
+# ============================================
+# SENTRY_DSN=your-sentry-dsn
+# GOOGLE_ANALYTICS_ID=GA-XXXXXXXXX
+
+# ============================================
+# BACKUP NOTES
+# ============================================
+# Current Supabase URL: https://nxkjgbvjfjzhizkygmfb.supabase.co
+# Current Supabase Anon Key: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im54a2pnYnZqZmp6aGl6a3lnbWZiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAzNjA3MjksImV4cCI6MjA3NTkzNjcyOX0.WX4lBHJbuou-uO7P1K4m7phCisDmMKq14-PjaZfuG2w
+# 
+# To restore:
+# 1. Copy this file to .env.local
+# 2. Replace placeholder values with actual credentials
+# 3. Restart the development server

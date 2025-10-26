@@ -19,6 +19,7 @@ interface AccessibilitySettings {
 const AccessibilityBubble: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'settings' | 'checker'>('settings');
+  const [isMounted, setIsMounted] = useState(false);
   const [settings, setSettings] = useState<AccessibilitySettings>({
     fontSize: 'normal',
     contrast: 'normal',
@@ -31,15 +32,27 @@ const AccessibilityBubble: React.FC = () => {
   const { applyAccessibilitySettings, announceToScreenReader } = useAccessibility();
   const { trapFocus } = useKeyboardNavigation();
 
+  // Prevent hydration issues
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Load settings from localStorage on mount
   useEffect(() => {
+    if (!isMounted) return;
+    
     const savedSettings = localStorage.getItem('accessibility-settings');
     if (savedSettings) {
       const parsedSettings = JSON.parse(savedSettings);
       setSettings(parsedSettings);
       applyAccessibilitySettings(parsedSettings);
     }
-  }, [applyAccessibilitySettings]);
+  }, [isMounted, applyAccessibilitySettings]);
+
+  // Don't render until mounted (client-side only)
+  if (!isMounted) {
+    return null;
+  }
 
   const handleSettingChange = (key: keyof AccessibilitySettings, value: string | boolean) => {
     const newSettings = { ...settings, [key]: value };

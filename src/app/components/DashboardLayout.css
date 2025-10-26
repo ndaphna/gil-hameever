@@ -13,13 +13,12 @@
 .dashboard-content {
   flex: 1;
   transition: all 0.3s ease;
-  overflow: hidden; /* No scrolling at all */
+  overflow-y: auto; /* Allow vertical scrolling */
+  overflow-x: hidden;
   padding: 20px;
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  height: calc(100vh - 64px); /* Fixed height */
   box-sizing: border-box;
+  min-height: calc(100vh - 64px);
 }
 
 /* Desktop - Sidebar always visible */
@@ -30,8 +29,8 @@
   
   .dashboard-content {
     flex: 1;
-    height: calc(100vh - 64px); /* Fixed height */
-    overflow: hidden; /* No scrolling at all */
+    overflow-y: auto; /* Allow scrolling */
+    overflow-x: hidden;
   }
 }
 
@@ -44,19 +43,18 @@
   .dashboard-content {
     width: 100%;
     flex: 1;
-    height: calc(100vh - 64px); /* Fixed height */
-    overflow: hidden; /* No scrolling at all */
-    padding: 0; /* No padding in mobile */
+    overflow-y: auto; /* Allow scrolling */
+    overflow-x: hidden;
+    padding: 16px;
   }
 }
 
 /* Mobile specific */
 @media (max-width: 768px) {
   .dashboard-content {
-    padding: 0 !important;
-    overflow: hidden !important;
-    overflow-x: hidden !important;
-    overflow-y: hidden !important;
+    padding: 12px;
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 

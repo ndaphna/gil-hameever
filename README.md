@@ -4,6 +4,76 @@
 
 ---
 
+## ✨ עיצוב חדש ומשודרג!
+
+### 🎨 עיצוב מוקפד ומרגיע ליומן
+**👉 ראי: [`REFINED_DESIGN_SUMMARY.md`](REFINED_DESIGN_SUMMARY.md)**
+
+עיצוב נקי, מינימליסטי ויוקרתי עם גלילה חלקה
+
+### 🔧 תיקוני עיצוב אחרונים
+**👉 [`DAILY_TRACKING_DESIGN_FIX.md`](DAILY_TRACKING_DESIGN_FIX.md)**
+תיקון כפתור בוקר/ערב + עיצוב כרטיסי סטטיסטיקה
+
+**👉 [`MODAL_DESIGN_FIX.md`](MODAL_DESIGN_FIX.md)**
+תיקון פופאפים - גלילה חלקה ועיצוב מודרני
+
+**👉 [`PROGRESS_CHART_DESIGN_FIX.md`](PROGRESS_CHART_DESIGN_FIX.md)**
+גרף התקדמות חדש + תיקון חפיפת בועות
+
+**👉 [`FIX_PERIOD_BUTTONS.md`](FIX_PERIOD_BUTTONS.md)**
+תיקון כפתורי תקופה - עכשיו עובדים!
+
+**👉 [`FIX_MOOD_CARDS_DUPLICATE.md`](FIX_MOOD_CARDS_DUPLICATE.md)**
+תיקון כפילות + גיימיפיקציה מתקדמת
+
+**👉 [`FIX_DAILY_TRACKING_ROW1_DESIGN.md`](FIX_DAILY_TRACKING_ROW1_DESIGN.md)**
+עיצוב יוקרתי ומאוזן ל-row-1
+
+**👉 [`FIX_DAILY_ENTRY_SAVING.md`](FIX_DAILY_ENTRY_SAVING.md)**
+תיקון בעיות שמירת דיווחים יומיים
+
+**👉 [`FIX_ACCESSIBILITY_REALTIME_UPDATE.md`](FIX_ACCESSIBILITY_REALTIME_UPDATE.md)**
+תיקון נגישות ועדכון בזמן אמת
+
+**👉 [`FIX_FORM_FINAL.md`](FIX_FORM_FINAL.md)** ⭐
+תיקון סופי לטופס + לוגים מפורטים לאיתור בעיות
+
+---
+
+## 🚨 יש שגיאה? תקני עכשיו!
+
+### 🆘 דיווחים לא נשמרים ביומן?
+**👉 פתחי מיד: [`FIX_SAVING_ISSUES_NOW.md`](FIX_SAVING_ISSUES_NOW.md)** 🔥
+
+תיקון ב-1 דקה - בעיות שמירה ב-DB!
+
+### 🆘 שגיאה: "column full_name does not exist"?
+**👉 פתחי מיד: [`FIX_FULL_NAME_COLUMN_NOW.md`](FIX_FULL_NAME_COLUMN_NOW.md)** ⚡
+
+תיקון ב-1 דקה - הוספת עמודות חסרות ל-user_profile!
+
+### 🆘 שגיאה: "null value in column email violates not-null constraint"?
+**👉 פתחי מיד: [`FIX_EMAIL_CONSTRAINT_NOW.md`](FIX_EMAIL_CONSTRAINT_NOW.md)** ⚡
+
+תיקון ב-1 דקה - בעיית email ב-user_profile!
+
+### ❌ "column cycle_entries.date does not exist"
+**👉 פתחי: [`URGENT_FIX_CYCLE_ENTRIES.md`](URGENT_FIX_CYCLE_ENTRIES.md)**
+
+תיקון מהיר ב-3 דקות!
+
+### 🎯 רוצה נתוני דמה לבדיקה?
+**👉 התחל כאן: [`READY_TO_INSERT_MOCK_DATA.md`](READY_TO_INSERT_MOCK_DATA.md)** ⭐
+
+הכנסת 29 דיווחים + 15 רשומות מחזור + 6 הודעות למשתמשת `inbald@sapir.ac.il`
+
+**מדריך מפורט:** [`INSERT_MOCK_DATA_INSTRUCTIONS.md`](INSERT_MOCK_DATA_INSTRUCTIONS.md)  
+**שגיאה בהכנסה?** [`FIX_MOCK_DATA_ERROR.md`](FIX_MOCK_DATA_ERROR.md)  
+**סקריפט מהיר:** [`QUICK_INSERT_MOCK_DATA.sql`](QUICK_INSERT_MOCK_DATA.sql)
+
+---
+
 ## ⚡ התחלה מהירה - Quick Start
 
 ### 1. התקנת תלויות

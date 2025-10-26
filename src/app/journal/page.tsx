@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import MenopauseJournal from '@/components/journal/MenopauseJournal';
 import { supabase } from '@/lib/supabase';
-import '@/components/journal/MenopauseJournal.css';
+// CSS imported in MenopauseJournal component
 
 export default function JournalPage() {
   const [userId, setUserId] = useState<string | null>(null);

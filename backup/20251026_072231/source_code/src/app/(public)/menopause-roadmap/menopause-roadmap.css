@@ -1,0 +1,644 @@
+/* Menopause Roadmap - ONLY Pyramid Specific Styles */
+/* All other styles are inherited from globals.css */
+
+.menopause-roadmap-page {
+  overflow-x: hidden;
+}
+
+/* ============================================
+   PYRAMID SECTION - Unique to this page
+   ============================================ */
+
+.menopause-roadmap-page .questions-container {
+  margin: 24px 0 32px;
+}
+
+.menopause-roadmap-page .hero-question {
+  font-size: var(--text-base-mobile);
+  line-height: 1.8;
+  color: var(--magenta-dark);
+  margin: 12px auto;
+  font-style: italic;
+  opacity: 0;
+  animation: fadeInUp 0.8s ease-out forwards;
+  max-width: 90%;
+  text-align: center;
+}
+
+.menopause-roadmap-page .hero-question:nth-child(1) { animation-delay: 0.5s; }
+.menopause-roadmap-page .hero-question:nth-child(2) { animation-delay: 0.7s; }
+.menopause-roadmap-page .hero-question:nth-child(3) { animation-delay: 0.9s; }
+
+.menopause-roadmap-page h1 {
+  color: var(--magenta);
+  animation: fadeInUp 1s ease-out;
+  text-align: center;
+}
+
+.menopause-roadmap-page .subtitle {
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.3s forwards;
+  text-align: center;
+}
+
+.menopause-roadmap-page .pyramid-section {
+  padding: 0 0 40px 0;
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+
+.menopause-roadmap-page .pyramid-intro {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.menopause-roadmap-page .pyramid-description {
+  font-size: var(--text-base-mobile);
+  line-height: 1.8;
+  color: var(--black);
+  margin-bottom: 16px;
+  padding: 0;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menopause-roadmap-page .pyramid-container {
+  position: relative;
+  padding: 20px 0;
+}
+
+.menopause-roadmap-page .pyramid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  margin: 0 auto 20px;
+  position: relative;
+  width: 100%;
+  padding: 0;
+}
+
+.menopause-roadmap-page .pyramid-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  opacity: 0;
+  animation: slideInPyramid 0.6s ease-out forwards;
+  position: relative;
+}
+
+.menopause-roadmap-page .pyramid-row:nth-child(1) { animation-delay: 0.5s; }
+.menopause-roadmap-page .pyramid-row:nth-child(2) { animation-delay: 0.4s; }
+.menopause-roadmap-page .pyramid-row:nth-child(3) { animation-delay: 0.3s; }
+.menopause-roadmap-page .pyramid-row:nth-child(4) { animation-delay: 0.2s; }
+.menopause-roadmap-page .pyramid-row:nth-child(5) { animation-delay: 0.1s; }
+
+.menopause-roadmap-page .pyramid-labels-mobile {
+  display: block;
+  margin-top: 32px;
+  padding: 0;
+}
+
+.menopause-roadmap-page .level-info {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border: 2px solid var(--light-pink);
+  transition: all 0.3s ease;
+  margin-bottom: 12px;
+  text-align: right;
+}
+
+.menopause-roadmap-page .pyramid-row .level-info {
+  display: none;
+}
+
+.menopause-roadmap-page .pyramid-level {
+  display: block;
+  text-decoration: none;
+  position: relative;
+  transition: all 0.4s ease;
+  cursor: pointer;
+}
+
+.menopause-roadmap-page .level-1 { width: min(280px, 90%); max-width: 280px; }
+.menopause-roadmap-page .level-2 { width: min(240px, 80%); max-width: 240px; }
+.menopause-roadmap-page .level-3 { width: min(200px, 70%); max-width: 200px; }
+.menopause-roadmap-page .level-4 { width: min(160px, 60%); max-width: 160px; }
+.menopause-roadmap-page .level-5 { width: min(120px, 50%); max-width: 120px; }
+
+.menopause-roadmap-page .level-content {
+  padding: 8px 14px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+  min-height: 43px;
+  height: 43px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.menopause-roadmap-page .level-1 .level-content {
+  background: linear-gradient(135deg, #FF0080 0%, #FF1A8C 100%);
+  color: white;
+}
+
+.menopause-roadmap-page .level-2 .level-content {
+  background: linear-gradient(135deg, #FF1A8C 0%, #FF4DA6 100%);
+  color: white;
+}
+
+.menopause-roadmap-page .level-3 .level-content {
+  background: linear-gradient(135deg, #FF4DA6 0%, #FF80BF 100%);
+  color: white;
+}
+
+.menopause-roadmap-page .level-4 .level-content {
+  background: linear-gradient(135deg, #FF80BF 0%, #FFB3D9 100%);
+  color: white;
+}
+
+.menopause-roadmap-page .level-5 .level-content {
+  background: linear-gradient(135deg, #FF99CC 0%, #FFC2E0 100%);
+  color: white;
+}
+
+.menopause-roadmap-page .level-number {
+  background: var(--gradient-main);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.menopause-roadmap-page .pyramid-level h3 {
+  font-size: 13px;
+  margin: 0;
+  font-weight: bold;
+  color: inherit;
+  line-height: 1.2;
+}
+
+.menopause-roadmap-page .level-subtitle {
+  font-size: 13px;
+  opacity: 0.9;
+  margin-top: 2px;
+  line-height: 1.4;
+  color: var(--black);
+}
+
+.menopause-roadmap-page .pyramid-level:hover {
+  transform: scale(1.02);
+}
+
+.menopause-roadmap-page .pyramid-level:active {
+  transform: scale(0.98);
+}
+
+.menopause-roadmap-page .pyramid-labels-mobile {
+  display: block;
+  margin-top: 32px;
+  padding: 0 16px;
+}
+
+.menopause-roadmap-page .pyramid-labels-mobile .level-info {
+  display: block;
+}
+
+.menopause-roadmap-page .pyramid-cta {
+  text-align: center;
+  margin-top: 32px;
+}
+
+.menopause-roadmap-page .pulse-button {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 20px 40px;
+}
+
+.menopause-roadmap-page .button-text {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+.menopause-roadmap-page .button-subtext {
+  font-size: 13px;
+  opacity: 0.9;
+  line-height: 1.2;
+}
+
+.menopause-roadmap-page .pyramid-card {
+  background: var(--soft-pink);
+  text-align: center;
+  padding: 28px 20px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.menopause-roadmap-page .pyramid-card h2 {
+  margin-top: 0;
+  margin-bottom: 24px;
+  text-align: center;
+  color: var(--magenta-dark);
+}
+
+.menopause-roadmap-page .pyramid-card .pyramid-intro {
+  margin-bottom: 24px;
+}
+
+.menopause-roadmap-page .pyramid-card .pyramid-container {
+  padding: 0;
+}
+
+.menopause-roadmap-page .content-card {
+  background: var(--soft-pink);
+}
+
+.menopause-roadmap-page .content-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, var(--magenta) 0%, transparent 70%);
+  opacity: 0.05;
+  transition: all 0.5s ease;
+}
+
+.menopause-roadmap-page .important-message {
+  font-size: var(--text-base-mobile);
+  font-weight: bold;
+  text-align: center;
+  margin: 24px 0;
+  padding: 20px 16px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 15px;
+  line-height: 1.7;
+}
+
+.menopause-roadmap-page .benefits-list {
+  margin: 20px 0;
+}
+
+.menopause-roadmap-page .benefit-item {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.5);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  gap: 12px;
+}
+
+.menopause-roadmap-page .benefit-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.menopause-roadmap-page .benefit-item p {
+  margin: 0;
+  flex: 1;
+}
+
+.menopause-roadmap-page .closing-card {
+  background: linear-gradient(135deg, var(--light-pink) 0%, var(--soft-pink) 100%);
+  text-align: center;
+  padding: 32px 24px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+
+.menopause-roadmap-page .closing-message {
+  font-size: clamp(18px, 5vw, 24px);
+  font-weight: bold;
+  color: var(--magenta);
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+.menopause-roadmap-page .emphasis {
+  background: linear-gradient(120deg, var(--light-pink) 0%, var(--light-pink) 100%);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* ============================================
+   TABLET RESPONSIVE
+   ============================================ */
+
+@media (min-width: 768px) {
+  .menopause-roadmap-page .hero-question {
+    font-size: clamp(18px, 3vw, 22px);
+    max-width: 100%;
+  }
+
+  .menopause-roadmap-page .questions-container {
+    margin: 32px 0 40px;
+  }
+
+  .menopause-roadmap-page .pyramid-description {
+    font-size: var(--text-base-tablet);
+  }
+
+  .menopause-roadmap-page .pyramid {
+    gap: 2px;
+    max-width: 700px;
+    padding: 0;
+    margin-bottom: 32px;
+  }
+  
+  .menopause-roadmap-page .pyramid-labels-mobile {
+    display: none;
+  }
+
+  .menopause-roadmap-page .pyramid-row {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
+    padding: 0;
+  }
+
+  .menopause-roadmap-page .pyramid-row .level-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 8px;
+    width: 200px;
+    height: 43px;
+    min-height: 43px;
+    padding: 6px 8px;
+    text-align: right;
+    margin-bottom: 0;
+    overflow: hidden;
+  }
+
+  .menopause-roadmap-page .level-info .level-number {
+    font-size: 9px;
+    padding: 3px 6px;
+    margin: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+    align-self: center;
+  }
+
+  .menopause-roadmap-page .level-info .level-subtitle {
+    font-size: 10px;
+    line-height: 1.3;
+    margin: 0;
+    text-align: right;
+    flex: 1;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    text-overflow: ellipsis;
+    align-self: center;
+  }
+
+  .menopause-roadmap-page .pyramid-level {
+    width: auto;
+  }
+
+  .menopause-roadmap-page .level-1 { width: 336px; }
+  .menopause-roadmap-page .level-2 { width: 288px; }
+  .menopause-roadmap-page .level-3 { width: 240px; }
+  .menopause-roadmap-page .level-4 { width: 192px; }
+  .menopause-roadmap-page .level-5 { width: 144px; }
+
+  .menopause-roadmap-page .pyramid-level h3 {
+    font-size: 14px;
+  }
+
+  .menopause-roadmap-page .level-content {
+    height: 43px;
+    min-height: 43px;
+  }
+
+  .menopause-roadmap-page .pyramid-container {
+    padding: 30px 20px;
+  }
+  
+  .menopause-roadmap-page .pyramid-cta {
+    margin-top: 40px;
+  }
+  
+  .menopause-roadmap-page .button-text {
+    font-size: 17px;
+  }
+
+  .menopause-roadmap-page .button-subtext {
+    font-size: 14px;
+  }
+
+  .menopause-roadmap-page .closing-card {
+    padding: 48px 32px;
+  }
+
+  .menopause-roadmap-page .benefit-item {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .menopause-roadmap-page .benefit-icon {
+    font-size: 28px;
+  }
+
+  .menopause-roadmap-page .pyramid-section {
+    padding: 0 0 60px 0;
+  }
+
+  .menopause-roadmap-page .pyramid-card {
+    padding: 40px 32px;
+  }
+}
+
+/* ============================================
+   DESKTOP RESPONSIVE
+   ============================================ */
+
+@media (min-width: 1024px) {
+  .menopause-roadmap-page .hero-question {
+    font-size: 24px;
+    margin: 16px auto;
+  }
+
+  .menopause-roadmap-page .questions-container {
+    margin: 40px 0 48px;
+  }
+
+  .menopause-roadmap-page .pyramid-description {
+    font-size: var(--text-base-desktop);
+    line-height: 2;
+  }
+
+  .menopause-roadmap-page .closing-message {
+    font-size: 26px;
+  }
+
+  .menopause-roadmap-page .pyramid-section {
+    padding: 0 0 80px 0;
+  }
+
+  .menopause-roadmap-page .pyramid {
+    gap: 2px;
+    max-width: 800px;
+    padding: 0;
+    margin-bottom: 32px;
+  }
+
+  .menopause-roadmap-page .pyramid-row {
+    gap: 20px;
+  }
+
+  .menopause-roadmap-page .pyramid-row .level-info {
+    width: 240px;
+    height: 48px;
+    min-height: 48px;
+    padding: 6px 10px;
+  }
+
+  .menopause-roadmap-page .level-info .level-number {
+    font-size: 10px;
+    padding: 3px 7px;
+  }
+
+  .menopause-roadmap-page .level-info .level-subtitle {
+    font-size: 11px;
+    line-height: 1.35;
+  }
+
+  .menopause-roadmap-page .level-1 { width: 384px; }
+  .menopause-roadmap-page .level-2 { width: 320px; }
+  .menopause-roadmap-page .level-3 { width: 272px; }
+  .menopause-roadmap-page .level-4 { width: 224px; }
+  .menopause-roadmap-page .level-5 { width: 176px; }
+
+  .menopause-roadmap-page .pyramid-level h3 {
+    font-size: 15px;
+  }
+
+  .menopause-roadmap-page .level-content {
+    padding: 10px 20px;
+    height: 48px;
+    min-height: 48px;
+  }
+
+  .menopause-roadmap-page .pyramid-container {
+    padding: 40px 40px;
+  }
+  
+  .menopause-roadmap-page .pyramid-cta {
+    margin-top: 48px;
+  }
+  
+  .menopause-roadmap-page .button-text {
+    font-size: 18px;
+  }
+
+  .menopause-roadmap-page .button-subtext {
+    font-size: 15px;
+  }
+
+  .menopause-roadmap-page .benefit-icon {
+    font-size: 32px;
+  }
+
+  .menopause-roadmap-page .closing-card {
+    padding: 60px 40px;
+  }
+
+  .menopause-roadmap-page .benefit-item {
+    padding: 24px;
+    gap: 20px;
+  }
+
+  .menopause-roadmap-page .important-message {
+    font-size: 19px;
+    padding: 24px 20px;
+  }
+
+  .menopause-roadmap-page .pyramid-card {
+    padding: 50px 40px;
+  }
+}
+
+/* ============================================
+   LARGE DESKTOP
+   ============================================ */
+
+@media (min-width: 1440px) {
+  .menopause-roadmap-page .pyramid {
+    max-width: 900px;
+  }
+
+  .menopause-roadmap-page .pyramid-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .menopause-roadmap-page .pyramid-row .level-info {
+    width: 260px;
+    height: 50px;
+    min-height: 50px;
+    padding: 6px 12px;
+  }
+
+  .menopause-roadmap-page .level-info .level-number {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .menopause-roadmap-page .level-info .level-subtitle {
+    font-size: 11.5px;
+    line-height: 1.35;
+  }
+
+  .menopause-roadmap-page .level-1 { width: 416px; }
+  .menopause-roadmap-page .level-2 { width: 352px; }
+  .menopause-roadmap-page .level-3 { width: 288px; }
+  .menopause-roadmap-page .level-4 { width: 240px; }
+  .menopause-roadmap-page .level-5 { width: 192px; }
+
+  .menopause-roadmap-page .level-content {
+    height: 50px;
+    min-height: 50px;
+  }
+
+  .menopause-roadmap-page .pyramid-row {
+    gap: 24px;
+  }
+}
+
+/* ============================================
+   TOUCH DEVICES
+   ============================================ */
+
+@media (hover: none) and (pointer: coarse) {
+  .menopause-roadmap-page .pyramid-level {
+    min-height: 52px;
+  }
+
+  .menopause-roadmap-page .benefit-item:hover,
+  .menopause-roadmap-page .pyramid-level:hover {
+    transform: none;
+  }
+}
+

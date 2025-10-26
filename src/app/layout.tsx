@@ -27,9 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="he" dir="rtl">
+    <html lang="he" dir="rtl" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
         className={`${assistant.variable} ${geistMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         <Navigation />
         <main id="main-content">

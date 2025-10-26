@@ -12,17 +12,29 @@ interface CycleEntryFormProps {
 }
 
 const SYMPTOM_OPTIONS = [
-  { id: 'cramps', label: 'כאבי בטן', emoji: '🤕' },
-  { id: 'back_pain', label: 'כאבי גב', emoji: '🦴' },
-  { id: 'headache', label: 'כאבי ראש', emoji: '🤯' },
-  { id: 'bloating', label: 'נפיחות', emoji: '💨' },
-  { id: 'fatigue', label: 'עייפות', emoji: '😴' },
-  { id: 'mood_swings', label: 'שינויי מצב רוח', emoji: '😤' },
-  { id: 'breast_tenderness', label: 'רגישות בחזה', emoji: '🤱' },
-  { id: 'cravings', label: 'תשוקות אוכל', emoji: '🍫' },
-  { id: 'acne', label: 'פצעונים', emoji: '🔴' },
-  { id: 'sleep_issues', label: 'בעיות שינה', emoji: '😵' }
+  { id: 'cramps', label: 'כאבי בטן', emoji: '🤕', category: 'pain' },
+  { id: 'back_pain', label: 'גב תחתון', emoji: '🦴', category: 'pain' },
+  { id: 'headache', label: 'כאבי ראש', emoji: '🤯', category: 'pain' },
+  { id: 'bloating', label: 'נפיחות', emoji: '💨', category: 'physical' },
+  { id: 'fatigue', label: 'עייפות', emoji: '😴', category: 'energy' },
+  { id: 'mood_irritable', label: 'עצבנות', emoji: '😤', category: 'mood' },
+  { id: 'mood_sensitive', label: 'רגישות', emoji: '🥺', category: 'mood' },
+  { id: 'mood_sad', label: 'עצב', emoji: '😢', category: 'mood' },
+  { id: 'mood_anxious', label: 'דכדוך', emoji: '😰', category: 'mood' },
+  { id: 'breast_tenderness', label: 'רגישות בחזה', emoji: '🤱', category: 'physical' },
+  { id: 'increased_desire', label: 'חשק מיני מוגבר', emoji: '💕', category: 'physical' },
+  { id: 'cravings', label: 'תשוקות אוכל', emoji: '🍫', category: 'physical' },
+  { id: 'acne', label: 'פצעונים', emoji: '🔴', category: 'physical' },
+  { id: 'sleep_issues', label: 'בעיות שינה', emoji: '😵', category: 'sleep' }
 ];
+
+const SYMPTOM_CATEGORIES = {
+  pain: { label: 'כאבים', emoji: '🤕' },
+  mood: { label: 'מצב רוח', emoji: '😊' },
+  physical: { label: 'תסמינים פיזיים', emoji: '💪' },
+  energy: { label: 'אנרגיה', emoji: '⚡' },
+  sleep: { label: 'שינה', emoji: '😴' }
+};
 
 export default function CycleEntryForm({ 
   isOpen, 
@@ -78,12 +90,14 @@ export default function CycleEntryForm({
       <div className="modal-content cycle-form" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>
+            <span className="modal-title-emoji">🌸</span>
             {new Date(selectedDate).toLocaleDateString('he-IL')} - מעקב מחזור
           </h2>
           <button className="modal-close" onClick={onClose}>✕</button>
         </div>
 
-        <form onSubmit={handleSubmit} className="cycle-form-content">
+        <div className="modal-body">
+          <form onSubmit={handleSubmit} className="cycle-form-content">
           {/* Period Check */}
           <div className="form-section">
             <h3>האם יש מחזור?</h3>
@@ -91,7 +105,11 @@ export default function CycleEntryForm({
               <button
                 type="button"
                 className={`toggle-btn ${formData.is_period ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, is_period: true })}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Toggle: יש מחזור');
+                  setFormData({ ...formData, is_period: true });
+                }}
               >
                 <span className="emoji">🌸</span>
                 <span>כן, יש מחזור</span>
@@ -99,7 +117,11 @@ export default function CycleEntryForm({
               <button
                 type="button"
                 className={`toggle-btn ${!formData.is_period ? 'active' : ''}`}
-                onClick={() => setFormData({ ...formData, is_period: false })}
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log('Toggle: אין מחזור');
+                  setFormData({ ...formData, is_period: false });
+                }}
               >
                 <span className="emoji">❌</span>
                 <span>לא, אין מחזור</span>
@@ -123,7 +145,11 @@ export default function CycleEntryForm({
                     className={`intensity-option ${
                       formData.bleeding_intensity === option.value ? 'selected' : ''
                     }`}
-                    onClick={() => setFormData({ ...formData, bleeding_intensity: option.value as any })}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      console.log('Intensity:', option.value);
+                      setFormData({ ...formData, bleeding_intensity: option.value as any });
+                    }}
                   >
                     <span className="emoji">{option.emoji}</span>
                     <span className="label">{option.label}</span>
@@ -134,34 +160,50 @@ export default function CycleEntryForm({
             </div>
           )}
 
-          {/* Symptoms */}
+          {/* Symptoms by Category */}
           <div className="form-section">
             <h3>תסמינים נלווים</h3>
-            <div className="symptoms-grid">
-              {SYMPTOM_OPTIONS.map((symptom) => (
-                <button
-                  key={symptom.id}
-                  type="button"
-                  className={`symptom-option ${
-                    formData.symptoms.includes(symptom.id) ? 'selected' : ''
-                  }`}
-                  onClick={() => toggleSymptom(symptom.id)}
-                >
-                  <span className="emoji">{symptom.emoji}</span>
-                  <span className="label">{symptom.label}</span>
-                </button>
-              ))}
-            </div>
+            {Object.entries(SYMPTOM_CATEGORIES).map(([categoryKey, category]) => {
+              const categorySymptoms = SYMPTOM_OPTIONS.filter(s => s.category === categoryKey);
+              if (categorySymptoms.length === 0) return null;
+              
+              return (
+                <div key={categoryKey} className="symptom-category">
+                  <h4 className="category-title">
+                    <span className="category-emoji">{category.emoji}</span>
+                    {category.label}
+                  </h4>
+                  <div className="symptoms-grid">
+                    {categorySymptoms.map((symptom) => (
+                      <button
+                        key={symptom.id}
+                        type="button"
+                        className={`symptom-option ${
+                          formData.symptoms.includes(symptom.id) ? 'selected' : ''
+                        }`}
+                        onClick={() => toggleSymptom(symptom.id)}
+                      >
+                        <span className="emoji">{symptom.emoji}</span>
+                        <span className="label">{symptom.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
-          {/* Notes */}
+          {/* Quick Insight */}
           <div className="form-group">
-            <label>הערות נוספות (אופציונלי)</label>
+            <label>
+              🖋️ תוסיפי כמה מילים על איך הרגשת
+              <span className="optional"> (אופציונלי)</span>
+            </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-              placeholder="כתבי כאן משהו על איך הרגשת..."
-              className="notes-textarea"
+              placeholder="לדוגמה: הרגשתי עייפה במיוחד היום, אבל המצב רוח דווקא טוב..."
+              className="notes-textarea insight-textarea"
               rows={3}
             />
           </div>
@@ -175,6 +217,7 @@ export default function CycleEntryForm({
             </button>
           </div>
         </form>
+        </div>
       </div>
     </div>
   );

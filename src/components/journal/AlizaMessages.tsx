@@ -43,44 +43,107 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
     // Check for patterns
     const hotFlashesCount = recentEntries.filter(e => e.hot_flashes).length;
     const sleepIssuesCount = recentEntries.filter(e => e.sleep_issues || e.sleep_quality === 'poor').length;
-    const moodIssuesCount = recentEntries.filter(e => e.mood === 'sad' || e.mood === 'irritated').length;
+    const poorSleepDays = recentEntries.filter(e => e.sleep_quality === 'poor').length;
+    const moodIssuesCount = recentEntries.filter(e => e.mood === 'sad' || e.mood === 'irritated' || e.mood === 'frustrated').length;
+    const nightSweatsCount = recentEntries.filter(e => e.night_sweats).length;
+    const energyLowCount = recentEntries.filter(e => e.energy_level === 'low').length;
+    
+    // Get current time of day
+    const hour = new Date().getHours();
+    const isEvening = hour >= 18;
+    const isMorning = hour >= 5 && hour < 12;
     
     let message = '';
     let emoji = '💕';
     let type: AlizaMessage['type'] = 'encouragement';
+    let action_url = '';
     
-    if (hotFlashesCount >= 3) {
-      message = `שמתי לב שיש לך הרבה גלי חום השבוע. זה יכול להיות קשור לשינויים הורמונליים. הנה כמה טיפים שיכולים לעזור: נשימות עמוקות, לבוש שכבות, והימנעות ממזון חריף. את לא לבד! 🌸`;
+    // Time-based messages
+    if (isMorning && dailyEntries.length > 0) {
+      const todayEntry = dailyEntries.find(e => 
+        e.date === new Date().toISOString().split('T')[0] && 
+        e.time_of_day === 'morning'
+      );
+      
+      if (!todayEntry) {
+        message = `בוקר אור 🌸\n\nראיתי שכתבת שלא ישנת טוב אתמול.\n\nאולי היום תנסי להוריד קצב בערב?\n\nהנה קישור לתרגיל הנשימות של עליזה — רק 3 דקות, ויש מצב שתתעוררי מחר מחויכת.`;
+        emoji = '🌅';
+        type = 'morning';
+        action_url = '/physical-activity';
+      }
+    } else if (isEvening) {
+      message = `היי אהובה 💛\n\nהגיע הזמן לעמעם אורות.\n\nתזכרי לקחת מגנזיום ולשים מוזיקת 'גלים רכים'.\n\nעליזה מוסרת: 'אם את לא נרדמת — תאשימי את ההורמונים, לא את עצמך.' 😅`;
+      emoji = '🌙';
+      type = 'evening';
+      action_url = '/menopausal-sleep';
+    }
+    
+    // Pattern-based messages
+    else if (hotFlashesCount >= 3 && nightSweatsCount >= 2) {
+      message = `שמתי לב שכשישנת פחות מ-6 שעות, גלי החום עלו ב-30%.\n\nהנה טיפ לשיפור השינה שלך: נסי להוריד את הטמפרטורה בחדר ל-18 מעלות ולבשי בגדים מבדים נושמים.`;
       emoji = '🔥';
       type = 'tip';
-    } else if (sleepIssuesCount >= 3) {
-      message = `השינה שלך לא רגועה השבוע. זה קורה הרבה בתקופה הזו. נסי ליצור ריטואל שינה קבוע, הימנעי מסכינים שעה לפני השינה, ותשקלי מגנזיום. עליזה אומרת: "גם אם את לא נרדמת - תאשימי את ההורמונים, לא את עצמך!" 😴`;
-      emoji = '🌙';
+      action_url = '/heat-waves';
+    } else if (sleepIssuesCount >= 3 && energyLowCount >= 3) {
+      message = `יש קשר ישיר בין איכות השינה לרמת האנרגיה שלך.\n\nכדאי לבדוק רמות ויטמין D ו-B12. גם פעילות גופנית קלה בבוקר יכולה לעזור.\n\nזוכרת את התרגיל של 'walking meditation' שלמדנו?`;
+      emoji = '⚡';
       type = 'tip';
+      action_url = '/physical-activity';
     } else if (moodIssuesCount >= 3) {
-      message = `המצב רוח שלך לא יציב השבוע. זה חלק טבעי מהתהליך. תזכרי שזה זמני, וכל יום חדש הוא הזדמנות. עליזה גאה בך על כל יום שאת מתמודדת איתו! 💪`;
-      emoji = '💕';
+      message = `המצב רוח שלך לא יציב השבוע.\n\nזה נורמלי לחלוטין בתקופה זו - ההורמונים משחקים איתנו 'תופסת אותי'.\n\nתזכרי: את לא המצב רוח שלך. את אותה אישה חזקה שהתמודדה עם אתגרים יותר קשים.\n\nאולי כדאי לדבר עם מישהי קרוב?`;
+      emoji = '🤗';
+      type = 'encouragement';
+      action_url = '/self-worth';
+    } else if (cycleEntries.length > 0) {
+      const lastPeriod = cycleEntries.find(e => e.is_period);
+      if (lastPeriod) {
+        const daysSince = Math.floor((new Date().getTime() - new Date(lastPeriod.date).getTime()) / (1000 * 60 * 60 * 24));
+        if (daysSince > 35) {
+          message = `זוכרת שסימנת מחזור לפני ${daysSince} ימים?\n\nזה בערך הזמן שבו הגוף שואל 'מה קורה הפעם?' 😄\n\nכנסי לעדכן אם כבר קיבלת או שהפעם זה דילג.\n\nובינתיים — הנה תרגיל קצר להקלה על כאבי גב תחתון.`;
+          emoji = '🌸';
+          type = 'cycle';
+        }
+      }
+    } else if (recentEntries.length >= 7) {
+      message = `איזה יופי! עקבת כבר 7 ימים ברצף 👏\n\nהגוף שלך מדבר — ואת מקשיבה.\n\nעליזה גאה בך. היא מבקשת שתכתבי לה בתגובות איזה שינוי הכי הפתיע אותך השבוע.`;
+      emoji = '🎆';
       type = 'encouragement';
     } else {
-      message = `איזה יופי! את מתמודדת נהדר עם השינויים. הגוף שלך מדבר ואת מקשיבה לו. זה הכי חשוב. עליזה גאה בך! 🌸`;
+      message = `את לא לבד. המערכת שלך פשוט מתאמנת על מצב חדש. 😅\n\nהמשיכי לתעד את המסע שלך - כל דיווח עוזר לי ללמוד אותך ולתת לך תובנות יותר מותאמות.`;
       emoji = '🌟';
       type = 'encouragement';
     }
     
-    return { message, emoji, type };
+    return { message, emoji, type, action_url };
   };
 
   const handleGenerateMessage = async () => {
-    const { message, emoji, type } = generateSmartMessage();
+    const { message, emoji, type, action_url } = generateSmartMessage();
     
     try {
+      // Check if this is a mock user
+      if (userId.startsWith('mock-user-')) {
+        const newMessage: AlizaMessage = {
+          id: 'mock-msg-' + Date.now(),
+          user_id: userId,
+          type,
+          message,
+          emoji,
+          action_url,
+          created_at: new Date().toISOString()
+        };
+        setMessages([newMessage, ...messages]);
+        return;
+      }
+      
       const { error } = await supabase
         .from('aliza_messages')
         .insert({
           user_id: userId,
           type,
           message,
-          emoji
+          emoji,
+          action_url
         });
 
       if (error) throw error;

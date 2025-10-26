@@ -1,0 +1,360 @@
+/* Insights Page Styles - Same structure as Journal */
+.insights-page {
+  background: var(--gray-light);
+  padding: 40px 20px 100px 20px;
+  min-height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar for insights page */
+.insights-page::-webkit-scrollbar {
+  width: 8px;
+}
+
+.insights-page::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.insights-page::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+.insights-page::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+
+/* Firefox scrollbar */
+.insights-page {
+  scrollbar-width: thin;
+  scrollbar-color: #667eea #f1f1f1;
+}
+
+.insights-container {
+  margin: 0 auto;
+}
+
+.insights-header {
+  margin-bottom: 40px;
+  text-align: right;
+  padding: 40px 0;
+  border-bottom: 1px solid var(--gray-light);
+  position: relative;
+}
+
+.insights-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 60px;
+  height: 3px;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border-radius: 2px;
+}
+
+.insights-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0 0 16px 0;
+  line-height: 1.25;
+  text-align: right;
+  position: relative;
+  padding-right: 40px;
+}
+
+.insights-header h1::before {
+  content: "🔮";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.insights-header .subtitle {
+  font-size: 16px;
+  color: var(--gray-dark);
+  margin: 0;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.insights-content {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.insights-filters {
+  background: white;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  margin-bottom: 2rem;
+}
+
+.insights-filters h3 {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.3rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.category-filters {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.category-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.5rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 25px;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.category-filter:hover {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.2);
+}
+
+.category-filter.active {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: transparent;
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.category-icon {
+  font-size: 1.2rem;
+}
+
+.category-label {
+  font-weight: 500;
+}
+
+.insights-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+}
+
+.insight-card {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.insight-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.insight-header {
+  padding: 1.5rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.insight-icon {
+  font-size: 2rem;
+}
+
+.insight-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.insight-category {
+  font-size: 0.9rem;
+  opacity: 0.9;
+  font-weight: 500;
+}
+
+.insight-date {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.insight-content {
+  padding: 2rem;
+}
+
+.insight-title {
+  margin: 0 0 1rem 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.4;
+}
+
+.insight-description {
+  margin: 0;
+  color: #6c757d;
+  line-height: 1.6;
+  font-size: 1rem;
+}
+
+.loading-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+.loading-container p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.no-insights {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.no-insights-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.no-insights h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.no-insights p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1.1rem;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .insights-container {
+    padding: 1rem;
+  }
+  
+  .insights-title h1 {
+    font-size: 2rem;
+  }
+  
+  .insights-icon {
+    font-size: 2.5rem;
+  }
+  
+  .insights-subtitle {
+    font-size: 1rem;
+  }
+  
+  .insights-filters {
+    padding: 1.5rem;
+  }
+  
+  .category-filters {
+    gap: 0.5rem;
+  }
+  
+  .category-filter {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .insights-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .insight-content {
+    padding: 1.5rem;
+  }
+  
+  .insight-title {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .insights-container {
+    padding: 0.5rem;
+  }
+  
+  .insights-title {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .insights-title h1 {
+    font-size: 1.8rem;
+  }
+  
+  .category-filters {
+    justify-content: center;
+  }
+  
+  .category-filter {
+    flex: 1;
+    min-width: 120px;
+    justify-content: center;
+  }
+}
+

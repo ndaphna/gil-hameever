@@ -4,14 +4,33 @@ This directory contains SQL migration files for the database schema.
 
 ## Migration Files (Run in Order)
 
-### Core Migrations
+### Core Migrations (Run in Order)
 1. `20241013_initial_schema.sql` - Initial database schema with all tables
 2. `20241013_fix_schema_consistency.sql` - Fixes for schema consistency
 3. `20241013_add_color_to_emotion_entry.sql` - Adds color column to emotion_entry table
+4. `20241017_add_chat_tables.sql` - Chat system tables
+5. `20241024_menopause_journal_tables.sql` - Journal tables (daily_entries, cycle_entries, aliza_messages)
+6. `20250118_notification_system.sql` - Notification system
+7. `20250126_journal_enhancements.sql` - Enhanced journal fields
 
-### Maintenance Scripts
-- `verify_and_fix_schema.sql` - **RUN THIS IF YOU HAVE ISSUES** - Automatically fixes common schema problems
-- `check_database_status.sql` - Diagnostic tool to check database configuration
+### Maintenance & Diagnostic Scripts
+- `check_database_status.sql` - General database diagnostic
+- `verify_and_fix_schema.sql` - General schema fixes
+- `check_journal_tables_status.sql` - **NEW** ✨ Specific check for journal tables
+- `verify_database_functions.sql` - **NEW** ✨ Verify required functions exist
+
+### Fix Scripts (Use if you have specific issues)
+- `fix_cycle_entries_schema.sql` - **NEW** ✨ Fix cycle_entries table structure
+- `fix_daily_entries_schema.sql` - **NEW** ✨ Fix daily_entries table structure
+
+### Mock Data Scripts (For Testing)
+- `insert_mock_data_for_inbal.sql` - **NEW** 🎯 Insert comprehensive mock data for inbald@sapir.ac.il
+  - 29 daily entries (15 days)
+  - 16 cycle entries (3 periods)
+  - 6 Aliza messages
+  - Journal preferences
+- Quick version available in root: `QUICK_INSERT_MOCK_DATA.sql`
+- Full instructions: `INSERT_MOCK_DATA_INSTRUCTIONS.md`
 
 ## How to Run Migrations
 
@@ -58,6 +77,18 @@ supabase db push
 
 ### Common Issues
 
+#### ❌ "column cycle_entries.date does not exist"
+- **Cause**: The `cycle_entries` table structure is incorrect or migration didn't run
+- **Solution**: 
+  1. First run `check_journal_tables_status.sql` to see what's missing
+  2. Then run `fix_cycle_entries_schema.sql` to fix the table
+  3. **⚠️ WARNING**: This will delete existing data in cycle_entries!
+- **Detailed Guide**: See `DATABASE_FIX_INSTRUCTIONS.md` in root directory
+
+#### ❌ "column daily_entries.date does not exist"
+- **Cause**: The `daily_entries` table structure is incorrect
+- **Solution**: Run `fix_daily_entries_schema.sql`
+
 #### "Error creating profile"
 - **Cause**: Missing `SUPABASE_SERVICE_ROLE_KEY` environment variable
 - **Solution**: See `SETUP.md` in the root directory
@@ -68,21 +99,33 @@ supabase db push
 
 #### "relation does not exist"
 - **Cause**: Migrations not run in order
-- **Solution**: Run all migrations in order (1, 2, 3, then verify_and_fix)
+- **Solution**: Run all migrations in order (1-7, then verify_and_fix)
 
 ## Schema Overview
 
-### Tables
+### Core Tables
 - `user_profile` - User information and subscription status
-- `emotion_entry` - Daily emotion journal entries
+- `emotion_entry` - Daily emotion journal entries (legacy)
 - `thread` - Chat conversation threads
 - `message` - Individual chat messages
 - `subscription` - Subscription and billing information
 - `token_ledger` - Token usage tracking
 
+### Journal Tables (New)
+- `daily_entries` - Daily symptom tracking (morning & evening)
+- `cycle_entries` - Menstrual cycle tracking
+- `aliza_messages` - Smart messages from Aliza
+- `journal_trends` - Calculated insights and trends
+- `journal_preferences` - User journal settings and preferences
+
 ### Key Relationships
 - `user_profile.id` → `auth.users.id` (CASCADE DELETE)
 - `emotion_entry.user_id` → `user_profile.id` (CASCADE DELETE)
+- `daily_entries.user_id` → `user_profile.id` (CASCADE DELETE)
+- `cycle_entries.user_id` → `user_profile.id` (CASCADE DELETE)
+- `aliza_messages.user_id` → `user_profile.id` (CASCADE DELETE)
+- `journal_trends.user_id` → `user_profile.id` (CASCADE DELETE)
+- `journal_preferences.user_id` → `user_profile.id` (CASCADE DELETE)
 - `thread.user_id` → `user_profile.id` (CASCADE DELETE)
 - `message.user_id` → `user_profile.id` (CASCADE DELETE)
 

@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
+import { DailyEntry, CycleEntry } from '@/types/journal';
+import './dashboard.css';
 
 interface UserProfile {
   name: string | null;
@@ -16,9 +18,16 @@ export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
+  const [dailyEntries, setDailyEntries] = useState<DailyEntry[]>([]);
+  const [cycleEntries, setCycleEntry] = useState<CycleEntry[]>([]);
+  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadProfile() {
+    loadProfile();
+  }, [router]);
+
+  const loadProfile = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
@@ -29,7 +38,6 @@ export default function DashboardPage() {
           const mockLogin = localStorage.getItem('mock-login');
           if (mockLogin === 'true') {
             console.log('Dashboard: Using mock login');
-            // Create a mock user profile
             const mockProfile: UserProfile = {
               name: localStorage.getItem('user-email')?.split('@')[0] || 'משתמשת',
               email: localStorage.getItem('user-email') || '',
@@ -37,6 +45,8 @@ export default function DashboardPage() {
               current_tokens: 100
             };
             setProfile(mockProfile);
+          setUserId('mock-user-dashboard');
+          await loadUserData('mock-user-dashboard');
             setLoading(false);
             return;
           } else {
@@ -52,7 +62,7 @@ export default function DashboardPage() {
           .eq('id', user.id)
           .single();
 
-        // Create profile if it doesn't exist - use API to bypass RLS
+      // Create profile if it doesn't exist
         if (!profileData) {
           await fetch('/api/create-profile', {
             method: 'POST',
@@ -64,7 +74,6 @@ export default function DashboardPage() {
             }),
           });
 
-          // Fetch the newly created profile
           const { data: newProfile } = await supabase
             .from('user_profile')
             .select('*')
@@ -76,360 +85,593 @@ export default function DashboardPage() {
 
         if (profileData) {
           setProfile(profileData);
+        setUserId(user.id);
+        await loadUserData(user.id);
         }
       } catch (error) {
         console.error('Error loading profile:', error);
       } finally {
         setLoading(false);
       }
-    }
+  };
 
-    loadProfile();
-  }, [router]);
-
-  const handleLogout = async () => {
+  const loadUserData = async (uid: string) => {
     try {
-      // Clear mock login if exists
-      localStorage.removeItem('mock-login');
-      localStorage.removeItem('user-email');
-      
-      // Try Supabase logout
-      await supabase.auth.signOut();
-      
-      // Redirect to login
-      router.push('/login');
+      // Check if mock user
+      if (uid.startsWith('mock-user-')) {
+        // Generate mock data for dashboard
+        const mockDaily = generateMockDailyEntries(uid);
+        const mockCycle = generateMockCycleEntries(uid);
+        setDailyEntries(mockDaily);
+        setCycleEntry(mockCycle);
+        calculateDashboard(mockDaily, mockCycle);
+        return;
+      }
+
+      // Load real data
+      const { data: dailyData } = await supabase
+        .from('daily_entries')
+        .select('*')
+        .eq('user_id', uid)
+        .order('created_at', { ascending: false })
+        .limit(30);
+
+      const { data: cycleData } = await supabase
+        .from('cycle_entries')
+        .select('*')
+        .eq('user_id', uid)
+        .order('date', { ascending: false })
+        .limit(12);
+
+      setDailyEntries(dailyData || []);
+      setCycleEntry(cycleData || []);
+      calculateDashboard(dailyData || [], cycleData || []);
     } catch (error) {
-      console.error('Error during logout:', error);
-      // Still redirect to login even if logout fails
-      router.push('/login');
+      console.error('Error loading user data:', error);
     }
+  };
+
+  const generateMockDailyEntries = (uid: string): DailyEntry[] => {
+    const entries: DailyEntry[] = [];
+    const today = new Date();
+    
+    for (let i = 0; i < 14; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // Morning entry
+      if (i < 7) {
+        entries.push({
+          id: `mock-daily-${i}-morning`,
+          user_id: uid,
+          date: dateStr,
+          time_of_day: 'morning',
+          sleep_quality: i % 3 === 0 ? 'poor' : i % 3 === 1 ? 'fair' : 'good',
+          woke_up_night: i % 3 === 0,
+          night_sweats: i % 4 === 0,
+          energy_level: i % 3 === 0 ? 'low' : i % 3 === 1 ? 'medium' : 'high',
+          mood: i % 4 === 0 ? 'frustrated' : i % 4 === 1 ? 'calm' : i % 4 === 2 ? 'happy' : 'sad',
+          hot_flashes: i % 3 === 0,
+          dryness: false,
+          pain: i % 5 === 0,
+          bloating: false,
+          concentration_difficulty: i % 4 === 0,
+          sleep_issues: i % 3 === 0,
+          sexual_desire: i % 2 === 0,
+          daily_insight: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      }
+      
+      // Evening entry
+      if (i < 5) {
+        entries.push({
+          id: `mock-daily-${i}-evening`,
+          user_id: uid,
+          date: dateStr,
+          time_of_day: 'evening',
+          sleep_quality: null,
+          woke_up_night: false,
+          night_sweats: false,
+          energy_level: i % 3 === 0 ? 'low' : 'medium',
+          mood: i % 3 === 0 ? 'irritated' : 'calm',
+          hot_flashes: i % 2 === 0,
+          dryness: false,
+          pain: false,
+          bloating: i % 3 === 0,
+          concentration_difficulty: false,
+          sleep_issues: false,
+          sexual_desire: false,
+          daily_insight: '',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+      }
+    }
+    
+    return entries;
+  };
+
+  const generateMockCycleEntries = (uid: string): CycleEntry[] => {
+    const entries: CycleEntry[] = [];
+    const today = new Date();
+    
+    // Last 3 periods
+    for (let i = 0; i < 3; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - (i * 32 + 15)); // ~32 days apart
+      
+      entries.push({
+        id: `mock-cycle-${i}`,
+        user_id: uid,
+        date: date.toISOString().split('T')[0],
+        is_period: true,
+        bleeding_intensity: i === 0 ? 'medium' : i === 1 ? 'light' : 'heavy',
+        symptoms: i === 0 ? ['cramps', 'fatigue'] : i === 1 ? ['mood_irritable'] : ['back_pain', 'bloating'],
+        notes: '',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      });
+    }
+    
+    return entries;
+  };
+
+  const calculateDashboard = (daily: DailyEntry[], cycle: CycleEntry[]) => {
+    // Calculate streak (same logic as before)
+    const uniqueDays = Array.from(new Set(daily.map(e => e.date))).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+    let streak = 0;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    for (let i = 0; i < uniqueDays.length; i++) {
+      const expected = new Date(today);
+      expected.setDate(today.getDate() - i);
+      const expectedStr = expected.toISOString().split('T')[0];
+      
+      if (uniqueDays[i] === expectedStr) {
+        streak++;
+      } else {
+        break;
+      }
+    }
+
+    // Weekly stats (Israeli week: Sunday to Saturday)
+    const nowForWeek = new Date();
+    const currentDayOfWeekForStats = nowForWeek.getDay(); // 0 = Sunday
+    
+    // Find last Sunday (start of current Israeli week)
+    const lastSundayForStats = new Date(nowForWeek);
+    lastSundayForStats.setDate(nowForWeek.getDate() - currentDayOfWeekForStats);
+    lastSundayForStats.setHours(0, 0, 0, 0);
+    
+    const weeklyEntries = daily.filter(e => new Date(e.date) >= lastSundayForStats);
+    
+    // Last 7 days for mini chart - Starting from Sunday (Israeli week)
+    const last7Days = [];
+    const nowDate = new Date();
+    
+    // Find last Sunday
+    const currentDayOfWeek = nowDate.getDay(); // 0 = Sunday
+    const lastSunday = new Date(nowDate);
+    lastSunday.setDate(nowDate.getDate() - currentDayOfWeek);
+    
+    // If today is Sunday and we have data for today, include this week
+    // Otherwise show last complete week
+    const startDate = currentDayOfWeek === 0 ? lastSunday : new Date(lastSunday.getTime() - 7 * 24 * 60 * 60 * 1000);
+    
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(startDate);
+      date.setDate(startDate.getDate() + i);
+      const dateStr = date.toISOString().split('T')[0];
+      const dayEntries = daily.filter(e => e.date === dateStr);
+      
+      last7Days.push({
+        date: dateStr,
+        dayName: date.toLocaleDateString('he-IL', { weekday: 'short' }),
+        hasEntry: dayEntries.length > 0,
+        hotFlash: dayEntries.some(e => e.hot_flashes),
+        goodSleep: dayEntries.some(e => e.sleep_quality === 'good'),
+        lowMood: dayEntries.some(e => e.mood === 'sad' || e.mood === 'frustrated')
+      });
+    }
+    
+    // Cycle stats
+    const periodEntries = cycle.filter(e => e.is_period).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    const lastPeriod = periodEntries[0] ? new Date(periodEntries[0].date) : null;
+    const daysSinceLastPeriod = lastPeriod ? Math.floor((new Date().getTime() - lastPeriod.getTime()) / (1000 * 60 * 60 * 24)) : null;
+
+    // Most common symptoms
+    const symptomCount: Record<string, number> = {};
+    weeklyEntries.forEach(e => {
+      if (e.hot_flashes) symptomCount['hot_flashes'] = (symptomCount['hot_flashes'] || 0) + 1;
+      if (e.sleep_issues) symptomCount['sleep_issues'] = (symptomCount['sleep_issues'] || 0) + 1;
+      if (e.mood === 'irritated' || e.mood === 'frustrated') symptomCount['mood_issues'] = (symptomCount['mood_issues'] || 0) + 1;
+    });
+
+    const topSymptoms = Object.entries(symptomCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+
+    // Generate Aliza recommendations
+    const recommendations = generateAlizaRecommendations(weeklyEntries, daysSinceLastPeriod, streak);
+
+    setDashboardData({
+      streak,
+      weeklyReports: weeklyEntries.length,
+      totalReports: daily.length,
+      hotFlashes: weeklyEntries.filter(e => e.hot_flashes).length,
+      goodSleep: weeklyEntries.filter(e => e.sleep_quality === 'good').length,
+      daysSinceLastPeriod,
+      lastPeriod: lastPeriod ? lastPeriod.toLocaleDateString('he-IL') : 'לא תועד',
+      topSymptoms,
+      last7Days,
+      needsAttention: calculateNeedsAttention(weeklyEntries, daysSinceLastPeriod),
+      alizaRecommendations: recommendations
+    });
+  };
+
+  const generateAlizaRecommendations = (entries: DailyEntry[], daysSincePeriod: number | null, streak: number) => {
+    const recommendations: Array<{emoji: string, title: string, message: string, action: string, link: string}> = [];
+    
+    // Streak encouragement
+    if (streak >= 7) {
+      recommendations.push({
+        emoji: '🎉',
+        title: 'מדהים! שבוע שלם של דיווחים',
+        message: 'את עושה עבודה נהדרת בתיעוד המסע שלך. זה עוזר לך ולרופאה להבין דפוסים.',
+        action: 'המשיכי כך',
+        link: '/journal'
+      });
+    } else if (streak === 0) {
+      recommendations.push({
+        emoji: '🌱',
+        title: 'בואי נתחיל רצף חדש!',
+        message: 'דיווח יומי קבוע יעזור לך לזהות דפוסים ולהרגיש בשליטה על התהליך.',
+        action: 'התחילי עכשיו',
+        link: '/journal?tab=daily'
+      });
+    }
+
+    // Hot flashes advice
+    const hotFlashCount = entries.filter(e => e.hot_flashes).length;
+    if (hotFlashCount >= 4) {
+      recommendations.push({
+        emoji: '🔥',
+        title: `${hotFlashCount} גלי חום השבוע`,
+        message: 'נסי להימנע מקפאין אחר הצהריים, תרגלי נשימות עמוקות, והחזיקי מאוורר קטן בתיק.',
+        action: 'קראי עוד טיפים',
+        link: '/heat-waves'
+      });
+    }
+
+    // Sleep improvement
+    const poorSleepCount = entries.filter(e => e.sleep_quality === 'poor').length;
+    if (poorSleepCount >= 3) {
+      recommendations.push({
+        emoji: '😴',
+        title: 'שינה לא רגועה',
+        message: 'רוטינת שינה קבועה, הימנעות ממסכים שעה לפני השינה, וחדר קריר יכולים לעזור.',
+        action: 'שיפור השינה',
+        link: '/menopausal-sleep'
+      });
+    } else if (entries.filter(e => e.sleep_quality === 'good').length >= 5) {
+      recommendations.push({
+        emoji: '✨',
+        title: 'השינה שלך משתפרת!',
+        message: 'ישנת טוב רוב הלילות השבוע. שימי לב מה עשית אחרת והמשיכי.',
+        action: 'המשיכי כך',
+        link: '/journal?tab=insights'
+      });
+    }
+
+    // Mood support
+    const lowMoodCount = entries.filter(e => e.mood === 'sad' || e.mood === 'frustrated').length;
+    if (lowMoodCount >= 4) {
+      recommendations.push({
+        emoji: '💙',
+        title: 'מצב הרוח זקוק לתמיכה',
+        message: 'שיחה עם חברה, פעילות גופנית קלה, או ייעוץ מקצועי יכולים לעזור מאוד.',
+        action: 'משאבים לתמיכה',
+        link: '/belonging-sisterhood-emotional-connection'
+      });
+    }
+
+    // Period tracking
+    if (daysSincePeriod && daysSincePeriod > 365) {
+      recommendations.push({
+        emoji: '🌸',
+        title: 'שנה ללא מחזור',
+        message: 'הגעת רשמית למנופאוזה! זה שלב טבעי. בואי נבין מה זה אומר ואיך להמשיך.',
+        action: 'למדי עוד',
+        link: '/what-going-on'
+      });
+    }
+
+    // If no specific recommendations
+    if (recommendations.length === 0) {
+      recommendations.push({
+        emoji: '💚',
+        title: 'הכל נראה טוב!',
+        message: 'את עושה עבודה נהדרת. המשיכי לתעד ולהקשיב לגוף שלך.',
+        action: 'ראי תובנות',
+        link: '/journal?tab=insights'
+      });
+    }
+
+    return recommendations.slice(0, 3); // Max 3 recommendations
+  };
+
+  const calculateNeedsAttention = (entries: DailyEntry[], daysSincePeriod: number | null) => {
+    const alerts: Array<{type: string, message: string, severity: 'high' | 'medium' | 'low', link: string}> = [];
+    
+    const hotFlashCount = entries.filter(e => e.hot_flashes).length;
+    if (hotFlashCount >= 5) {
+      alerts.push({
+        type: 'hot_flashes',
+        message: `${hotFlashCount} גלי חום בשבוע - יש דרכים להקל`,
+        severity: 'high',
+        link: '/heat-waves'
+      });
+    }
+
+    const poorSleep = entries.filter(e => e.sleep_quality === 'poor').length;
+    if (poorSleep >= 3) {
+      alerts.push({
+        type: 'sleep',
+        message: `${poorSleep} לילות קשים - בואי נשפר את השינה`,
+        severity: 'high',
+        link: '/menopausal-sleep'
+      });
+    }
+
+    if (daysSincePeriod && daysSincePeriod > 365) {
+      alerts.push({
+        type: 'menopause',
+        message: 'שנה ללא מחזור - מנופאוזה רשמית. מה עכשיו?',
+        severity: 'medium',
+        link: '/journal?tab=cycle'
+      });
+    }
+
+    const lowMood = entries.filter(e => e.mood === 'sad' || e.mood === 'frustrated').length;
+    if (lowMood >= 4) {
+      alerts.push({
+        type: 'mood',
+        message: 'מצב רוח נמוך - אולי זמן לדבר עם מישהי?',
+        severity: 'medium',
+        link: '/belonging-sisterhood-emotional-connection'
+      });
+    }
+
+    return alerts;
   };
 
   if (loading) {
     return (
       <DashboardLayout>
-        <div className="loading-container">
-          <div className="loading">טוען...</div>
+        <div className="loading-screen">
+          <div className="loading-spinner">🌸</div>
+          <p>טוענת את הנתונים שלך...</p>
         </div>
       </DashboardLayout>
     );
   }
 
+  if (!dashboardData) {
+    return (
+      <DashboardLayout>
+        <div className="loading-screen">
+          <p>אין נתונים זמינים</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const today = new Date().toLocaleDateString('he-IL', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
   return (
     <DashboardLayout>
       <div className="dashboard-page">
-      <div className="dashboard-container">
-        <div className="dashboard-header">
-          <h1>ברוכה הבאה לאזור האישי שלך! 👋</h1>
-        </div>
-
-        <div className="dashboard-grid">
-          {/* Welcome Card */}
-          <div className="dashboard-card welcome-card">
-            <h2>👋 שלום {profile?.name || profile?.email?.split('@')[0]}!</h2>
-            <p>זה האזור האישי שלך. כאן תוכלי:</p>
-            <ul className="feature-list">
-              <li>💬 לשוחח עם עליזה בצ'אט AI אישי</li>
-              <li>📔 לתעד רגשות ביומן היומי</li>
-              <li>🔮 לקבל תובנות מבוססות AI</li>
-            </ul>
+        {/* Hero Welcome */}
+        <section className="dashboard-hero">
+          <div className="welcome-header">
+            <h1>👋 שלום {profile?.name || profile?.email?.split('@')[0]}!</h1>
+            <p className="date-subtitle">{today}</p>
           </div>
 
-          {/* Subscription Status Card */}
-          <div className="dashboard-card">
-            <h2>💎 סטטוס המנוי</h2>
-            <div className="subscription-info">
-              <div className="tier-badge">{profile?.subscription_status}</div>
-              <p className="tokens">
-                <strong>{profile?.current_tokens || 0}</strong> טוקנים
-              </p>
+          {dashboardData.needsAttention.length > 0 && (
+            <div className="urgent-alerts">
+              <h2>💡 דברים שדורשים תשומת לב</h2>
+              <div className="alerts-grid">
+                {dashboardData.needsAttention.map((alert: any, index: number) => (
+                  <a 
+                    key={index}
+                    href={alert.link}
+                    className={`alert-card severity-${alert.severity}`}
+                  >
+                    <p className="alert-message">{alert.message}</p>
+                    <span className="alert-action">לחצי לפרטים →</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="status-snapshot">
+            <h2>📊 סטטוס המומנטום</h2>
+            <div className="status-grid">
+              <div className="status-hero-card streak">
+                <div className="card-icon">🔥</div>
+                <div className="card-content">
+                  <div className="card-number">{dashboardData.streak}</div>
+                  <div className="card-label">{dashboardData.streak === 1 ? 'יום ברצף' : 'ימים ברצף'}</div>
+                  <div className="card-hint">
+                    {dashboardData.streak === 0 ? 'התחילי רצף!' : dashboardData.streak < 7 ? `עוד ${7 - dashboardData.streak} ליעד שבוע` : 'מדהים! 🎉'}
+                  </div>
+                </div>
+              </div>
+
+              <div className="status-hero-card reports">
+                <div className="card-icon">📝</div>
+                <div className="card-content">
+                  <div className="card-number">{dashboardData.weeklyReports}</div>
+                  <div className="card-label">דיווחים השבוע</div>
+                  <div className="card-hint">מתוך מקסימום 14</div>
             </div>
           </div>
 
-          {/* Quick Stats Card */}
-          <div className="dashboard-card">
-            <h2>📊 פעילות</h2>
-            <div className="stats-grid">
-              <div className="stat-item">
-                <div className="stat-icon">💬</div>
-                <div className="stat-info">
-                  <div className="stat-number">0</div>
-                  <div className="stat-label">שיחות</div>
+              <div className="status-hero-card sleep">
+                <div className="card-icon">😴</div>
+                <div className="card-content">
+                  <div className="card-number">{dashboardData.goodSleep}</div>
+                  <div className="card-label">לילות טובים</div>
+                  <div className="card-hint">
+                    {dashboardData.goodSleep >= 5 ? 'מצוין!' : dashboardData.goodSleep >= 3 ? 'לא רע' : 'צריך שיפור'}
+                  </div>
                 </div>
               </div>
-              <div className="stat-item">
-                <div className="stat-icon">📔</div>
-                <div className="stat-info">
-                  <div className="stat-number">0</div>
-                  <div className="stat-label">רשומות</div>
+
+              <div className="status-hero-card period" onClick={() => router.push('/journal?tab=cycle')}>
+                <div className="card-icon">🌸</div>
+                <div className="card-content">
+                  <div className="card-number">
+                    {dashboardData.daysSinceLastPeriod !== null 
+                      ? `${dashboardData.daysSinceLastPeriod} ימים`
+                      : 'לא תועד'}
+                  </div>
+                  <div className="card-label">מאז מחזור אחרון</div>
+                  <div className="card-hint">
+                    {dashboardData.daysSinceLastPeriod > 365 ? '✨ מנופאוזה רשמית' : 'לחצי למעקב'}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </section>
 
-          {/* Next Steps Card */}
-          <div className="dashboard-card next-steps-card">
-            <h2>🚀 צעדים הבאים</h2>
-            <ol className="steps-list">
-              <li>השלמת הפרופיל</li>
-              <li>שיחה עם עליזה</li>
-              <li>כתיבת יומן</li>
-            </ol>
+        {/* 7 Days Mini Chart */}
+        <section className="mini-chart-section">
+          <h2>📈 7 הימים האחרונים שלך</h2>
+          <div className="mini-chart">
+            {dashboardData.last7Days.map((day: any, index: number) => (
+              <div key={index} className="mini-chart-day">
+                <div className={`day-indicator ${day.hasEntry ? 'has-entry' : 'no-entry'}`}>
+                  {day.hasEntry ? '✓' : '○'}
+                </div>
+                <div className="day-signals">
+                  {day.hotFlash && <span className="signal hot" title="גל חום">🔥</span>}
+                  {day.goodSleep && <span className="signal sleep" title="שינה טובה">😴</span>}
+                  {day.lowMood && <span className="signal mood" title="מצב רוח נמוך">😔</span>}
+                </div>
+                <div className="day-name">{day.dayName}</div>
+              </div>
+            ))}
           </div>
+          <p className="chart-legend">✓ = דיווח נשמר | ○ = לא דיווחת</p>
+        </section>
+
+        {/* Aliza Recommendations */}
+        <section className="aliza-recommendations">
+          <h2>💬 המלצות מעליזה</h2>
+          <div className="recommendations-grid">
+            {dashboardData.alizaRecommendations.map((rec: any, index: number) => (
+              <div key={index} className="recommendation-card">
+                <div className="rec-header">
+                  <span className="rec-emoji">{rec.emoji}</span>
+                  <h3>{rec.title}</h3>
+                </div>
+                <p className="rec-message">{rec.message}</p>
+                <a href={rec.link} className="rec-action">{rec.action} →</a>
         </div>
+            ))}
       </div>
+        </section>
 
-      <style jsx>{`
-        .dashboard-page {
-          background: var(--gray-light);
-          padding: 30px 20px;
-        }
+        {/* Quick Actions */}
+        <section className="quick-actions">
+          <h2>🚀 פעולות מהירות</h2>
+          <div className="actions-grid">
+            <a href="/journal?tab=daily" className="action-card daily">
+              <div className="action-icon">📋</div>
+              <h3>דיווח יומי</h3>
+              <p>תעדי איך היום/הלילה</p>
+            </a>
+            
+            <a href="/journal?tab=cycle" className="action-card cycle">
+              <div className="action-icon">🌸</div>
+              <h3>עדכון מחזור</h3>
+              <p>סמני מחזור/תסמינים</p>
+            </a>
+            
+            <a href="/journal?tab=insights" className="action-card insights">
+              <div className="action-icon">💡</div>
+              <h3>תובנות חכמות</h3>
+              <p>גלי דפוסים ומגמות</p>
+            </a>
+            
+            <a href="/chat" className="action-card chat">
+              <div className="action-icon">💬</div>
+              <h3>שיחה עם עליזה</h3>
+              <p>שאלות, תמיכה, עצות</p>
+            </a>
+          </div>
+        </section>
 
-        .dashboard-container {
-          margin: 0 auto;
-        }
+        {/* Top Symptoms */}
+        {dashboardData.topSymptoms.length > 0 && (
+          <section className="insights-highlights">
+            <h2>🎯 התסמינים המרכזיים שלך השבוע</h2>
+            <div className="symptoms-cards">
+              {dashboardData.topSymptoms.map(([symptom, count]: [string, number]) => (
+                <div key={symptom} className="symptom-highlight-card">
+                  <div className="symptom-icon">
+                    {symptom === 'hot_flashes' ? '🔥' : symptom === 'sleep_issues' ? '😴' : '😤'}
+                  </div>
+                  <div className="symptom-info">
+                    <div className="symptom-count">{count}</div>
+                    <div className="symptom-label">
+                      {symptom === 'hot_flashes' ? 'גלי חום' : symptom === 'sleep_issues' ? 'בעיות שינה' : 'מצב רוח'}
+                    </div>
+                  </div>
+                  <button 
+                    className="symptom-action"
+                    onClick={() => router.push(symptom === 'hot_flashes' ? '/heat-waves' : symptom === 'sleep_issues' ? '/menopausal-sleep' : '/belonging-sisterhood-emotional-connection')}
+                  >
+                    למדי עוד →
+                  </button>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
-        .dashboard-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          margin-bottom: 30px;
-          flex-wrap: wrap;
-          gap: 20px;
-        }
-
-        .dashboard-header h1 {
-          font-size: 28px;
-          font-weight: 700;
-          color: var(--black);
-          margin: 0;
-          text-align: center;
-        }
-
-        .dashboard-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-          gap: 20px;
-          align-items: start;
-        }
-
-        .dashboard-card {
-          background: white;
-          border-radius: 16px;
-          padding: 20px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-          transition: all 0.3s ease;
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          display: flex;
-          flex-direction: column;
-          height: 200px;
-          justify-content: flex-start;
-        }
-
-        .dashboard-card.clickable {
-          cursor: pointer;
-        }
-
-        .dashboard-card.clickable:hover {
-          transform: translateY(-4px);
-          box-shadow: 0 8px 24px rgba(255, 0, 128, 0.15);
-        }
-
-        .dashboard-card h2 {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--black);
-          margin: 0 0 8px 0;
-          text-align: right;
-          flex-shrink: 0;
-        }
-
-        .dashboard-card p {
-          color: var(--gray);
-          margin: 0 0 8px 0;
-          text-align: right;
-          line-height: 1.4;
-          font-size: 13px;
-          flex-shrink: 0;
-        }
-
-        .card-icon {
-          font-size: 32px;
-          margin-bottom: 12px;
-          text-align: right;
-        }
-
-        .card-link {
-          color: var(--magenta);
-          font-weight: 600;
-          text-decoration: none;
-          display: inline-block;
-          text-align: right;
-          font-size: 14px;
-        }
-
-        .card-link:hover {
-          text-decoration: underline;
-        }
-
-        .subscription-info {
-          margin-bottom: 12px;
-          text-align: right;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-        }
-
-        .tier-badge {
-          display: inline-block;
-          background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
-          color: white;
-          padding: 4px 12px;
-          border-radius: 16px;
-          font-size: 12px;
-          font-weight: 600;
-          margin-bottom: 8px;
-        }
-
-        .tokens {
-          font-size: 14px;
-          color: var(--gray);
-          margin: 6px 0;
-        }
-
-        .tokens strong {
-          color: var(--black);
-          font-size: 20px;
-        }
-
-        .feature-list {
-          list-style: none;
-          padding: 0;
-          margin: 8px 0 0 0;
-          text-align: right;
-          flex: 1;
-          overflow: hidden;
-        }
-
-        .feature-list li {
-          padding: 4px 0;
-          color: var(--black);
-          font-size: 14px;
-        }
-
-        .steps-list {
-          margin: 12px 0 0 0;
-          padding-right: 20px;
-          text-align: right;
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-          justify-content: flex-start;
-        }
-
-        .steps-list li {
-          padding: 4px 0;
-          color: var(--black);
-          font-size: 13px;
-        }
-
-        .info-text {
-          color: var(--gray);
-          font-size: 12px;
-          margin-top: 10px;
-          text-align: right;
-        }
-
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 12px;
-          margin-top: 12px;
-          flex: 1;
-          align-content: flex-start;
-        }
-
-        .stat-item {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          padding: 8px;
-          background: var(--gray-light);
-          border-radius: 8px;
-        }
-
-        .stat-icon {
-          font-size: 20px;
-        }
-
-        .stat-info {
-          text-align: right;
-        }
-
-        .stat-number {
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--magenta);
-        }
-
-        .stat-label {
-          font-size: 12px;
-          color: var(--gray);
-        }
-
-        .welcome-card {
-          grid-column: 1 / -1;
-          background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
-          color: white;
-          padding: 20px;
-          margin-bottom: 0;
-          max-height: 200px;
-          overflow: hidden;
-        }
-
-        .welcome-card h2,
-        .welcome-card p,
-        .welcome-card li {
-          color: white;
-        }
-
-        .next-steps-card {
-          background: linear-gradient(135deg, #f0f7ff 0%, #e8f4ff 100%);
-          border-left: 3px solid var(--magenta);
-        }
-
-        .loading {
-          text-align: center;
-          padding: 30px;
-          font-size: 16px;
-          color: var(--gray);
-        }
-
-        @media (max-width: 768px) {
-          .dashboard-header h1 {
-            font-size: 22px;
-          }
-
-          .dashboard-grid {
-            grid-template-columns: 1fr;
-            gap: 16px;
-          }
-
-          .dashboard-card {
-            padding: 16px;
-          }
-        }
-
-        .loading-container {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          min-height: 50vh;
-        }
-      `}</style>
+        {/* Resources */}
+        <section className="resources-section">
+          <h2>📚 המשאבים שלך</h2>
+          <div className="resources-grid">
+            <a href="/menopause-roadmap" className="resource-card">
+              <div className="resource-icon">🗺️</div>
+              <h3>מפת הדרכים</h3>
+              <p>הסולם המלא של גיל המעבר</p>
+            </a>
+            
+            <a href="/what-going-on" className="resource-card">
+              <div className="resource-icon">🔬</div>
+              <h3>מה קורה בגוף?</h3>
+              <p>מדע פשוט ומובן</p>
+            </a>
+            
+            <a href="/the-body-whispers" className="resource-card">
+              <div className="resource-icon">🌿</div>
+              <h3>הגוף לוחש</h3>
+              <p>כלים לצרכים הפיזיים</p>
+            </a>
+          </div>
+        </section>
       </div>
     </DashboardLayout>
   );
 }
-

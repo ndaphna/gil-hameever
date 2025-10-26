@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { CycleEntry } from '@/types/journal';
 import CycleEntryForm from './CycleEntryForm';
 import CycleCalendar from './CycleCalendar';
+import CycleTrends from './CycleTrends';
 import { supabase } from '@/lib/supabase';
 
 interface CycleTrackingProps {
@@ -107,33 +108,75 @@ export default function CycleTracking({ userId, entries, onEntriesChange }: Cycl
     <div className="cycle-tracking">
       <div className="cycle-header">
         <h2>🌸 מעקב מחזור</h2>
-        <p className="subtitle">תעדי את המחזור שלך ותקבלי תובנות חכמות</p>
+        <p className="subtitle">
+          בגיל המעבר המחזור הופך ללא סדיר ומשתנה בעוצמות ובתסמינים. תיעוד עקבי יעזור לך ולרופאת הנשים לקבל תמונה מדויקת, לזהות דפוסים, ולקבל טיפול מותאם אישית. 
+          אם לא הופיע מחזור במשך שנה – מוגדרת רשמית מנופאוזה.
+        </p>
+        <ul className="cycle-guidelines">
+          <li>סמני ימים של דימום ועוצמה (קל/בינוני/חזק).</li>
+          <li>הוסיפי תסמינים רלוונטיים (כאבים, מצבי רוח, גלי חום ועוד).</li>
+          <li>רשמי הערות קצרות – תרופות, אירועים חריגים, בדיקות.</li>
+        </ul>
       </div>
 
-      {/* Statistics */}
-      <div className="cycle-stats">
-        <div className="stat-card">
-          <span className="stat-number">{cycleStats.totalCycles}</span>
-          <span className="stat-label">מחזורים תועדו</span>
+      {/* Hero Statistics */}
+      <div className="cycle-hero-stats">
+        <div className="hero-stat-card total-cycles">
+          <div className="hero-stat-icon">📊</div>
+          <div className="hero-stat-content">
+            <div className="hero-stat-number">{cycleStats.totalCycles}</div>
+            <div className="hero-stat-label">מחזורים שתועדו</div>
+            <div className="hero-stat-hint">כל מחזור שתיעדת עוזר לבנות תמונה מלאה</div>
+          </div>
         </div>
-        <div className="stat-card">
-          <span className="stat-number">{cycleStats.averageLength} ימים</span>
-          <span className="stat-label">אורך ממוצע</span>
+        
+        <div className="hero-stat-card cycle-length">
+          <div className="hero-stat-icon">📏</div>
+          <div className="hero-stat-content">
+            <div className="hero-stat-number">
+              {cycleStats.averageLength > 0 ? `${cycleStats.averageLength} ימים` : 'טרם חושב'}
+            </div>
+            <div className="hero-stat-label">אורך מחזור ממוצע</div>
+            <div className="hero-stat-hint">
+              {cycleStats.averageLength > 0 
+                ? cycleStats.averageLength < 21 ? 'קצר מהרגיל - ספרי לרופאה' 
+                  : cycleStats.averageLength > 35 ? 'ארוך - טיפוסי לגיל המעבר' 
+                  : 'בטווח תקין'
+                : 'נדרשים לפחות 2 מחזורים לחישוב'}
+            </div>
+          </div>
         </div>
-        <div className="stat-card">
-          <span className="stat-number">{cycleStats.lastPeriod}</span>
-          <span className="stat-label">מחזור אחרון</span>
+        
+        <div className="hero-stat-card last-period">
+          <div className="hero-stat-icon">📅</div>
+          <div className="hero-stat-content">
+            <div className="hero-stat-number">{cycleStats.lastPeriod}</div>
+            <div className="hero-stat-label">מחזור אחרון</div>
+            <div className="hero-stat-hint">
+              {cycleStats.daysSinceLastPeriod !== null 
+                ? cycleStats.daysSinceLastPeriod > 365 
+                  ? '✨ שנה ללא מחזור - מנופאוזה רשמית'
+                  : cycleStats.daysSinceLastPeriod > 90
+                    ? `${cycleStats.daysSinceLastPeriod} ימים - תקופת מעבר`
+                    : `לפני ${cycleStats.daysSinceLastPeriod} ימים`
+                : 'טרם תועד מחזור'}
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Calendar */}
       <div className="calendar-section">
-        <h3>לוח שנה</h3>
+        <h3>לוח שנה חכם</h3>
+        <p className="calendar-hint">לחצי על יום כדי לציין דימום/תסמינים. יום קיים ייפתח לעריכה.</p>
         <CycleCalendar
           entries={entries}
           onDateClick={handleDateClick}
         />
       </div>
+
+      {/* Trends and Community */}
+      <CycleTrends entries={entries} />
 
       {/* Recent Entries */}
       <div className="recent-entries">
@@ -224,7 +267,8 @@ function calculateCycleStats(entries: CycleEntry[]) {
     return {
       totalCycles: 0,
       averageLength: 0,
-      lastPeriod: 'לא תועד'
+      lastPeriod: 'לא תועד',
+      daysSinceLastPeriod: null
     };
   }
 
@@ -233,21 +277,32 @@ function calculateCycleStats(entries: CycleEntry[]) {
   for (let i = 1; i < periodEntries.length; i++) {
     const prevDate = new Date(periodEntries[i - 1].date);
     const currDate = new Date(periodEntries[i].date);
-    const diffDays = Math.floor((currDate.getTime() - prevDate.getTime()) / (1000 * 60 * 60 * 24));
-    cycleLengths.push(diffDays);
+    const diffDays = Math.floor((prevDate.getTime() - currDate.getTime()) / (1000 * 60 * 60 * 24));
+    if (diffDays > 0) {
+      cycleLengths.push(diffDays);
+    }
   }
 
   const averageLength = cycleLengths.length > 0 
     ? Math.round(cycleLengths.reduce((a, b) => a + b, 0) / cycleLengths.length)
     : 0;
 
-  const lastPeriod = periodEntries.length > 0 
-    ? new Date(periodEntries[0].date).toLocaleDateString('he-IL')
+  const lastPeriodDate = periodEntries.length > 0 
+    ? new Date(periodEntries[0].date)
+    : null;
+    
+  const lastPeriod = lastPeriodDate 
+    ? lastPeriodDate.toLocaleDateString('he-IL')
     : 'לא תועד';
+    
+  const daysSinceLastPeriod = lastPeriodDate
+    ? Math.floor((new Date().getTime() - lastPeriodDate.getTime()) / (1000 * 60 * 60 * 24))
+    : null;
 
   return {
     totalCycles: periodEntries.length,
     averageLength,
-    lastPeriod
+    lastPeriod,
+    daysSinceLastPeriod
   };
 }
