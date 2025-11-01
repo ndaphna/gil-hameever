@@ -58,4 +58,13 @@
   }
 }
 
+/* Prevent scrolling in dashboard-content on chat page */
+.dashboard-content.chat-page {
+  overflow: hidden !important;
+  height: calc(100vh - 64px);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+}
+
 
