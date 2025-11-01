@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DailyEntry, CycleEntry, AlizaMessage } from '@/types/journal';
 import { supabase } from '@/lib/supabase';
+import './AlizaMessages.css';
 
 interface AlizaMessagesProps {
   userId: string;
@@ -13,6 +14,7 @@ interface AlizaMessagesProps {
 export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: AlizaMessagesProps) {
   const [messages, setMessages] = useState<AlizaMessage[]>([]);
   const [loading, setLoading] = useState(true);
+  const [generating, setGenerating] = useState(false);
 
   useEffect(() => {
     loadMessages();
@@ -24,7 +26,8 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
         .from('aliza_messages')
         .select('*')
         .eq('user_id', userId)
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(20);
 
       if (error) throw error;
       setMessages(data || []);
@@ -35,201 +38,184 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
     }
   };
 
-  const generateSmartMessage = () => {
-    // Analyze recent entries to generate personalized message
-    const recentEntries = dailyEntries.slice(0, 7);
-    const recentCycles = cycleEntries.slice(0, 3);
-    
-    // Check for patterns
-    const hotFlashesCount = recentEntries.filter(e => e.hot_flashes).length;
-    const sleepIssuesCount = recentEntries.filter(e => e.sleep_issues || e.sleep_quality === 'poor').length;
-    const poorSleepDays = recentEntries.filter(e => e.sleep_quality === 'poor').length;
-    const moodIssuesCount = recentEntries.filter(e => e.mood === 'sad' || e.mood === 'irritated' || e.mood === 'frustrated').length;
-    const nightSweatsCount = recentEntries.filter(e => e.night_sweats).length;
-    const energyLowCount = recentEntries.filter(e => e.energy_level === 'low').length;
-    
-    // Get current time of day
-    const hour = new Date().getHours();
-    const isEvening = hour >= 18;
-    const isMorning = hour >= 5 && hour < 12;
-    
-    let message = '';
-    let emoji = '💕';
-    let type: AlizaMessage['type'] = 'encouragement';
-    let action_url = '';
-    
-    // Time-based messages
-    if (isMorning && dailyEntries.length > 0) {
-      const todayEntry = dailyEntries.find(e => 
-        e.date === new Date().toISOString().split('T')[0] && 
-        e.time_of_day === 'morning'
-      );
-      
-      if (!todayEntry) {
-        message = `בוקר אור 🌸\n\nראיתי שכתבת שלא ישנת טוב אתמול.\n\nאולי היום תנסי להוריד קצב בערב?\n\nהנה קישור לתרגיל הנשימות של עליזה — רק 3 דקות, ויש מצב שתתעוררי מחר מחויכת.`;
-        emoji = '🌅';
-        type = 'morning';
-        action_url = '/physical-activity';
-      }
-    } else if (isEvening) {
-      message = `היי אהובה 💛\n\nהגיע הזמן לעמעם אורות.\n\nתזכרי לקחת מגנזיום ולשים מוזיקת 'גלים רכים'.\n\nעליזה מוסרת: 'אם את לא נרדמת — תאשימי את ההורמונים, לא את עצמך.' 😅`;
-      emoji = '🌙';
-      type = 'evening';
-      action_url = '/menopausal-sleep';
-    }
-    
-    // Pattern-based messages
-    else if (hotFlashesCount >= 3 && nightSweatsCount >= 2) {
-      message = `שמתי לב שכשישנת פחות מ-6 שעות, גלי החום עלו ב-30%.\n\nהנה טיפ לשיפור השינה שלך: נסי להוריד את הטמפרטורה בחדר ל-18 מעלות ולבשי בגדים מבדים נושמים.`;
-      emoji = '🔥';
-      type = 'tip';
-      action_url = '/heat-waves';
-    } else if (sleepIssuesCount >= 3 && energyLowCount >= 3) {
-      message = `יש קשר ישיר בין איכות השינה לרמת האנרגיה שלך.\n\nכדאי לבדוק רמות ויטמין D ו-B12. גם פעילות גופנית קלה בבוקר יכולה לעזור.\n\nזוכרת את התרגיל של 'walking meditation' שלמדנו?`;
-      emoji = '⚡';
-      type = 'tip';
-      action_url = '/physical-activity';
-    } else if (moodIssuesCount >= 3) {
-      message = `המצב רוח שלך לא יציב השבוע.\n\nזה נורמלי לחלוטין בתקופה זו - ההורמונים משחקים איתנו 'תופסת אותי'.\n\nתזכרי: את לא המצב רוח שלך. את אותה אישה חזקה שהתמודדה עם אתגרים יותר קשים.\n\nאולי כדאי לדבר עם מישהי קרוב?`;
-      emoji = '🤗';
-      type = 'encouragement';
-      action_url = '/self-worth';
-    } else if (cycleEntries.length > 0) {
-      const lastPeriod = cycleEntries.find(e => e.is_period);
-      if (lastPeriod) {
-        const daysSince = Math.floor((new Date().getTime() - new Date(lastPeriod.date).getTime()) / (1000 * 60 * 60 * 24));
-        if (daysSince > 35) {
-          message = `זוכרת שסימנת מחזור לפני ${daysSince} ימים?\n\nזה בערך הזמן שבו הגוף שואל 'מה קורה הפעם?' 😄\n\nכנסי לעדכן אם כבר קיבלת או שהפעם זה דילג.\n\nובינתיים — הנה תרגיל קצר להקלה על כאבי גב תחתון.`;
-          emoji = '🌸';
-          type = 'cycle';
-        }
-      }
-    } else if (recentEntries.length >= 7) {
-      message = `איזה יופי! עקבת כבר 7 ימים ברצף 👏\n\nהגוף שלך מדבר — ואת מקשיבה.\n\nעליזה גאה בך. היא מבקשת שתכתבי לה בתגובות איזה שינוי הכי הפתיע אותך השבוע.`;
-      emoji = '🎆';
-      type = 'encouragement';
-    } else {
-      message = `את לא לבד. המערכת שלך פשוט מתאמנת על מצב חדש. 😅\n\nהמשיכי לתעד את המסע שלך - כל דיווח עוזר לי ללמוד אותך ולתת לך תובנות יותר מותאמות.`;
-      emoji = '🌟';
-      type = 'encouragement';
-    }
-    
-    return { message, emoji, type, action_url };
-  };
-
   const handleGenerateMessage = async () => {
-    const { message, emoji, type, action_url } = generateSmartMessage();
-    
+    setGenerating(true);
     try {
-      // Check if this is a mock user
-      if (userId.startsWith('mock-user-')) {
-        const newMessage: AlizaMessage = {
-          id: 'mock-msg-' + Date.now(),
-          user_id: userId,
-          type,
-          message,
-          emoji,
-          action_url,
-          created_at: new Date().toISOString()
-        };
-        setMessages([newMessage, ...messages]);
-        return;
-      }
-      
-      const { error } = await supabase
-        .from('aliza_messages')
-        .insert({
-          user_id: userId,
-          type,
-          message,
-          emoji,
-          action_url
-        });
+      const response = await fetch('/api/generate-aliza-message', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId,
+          dailyEntries,
+          cycleEntries
+        }),
+      });
 
-      if (error) throw error;
-      await loadMessages();
+      const result = await response.json();
+      
+      if (result.success && result.message) {
+        // If mock user, add to local state
+        if (userId.startsWith('mock-user-')) {
+          setMessages([result.message, ...messages]);
+        } else {
+          // Reload messages from database
+          await loadMessages();
+        }
+      } else {
+        console.error('Error generating message:', result.error);
+      }
     } catch (error) {
       console.error('Error generating message:', error);
+    } finally {
+      setGenerating(false);
     }
   };
 
   if (loading) {
     return (
-      <div className="aliza-messages">
-        <div className="loading">טוען הודעות...</div>
+      <div className="aliza-messages-container">
+        <div className="aliza-messages-loading">
+          <div className="loading-spinner"></div>
+          <p>טוען הודעות...</p>
+        </div>
       </div>
     );
   }
 
+  const getTypeLabel = (type: string) => {
+    const labels: Record<string, string> = {
+      morning: 'בוקר טוב',
+      evening: 'ערב טוב',
+      cycle: 'מעקב מחזור',
+      encouragement: 'עידוד',
+      tip: 'טיפ'
+    };
+    return labels[type] || 'הודעה';
+  };
+
+  const getTypeGradient = (type: string) => {
+    const gradients: Record<string, string> = {
+      morning: 'linear-gradient(135deg, #FFD89B 0%, #FFE4B5 100%)',
+      evening: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      cycle: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      encouragement: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      tip: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'
+    };
+    return gradients[type] || 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+  };
+
   return (
-    <div className="aliza-messages">
-      <div className="aliza-header">
-        <h2>💌 הודעות מעליזה</h2>
-        <p className="subtitle">התובנות החכמות והמסרים האישיים שלך</p>
+    <div className="aliza-messages-container">
+      {/* Header Section */}
+      <div className="aliza-messages-header">
+        <div className="header-content">
+          <div className="aliza-avatar-section">
+            <img src="/aliza_profile.jpg" alt="עליזה" className="aliza-profile-image" />
+            <div className="avatar-glow"></div>
+          </div>
+          <div className="header-text">
+            <h2 className="section-title">
+              <span className="title-icon">💌</span>
+              הודעות מעליזה
+            </h2>
+            <p className="section-subtitle">התובנות החכמות והמסרים האישיים שלך</p>
+          </div>
+        </div>
       </div>
 
       {/* Generate New Message Button */}
-      <div className="generate-section">
+      <div className="generate-section-luxury">
         <button 
-          className="btn btn-primary generate-btn"
+          className={`generate-btn-luxury ${generating ? 'generating' : ''}`}
           onClick={handleGenerateMessage}
+          disabled={generating}
         >
-          <span className="btn-icon">✨</span>
-          צרי הודעה חכמה חדשה
+          <span className="btn-sparkles">
+            <span className="sparkle">✨</span>
+            <span className="sparkle">✨</span>
+          </span>
+          <span className="btn-text">
+            {generating ? 'יוצרת הודעה חכמה...' : 'צרי הודעה חכמה חדשה'}
+          </span>
+          <span className="btn-shine"></span>
         </button>
       </div>
 
       {/* Messages List */}
-      <div className="messages-list">
+      <div className="messages-grid">
         {messages.length === 0 ? (
-          <div className="empty-state">
-            <div className="empty-icon">💌</div>
-            <h3>עדיין אין הודעות</h3>
-            <p>לחצי על הכפתור למעלה כדי לקבל הודעה חכמה מעליזה</p>
+          <div className="empty-state-luxury">
+            <div className="empty-icon-wrapper">
+              <div className="empty-icon">💌</div>
+              <div className="empty-icon-glow"></div>
+            </div>
+            <h3 className="empty-title">עדיין אין הודעות</h3>
+            <p className="empty-description">
+              לחצי על הכפתור למעלה כדי לקבל הודעה חכמה מעליזה המבוססת על הנתונים שלך
+            </p>
           </div>
         ) : (
-          messages.map((message) => (
-            <div key={message.id} className={`message-card ${message.type}`}>
-              <div className="message-header">
-                <span className="message-emoji">{message.emoji}</span>
-                <span className="message-type">
-                  {message.type === 'morning' && 'בוקר טוב'}
-                  {message.type === 'evening' && 'ערב טוב'}
-                  {message.type === 'cycle' && 'מעקב מחזור'}
-                  {message.type === 'encouragement' && 'עידוד'}
-                  {message.type === 'tip' && 'טיפ'}
-                </span>
-                <span className="message-date">
-                  {new Date(message.created_at).toLocaleDateString('he-IL')}
+          messages.map((message, index) => (
+            <div 
+              key={message.id} 
+              className={`message-card-luxury ${message.type}`}
+              style={{ 
+                '--type-gradient': getTypeGradient(message.type),
+                animationDelay: `${index * 0.1}s`
+              } as React.CSSProperties}
+            >
+              <div className="card-decoration"></div>
+              <div className="card-shine"></div>
+              
+              {/* Message Header */}
+              <div className="message-header-luxury">
+                <div className="message-type-badge" style={{ background: getTypeGradient(message.type) }}>
+                  <span className="type-emoji">{message.emoji}</span>
+                  <span className="type-label">{getTypeLabel(message.type)}</span>
+                </div>
+                <span className="message-date-luxury">
+                  {new Date(message.created_at).toLocaleDateString('he-IL', {
+                    day: 'numeric',
+                    month: 'numeric',
+                    year: 'numeric'
+                  })}
                 </span>
               </div>
-              <div className="message-content">
-                {message.message}
+
+              {/* Message Content */}
+              <div className="message-content-luxury">
+                <div className="content-text">
+                  {message.message.split('\n').map((line, i) => (
+                    <p key={i} className={line.trim() === '' ? 'paragraph-break' : ''}>
+                      {line.trim() || '\u00A0'}
+                    </p>
+                  ))}
+                </div>
               </div>
+
+              {/* Action Link */}
               {message.action_url && (
-                <div className="message-action">
-                  <a href={message.action_url} className="action-link">
-                    קישור לפעולה
+                <div className="message-action-luxury">
+                  <a href={message.action_url} className="action-link-luxury">
+                    <span className="link-icon">👉</span>
+                    <span className="link-text">קישור לפעולה</span>
+                    <span className="link-arrow">→</span>
                   </a>
                 </div>
               )}
+
+              {/* Aliza Signature */}
+              <div className="message-signature">
+                <div className="signature-avatar">
+                  <img src="/aliza_profile.jpg" alt="עליזה" />
+                </div>
+                <span className="signature-text">עליזה</span>
+              </div>
             </div>
           ))
         )}
-      </div>
-
-      {/* Aliza Personality */}
-      <div className="aliza-personality">
-        <div className="personality-card">
-          <div className="aliza-avatar">👩‍⚕️</div>
-          <div className="personality-text">
-            <h3>עליזה - המלווה שלך</h3>
-            <p>
-              "אני כאן כדי לעזור לך להבין את הגוף שלך ולהתמודד עם השינויים. 
-              כל יום הוא מסע, ואנחנו עוברות אותו יחד! 💕"
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
