@@ -53,7 +53,7 @@ export default function LoginPage() {
           router.push('/dashboard');
         }, 1000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.log('Login failed. Error:', error.message);
       setMessage('שגיאה בהתחברות: ' + error.message);
     } finally {
@@ -73,7 +73,7 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMessage(error.message || 'שגיאה בהתחברות עם Google');
       setLoading(false);
     }

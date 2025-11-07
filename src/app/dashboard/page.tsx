@@ -14,13 +14,42 @@ interface UserProfile {
   current_tokens: number;
 }
 
+interface Alert {
+  link: string;
+  severity: string;
+  title: string;
+  message: string;
+}
+
+interface DayData {
+  hasEntry: boolean;
+  hotFlash?: boolean;
+  goodSleep?: boolean;
+  lowMood?: boolean;
+  dayName: string;
+}
+
+interface Recommendation {
+  emoji: string;
+  title: string;
+  message: string;
+  link: string;
+}
+
+interface DashboardData {
+  needsAttention: Alert[];
+  last7Days: DayData[];
+  alizaRecommendations: Recommendation[];
+  topSymptoms?: [string, number][];
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [dailyEntries, setDailyEntries] = useState<DailyEntry[]>([]);
   const [cycleEntries, setCycleEntry] = useState<CycleEntry[]>([]);
-  const [dashboardData, setDashboardData] = useState<any>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -406,7 +435,7 @@ export default function DashboardPage() {
             <div className="urgent-alerts">
               <h2>💡 דברים שדורשים תשומת לב</h2>
               <div className="alerts-grid">
-                {dashboardData.needsAttention.map((alert: any, index: number) => (
+                {dashboardData.needsAttention.map((alert: Alert, index: number) => (
                   <a 
                     key={index}
                     href={alert.link}
@@ -476,7 +505,7 @@ export default function DashboardPage() {
         <section className="mini-chart-section">
           <h2>📈 7 הימים האחרונים שלך</h2>
           <div className="mini-chart">
-            {dashboardData.last7Days.map((day: any, index: number) => (
+            {dashboardData.last7Days.map((day: DayData, index: number) => (
               <div key={index} className="mini-chart-day">
                 <div className={`day-indicator ${day.hasEntry ? 'has-entry' : 'no-entry'}`}>
                   {day.hasEntry ? '✓' : '○'}
@@ -497,7 +526,7 @@ export default function DashboardPage() {
         <section className="aliza-recommendations">
           <h2>💬 המלצות מעליזה</h2>
           <div className="recommendations-grid">
-            {dashboardData.alizaRecommendations.map((rec: any, index: number) => (
+            {dashboardData.alizaRecommendations.map((rec: Recommendation, index: number) => (
               <div key={index} className="recommendation-card">
                 <div className="rec-header">
                   <span className="rec-emoji">{rec.emoji}</span>

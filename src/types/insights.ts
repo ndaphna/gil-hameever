@@ -50,7 +50,7 @@ export interface PersonalizedInsight {
   priority: 'low' | 'medium' | 'high';
   category: string;
   actionable: boolean;
-  relatedData: any;
+  relatedData?: Record<string, unknown>;
   alizaMessage: string;
   // מידע נוסף למערכת המשופרת
   comparisonToNorm?: {

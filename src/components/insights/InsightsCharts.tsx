@@ -2,11 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ChartData, TrendAnalysis } from '@/types/insights';
+import type { DailyEntry, CycleEntry } from '@/types/journal';
 import './InsightsCharts.css';
 
 interface InsightsChartsProps {
-  dailyEntries: any[];
-  cycleEntries: any[];
+  dailyEntries: DailyEntry[];
+  cycleEntries: CycleEntry[];
   timeRange: 'week' | 'month' | 'quarter';
   onTimeRangeChange?: (range: 'week' | 'month' | 'quarter') => void;
 }
@@ -437,7 +438,7 @@ const SYMPTOM_NAMES: Record<string, { name: string; emoji: string; color: string
 };
 
 // פונקציות ליצירת נתונים מהנתונים האמיתיים
-function generateSymptomsData(dailyEntries: any[], timeRange: string): { chartData: ChartData; topSymptoms: Array<{ name: string; emoji: string; count: number; percentage: number; color: string }> } {
+function generateSymptomsData(dailyEntries: DailyEntry[], timeRange: string): { chartData: ChartData; topSymptoms: Array<{ name: string; emoji: string; count: number; percentage: number; color: string }> } {
   const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -512,7 +513,7 @@ function generateSymptomsData(dailyEntries: any[], timeRange: string): { chartDa
   };
 }
 
-function generateMoodData(dailyEntries: any[], timeRange: string): ChartData {
+function generateMoodData(dailyEntries: DailyEntry[], timeRange: string): ChartData {
   const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -565,7 +566,7 @@ function generateMoodData(dailyEntries: any[], timeRange: string): ChartData {
   };
 }
 
-function generateSleepData(dailyEntries: any[], timeRange: string): ChartData {
+function generateSleepData(dailyEntries: DailyEntry[], timeRange: string): ChartData {
   const days = timeRange === 'week' ? 7 : timeRange === 'month' ? 30 : 90;
   const cutoffDate = new Date();
   cutoffDate.setDate(cutoffDate.getDate() - days);
@@ -614,7 +615,7 @@ function generateSleepData(dailyEntries: any[], timeRange: string): ChartData {
   };
 }
 
-function generateCycleData(cycleEntries: any[], timeRange: string): ChartData {
+function generateCycleData(cycleEntries: CycleEntry[], timeRange: string): ChartData {
   const months = timeRange === 'week' ? 1 : timeRange === 'month' ? 3 : 12;
   const cutoffDate = new Date();
   cutoffDate.setMonth(cutoffDate.getMonth() - months);

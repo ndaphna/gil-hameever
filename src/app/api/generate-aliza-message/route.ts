@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import OpenAI from 'openai';
+import type { DailyEntry, CycleEntry } from '@/types/journal';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -26,16 +27,16 @@ export async function POST(request: NextRequest) {
     const recentCycles = (cycleEntries || []).slice(0, 3);
     
     // Calculate patterns
-    const hotFlashesCount = recentEntries.filter((e: any) => e.hot_flashes).length;
-    const sleepIssuesCount = recentEntries.filter((e: any) => 
+    const hotFlashesCount = recentEntries.filter((e: DailyEntry) => e.hot_flashes).length;
+    const sleepIssuesCount = recentEntries.filter((e: DailyEntry) => 
       e.sleep_issues || e.sleep_quality === 'poor'
     ).length;
-    const poorSleepDays = recentEntries.filter((e: any) => e.sleep_quality === 'poor').length;
-    const moodIssuesCount = recentEntries.filter((e: any) => 
-      ['sad', 'irritated', 'frustrated'].includes(e.mood)
+    const poorSleepDays = recentEntries.filter((e: DailyEntry) => e.sleep_quality === 'poor').length;
+    const moodIssuesCount = recentEntries.filter((e: DailyEntry) => 
+      ['sad', 'irritated', 'frustrated'].includes(e.mood || '')
     ).length;
-    const nightSweatsCount = recentEntries.filter((e: any) => e.night_sweats).length;
-    const energyLowCount = recentEntries.filter((e: any) => e.energy_level === 'low').length;
+    const nightSweatsCount = recentEntries.filter((e: DailyEntry) => e.night_sweats).length;
+    const energyLowCount = recentEntries.filter((e: DailyEntry) => e.energy_level === 'low').length;
     
     // Get current time of day
     const hour = new Date().getHours();
@@ -43,7 +44,7 @@ export async function POST(request: NextRequest) {
     const isMorning = hour >= 5 && hour < 12;
     
     // Build context prompt
-    let contextPrompt = `את עליזה, יועצת אישית מקצועית ומנופאוזית מנוסה לנשים בגיל המעבר. 
+    const contextPrompt = `את עליזה, יועצת אישית מקצועית ומנופאוזית מנוסה לנשים בגיל המעבר. 
 
 תפקידך: ליצור הודעה חכמה, אישית וחמה המבוססת על הנתונים האמיתיים של המשתמשת.
 
@@ -74,7 +75,7 @@ export async function POST(request: NextRequest) {
     let emoji: string = '💕';
 
     if (isMorning && recentEntries.length > 0) {
-      const todayEntry = recentEntries.find((e: any) => {
+      const todayEntry = recentEntries.find((e: DailyEntry) => {
         const entryDate = new Date(e.date).toISOString().split('T')[0];
         const today = new Date().toISOString().split('T')[0];
         return entryDate === today && e.time_of_day === 'morning';
@@ -102,7 +103,7 @@ export async function POST(request: NextRequest) {
       actionUrl = '/self-worth';
       emoji = '🤗';
     } else if (recentCycles.length > 0) {
-      const lastPeriod = recentCycles.find((e: any) => e.is_period);
+      const lastPeriod = recentCycles.find((e: CycleEntry) => e.is_period);
       if (lastPeriod) {
         const daysSince = Math.floor(
           (new Date().getTime() - new Date(lastPeriod.date).getTime()) / (1000 * 60 * 60 * 24)
@@ -162,10 +163,11 @@ export async function POST(request: NextRequest) {
       }
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error generating Aliza message:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Internal server error';
     return NextResponse.json({ 
-      error: error.message || 'Internal server error',
+      error: errorMessage,
       message: null
     }, { status: 500 });
   }

@@ -148,7 +148,7 @@ export default function CycleEntryForm({
                     onClick={(e) => {
                       e.preventDefault();
                       console.log('Intensity:', option.value);
-                      setFormData({ ...formData, bleeding_intensity: option.value as any });
+                      setFormData({ ...formData, bleeding_intensity: option.value as 'light' | 'medium' | 'heavy' });
                     }}
                   >
                     <span className="emoji">{option.emoji}</span>

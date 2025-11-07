@@ -400,7 +400,7 @@ export default function MoodCards({ entries }: MoodCardsProps) {
           <div className="gamification-card total-card">
             <div className="total-icon">📊</div>
             <div className="total-number">{totalReports}</div>
-            <div className="total-label">סה"כ דיווחים</div>
+            <div className="total-label">סה&quot;כ דיווחים</div>
             {totalReports >= 30 && <div className="achievement">⭐ מדווחת מצטיינת</div>}
           </div>
         </div>

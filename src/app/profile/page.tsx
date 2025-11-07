@@ -98,7 +98,7 @@ export default function ProfilePage() {
       
       // Dispatch custom event to notify other components
       window.dispatchEvent(new CustomEvent('profileUpdated'));
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMessage('שגיאה בעדכון הפרופיל');
       console.error(error);
     } finally {

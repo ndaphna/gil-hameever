@@ -34,7 +34,7 @@ export default function CycleTrends({ entries }: CycleTrendsProps) {
     const cycleDataArray: CycleData[] = [];
     let totalCycleLength = 0;
     let cycleCount = 0;
-    let varianceAccumulator: number[] = [];
+    const varianceAccumulator: number[] = [];
 
     for (let i = 1; i < periodEntries.length; i++) {
       const prevDate = new Date(periodEntries[i - 1].date);

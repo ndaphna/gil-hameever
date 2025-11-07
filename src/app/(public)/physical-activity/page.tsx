@@ -90,7 +90,7 @@ export default function PhysicalActivityPage() {
                   <td>שומרים על מסת שריר, מזרזים מטבוליזם, מגנים על עצמות</td>
                 </tr>
                 <tr>
-                  <td>🚶 הליכה יומית (גם 20 דק')</td>
+                  <td>🚶 הליכה יומית (גם 20 דק&apos;)</td>
                   <td>תורמת לבריאות הלב, מעודדת חשיבה חיובית</td>
                 </tr>
                 <tr>

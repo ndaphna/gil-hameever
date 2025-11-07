@@ -43,7 +43,7 @@ export default function SignupPage() {
           router.push('/login');
         }, 2000);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMessage(error.message || 'שגיאה בהרשמה');
     } finally {
       setLoading(false);
@@ -61,7 +61,7 @@ export default function SignupPage() {
       });
 
       if (error) throw error;
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMessage(error.message || 'שגיאה בהרשמה עם Google');
       setLoading(false);
     }

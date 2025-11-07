@@ -271,7 +271,7 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
             <div className="summary-icon">📊</div>
             <div className="summary-content">
               <h4>{summary.totalInsights}</h4>
-              <p>תובנות סה"כ</p>
+              <p>תובנות סה&quot;כ</p>
             </div>
           </div>
           <div className="summary-card">

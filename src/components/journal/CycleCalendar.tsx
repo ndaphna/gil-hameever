@@ -50,7 +50,7 @@ export default function CycleCalendar({ entries, onDateClick }: CycleCalendarPro
     });
   };
 
-  const getDayClass = (dayData: any) => {
+  const getDayClass = (dayData: { dateStr: string; entry?: CycleEntry } | null) => {
     if (!dayData) return 'calendar-day empty';
     
     const classes = ['calendar-day'];
@@ -73,7 +73,7 @@ export default function CycleCalendar({ entries, onDateClick }: CycleCalendarPro
     return classes.join(' ');
   };
 
-  const getDayIcon = (dayData: any) => {
+  const getDayIcon = (dayData: { dateStr: string; entry?: CycleEntry } | null) => {
     if (!dayData || !dayData.entry) return null;
     
     if (dayData.entry.is_period) {

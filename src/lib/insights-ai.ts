@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 import { PersonalizedInsight, ChartData } from '@/types/insights';
+import type { DailyEntry, CycleEntry } from '@/types/journal';
+import type { EmotionEntry } from '@/types';
 
 export class InsightsAI {
   private userId: string;
@@ -48,10 +50,10 @@ export class InsightsAI {
   }
 
   private async analyzeWithOpenAI(data: {
-    dailyEntries: any[];
-    cycleEntries: any[];
-    emotionEntries: any[];
-    userProfile: any;
+    dailyEntries: DailyEntry[];
+    cycleEntries: CycleEntry[];
+    emotionEntries: EmotionEntry[];
+    userProfile: Record<string, unknown>;
   }): Promise<PersonalizedInsight[]> {
     try {
       // קריאה ל-API route החדש
@@ -87,7 +89,7 @@ export class InsightsAI {
 
   private async addVisualDataToInsight(
     insight: PersonalizedInsight,
-    dailyEntries: any[]
+    dailyEntries: DailyEntry[]
   ): Promise<PersonalizedInsight> {
     // הוספת נתונים ויזואליים לפי קטגוריה
     if (insight.category === 'sleep' && !insight.visualData) {
@@ -171,7 +173,7 @@ export class InsightsAI {
   }
 
   // Helper functions for visual data
-  private generateSleepVisualData(entries: any[]): ChartData {
+  private generateSleepVisualData(entries: DailyEntry[]): ChartData {
     const sleepEntries = entries
       .filter(e => e.sleep_quality)
       .slice(0, 30)
@@ -194,7 +196,7 @@ export class InsightsAI {
     };
   }
 
-  private generateSymptomVisualData(entries: any[], symptom: string): ChartData {
+  private generateSymptomVisualData(entries: DailyEntry[], symptom: string): ChartData {
     const recentEntries = entries.slice(0, 30).reverse();
     
     return {
@@ -212,7 +214,7 @@ export class InsightsAI {
     };
   }
 
-  private generateMoodVisualData(entries: any[]): ChartData {
+  private generateMoodVisualData(entries: DailyEntry[]): ChartData {
     const moodScores: Record<string, number> = {
       happy: 5,
       calm: 4,

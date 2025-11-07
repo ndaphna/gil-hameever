@@ -89,7 +89,7 @@ export default function DailyEntryForm({
       energy_level: timeOfDay === 'morning' ? formData.morning_energy_level : formData.energy_level
     };
     // Remove morning_energy_level from submission as it's not in the database schema
-    delete (submitData as any).morning_energy_level;
+    delete (submitData as Record<string, unknown>).morning_energy_level;
     
     console.log('📝 DailyEntryForm: Submitting form with data:', submitData);
     console.log('🕐 Time of day:', timeOfDay);
@@ -128,7 +128,7 @@ export default function DailyEntryForm({
                       className={`sleep-option ${
                         formData.sleep_quality === option.value ? 'selected' : ''
                       }`}
-                      onClick={() => setFormData({ ...formData, sleep_quality: option.value as any })}
+                      onClick={() => setFormData({ ...formData, sleep_quality: option.value as 'poor' | 'fair' | 'good' })}
                       aria-label={`איכות שינה ${option.label}`}
                       role="radio"
                       aria-checked={formData.sleep_quality === option.value}
@@ -187,7 +187,7 @@ export default function DailyEntryForm({
                       className={`energy-option ${
                         formData.morning_energy_level === option.value ? 'selected' : ''
                       }`}
-                      onClick={() => setFormData({ ...formData, morning_energy_level: option.value as any })}
+                      onClick={() => setFormData({ ...formData, morning_energy_level: option.value as 'low' | 'medium' | 'high' })}
                       aria-label={`אנרגיה בבוקר ${option.label}`}
                       role="radio"
                       aria-checked={formData.morning_energy_level === option.value}
@@ -219,7 +219,7 @@ export default function DailyEntryForm({
                     className={`energy-option ${
                       formData.energy_level === option.value ? 'selected' : ''
                     }`}
-                    onClick={() => setFormData({ ...formData, energy_level: option.value as any })}
+                    onClick={() => setFormData({ ...formData, energy_level: option.value as 'low' | 'medium' | 'high' })}
                     aria-label={`רמת אנרגיה ${option.label}`}
                     role="radio"
                     aria-checked={formData.energy_level === option.value}
@@ -248,7 +248,7 @@ export default function DailyEntryForm({
                     className={`mood-option ${
                       formData.mood === option.value ? 'selected' : ''
                     }`}
-                    onClick={() => setFormData({ ...formData, mood: option.value as any })}
+                    onClick={() => setFormData({ ...formData, mood: option.value as 'calm' | 'irritated' | 'sad' | 'happy' | 'frustrated' })}
                     aria-label={`מצב רוח ${option.label}`}
                     role="radio"
                     aria-checked={formData.mood === option.value}

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import OpenAI from 'openai';
+import type { ChatMessage } from '@/types';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -75,7 +76,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get conversation history if conversationId exists
-    let conversationHistory: any[] = [];
+    let conversationHistory: ChatMessage[] = [];
     if (conversationId) {
       const { data: messages } = await supabaseAdmin
         .from('message')
@@ -134,10 +135,11 @@ export async function POST(request: NextRequest) {
             max_tokens: 300,
             temperature: 0.7,
           });
-        } catch (openaiError: any) {
+        } catch (openaiError: unknown) {
           console.error('OpenAI API error:', openaiError);
+          const errorMessage = openaiError instanceof Error ? openaiError.message : 'Unknown error';
           return NextResponse.json({ 
-            error: `OpenAI API error: ${openaiError.message || 'Unknown error'}` 
+            error: `OpenAI API error: ${errorMessage}` 
           }, { status: 500 });
         }
 

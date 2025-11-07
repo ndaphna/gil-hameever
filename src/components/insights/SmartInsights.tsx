@@ -161,7 +161,7 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
         insights.push({
           type: 'pattern',
           title: '🔗 זיהיתי קשר בין תסמינים',
-          message: 'גלי החום משפיעים על השינה שלך. נסי להוריד טמפרטורה בחדר, להימנע מקפאין אחה"צ, ולהחזיק מאוורר ליד המיטה.',
+          message: 'גלי החום משפיעים על השינה שלך. נסי להוריד טמפרטורה בחדר, להימנע מקפאין אחה&quot;צ, ולהחזיק מאוורר ליד המיטה.',
           action: 'קראי עוד',
           link: '/heat-waves'
         });
@@ -376,7 +376,7 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
                 </div>
                 <div className="sleep-stat">
                   <span className="stat-emoji">📊</span>
-                  <span className="stat-text">{sleep.total} סה"כ דיווחי בוקר</span>
+                  <span className="stat-text">{sleep.total} סה&quot;כ דיווחי בוקר</span>
                 </div>
               </div>
             </div>

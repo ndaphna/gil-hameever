@@ -75,15 +75,21 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
     }
   };
 
-  const updatePreference = (path: string, value: any) => {
+  const updatePreference = (path: string, value: unknown) => {
     if (!preferences) return;
     
     const newPreferences = { ...preferences };
     const keys = path.split('.');
-    let current = newPreferences as any;
+    let current: Record<string, unknown> = newPreferences as Record<string, unknown>;
     
     for (let i = 0; i < keys.length - 1; i++) {
-      current = current[keys[i]];
+      const next = current[keys[i]];
+      if (next && typeof next === 'object') {
+        current = next as Record<string, unknown>;
+      } else {
+        current[keys[i]] = {};
+        current = current[keys[i]] as Record<string, unknown>;
+      }
     }
     
     current[keys[keys.length - 1]] = value;

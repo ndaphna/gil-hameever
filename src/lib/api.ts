@@ -59,7 +59,7 @@ class ApiClient {
     return this.request(`/profile/${userId}`);
   }
 
-  async updateProfile(userId: string, updates: any) {
+  async updateProfile(userId: string, updates: Record<string, unknown>) {
     return this.request(`/profile/${userId}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
@@ -71,7 +71,7 @@ class ApiClient {
     return this.request(`/journal/${userId}?page=${page}&limit=${limit}`);
   }
 
-  async createJournalEntry(userId: string, entry: any) {
+  async createJournalEntry(userId: string, entry: Record<string, unknown>) {
     return this.request('/journal', {
       method: 'POST',
       body: JSON.stringify({
@@ -81,7 +81,7 @@ class ApiClient {
     });
   }
 
-  async updateJournalEntry(entryId: string, updates: any) {
+  async updateJournalEntry(entryId: string, updates: Record<string, unknown>) {
     return this.request(`/journal/${entryId}`, {
       method: 'PUT',
       body: JSON.stringify(updates),
@@ -102,7 +102,7 @@ class ApiClient {
     return this.request(`/emotions?${params}`);
   }
 
-  async createEmotionEntry(userId: string, entry: any) {
+  async createEmotionEntry(userId: string, entry: Record<string, unknown>) {
     return this.request('/emotions', {
       method: 'POST',
       body: JSON.stringify({
@@ -156,7 +156,7 @@ class ApiClient {
     return this.request(`/settings/${userId}`);
   }
 
-  async updateSettings(userId: string, settings: any) {
+  async updateSettings(userId: string, settings: Record<string, unknown>) {
     return this.request('/settings', {
       method: 'PUT',
       body: JSON.stringify({

@@ -1,6 +1,29 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import OpenAI from 'openai';
+import type { DailyEntry } from '@/types/journal';
+
+interface SleepPatterns {
+  totalDays: number;
+  poorSleepDays: number;
+  averageSleepQuality: number;
+  recentTrend: 'declining' | 'stable';
+}
+
+interface MoodTrends {
+  totalDays: number;
+  positiveMoods: number;
+  negativeMoods: number;
+  dominantMood: string;
+  recentTrend: 'improving' | 'declining' | 'stable';
+}
+
+interface Insight {
+  type: string;
+  title: string;
+  description: string;
+  data?: SleepPatterns | MoodTrends;
+}
 
 console.log('🔑 OpenAI API Key loaded:', process.env.OPENAI_API_KEY ? 'YES' : 'NO');
 console.log('🔑 Supabase URL loaded:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'YES' : 'NO');
@@ -111,7 +134,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function calculateConsecutiveDays(checkIns: any[]): number {
+function calculateConsecutiveDays(checkIns: DailyEntry[]): number {
   if (checkIns.length === 0) return 0;
   
   let consecutive = 0;
@@ -135,7 +158,7 @@ function calculateConsecutiveDays(checkIns: any[]): number {
   return consecutive;
 }
 
-function analyzeSleepPatterns(checkIns: any[]): any {
+function analyzeSleepPatterns(checkIns: DailyEntry[]): SleepPatterns {
   const morningCheckIns = checkIns.filter(c => c.time_of_day === 'morning');
   const totalDays = morningCheckIns.length;
   const poorSleepDays = morningCheckIns.filter(c => 
@@ -165,7 +188,7 @@ function analyzeSleepPatterns(checkIns: any[]): any {
   };
 }
 
-function analyzeMoodTrends(checkIns: any[]): any {
+function analyzeMoodTrends(checkIns: DailyEntry[]): MoodTrends {
   const eveningCheckIns = checkIns.filter(c => c.time_of_day === 'evening');
   const moods = eveningCheckIns.map(c => c.mood?.value).filter(Boolean);
   
@@ -188,7 +211,7 @@ function analyzeMoodTrends(checkIns: any[]): any {
   };
 }
 
-async function generateSleepInsight(sleepPatterns: any): Promise<any> {
+async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insight> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על דפוסי שינה בהתבסס על הנתונים.
@@ -228,7 +251,7 @@ async function generateSleepInsight(sleepPatterns: any): Promise<any> {
   }
 }
 
-async function generateMoodInsight(moodTrends: any): Promise<any> {
+async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על מגמות מצב רוח.
@@ -306,7 +329,7 @@ async function generateEncouragementInsight(consecutiveDays: number): Promise<an
   }
 }
 
-function getFallbackSleepInsight(sleepPatterns: any): any {
+function getFallbackSleepInsight(sleepPatterns: SleepPatterns): Insight {
   const { poorSleepDays, totalDays, averageSleepQuality } = sleepPatterns;
   
   if (poorSleepDays >= 3) {
@@ -333,7 +356,7 @@ function getFallbackSleepInsight(sleepPatterns: any): any {
   }
 }
 
-function getFallbackMoodInsight(moodTrends: any): any {
+function getFallbackMoodInsight(moodTrends: MoodTrends): Insight {
   const { dominantMood } = moodTrends;
   
   if (dominantMood === 'sad' || dominantMood === 'frustrated') {
@@ -353,7 +376,7 @@ function getFallbackMoodInsight(moodTrends: any): any {
   }
 }
 
-function getFallbackEncouragementInsight(consecutiveDays: number): any {
+function getFallbackEncouragementInsight(consecutiveDays: number): Insight {
   return {
     type: 'suggestion',
     title: 'עידוד',
