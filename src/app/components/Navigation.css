@@ -32,16 +32,34 @@
   flex-shrink: 0;
 }
 
-.nav-brand a {
+.nav-brand-link {
   text-decoration: none;
   color: var(--color-pink);
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   padding: 8px 0;
-  transition: color 0.3s ease;
+  transition: all 0.3s ease;
 }
 
-.nav-brand a:hover {
+.nav-brand-link:hover {
   color: var(--color-pink-strong);
+}
+
+.nav-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+  transition: transform 0.3s ease;
+}
+
+.nav-brand-link:hover .nav-logo {
+  transform: scale(1.05);
+}
+
+.nav-brand-text {
+  display: inline-block;
 }
 
 /* Mobile Menu Buttons */
@@ -295,6 +313,43 @@
   flex-shrink: 0;
 }
 
+/* Social Icons Group */
+.nav-auth-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.social-icon-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-gray-700);
+  transition: all 0.3s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.social-icon-link:hover {
+  background: var(--color-pink-light);
+  color: var(--color-pink);
+  transform: translateY(-2px);
+}
+
+.social-icon {
+  width: 20px;
+  height: 20px;
+  transition: all 0.3s ease;
+}
+
+.social-icon-link:hover .social-icon {
+  transform: scale(1.1);
+}
+
 .nav-auth form {
   margin: 0;
 }
@@ -352,6 +407,15 @@
 
   .nav-brand {
     font-size: 16px;
+  }
+
+  .nav-logo {
+    width: 32px;
+    height: 32px;
+  }
+
+  .nav-brand-link {
+    gap: 8px;
   }
 
   /* Show Mobile Menu Buttons */
@@ -486,6 +550,25 @@
     font-size: 15px;
     padding: 12px 20px;
     justify-content: center;
+  }
+
+  .nav-auth-group {
+    width: 100%;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .social-icon-link {
+    width: 100%;
+    height: 44px;
+    justify-content: flex-start;
+    padding: 0 20px;
+    border-radius: 8px;
+    border: 1px solid var(--color-gray-100);
+  }
+
+  .social-icon-link:hover {
+    border-color: var(--color-pink);
   }
 
   /* Overlay */

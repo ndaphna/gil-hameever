@@ -49,6 +49,10 @@ const kalam = Kalam({
 export const metadata: Metadata = {
   title: "מנופאוזית וטוב לה",
   description: "אתר ואפליקציה בעברית לנשים בישראל",
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+  },
 };
 
 export default function RootLayout({
