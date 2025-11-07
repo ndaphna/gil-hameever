@@ -352,11 +352,22 @@
   border-radius: 50%;
 }
 
-.pie-positive {
+.pie-value {
   font-size: 2.5rem;
   font-weight: 700;
-  color: var(--neutral-dark);
   z-index: 1;
+}
+
+.pie-positive {
+  color: #4CAF50; /* ירוק - חיובי */
+}
+
+.pie-mixed {
+  color: #FF9800; /* כתום - מעורב */
+}
+
+.pie-negative {
+  color: #F44336; /* אדום - זקוק לתמיכה */
 }
 
 .pie-label {

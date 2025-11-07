@@ -371,22 +371,45 @@
 .new-conversation-btn {
   background: linear-gradient(135deg, #6c5ce7, #a29bfe);
   border: none;
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   cursor: pointer;
   color: white;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .new-conversation-btn:hover {
-  transform: scale(1.1);
+  transform: translateY(-1px);
   box-shadow: 0 6px 16px rgba(108, 92, 231, 0.4);
+  background: linear-gradient(135deg, #5a4cd6, #9286fd);
+}
+
+.new-conversation-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(108, 92, 231, 0.3);
+}
+
+.new-conversation-icon {
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.new-conversation-text {
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .conversations-list {
@@ -540,6 +563,46 @@
   .tokens-display {
     padding: 0.5rem 1rem;
     font-size: 0.85rem;
+  }
+  
+  .conversations-header {
+    padding: 1rem 1.25rem 0.75rem;
+  }
+  
+  .conversations-header h3 {
+    font-size: 0.9rem;
+  }
+  
+  .new-conversation-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .new-conversation-text {
+    font-size: 0.75rem;
+  }
+  
+  .new-conversation-icon {
+    font-size: 0.9rem;
+  }
+}
+
+/* Very small screens - hide text, show only icon */
+@media (max-width: 480px) {
+  .new-conversation-text {
+    display: none;
+  }
+  
+  .new-conversation-btn {
+    padding: 0.5rem;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+  
+  .new-conversation-icon {
+    font-size: 1rem;
   }
 }
 

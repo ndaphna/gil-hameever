@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 
 export default function BelongingSisterhoodEmotionalConnectionPage() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function BelongingSisterhoodEmotionalConnectionPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="belonging-sisterhood-page">
       {/* Hero Section */}
       <section className="hero">
@@ -257,6 +259,7 @@ export default function BelongingSisterhoodEmotionalConnectionPage() {
         </div>
       </section>
     </div>
+    </DashboardLayout>
   );
 }
 

@@ -22,21 +22,11 @@ export default function JournalPage() {
       
       console.log('Journal: User check result:', user);
       
-      // Check for mock login if no Supabase user
+      // Redirect to login if no authenticated user
       if (!user) {
-        const mockLogin = localStorage.getItem('mock-login');
-        if (mockLogin === 'true') {
-          console.log('Journal: Using mock login');
-          // Create a mock user ID for mock login
-          const mockUserId = 'mock-user-' + Date.now();
-          setUserId(mockUserId);
-          setLoading(false);
-          return;
-        } else {
-          console.log('Journal: No user found, redirecting to login');
-          router.push('/login');
-          return;
-        }
+        console.log('Journal: No authenticated user found, redirecting to login');
+        router.push('/login');
+        return;
       }
 
       setUserId(user.id);

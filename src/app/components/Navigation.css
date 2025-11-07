@@ -70,7 +70,9 @@
   transition: all 0.3s ease;
   box-shadow: 0 2px 8px rgba(255, 0, 128, 0.2);
   position: relative;
-  z-index: 1001;
+  z-index: 1004; /* Above sidebar (1003) to ensure click works */
+  -webkit-tap-highlight-color: transparent; /* Remove mobile tap highlight */
+  touch-action: manipulation; /* Improve touch responsiveness */
 }
 
 .internal-menu-btn:hover {

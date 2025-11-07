@@ -16,13 +16,27 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [userName, setUserName] = useState<string>('');
   const [mounted, setMounted] = useState(false);
+  const [roadmapOpen, setRoadmapOpen] = useState(false);
   const { tokens } = useTokens();
+
+  // Check if current page is a roadmap page
+  const isRoadmapPage = useMemo(() => {
+    const roadmapPaths = [
+      '/menopause-roadmap',
+      '/the-body-whispers',
+      '/certainty-peace-security',
+      '/belonging-sisterhood-emotional-connection',
+      '/self-worth',
+      '/wisdom-giving'
+    ];
+    return roadmapPaths.some(path => pathname === path);
+  }, [pathname]);
 
   const menuItems = useMemo(() => [
     {
       href: '/dashboard',
-      icon: '🏠',
-      label: 'דף הבית',
+      icon: '📊',
+      label: 'לוח בקרה',
       description: 'סקירה כללית'
     },
     {
@@ -51,9 +65,68 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     }
   ], []);
 
+  const roadmapItems = useMemo(() => [
+    {
+      href: '/menopause-roadmap',
+      icon: '🗺️',
+      label: 'מפת הדרכים המלאה'
+    },
+    {
+      href: '/the-body-whispers',
+      icon: '🧏🏻‍♀️',
+      label: 'שלב 1: הגוף לוחש'
+    },
+    {
+      href: '/certainty-peace-security',
+      icon: '🌳',
+      label: 'שלב 2: וודאות, שקט, ביטחון'
+    },
+    {
+      href: '/belonging-sisterhood-emotional-connection',
+      icon: '🤝',
+      label: 'שלב 3: שייכות ואחוות נשים'
+    },
+    {
+      href: '/self-worth',
+      icon: '🌟',
+      label: 'שלב 4: ערך עצמי, משמעות'
+    },
+    {
+      href: '/wisdom-giving',
+      icon: '✨',
+      label: 'שלב 5: תבונה ונתינה'
+    }
+  ], []);
+
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Auto-open roadmap dropdown if on a roadmap page
+  useEffect(() => {
+    if (isRoadmapPage) {
+      setRoadmapOpen(true);
+    }
+  }, [isRoadmapPage]);
+
+  // Auto-scroll to active item in sidebar
+  useEffect(() => {
+    if (!mounted || !pathname) return;
+
+    // Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      const activeItem = document.querySelector('.sidebar-dropdown-item.active');
+      if (activeItem) {
+        activeItem.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+          inline: 'nearest'
+        });
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [pathname, mounted, roadmapOpen]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -61,22 +134,14 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     async function loadUserName() {
       const { data: { user } } = await supabase.auth.getUser();
       
-      // Check for mock login if no Supabase user
+      // If no authenticated user, show default name
       if (!user) {
-        const mockLogin = localStorage.getItem('mock-login');
-        if (mockLogin === 'true') {
-          console.log('Sidebar: Using mock login');
-          const mockEmail = localStorage.getItem('user-email') || 'inbald@sapir.ac.il';
-          setUserName(mockEmail.split('@')[0]);
-          return;
-        } else {
-          console.log('Sidebar: No user found');
-          setUserName('משתמשת');
-          return;
-        }
+        console.log('Sidebar: No authenticated user found');
+        setUserName('משתמשת');
+        return;
       }
       
-      if (user) {
+      // Load user profile from database
         let { data: profile } = await supabase
           .from('user_profile')
           .select('name, email')
@@ -108,44 +173,37 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         if (profile) {
           setUserName(profile.name || profile.email.split('@')[0]);
         }
-      }
     }
 
     loadUserName();
   }, [mounted]);
 
-  // Listen for localStorage changes (for mock login updates)
+  // Listen for profile updates
   useEffect(() => {
     if (!mounted) return;
     
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'user-email' && e.newValue) {
-        console.log('Sidebar: User email changed, updating name');
-        const newName = e.newValue.split('@')[0];
-        setUserName(newName);
-      }
-    };
-
-    // Listen for storage events
-    window.addEventListener('storage', handleStorageChange);
-    
-    // Also listen for custom events (for same-tab updates)
-    const handleCustomStorageChange = () => {
-      const mockLogin = localStorage.getItem('mock-login');
-      if (mockLogin === 'true') {
-        const mockEmail = localStorage.getItem('user-email');
-        if (mockEmail) {
-          console.log('Sidebar: Custom storage change, updating name');
-          setUserName(mockEmail.split('@')[0]);
+    // Listen for custom events (for profile updates)
+    const handleProfileUpdate = async () => {
+      console.log('Sidebar: Profile updated, reloading user name');
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        const { data: profile } = await supabase
+          .from('user_profile')
+          .select('name, email')
+          .eq('id', user.id)
+          .single();
+        
+        if (profile) {
+          setUserName(profile.name || profile.email.split('@')[0]);
         }
       }
     };
 
-    window.addEventListener('profileUpdated', handleCustomStorageChange);
+    window.addEventListener('profileUpdated', handleProfileUpdate);
     
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
-      window.removeEventListener('profileUpdated', handleCustomStorageChange);
+      window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
   }, [mounted]);
 
@@ -160,6 +218,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         <div 
           className="sidebar-overlay" 
           onClick={onClose}
+          onTouchStart={onClose} /* Handle touch events on mobile */
+          aria-hidden="true"
         />
       )}
 
@@ -201,6 +261,37 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               </div>
             </Link>
           ))}
+
+          {/* Roadmap Dropdown */}
+          <div className="sidebar-dropdown">
+            <button
+              className={`sidebar-item sidebar-dropdown-toggle ${roadmapOpen ? 'open' : ''} ${isRoadmapPage ? 'active' : ''}`}
+              onClick={() => setRoadmapOpen(!roadmapOpen)}
+            >
+              <span className="sidebar-icon">🗺️</span>
+              <div className="sidebar-content">
+                <span className="sidebar-label">מפת דרכים</span>
+                <span className="sidebar-description">שלבי גיל המעבר</span>
+              </div>
+              <span className={`dropdown-arrow ${roadmapOpen ? 'open' : ''}`}>▼</span>
+            </button>
+            
+            {roadmapOpen && (
+              <div className="sidebar-dropdown-menu">
+                {roadmapItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`sidebar-dropdown-item ${pathname === item.href ? 'active' : ''}`}
+                    onClick={onClose}
+                  >
+                    <span className="sidebar-icon">{item.icon}</span>
+                    <span className="sidebar-label">{item.label}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
         </nav>
 
         {/* Sidebar Footer */}

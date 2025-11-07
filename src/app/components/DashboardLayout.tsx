@@ -6,9 +6,10 @@ import './DashboardLayout.css';
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
+  className?: string;
 }
 
-export default function DashboardLayout({ children }: DashboardLayoutProps) {
+export default function DashboardLayout({ children, className }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // Auto-close sidebar on small screens
@@ -38,7 +39,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
       <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main Content */}
-      <main className="dashboard-content">
+      <main className={`dashboard-content ${className || ''}`}>
         {children}
       </main>
     </div>

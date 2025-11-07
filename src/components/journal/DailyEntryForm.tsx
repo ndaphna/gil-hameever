@@ -22,6 +22,7 @@ export default function DailyEntryForm({
     sleep_quality: 'good' as 'poor' | 'fair' | 'good',
     woke_up_night: false,
     night_sweats: false,
+    morning_energy_level: 'medium' as 'low' | 'medium' | 'high',
     energy_level: 'medium' as 'low' | 'medium' | 'high',
     mood: 'calm' as 'calm' | 'irritated' | 'sad' | 'happy' | 'frustrated',
     hot_flashes: false,
@@ -36,11 +37,17 @@ export default function DailyEntryForm({
 
   useEffect(() => {
     if (entry) {
+      // Use energy_level for morning_energy_level if time_of_day is morning
+      // Otherwise use it for general energy_level
+      const morningEnergy = entry.time_of_day === 'morning' ? (entry.energy_level || 'medium') : 'medium';
+      const generalEnergy = entry.time_of_day === 'evening' ? (entry.energy_level || 'medium') : 'medium';
+      
       setFormData({
         sleep_quality: entry.sleep_quality || 'good',
         woke_up_night: entry.woke_up_night || false,
         night_sweats: entry.night_sweats || false,
-        energy_level: entry.energy_level || 'medium',
+        morning_energy_level: morningEnergy as 'low' | 'medium' | 'high',
+        energy_level: generalEnergy as 'low' | 'medium' | 'high',
         mood: entry.mood || 'calm',
         hot_flashes: entry.hot_flashes || false,
         dryness: entry.dryness || false,
@@ -57,6 +64,7 @@ export default function DailyEntryForm({
         sleep_quality: 'good',
         woke_up_night: false,
         night_sweats: false,
+        morning_energy_level: 'medium',
         energy_level: 'medium',
         mood: 'calm',
         hot_flashes: false,
@@ -73,9 +81,19 @@ export default function DailyEntryForm({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('📝 DailyEntryForm: Submitting form with data:', formData);
+    // Prepare data based on time of day
+    const submitData: Partial<DailyEntry> = {
+      ...formData,
+      // For morning entries, save morning_energy_level as energy_level
+      // For evening entries, use the general energy_level
+      energy_level: timeOfDay === 'morning' ? formData.morning_energy_level : formData.energy_level
+    };
+    // Remove morning_energy_level from submission as it's not in the database schema
+    delete (submitData as any).morning_energy_level;
+    
+    console.log('📝 DailyEntryForm: Submitting form with data:', submitData);
     console.log('🕐 Time of day:', timeOfDay);
-    onSave(formData);
+    onSave(submitData);
   };
 
   if (!isOpen) return null;
@@ -167,12 +185,13 @@ export default function DailyEntryForm({
                       key={option.value}
                       type="button"
                       className={`energy-option ${
-                        formData.energy_level === option.value ? 'selected' : ''
+                        formData.morning_energy_level === option.value ? 'selected' : ''
                       }`}
-                      onClick={() => setFormData({ ...formData, energy_level: option.value as any })}
-                      aria-label={`אנרגיה ${option.label}`}
+                      onClick={() => setFormData({ ...formData, morning_energy_level: option.value as any })}
+                      aria-label={`אנרגיה בבוקר ${option.label}`}
                       role="radio"
-                      aria-checked={formData.energy_level === option.value}
+                      aria-checked={formData.morning_energy_level === option.value}
+                      name="morning_energy_level"
                     >
                       <span className="emoji">{option.emoji}</span>
                       <span className="label">{option.label}</span>
@@ -201,9 +220,10 @@ export default function DailyEntryForm({
                       formData.energy_level === option.value ? 'selected' : ''
                     }`}
                     onClick={() => setFormData({ ...formData, energy_level: option.value as any })}
-                    aria-label={`אנרגיה ${option.label}`}
+                    aria-label={`רמת אנרגיה ${option.label}`}
                     role="radio"
                     aria-checked={formData.energy_level === option.value}
+                    name="energy_level"
                   >
                     <span className="emoji">{option.emoji}</span>
                     <span className="label">{option.label}</span>

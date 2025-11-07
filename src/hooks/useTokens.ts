@@ -17,19 +17,16 @@ export function useTokens() {
         
         if (profile) {
           setTokens(profile.current_tokens || 0);
+        } else {
+          setTokens(0);
         }
       } else {
-        // Check for mock login
-        const mockLogin = localStorage.getItem('mock-login');
-        if (mockLogin === 'true') {
-          setTokens(100);
-        } else {
-          setTokens(50);
-        }
+        // No authenticated user - set tokens to 0
+        setTokens(0);
       }
     } catch (error) {
-      console.log('Token loading failed, using default');
-      setTokens(50);
+      console.log('Token loading failed, setting to 0');
+      setTokens(0);
     } finally {
       setIsLoading(false);
     }

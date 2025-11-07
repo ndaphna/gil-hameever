@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 
 export default function SelfWorthPage() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function SelfWorthPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="self-worth-page">
       <section className="hero">
         <div className="decoration-circle"></div>
@@ -233,6 +235,7 @@ export default function SelfWorthPage() {
         </div>
       </section>
     </div>
+    </DashboardLayout>
   );
 }
 

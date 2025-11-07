@@ -154,7 +154,7 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
       trend: wellnessScore > 70 ? 'up' : wellnessScore < 50 ? 'down' : 'stable',
       message: wellnessScore > 70 
         ? 'את מתמודדת נהדר! 🎉' 
-        : 'יש מקום לשיפור - עליזה כאן בשבילך',
+        : 'יש מקום לשיפור - בדקי את התובנות למטה',
       color: '#4CAF50',
       priority: wellnessScore < 50 ? 'high' : 'low'
     });
@@ -218,9 +218,9 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
   return (
     <div className="insights-dashboard">
       <div className="dashboard-header">
-        <h2>🎯 התובנות שלך במבט אחד</h2>
+        <h2>🎯 ניתוח ותובנות AI</h2>
         <p className="dashboard-subtitle">
-          עליזה ניתחה את הנתונים שלך וגילתה דברים מעניינים
+          ניתוח חכם של הנתונים שלך באמצעות בינה מלאכותית
         </p>
       </div>
 
@@ -304,11 +304,11 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
         )}
 
       <div className="dashboard-footer">
-        <div className="aliza-tip">
+        <div className="ai-tip">
           <span className="tip-icon">💡</span>
           <p>
-            <strong>טיפ מעליזה:</strong> המעקב היומי שלך עוזר לי להכיר אותך טוב יותר. 
-            ככל שתתעדי יותר, אוכל לתת לך תובנות מדויקות יותר!
+            <strong>טיפ:</strong> המעקב היומי שלך עוזר לניתוח המדויק. 
+            ככל שתתעדי יותר, כך הניתוח יהיה מדויק יותר!
           </p>
         </div>
       </div>

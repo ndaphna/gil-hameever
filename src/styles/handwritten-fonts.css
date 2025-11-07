@@ -1,0 +1,119 @@
+/* ============================================
+   HANDWRITTEN FONTS COLLECTION
+   Hebrew Handwritten Fonts Utility Classes
+   ============================================ */
+
+/* Font Variables (defined in layout.tsx):
+   --font-handwritten: Satisfy (casual, friendly)
+   --font-handwritten-luxury: Dancing Script (luxury, elegant)
+   --font-handwritten-elegant: Caveat (modern, stylish)
+   --font-handwritten-casual: Kalam (informal, readable)
+*/
+
+/* Luxury Handwritten - Premium elegant style */
+.font-handwritten-luxury {
+  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-weight: 400;
+  letter-spacing: 0.03em;
+}
+
+.font-handwritten-luxury-medium {
+  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+.font-handwritten-luxury-bold {
+  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+/* Elegant Handwritten - Modern stylish */
+.font-handwritten-elegant {
+  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.font-handwritten-elegant-medium {
+  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-weight: 500;
+}
+
+.font-handwritten-elegant-bold {
+  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-weight: 600;
+}
+
+/* Casual Handwritten - Friendly and readable */
+.font-handwritten-casual {
+  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-weight: 400;
+}
+
+.font-handwritten-casual-light {
+  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-weight: 300;
+}
+
+.font-handwritten-casual-bold {
+  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-weight: 700;
+}
+
+/* Standard Handwritten - Satisfy (default) */
+.font-handwritten {
+  font-family: var(--font-handwritten), var(--font-assistant), cursive;
+  font-weight: 400;
+}
+
+/* Utility: Auto-select best handwritten font for hero subtitles */
+.handwritten-hero {
+  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.75;
+}
+
+/* Utility: Handwritten for decorative elements */
+.handwritten-decorative {
+  font-family: var(--font-handwritten-elegant), var(--font-handwritten-luxury), var(--font-handwritten), cursive;
+  font-weight: 500;
+  letter-spacing: 0.03em;
+}
+
+/* Utility: Handwritten for quotes/testimonials */
+.handwritten-quote {
+  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  line-height: 1.8;
+}
+
+/* Responsive adjustments for handwritten fonts */
+@media (max-width: 768px) {
+  .handwritten-hero,
+  .font-handwritten-luxury,
+  .font-handwritten-elegant {
+    letter-spacing: 0.03em;
+    line-height: 1.8;
+  }
+}
+
+/* Better rendering for handwritten fonts */
+.font-handwritten-luxury,
+.font-handwritten-elegant,
+.font-handwritten-casual,
+.font-handwritten,
+.handwritten-hero,
+.handwritten-decorative,
+.handwritten-quote {
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+
+

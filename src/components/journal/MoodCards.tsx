@@ -33,6 +33,16 @@ export default function MoodCards({ entries }: MoodCardsProps) {
   
   const filteredEntries = getFilteredEntries();
   
+  // Debug: Log filtered entries to verify data
+  console.log(`📊 MoodCards: Analyzing ${filteredEntries.length} entries for period: ${selectedPeriod}`);
+  if (filteredEntries.length > 0) {
+    console.log('📊 Sample entries:', filteredEntries.slice(0, 3).map(e => ({
+      date: e.date,
+      mood: e.mood,
+      energy_level: e.energy_level
+    })));
+  }
+  
   // Calculate mood statistics
   const moodStats = filteredEntries.reduce((acc, entry) => {
     if (entry.mood) {
@@ -42,10 +52,18 @@ export default function MoodCards({ entries }: MoodCardsProps) {
   }, {} as Record<string, number>);
 
   const totalEntries = filteredEntries.length;
-  const mostCommonMood = Object.entries(moodStats).reduce((a, b) => 
-    moodStats[a[0]] > moodStats[b[0]] ? a[0] : b[0], 
-    Object.keys(moodStats)[0] || 'calm'
-  );
+  
+  // Debug: Log mood statistics
+  console.log('📊 Mood statistics:', moodStats);
+  
+  // Fix: Properly find the most common mood by sorting entries by count
+  const mostCommonMood = Object.keys(moodStats).length > 0
+    ? Object.entries(moodStats)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        [0][0] // Get the first (highest count) mood
+    : 'calm'; // Default if no moods found
+  
+  console.log(`📊 Most common mood: ${mostCommonMood} (${moodStats[mostCommonMood] || 0}/${totalEntries} entries)`);
 
   // Calculate energy level statistics
   const energyStats = filteredEntries.reduce((acc, entry) => {
@@ -55,10 +73,11 @@ export default function MoodCards({ entries }: MoodCardsProps) {
     return acc;
   }, {} as Record<string, number>);
 
-  const mostCommonEnergy = Object.entries(energyStats).reduce((a, b) => 
-    energyStats[a[0]] > energyStats[b[0]] ? a[0] : b[0], 
-    Object.keys(energyStats)[0] || 'medium'
-  );
+  const mostCommonEnergy = Object.keys(energyStats).length > 0
+    ? Object.entries(energyStats)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        [0][0] // Get the first (highest count) energy level
+    : 'medium'; // Default if no energy levels found
 
   // Calculate sleep quality statistics
   const sleepStats = filteredEntries.reduce((acc, entry) => {
@@ -68,10 +87,11 @@ export default function MoodCards({ entries }: MoodCardsProps) {
     return acc;
   }, {} as Record<string, number>);
 
-  const mostCommonSleep = Object.entries(sleepStats).reduce((a, b) => 
-    sleepStats[a[0]] > sleepStats[b[0]] ? a[0] : b[0], 
-    Object.keys(sleepStats)[0] || 'good'
-  );
+  const mostCommonSleep = Object.keys(sleepStats).length > 0
+    ? Object.entries(sleepStats)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        [0][0] // Get the first (highest count) sleep quality
+    : 'good'; // Default if no sleep quality found
 
   // Calculate symptoms frequency
   const symptomCount = filteredEntries.reduce((acc, entry) => {
@@ -89,10 +109,11 @@ export default function MoodCards({ entries }: MoodCardsProps) {
     return acc;
   }, {} as Record<string, number>);
 
-  const mostCommonSymptom = Object.entries(symptomCount).reduce((a, b) => 
-    symptomCount[a[0]] > symptomCount[b[0]] ? a[0] : b[0], 
-    Object.keys(symptomCount)[0] || 'none'
-  );
+  const mostCommonSymptom = Object.keys(symptomCount).length > 0
+    ? Object.entries(symptomCount)
+        .sort((a, b) => b[1] - a[1]) // Sort by count descending
+        [0][0] // Get the first (highest count) symptom
+    : 'none'; // Default if no symptoms found
 
   // Calculate trends
   const lastWeekEntries = filteredEntries.slice(0, Math.floor(filteredEntries.length / 2));

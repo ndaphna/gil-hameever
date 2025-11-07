@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 import './menopause-roadmap.css';
 
 export default function MenopauseRoadmapPage() {
@@ -158,6 +159,7 @@ export default function MenopauseRoadmapPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="menopause-roadmap-page">
       <section className="hero" id="main-content">
         <div className="decoration-circle"></div>
@@ -357,5 +359,6 @@ export default function MenopauseRoadmapPage() {
         </div>
       </section>
     </div>
+  </DashboardLayout>
   );
 }

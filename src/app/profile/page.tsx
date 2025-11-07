@@ -29,29 +29,11 @@ export default function ProfilePage() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         
-        // Check for mock login if no Supabase user
+        // Redirect to login if no authenticated user
         if (!user) {
-          const mockLogin = localStorage.getItem('mock-login');
-          if (mockLogin === 'true') {
-            console.log('Profile: Using mock login');
-            // Create a mock user profile
-            const mockProfile: UserProfile = {
-              id: 'mock-user-' + Date.now(),
-              name: localStorage.getItem('user-email')?.split('@')[0] || 'משתמשת',
-              email: localStorage.getItem('user-email') || 'inbald@sapir.ac.il',
-              subscription_status: 'active',
-              current_tokens: 100,
-              created_at: new Date().toISOString()
-            };
-            setProfile(mockProfile);
-            setFullName(mockProfile.name || '');
-            setLoading(false);
-            return;
-          } else {
-            console.log('Profile: No user found, redirecting to login');
-            router.push('/login');
-            return;
-          }
+          console.log('Profile: No authenticated user found, redirecting to login');
+          router.push('/login');
+          return;
         }
 
         let { data: profileData } = await supabase
@@ -102,26 +84,6 @@ export default function ProfilePage() {
     setMessage('');
 
     try {
-      // Check if this is a mock user
-      if (profile && profile.id.startsWith('mock-user-')) {
-        console.log('Profile: Mock user - simulating save');
-        // For mock users, just update local state
-        setProfile({ ...profile, name: fullName });
-        setMessage('הפרופיל עודכן בהצלחה (mock)');
-        
-        // Update localStorage with new name
-        const currentEmail = localStorage.getItem('user-email') || 'inbald@sapir.ac.il';
-        const emailDomain = currentEmail.split('@')[1];
-        const newEmail = `${fullName}@${emailDomain}`;
-        localStorage.setItem('user-email', newEmail);
-        
-        // Dispatch custom event to notify other components
-        window.dispatchEvent(new CustomEvent('profileUpdated'));
-        
-        setSaving(false);
-        return;
-      }
-      
       const { error } = await supabase
         .from('user_profile')
         .update({ name: fullName })
@@ -133,6 +95,9 @@ export default function ProfilePage() {
       if (profile) {
         setProfile({ ...profile, name: fullName });
       }
+      
+      // Dispatch custom event to notify other components
+      window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (error: any) {
       setMessage('שגיאה בעדכון הפרופיל');
       console.error(error);

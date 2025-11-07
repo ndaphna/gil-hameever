@@ -11,7 +11,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [useMockLogin, setUseMockLogin] = useState(false);
 
   // Check if user is already logged in
   useEffect(() => {
@@ -28,13 +27,6 @@ export default function LoginPage() {
         console.log('Session check failed, staying on login page');
         // Don't redirect if there's an error - let user try to login
       }
-      
-      // Check for mock login
-      const mockLogin = localStorage.getItem('mock-login');
-      if (mockLogin === 'true') {
-        console.log('Found mock login, redirecting to dashboard');
-        router.push('/dashboard');
-      }
     }
     checkUser();
   }, [router, isLoggingIn]);
@@ -46,40 +38,23 @@ export default function LoginPage() {
     setIsLoggingIn(true);
 
     try {
-      if (useMockLogin) {
-        // Mock login for development
-        if (email && password) {
-          console.log('Login successful with mock login');
-          // Store login state in localStorage for mock login
-          localStorage.setItem('mock-login', 'true');
-          localStorage.setItem('user-email', email);
-          setMessage('התחברת בהצלחה! מעביר אותך... (Mock)');
-          // Use router.push instead of window.location to avoid conflicts
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 1000);
-        } else {
-          setMessage('אנא הכניסי אימייל וסיסמה');
-        }
-      } else {
-        // Try Supabase login
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
+      // Supabase login only - no mock login
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-        if (error) throw error;
+      if (error) throw error;
 
-        if (data.user) {
-          console.log('Login successful with Supabase:', data.user);
-          setMessage('התחברת בהצלחה! מעביר אותך...');
-          setTimeout(() => {
-            router.push('/dashboard');
-          }, 1000);
-        }
+      if (data.user) {
+        console.log('Login successful with Supabase:', data.user);
+        setMessage('התחברת בהצלחה! מעביר אותך...');
+        setTimeout(() => {
+          router.push('/dashboard');
+        }, 1000);
       }
     } catch (error: any) {
-      console.log('Supabase login failed. Error:', error.message);
+      console.log('Login failed. Error:', error.message);
       setMessage('שגיאה בהתחברות: ' + error.message);
     } finally {
       setLoading(false);
@@ -148,26 +123,6 @@ export default function LoginPage() {
             </button>
           </form>
 
-          <div className="login-options">
-            <label className="checkbox-label">
-              <input
-                type="checkbox"
-                checked={useMockLogin}
-                onChange={(e) => setUseMockLogin(e.target.checked)}
-                disabled={loading}
-              />
-              <span className="checkbox-text">
-                {useMockLogin ? '🔧 Mock Login (סימולציה)' : '🔗 Real Login (מסד נתונים)'}
-              </span>
-            </label>
-            <p className="login-info">
-              {useMockLogin 
-                ? 'הנתונים לא נשמרים במסד הנתונים - רק סימולציה' 
-                : 'הנתונים נשמרים במסד הנתונים האמיתי'
-              }
-            </p>
-          </div>
-
           <div className="divider">
             <span>או</span>
           </div>
@@ -234,41 +189,6 @@ export default function LoginPage() {
 
         .auth-form {
           margin-bottom: 24px;
-        }
-
-        .login-options {
-          margin-bottom: 24px;
-          padding: 16px;
-          background: #f8f9fa;
-          border-radius: 8px;
-          border: 1px solid #e5e5e5;
-        }
-
-        .checkbox-label {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          cursor: pointer;
-          margin-bottom: 8px;
-        }
-
-        .checkbox-label input[type="checkbox"] {
-          width: 16px;
-          height: 16px;
-          cursor: pointer;
-        }
-
-        .checkbox-text {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--black);
-        }
-
-        .login-info {
-          font-size: 12px;
-          color: #666;
-          margin: 0;
-          text-align: right;
         }
 
         .form-group {

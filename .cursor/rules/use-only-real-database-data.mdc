@@ -1,0 +1,6 @@
+---
+alwaysApply: true
+---
+All development, analysis, and visualization processes must rely only on real data retrieved from the system’s database.
+Do not use simulations, mock data, or generated examples for testing or display purposes.
+If no real data is available, the process must stop and notify the user, rather than continue with sample or artificial data.

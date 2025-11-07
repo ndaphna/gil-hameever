@@ -22,21 +22,11 @@ export default function InsightsPage() {
       
       console.log('Insights: User check result:', user);
       
-      // Check for mock login if no Supabase user
+      // Redirect to login if no authenticated user
       if (!user) {
-        const mockLogin = localStorage.getItem('mock-login');
-        if (mockLogin === 'true') {
-          console.log('Insights: Using mock login');
-          // Create a mock user ID for mock login
-          const mockUserId = 'mock-user-' + Date.now();
-          setUserId(mockUserId);
-          setLoading(false);
-          return;
-        } else {
-          console.log('Insights: No user found, redirecting to login');
-          router.push('/login');
-          return;
-        }
+        console.log('Insights: No authenticated user found, redirecting to login');
+        router.push('/login');
+        return;
       }
 
       setUserId(user.id);

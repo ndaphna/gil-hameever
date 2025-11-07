@@ -11,7 +11,6 @@ export default function Navigation() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isRoadmapOpen, setIsRoadmapOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
@@ -30,7 +29,6 @@ export default function Navigation() {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
-    setIsRoadmapOpen(false);
   };
 
   const handleLinkClick = (href: string) => {
@@ -43,10 +41,10 @@ export default function Navigation() {
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
-  };
-
-  const toggleRoadmap = () => {
-    setIsRoadmapOpen(!isRoadmapOpen);
+    // Close mobile menu if open
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
   };
 
   // Mark as hydrated
@@ -59,17 +57,6 @@ export default function Navigation() {
     async function checkAuth() {
       try {
         const { data: { session } } = await supabase.auth.getSession();
-        
-        // Check for mock login if no Supabase session
-        if (!session) {
-          const mockLogin = localStorage.getItem('mock-login');
-          if (mockLogin === 'true') {
-            console.log('Navigation: Using mock login');
-            setIsLoggedIn(true);
-            setUserEmail(localStorage.getItem('user-email'));
-            return;
-          }
-        }
         
         setIsLoggedIn(!!session);
         setUserEmail(session?.user?.email || null);
@@ -85,17 +72,6 @@ export default function Navigation() {
     // Subscribe to auth changes
     try {
       const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        // Check for mock login if no Supabase session
-        if (!session) {
-          const mockLogin = localStorage.getItem('mock-login');
-          if (mockLogin === 'true') {
-            console.log('Navigation: Auth change - using mock login');
-            setIsLoggedIn(true);
-            setUserEmail(localStorage.getItem('user-email'));
-            return;
-          }
-        }
-        
         setIsLoggedIn(!!session);
         setUserEmail(session?.user?.email || null);
       });
@@ -121,24 +97,23 @@ export default function Navigation() {
     };
   }, [isMenuOpen]);
 
-  const handleLogout = async () => {
-    // Check if this is mock login
-    const mockLogin = localStorage.getItem('mock-login');
-    if (mockLogin === 'true') {
-      console.log('Navigation: Logging out from mock login');
-      // Clear mock login data
-      localStorage.removeItem('mock-login');
-      localStorage.removeItem('user-email');
-      // Update local state immediately
-      setIsLoggedIn(false);
-      setUserEmail(null);
-      // Force page refresh to ensure clean state
-      window.location.href = '/';
-      closeMenu();
-      return;
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (sidebarOpen && window.innerWidth <= 1049) {
+      document.body.style.overflow = 'hidden';
+    } else if (!isMenuOpen) {
+      document.body.style.overflow = 'unset';
     }
     
-    // Regular Supabase logout
+    return () => {
+      if (!isMenuOpen) {
+        document.body.style.overflow = 'unset';
+      }
+    };
+  }, [sidebarOpen, isMenuOpen]);
+
+  const handleLogout = async () => {
+    // Logout from Supabase
     await supabase.auth.signOut();
     // Update local state immediately
     setIsLoggedIn(false);
@@ -150,8 +125,8 @@ export default function Navigation() {
 
   return (
     <>
-      {/* Sidebar for internal system - only show on internal pages */}
-      {isHydrated && isLoggedIn && isInternalPage && (
+      {/* Sidebar for internal system - show for logged in users */}
+      {isHydrated && isLoggedIn && (
         <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       )}
       
@@ -215,52 +190,6 @@ export default function Navigation() {
               <>
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
-                
-                {/* Dropdown Menu for Roadmap */}
-                <div 
-                  className={`nav-dropdown ${isRoadmapOpen ? 'active' : ''}`}
-                  onMouseEnter={() => setIsRoadmapOpen(true)}
-                  onMouseLeave={() => setIsRoadmapOpen(false)}
-                  role="menuitem"
-                >
-                  <button 
-                    className="nav-dropdown-toggle"
-                    onClick={toggleRoadmap}
-                    aria-expanded={isRoadmapOpen}
-                    aria-haspopup="true"
-                    aria-label="פתח תפריט מפת דרכים"
-                  >
-                    מפת דרכים
-                    <span className={`dropdown-arrow ${isRoadmapOpen ? 'active' : ''}`} aria-hidden="true">▼</span>
-                  </button>
-                  <div className="nav-dropdown-menu" role="menu" aria-label="תפריט מפת דרכים">
-                    <button onClick={() => handleLinkClick('/menopause-roadmap')} className="nav-dropdown-link" role="menuitem" aria-label="עבור למפת הדרכים המלאה">
-                      <span className="stage-icon" aria-hidden="true">🗺️</span>
-                      מפת הדרכים המלאה
-                    </button>
-                    <button onClick={() => handleLinkClick('/the-body-whispers')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 1: הגוף לוחש">
-                      <span className="stage-icon" aria-hidden="true">🧏🏻‍♀️</span>
-                      שלב 1: הגוף לוחש
-                    </button>
-                    <button onClick={() => handleLinkClick('/certainty-peace-security')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 2: וודאות, שקט, ביטחון">
-                      <span className="stage-icon" aria-hidden="true">🌳</span>
-                      שלב 2: וודאות, שקט, ביטחון
-                    </button>
-                    <button onClick={() => handleLinkClick('/belonging-sisterhood-emotional-connection')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 3: שייכות ואחוות נשים">
-                      <span className="stage-icon" aria-hidden="true">🤝</span>
-                      שלב 3: שייכות ואחוות נשים
-                    </button>
-                    <button onClick={() => handleLinkClick('/self-worth')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 4: ערך עצמי, משמעות">
-                      <span className="stage-icon" aria-hidden="true">🌟</span>
-                      שלב 4: ערך עצמי, משמעות
-                    </button>
-                    <button onClick={() => handleLinkClick('/wisdom-giving')} className="nav-dropdown-link" role="menuitem" aria-label="עבור לשלב 5: תבונה ונתינה">
-                      <span className="stage-icon" aria-hidden="true">✨</span>
-                      שלב 5: תבונה ונתינה
-                    </button>
-                  </div>
-                </div>
-
                 <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מחירים">מחירים</button>
                 
                 {/* כפתור אזור אישי - רק למשתמשים מחוברים */}

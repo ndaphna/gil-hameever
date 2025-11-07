@@ -233,7 +233,11 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
               <div className="metric-icon">😊</div>
               <div className="metric-content">
                 <div className="metric-number">{mood.positiveRate}%</div>
-                <div className="metric-label">מצב רוח חיובי</div>
+                <div className="metric-label">
+                  {mood.positiveRate >= 60 ? 'מצב רוח חיובי' : 
+                   mood.positiveRate >= 50 ? 'מצב רוח מעורב' : 
+                   mood.negative >= mood.positive ? 'זקוק לתמיכה' : 'מצב רוח מעורב'}
+                </div>
               </div>
             </div>
             
@@ -278,9 +282,9 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
             )}
           </div>
 
-          {/* AI Insights from Aliza */}
+          {/* AI Insights */}
           <div className="ai-insights-section">
-            <h3>💡 תובנות של עליזה</h3>
+            <h3>🤖 ניתוח ותובנות AI</h3>
             <div className="insights-grid">
               {aiInsights.map((insight, index) => (
                 <div key={index} className="insight-card">
@@ -298,10 +302,21 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
             <div className="mood-stats">
               <div className="mood-summary">
                 <div className="mood-pie">
-                  <div className="pie-positive" style={{ '--percentage': mood.positiveRate } as React.CSSProperties}>
+                  <div 
+                    className={`pie-value ${
+                      mood.positiveRate >= 60 ? 'pie-positive' : 
+                      mood.positiveRate >= 50 ? 'pie-mixed' : 
+                      mood.negative >= mood.positive ? 'pie-negative' : 'pie-mixed'
+                    }`} 
+                    style={{ '--percentage': mood.positiveRate } as React.CSSProperties}
+                  >
                     {mood.positiveRate}%
                   </div>
-                  <div className="pie-label">חיובי</div>
+                  <div className="pie-label">
+                    {mood.positiveRate >= 60 ? 'חיובי' : 
+                     mood.positiveRate >= 50 ? 'מעורב' : 
+                     mood.negative >= mood.positive ? 'זקוק לתמיכה' : 'מעורב'}
+                  </div>
                 </div>
                 <div className="mood-bars">
                   {Object.entries(mood.moodCount).map(([moodType, count]) => {

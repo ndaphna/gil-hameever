@@ -7,6 +7,7 @@
 @import '../styles/base.css';
 @import '../styles/components.css';
 @import '../styles/layout.css';
+@import '../styles/handwritten-fonts.css';
 
 /* ============================================
    SMOOTH SCROLLING - גלילה חלקה גלובלית
@@ -2393,4 +2394,17 @@ textarea:focus-visible,
     color: var(--magenta);
     background: white;
   }
+}
+
+/* ============================================
+   APP WRAPPER - Footer positioning
+   ============================================ */
+.app-wrapper {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+#main-content {
+  flex: 1;
 }

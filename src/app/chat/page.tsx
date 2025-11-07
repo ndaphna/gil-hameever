@@ -62,31 +62,17 @@ export default function ChatPage() {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       console.log('👤 User auth check:', { user: user?.id, error: userError });
       
-      // Check for mock login if no Supabase user
+      // Show welcome message and continue if no authenticated user
       if (userError || !user) {
-        const mockLogin = localStorage.getItem('mock-login');
-        if (mockLogin === 'true') {
-          console.log('✅ Using mock login for chat');
-          setUserId('mock-user-' + Date.now());
-          setMessages([{
-            id: '1',
-            content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
-            isUser: false,
-            timestamp: new Date()
-          }]);
-          setIsNewConversation(true);
-          return;
-        } else {
-          console.log('❌ Auth issue - showing welcome message without redirect');
-          setMessages([{
-            id: '1',
-            content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
-            isUser: false,
-            timestamp: new Date()
-          }]);
-          setIsNewConversation(true);
-          return;
-        }
+        console.log('❌ No authenticated user - showing welcome message');
+        setMessages([{
+          id: '1',
+          content: 'שלום! אני עליזה, היועצת האישית שלך לגיל המעבר. איך אני יכולה לעזור לך היום?',
+          isUser: false,
+          timestamp: new Date()
+        }]);
+        setIsNewConversation(true);
+        return;
       }
 
       // טען את כל השיחות הקיימות מהטבלה thread
@@ -261,33 +247,6 @@ export default function ChatPage() {
     setIsLoading(true);
 
     try {
-      // Check if this is a mock user
-      if (userId && userId.startsWith('mock-user-')) {
-        console.log('💬 Mock user - simulating chat response');
-        
-        // Simulate AI response for mock users
-        const mockResponses = [
-          'שלום! אני כאן לעזור לך עם כל שאלה בנושא גיל המעבר.',
-          'זה נהדר שאת פונה אליי! איך אני יכולה לעזור לך היום?',
-          'אני מבינה שזה יכול להיות תקופה מאתגרת. בואי נדבר על זה.',
-          'יש לי הרבה עצות מעשיות להתמודדות עם תסמיני גיל המעבר.',
-          'אני כאן בשבילך! כל שאלה או חשש שלך חשוב לי.'
-        ];
-        
-        const randomResponse = mockResponses[Math.floor(Math.random() * mockResponses.length)];
-        
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          content: randomResponse,
-          isUser: false,
-          timestamp: new Date()
-        };
-        
-        setMessages(prev => [...prev, aiResponse]);
-        setIsLoading(false);
-        return;
-      }
-      
       // אם זו שיחה חדשה, צור שם אוטומטי על בסיס ההודעה הראשונה
       let conversationId = currentConversationId;
       if (isNewConversation) {
@@ -296,46 +255,30 @@ export default function ChatPage() {
           ? inputMessage.substring(0, 30) + '...' 
           : inputMessage;
         
-        // For mock users, create a mock conversation
-        if (userId && userId.startsWith('mock-user-')) {
-          conversationId = 'mock-conversation-' + Date.now();
+        // צור שיחה חדשה עם השם
+        const { data: newConversation } = await supabase
+          .from('conversations')
+          .insert({
+            user_id: userId,
+            title: title,
+            created_at: new Date().toISOString()
+          })
+          .select('id')
+          .single();
+        
+        if (newConversation) {
+          conversationId = newConversation.id;
           setCurrentConversationId(conversationId);
           setIsNewConversation(false);
           
           // עדכן את רשימת השיחות
           setConversations(prev => [{
-            id: conversationId || 'mock-conversation',
+            id: newConversation.id,
             title: title,
             created_at: new Date().toISOString(),
             last_message: inputMessage,
             last_message_time: new Date().toISOString()
           }, ...prev]);
-        } else {
-          // צור שיחה חדשה עם השם
-          const { data: newConversation } = await supabase
-            .from('conversations')
-            .insert({
-              user_id: userId,
-              title: title,
-              created_at: new Date().toISOString()
-            })
-            .select('id')
-            .single();
-          
-          if (newConversation) {
-            conversationId = newConversation.id;
-            setCurrentConversationId(conversationId);
-            setIsNewConversation(false);
-            
-            // עדכן את רשימת השיחות
-            setConversations(prev => [{
-              id: newConversation.id,
-              title: title,
-              created_at: new Date().toISOString(),
-              last_message: inputMessage,
-              last_message_time: new Date().toISOString()
-            }, ...prev]);
-          }
         }
       }
 
@@ -446,7 +389,7 @@ export default function ChatPage() {
   };
 
   return (
-    <DashboardLayout>
+    <DashboardLayout className="chat-page">
       <div className="chat-container">
             <div className="chat-header">
               <div className="chat-title">
@@ -529,8 +472,10 @@ export default function ChatPage() {
                 className="new-conversation-btn"
                 onClick={startNewConversation}
                 title="התחל שיחה חדשה"
+                aria-label="התחל שיחה חדשה"
               >
-                ✨
+                <span className="new-conversation-icon">➕</span>
+                <span className="new-conversation-text">שיחה חדשה</span>
               </button>
             </div>
             

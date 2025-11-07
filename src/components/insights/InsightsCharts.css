@@ -1,31 +1,49 @@
 /* Insights Charts Styles */
 .insights-charts {
-  background: white;
-  border-radius: 20px;
-  padding: 2rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+  border-radius: 24px;
+  padding: 3rem;
+  box-shadow: 0 20px 60px rgba(102, 126, 234, 0.12);
+  margin-bottom: 3rem;
   overflow-y: auto;
   overflow-x: hidden;
   scroll-behavior: smooth;
+  border: 1px solid rgba(102, 126, 234, 0.08);
+  position: relative;
+}
+
+.insights-charts::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+  border-radius: 24px 24px 0 0;
 }
 
 .charts-header {
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 3rem;
 }
 
 .charts-header h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 0.5rem 0;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin: 0 0 0.75rem 0;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .charts-header p {
   color: #6c757d;
   margin: 0;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  font-weight: 400;
 }
 
 .chart-tabs {
@@ -58,10 +76,11 @@
 }
 
 .chart-tab.active {
-  background: var(--chart-color);
+  background: linear-gradient(135deg, var(--chart-color) 0%, var(--chart-color) 100%);
   color: white;
   border-color: var(--chart-color);
-  box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
 }
 
 .chart-icon {
@@ -73,13 +92,45 @@
 }
 
 .chart-container {
-  background: #f8f9fa;
-  border-radius: 15px;
-  padding: 1.5rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  max-height: 70vh;
+  background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+  border-radius: 20px;
+  padding: 2.5rem;
+  overflow: visible;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(102, 126, 234, 0.1);
+}
+
+.chart-header-section {
+  margin-bottom: 2rem;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+  gap: 2rem;
+}
+
+.chart-title-section {
+  flex: 1;
+}
+
+.chart-header h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #2c3e50;
+  line-height: 1.3;
+}
+
+.chart-description {
+  margin: 0;
+  font-size: 1.05rem;
+  color: #6c757d;
+  line-height: 1.6;
+  font-weight: 400;
+  max-width: 600px;
 }
 
 /* Custom scrollbar for chart container */
@@ -115,12 +166,7 @@
   margin-bottom: 1.5rem;
 }
 
-.chart-header h4 {
-  margin: 0;
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #333;
-}
+/* Moved to .chart-title-section h4 */
 
 .chart-controls {
   display: flex;
@@ -129,19 +175,27 @@
 }
 
 .time-range-select {
-  padding: 0.5rem 1rem;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid #e1e5e9;
+  border-radius: 12px;
   background: white;
-  font-size: 0.9rem;
-  color: #6c757d;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #495057;
   cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.time-range-select:hover {
+  border-color: #667eea;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.15);
 }
 
 .time-range-select:focus {
   outline: none;
   border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
 }
 
 .chart-content {
@@ -151,13 +205,14 @@
 .chart-wrapper {
   position: relative;
   background: white;
-  border-radius: 10px;
-  padding: 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  max-height: 60vh;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+  overflow: visible;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 /* Custom scrollbar for chart wrapper */
@@ -191,20 +246,16 @@
   height: auto;
   border-radius: 8px;
   max-width: 100%;
-  max-height: 50vh;
-  object-fit: contain;
+  display: block;
 }
 
 .chart-legend {
   display: flex;
   justify-content: center;
   gap: 2rem;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
   flex-wrap: wrap;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
-  max-height: 20vh;
+  width: 100%;
 }
 
 /* Custom scrollbar for chart legend */
@@ -236,19 +287,32 @@
 .legend-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(102, 126, 234, 0.1);
 }
 
 .legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .legend-label {
-  font-size: 0.9rem;
+  font-size: 1rem;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.legend-value {
+  font-size: 0.85rem;
   color: #6c757d;
-  font-weight: 500;
+  font-weight: 400;
+  margin-right: 0.5rem;
 }
 
 .charts-loading {
@@ -284,6 +348,134 @@
   100% { transform: rotate(360deg); }
 }
 
+.no-chart-data {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #f8f9fa;
+  border-radius: 15px;
+  margin-top: 2rem;
+}
+
+.no-data-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+  opacity: 0.5;
+}
+
+.no-chart-data h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.3rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.no-chart-data p {
+  margin: 0;
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+/* Top Symptoms Summary - סיכום תסמינים נפוצים */
+.top-symptoms-summary {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  border: 1px solid rgba(102, 126, 234, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.summary-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: right;
+}
+
+.top-symptoms-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.symptom-summary-item {
+  background: white;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  transition: all 0.3s ease;
+}
+
+.symptom-summary-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  border-color: rgba(102, 126, 234, 0.2);
+}
+
+.symptom-icon {
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  border: 3px solid;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.symptom-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.symptom-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #2c3e50;
+  margin-bottom: 0.25rem;
+}
+
+.symptom-stats {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.95rem;
+}
+
+.symptom-count {
+  font-weight: 600;
+  color: #495057;
+}
+
+.symptom-percentage {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.symptom-progress-bar {
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 0.5rem;
+}
+
+.symptom-progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .insights-charts {
@@ -312,6 +504,19 @@
   .chart-legend {
     gap: 1rem;
   }
+  
+  .top-symptoms-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .chart-header {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .top-symptoms-summary {
+    padding: 1.5rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -333,5 +538,28 @@
   
   .chart-wrapper {
     padding: 0.5rem;
+  }
+  
+  .top-symptoms-summary {
+    padding: 1rem;
+  }
+  
+  .summary-title {
+    font-size: 1.1rem;
+  }
+  
+  .symptom-summary-item {
+    padding: 1rem;
+  }
+  
+  .symptom-icon {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    font-size: 1.5rem;
+  }
+  
+  .chart-description {
+    font-size: 0.95rem;
   }
 }

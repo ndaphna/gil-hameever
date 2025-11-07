@@ -52,6 +52,22 @@ export interface PersonalizedInsight {
   actionable: boolean;
   relatedData: any;
   alizaMessage: string;
+  // מידע נוסף למערכת המשופרת
+  comparisonToNorm?: {
+    userValue: number;
+    averageValue: number;
+    explanation: string;
+  };
+  actionableSteps?: {
+    reliefMethods: string[];
+    whoToContact?: string[];
+    questionsToAsk?: string[];
+    lifestyleChanges?: string[];
+  };
+  visualData?: {
+    chartType: 'line' | 'bar' | 'pie';
+    data: ChartData;
+  };
 }
 
 export interface ChartData {

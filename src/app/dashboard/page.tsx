@@ -33,27 +33,11 @@ export default function DashboardPage() {
         
         console.log('Dashboard: User check result:', user);
         
-        // Check for mock login if no Supabase user
+        // Redirect to login if no authenticated user
         if (!user) {
-          const mockLogin = localStorage.getItem('mock-login');
-          if (mockLogin === 'true') {
-            console.log('Dashboard: Using mock login');
-            const mockProfile: UserProfile = {
-              name: localStorage.getItem('user-email')?.split('@')[0] || 'משתמשת',
-              email: localStorage.getItem('user-email') || '',
-              subscription_status: 'active',
-              current_tokens: 100
-            };
-            setProfile(mockProfile);
-          setUserId('mock-user-dashboard');
-          await loadUserData('mock-user-dashboard');
-            setLoading(false);
-            return;
-          } else {
-            console.log('Dashboard: No user found, redirecting to login');
-            router.push('/login');
-            return;
-          }
+          console.log('Dashboard: No authenticated user found, redirecting to login');
+          router.push('/login');
+          return;
         }
 
         let { data: profileData } = await supabase
@@ -97,138 +81,66 @@ export default function DashboardPage() {
 
   const loadUserData = async (uid: string) => {
     try {
-      // Check if mock user
-      if (uid.startsWith('mock-user-')) {
-        // Generate mock data for dashboard
-        const mockDaily = generateMockDailyEntries(uid);
-        const mockCycle = generateMockCycleEntries(uid);
-        setDailyEntries(mockDaily);
-        setCycleEntry(mockCycle);
-        calculateDashboard(mockDaily, mockCycle);
-        return;
-      }
-
-      // Load real data
-      const { data: dailyData } = await supabase
+      // Load real data from database only
+      console.log('Loading real data for user:', uid);
+      
+      const { data: dailyData, error: dailyError } = await supabase
         .from('daily_entries')
         .select('*')
         .eq('user_id', uid)
         .order('created_at', { ascending: false })
         .limit(30);
 
-      const { data: cycleData } = await supabase
+      if (dailyError) {
+        console.error('Error loading daily entries:', dailyError);
+      }
+
+      const { data: cycleData, error: cycleError } = await supabase
         .from('cycle_entries')
         .select('*')
         .eq('user_id', uid)
         .order('date', { ascending: false })
         .limit(12);
 
-      setDailyEntries(dailyData || []);
-      setCycleEntry(cycleData || []);
-      calculateDashboard(dailyData || [], cycleData || []);
+      if (cycleError) {
+        console.error('Error loading cycle entries:', cycleError);
+      }
+
+      const realDailyData = dailyData || [];
+      const realCycleData = cycleData || [];
+      
+      console.log(`✅ Loaded ${realDailyData.length} daily entries and ${realCycleData.length} cycle entries from database`);
+      console.log('📊 Daily entries sample:', realDailyData.slice(0, 3));
+      console.log('📅 Entry dates:', realDailyData.map(e => e.date).slice(0, 7));
+      
+      setDailyEntries(realDailyData);
+      setCycleEntry(realCycleData);
+      calculateDashboard(realDailyData, realCycleData);
     } catch (error) {
       console.error('Error loading user data:', error);
+      // Even on error, show empty dashboard with real data structure
+      setDailyEntries([]);
+      setCycleEntry([]);
+      calculateDashboard([], []);
     }
-  };
-
-  const generateMockDailyEntries = (uid: string): DailyEntry[] => {
-    const entries: DailyEntry[] = [];
-    const today = new Date();
-    
-    for (let i = 0; i < 14; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
-      
-      // Morning entry
-      if (i < 7) {
-        entries.push({
-          id: `mock-daily-${i}-morning`,
-          user_id: uid,
-          date: dateStr,
-          time_of_day: 'morning',
-          sleep_quality: i % 3 === 0 ? 'poor' : i % 3 === 1 ? 'fair' : 'good',
-          woke_up_night: i % 3 === 0,
-          night_sweats: i % 4 === 0,
-          energy_level: i % 3 === 0 ? 'low' : i % 3 === 1 ? 'medium' : 'high',
-          mood: i % 4 === 0 ? 'frustrated' : i % 4 === 1 ? 'calm' : i % 4 === 2 ? 'happy' : 'sad',
-          hot_flashes: i % 3 === 0,
-          dryness: false,
-          pain: i % 5 === 0,
-          bloating: false,
-          concentration_difficulty: i % 4 === 0,
-          sleep_issues: i % 3 === 0,
-          sexual_desire: i % 2 === 0,
-          daily_insight: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-      }
-      
-      // Evening entry
-      if (i < 5) {
-        entries.push({
-          id: `mock-daily-${i}-evening`,
-          user_id: uid,
-          date: dateStr,
-          time_of_day: 'evening',
-          sleep_quality: null,
-          woke_up_night: false,
-          night_sweats: false,
-          energy_level: i % 3 === 0 ? 'low' : 'medium',
-          mood: i % 3 === 0 ? 'irritated' : 'calm',
-          hot_flashes: i % 2 === 0,
-          dryness: false,
-          pain: false,
-          bloating: i % 3 === 0,
-          concentration_difficulty: false,
-          sleep_issues: false,
-          sexual_desire: false,
-          daily_insight: '',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        });
-      }
-    }
-    
-    return entries;
-  };
-
-  const generateMockCycleEntries = (uid: string): CycleEntry[] => {
-    const entries: CycleEntry[] = [];
-    const today = new Date();
-    
-    // Last 3 periods
-    for (let i = 0; i < 3; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() - (i * 32 + 15)); // ~32 days apart
-      
-      entries.push({
-        id: `mock-cycle-${i}`,
-        user_id: uid,
-        date: date.toISOString().split('T')[0],
-        is_period: true,
-        bleeding_intensity: i === 0 ? 'medium' : i === 1 ? 'light' : 'heavy',
-        symptoms: i === 0 ? ['cramps', 'fatigue'] : i === 1 ? ['mood_irritable'] : ['back_pain', 'bloating'],
-        notes: '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      });
-    }
-    
-    return entries;
   };
 
   const calculateDashboard = (daily: DailyEntry[], cycle: CycleEntry[]) => {
+    console.log('📈 calculateDashboard called with:', {
+      dailyEntries: daily.length,
+      cycleEntries: cycle.length,
+      sampleDates: daily.map(e => e.date).slice(0, 5)
+    });
+    
     // Calculate streak (same logic as before)
     const uniqueDays = Array.from(new Set(daily.map(e => e.date))).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
     let streak = 0;
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const todayForStreak = new Date();
+    todayForStreak.setHours(0, 0, 0, 0);
     
     for (let i = 0; i < uniqueDays.length; i++) {
-      const expected = new Date(today);
-      expected.setDate(today.getDate() - i);
+      const expected = new Date(todayForStreak);
+      expected.setDate(todayForStreak.getDate() - i);
       const expectedStr = expected.toISOString().split('T')[0];
       
       if (uniqueDays[i] === expectedStr) {
@@ -249,34 +161,42 @@ export default function DashboardPage() {
     
     const weeklyEntries = daily.filter(e => new Date(e.date) >= lastSundayForStats);
     
-    // Last 7 days for mini chart - Starting from Sunday (Israeli week)
+    // Last 7 days for mini chart - Show last 7 days from today (inclusive)
     const last7Days = [];
-    const nowDate = new Date();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset to start of day
     
-    // Find last Sunday
-    const currentDayOfWeek = nowDate.getDay(); // 0 = Sunday
-    const lastSunday = new Date(nowDate);
-    lastSunday.setDate(nowDate.getDate() - currentDayOfWeek);
-    
-    // If today is Sunday and we have data for today, include this week
-    // Otherwise show last complete week
-    const startDate = currentDayOfWeek === 0 ? lastSunday : new Date(lastSunday.getTime() - 7 * 24 * 60 * 60 * 1000);
-    
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(startDate);
-      date.setDate(startDate.getDate() + i);
+    // Calculate the 7 days (today and 6 days before)
+    for (let i = 6; i >= 0; i--) {
+      const date = new Date(today);
+      date.setDate(today.getDate() - i);
       const dateStr = date.toISOString().split('T')[0];
-      const dayEntries = daily.filter(e => e.date === dateStr);
       
-      last7Days.push({
+      // Find entries for this specific date
+      const dayEntries = daily.filter(e => {
+        // Handle date strings (most common case from database)
+        const entryDate = typeof e.date === 'string' ? e.date.split('T')[0] : String(e.date);
+        return entryDate === dateStr;
+      });
+      
+      const dayInfo = {
         date: dateStr,
         dayName: date.toLocaleDateString('he-IL', { weekday: 'short' }),
         hasEntry: dayEntries.length > 0,
         hotFlash: dayEntries.some(e => e.hot_flashes),
         goodSleep: dayEntries.some(e => e.sleep_quality === 'good'),
         lowMood: dayEntries.some(e => e.mood === 'sad' || e.mood === 'frustrated')
-      });
+      };
+      
+      // Debug log for each day
+      if (dayInfo.hasEntry) {
+        console.log(`📅 ${dayInfo.dayName} (${dateStr}): Found ${dayEntries.length} entries`);
+      }
+      
+      last7Days.push(dayInfo);
     }
+    
+    console.log('📊 Last 7 days calculated:', last7Days);
     
     // Cycle stats
     const periodEntries = cycle.filter(e => e.is_period).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());

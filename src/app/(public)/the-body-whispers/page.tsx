@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 
 export default function TheBodyWhispersPage() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function TheBodyWhispersPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="body-whispers-page">
       {/* Hero Section */}
       <section className="hero">
@@ -419,5 +421,6 @@ export default function TheBodyWhispersPage() {
         </div>
       </section>
     </div>
+    </DashboardLayout>
   );
 }

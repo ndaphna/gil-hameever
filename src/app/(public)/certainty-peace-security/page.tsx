@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 
 export default function CertaintyPeaceSecurityPage() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function CertaintyPeaceSecurityPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="certainty-peace-security-page">
       {/* Hero Section */}
       <section className="hero">
@@ -336,5 +338,6 @@ export default function CertaintyPeaceSecurityPage() {
         </div>
       </section>
     </div>
+    </DashboardLayout>
   );
 }

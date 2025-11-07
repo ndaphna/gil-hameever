@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import DashboardLayout from '../../components/DashboardLayout';
 
 export default function WisdomGivingPage() {
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function WisdomGivingPage() {
   }, []);
 
   return (
+    <DashboardLayout>
     <div className="wisdom-giving-page">
       <section className="hero">
         <div className="decoration-circle"></div>
@@ -245,6 +247,7 @@ export default function WisdomGivingPage() {
         </div>
       </section>
     </div>
+    </DashboardLayout>
   );
 }
 
