@@ -305,12 +305,18 @@ export function useAuth() {
     }
   };
 
+  const refreshAdminStatus = async () => {
+    if (!state.user) return;
+    await loadUserData(state.user.id);
+  };
+
   return {
     ...state,
     signIn,
     signUp,
     signOut,
-    updateProfile
+    updateProfile,
+    refreshAdminStatus
   };
 }
 

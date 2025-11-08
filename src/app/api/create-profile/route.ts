@@ -36,18 +36,30 @@ export async function POST(request: Request) {
     // Check if profile already exists
     const { data: existing } = await supabaseAdmin
       .from('user_profile')
-      .select('id')
+      .select('id, is_admin')
       .eq('id', userId)
       .single();
 
     if (existing) {
+      // If this is the admin email and not already admin, update it
+      const isAdmin = email === 'nitzandaphna@gmail.com';
+      if (isAdmin && !existing.is_admin) {
+        await supabaseAdmin
+          .from('user_profile')
+          .update({ is_admin: true })
+          .eq('id', userId);
+      }
       return NextResponse.json({ 
         success: true, 
-        message: 'Profile already exists' 
+        message: 'Profile already exists',
+        isAdmin: isAdmin && existing.is_admin !== false
       });
     }
 
-    // Create the profile with admin privileges
+    // Check if this is the admin email
+    const isAdmin = email === 'nitzandaphna@gmail.com';
+
+    // Create the profile with admin privileges if applicable
     const { data, error } = await supabaseAdmin
       .from('user_profile')
       .insert({
@@ -58,6 +70,7 @@ export async function POST(request: Request) {
         subscription_status: 'active',
         current_tokens: 500,
         tokens_remaining: 500,
+        is_admin: isAdmin,
       })
       .select()
       .single();
