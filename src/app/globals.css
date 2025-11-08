@@ -1326,7 +1326,10 @@ blockquote.quote-box:hover {
   padding: 16px 24px;
   border-radius: 12px;
   font-weight: 600;
-  color: var(--magenta-dark);
+  color: var(--black) !important;
+  -webkit-text-fill-color: var(--black) !important;
+  background-clip: border-box !important;
+  -webkit-background-clip: border-box !important;
   font-size: 18px;
   margin: 24px 0;
   border: 2px solid rgba(255, 0, 128, 0.2);

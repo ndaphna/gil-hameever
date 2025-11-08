@@ -1,9 +1,14 @@
 'use client';
 
 import Link from "next/link";
+import { useAuth } from "@/hooks/useAuth";
 import "./home.css";
 
 export default function Home() {
+  const { user, profile, loading } = useAuth();
+  
+  // Check if user is logged in and has active subscription
+  const hasActiveSubscription = user && profile && profile.subscription_status === 'active';
   const scrollToFeatures = () => {
     const featuresSection = document.querySelector('.features-section');
     if (featuresSection) {
@@ -187,7 +192,9 @@ export default function Home() {
               <h4>חשבון</h4>
               <Link href="/login">התחברות</Link>
               <Link href="/signup">הרשמה</Link>
-              <Link href="/dashboard">לוח בקרה</Link>
+              {hasActiveSubscription && (
+                <Link href="/dashboard">לוח בקרה</Link>
+              )}
             </div>
           </div>
         </div>

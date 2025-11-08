@@ -15,6 +15,41 @@ interface Article {
 // Articles list - add new articles here
 const articles: Article[] = [
   {
+    id: 'muscle-mass-menopause',
+    title: 'שרירים נעלמים? לא אצלנו! מדריך לשימור מסת השריר בגיל המעבר',
+    url: '/muscle-mass-menopause',
+    teaser: 'האם אתן מרגישות שהשרירים שלכן החליטו לקחת חופשה ארוכה? ברוכות הבאות למועדון "איפה נעלמו השרירים שלי?" בגיל המעבר. אני כאן כדי לספר לכן למה זה קורה ואיך אפשר להחזיר את השרירים הביתה…',
+    imageUrl: 'https://i.imghippo.com/files/Cmr5152HsY.png'
+  },
+  {
+    id: 'intermittent-fasting-menopause',
+    title: 'צום לסירוגין',
+    url: '/intermittent-fasting-menopause',
+    teaser: 'מבאס, נכון, בגיל המעבר יש סיכוי גדול שנעלה במשקל. האשמה היא בחוסר איזון הורמונלי והירידה באסטרוגן… בלה בלה..ידוע. אז מה אנחנו עושות? החדשות הטובות הן שצום לסירוגין יכול לעזור לנו...',
+    imageUrl: 'https://i.imghippo.com/files/BMz6150CfM.jpeg'
+  },
+  {
+    id: 'cortisol-stress-menopause',
+    title: 'מרגישה כמו סיר לחץ? גלי איך להוריד את האש מתחת הורמון הקורטיזול שלך',
+    url: '/cortisol-stress-menopause',
+    teaser: 'לפעמים הגוף שלנו מחליט להפוך לסיר לחץ אנושי. האחראי הראשי: הורמון הקורטיזול שמתחיל להשתולל חופשי בגיל המעבר! בואי נדבר על איך להרגיע את הורמון הסטרס הזה...',
+    imageUrl: 'https://i.imghippo.com/files/vL1482nNM.webp'
+  },
+  {
+    id: 'good-sleep-menopause',
+    title: 'לילה טוב (באמת!): מדריך השורדת לשינה טובה בגיל המעבר',
+    url: '/good-sleep-menopause',
+    teaser: 'אז מה, גם אתן מתהפכות במיטה בלילה כמו שניצל על מחבת? אל דאגה, אתן לא לבד! בתור אחת שכבר מזמן הפסיקה לספור כבשים ועברה לספור את הפעמים שהיא מסתובבת במיטה...',
+    imageUrl: 'https://i.imghippo.com/files/OsO8314YpQ.jpg'
+  },
+  {
+    id: 'walking-benefits-menopause',
+    title: 'היתרונות של הליכה לנשים בגיל המעבר ואיך לשרוף יותר קלוריות בהליכה',
+    url: '/walking-benefits-menopause',
+    teaser: 'כולנו יודעות שחשוב לשלב הליכה בשגרת היומיום שלנו, ושהיא מביאה שורה של יתרונות בריאותיים פיזיים ונפשיים. זו אחת מפעילויות הכושר היותר פופולאריות, והיא גם שורפת לא מעט קלוריות...',
+    imageUrl: 'https://i.imghippo.com/files/CVDE4088N.jpg'
+  },
+  {
     id: 'preparing-for-menopause',
     title: 'מה קורה לנו בגוף לקראת גיל המעבר וכיצד להיערך?',
     url: '/preparing-for-menopause',
