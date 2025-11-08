@@ -85,7 +85,9 @@ export function useAuth() {
       }
 
       // Load user profile via API route (bypasses RLS issues)
-      const profileResponse = await fetch('/api/user/profile');
+      const profileResponse = await fetch('/api/user/profile', {
+        credentials: 'include'
+      });
       
       if (!profileResponse.ok) {
         // If profile doesn't exist (404), try to create it
@@ -102,7 +104,9 @@ export function useAuth() {
             });
 
             // Retry loading profile
-            const retryResponse = await fetch('/api/user/profile');
+            const retryResponse = await fetch('/api/user/profile', {
+              credentials: 'include'
+            });
             if (!retryResponse.ok) {
               setState(prev => ({ 
                 ...prev, 
