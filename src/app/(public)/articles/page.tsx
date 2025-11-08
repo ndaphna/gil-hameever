@@ -1,0 +1,89 @@
+'use client';
+
+import Link from 'next/link';
+import './articles.css';
+
+// Article data structure
+interface Article {
+  id: string;
+  title: string;
+  url: string;
+  teaser: string;
+  imageUrl: string;
+}
+
+// Articles list - add new articles here
+const articles: Article[] = [
+  {
+    id: 'preparing-for-menopause',
+    title: 'מה קורה לנו בגוף לקראת גיל המעבר וכיצד להיערך?',
+    url: '/preparing-for-menopause',
+    teaser: 'בממוצע סביב גיל 48–49 אנחנו נכנסות לתקופה בחיינו שבה רובנו כבר לא פוריות ללדת ילדים. לחלק מאיתנו זה יקרה בגיל 40 ולחלק אחרי 50, והטווח הוא בנורמה...',
+    imageUrl: 'https://i.imghippo.com/files/EoFG9547htc.png'
+  },
+  {
+    id: 'mindset-changes-weight-loss',
+    title: 'שלושת שינויי המיינדסט הגדולים שעשיתי כדי לרדת במשקל בשנות ה-50 לחיי',
+    url: '/mindset-changes-weight-loss-50s',
+    teaser: 'רוב הנשים מתעסקות עיסוק יתר במשקל שלהן רוב חייהן. גם הרזות שביננו חוות בגיל המעבר קושי שלא חוו לפני. פתאום צצה לה כרס קטנה שמסרבת לרדת...',
+    imageUrl: 'https://i.imghippo.com/files/ncc8397uA.jpg'
+  },
+  {
+    id: 'proven-tools-belly-fat',
+    title: 'כלים מוכחים להורדת השומן הבטני לנשים בגיל המעבר - זה עובד!',
+    url: '/proven-tools-belly-fat-menopause',
+    teaser: 'אחת התופעות הנפוצות והמתסכלות ביותר לנשים בגיל המעבר, היא צבירת השומן הבטני העקשן. פתאום הבטן נפוחה ובולטת. אבל מעבר למראה החיצוני, הסכנה האמיתית היא בשומן הפנימי שסביב האיברים שלנו...',
+    imageUrl: 'https://i.imghippo.com/files/wZn1376Zms.png'
+  },
+  {
+    id: 'brain-fog-menopause',
+    title: '"ערפל מוחי" בגיל המעבר - מה זה ואיך להתמודד?',
+    url: '/brain-fog-menopause',
+    teaser: 'אחד התסמינים הפחות מוכרים (אבל בהחלט נפוצים) של גיל המעבר הוא \'ערפול מוחי\'. קרה לך פעם שבאמצע שיחה נתקעת ולא הצלחת למצוא את המילה שאת מחפשת? אם ענית בחיוב, ברוכה הבאה למועדון המעורפלות...',
+    imageUrl: 'https://i.imghippo.com/files/yPX6366sE.jpg'
+  },
+  {
+    id: 'hot-flashes-menopause',
+    title: 'גלי חום: איך להישאר קרירה כשהגוף מחליט להיות תנור?',
+    url: '/hot-flashes-menopause',
+    teaser: 'גם אתן מרגישות לפעמים כאילו מישהו הדליק לכן מדורה פרטית בתוך הגוף? ברוכות הבאות למועדון "הלוהטות בגיל המעבר"! אני כאן כדי לספר לכן על הסיבות לגלי החום הללו ואיך אפשר להתמודד איתם בלי להפוך לכבאית אנושית...',
+    imageUrl: 'https://i.imghippo.com/files/xFEf4520Pw.jpg'
+  }
+];
+
+export default function ArticlesPage() {
+  return (
+    <div className="articles-page">
+      <div className="articles-container">
+        <header className="articles-header">
+          <h1 className="articles-title">מאמרים</h1>
+          <p className="articles-subtitle">
+            מאמרים, טיפים ותובנות על גיל המעבר, בריאות, תזונה ואורח חיים בריא
+          </p>
+        </header>
+
+        <section className="articles-grid">
+          {articles.map((article) => (
+            <article key={article.id} className="article-card">
+              <Link href={article.url} className="article-card-link">
+                <div className="article-card-image-wrapper">
+                  <img 
+                    src={article.imageUrl} 
+                    alt={article.title}
+                    className="article-card-image"
+                  />
+                </div>
+                <div className="article-card-content">
+                  <h2 className="article-card-title">{article.title}</h2>
+                  <p className="article-card-teaser">{article.teaser}</p>
+                  <span className="article-card-read-more">קראי עוד →</span>
+                </div>
+              </Link>
+            </article>
+          ))}
+        </section>
+      </div>
+    </div>
+  );
+}
+

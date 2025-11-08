@@ -183,15 +183,15 @@ export default function Navigation() {
               // תפריט ברירת מחדל עד שה-hydration יסתיים
               <>
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
+                <button onClick={() => handleLinkClick('/articles')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מאמרים">מאמרים</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
-                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מחירים">מחירים</button>
               </>
             ) : (
               // תפריט ציבורי למשתמשים לא מחוברים
               <>
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
+                <button onClick={() => handleLinkClick('/articles')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מאמרים">מאמרים</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
-                <button onClick={() => handleLinkClick('/pricing')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מחירים">מחירים</button>
                 
                 {/* כפתור אזור אישי - רק למשתמשים מחוברים */}
                 {isHydrated && isLoggedIn && (

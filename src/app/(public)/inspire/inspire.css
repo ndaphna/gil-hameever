@@ -1,0 +1,40 @@
+/* Inspire Page - Reduced spacing between sections */
+.inspire-page .content-card {
+  margin-bottom: 12px;
+}
+
+.inspire-page .content-section {
+  padding: 24px 0 40px;
+}
+
+/* Reduce padding inside cards for more compact layout */
+.inspire-page .content-card {
+  padding: 24px 20px;
+}
+
+/* Reduce hero section height */
+.inspire-page .hero {
+  min-height: 60vh;
+  padding: 60px 0 30px;
+}
+
+/* Desktop adjustments */
+@media (min-width: 768px) {
+  .inspire-page .content-card {
+    margin-bottom: 16px;
+    padding: 32px 28px;
+  }
+  
+  .inspire-page .content-section {
+    padding: 40px 0 60px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .inspire-page .content-card {
+    margin-bottom: 20px;
+    padding: 36px 32px;
+  }
+}
+
+
