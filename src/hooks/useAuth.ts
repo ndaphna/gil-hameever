@@ -7,6 +7,7 @@ import { User, UserProfile } from '@/types';
 interface AuthState {
   user: User | null;
   profile: UserProfile | null;
+  isAdmin: boolean;
   loading: boolean;
   error: string | null;
 }
@@ -15,6 +16,7 @@ export function useAuth() {
   const [state, setState] = useState<AuthState>({
     user: null,
     profile: null,
+    isAdmin: false,
     loading: true,
     error: null
   });
@@ -33,7 +35,7 @@ export function useAuth() {
         if (session?.user) {
           await loadUserData(session.user.id);
         } else {
-          setState(prev => ({ ...prev, loading: false }));
+          setState(prev => ({ ...prev, loading: false, isAdmin: false }));
         }
       } catch (error) {
         setState(prev => ({ 
@@ -55,6 +57,7 @@ export function useAuth() {
           setState({
             user: null,
             profile: null,
+            isAdmin: false,
             loading: false,
             error: null
           });
@@ -69,41 +72,94 @@ export function useAuth() {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
-      // Load user data
-      const { data: user, error: userError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      // Get user from auth
+      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
 
-      if (userError) {
+      if (authError || !authUser) {
         setState(prev => ({ 
           ...prev, 
-          error: userError.message, 
+          error: authError?.message || 'User not found', 
           loading: false 
         }));
         return;
       }
 
-      // Load user profile
-      const { data: profile, error: profileError } = await supabase
-        .from('user_profile')
-        .select('*')
-        .eq('id', userId)
-        .single();
+      // Load user profile via API route (bypasses RLS issues)
+      const profileResponse = await fetch('/api/user/profile');
+      
+      if (!profileResponse.ok) {
+        // If profile doesn't exist (404), try to create it
+        if (profileResponse.status === 404) {
+          try {
+            await fetch('/api/create-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: authUser.id,
+                email: authUser.email || '',
+                name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'משתמשת',
+              }),
+            });
 
-      if (profileError) {
-        setState(prev => ({ 
-          ...prev, 
-          error: profileError.message, 
-          loading: false 
-        }));
-        return;
+            // Retry loading profile
+            const retryResponse = await fetch('/api/user/profile');
+            if (!retryResponse.ok) {
+              setState(prev => ({ 
+                ...prev, 
+                error: 'Failed to create profile', 
+                loading: false 
+              }));
+              return;
+            }
+
+            const retryData = await retryResponse.json();
+            const newProfile = retryData.profile;
+
+            setState({
+              user: {
+                id: authUser.id,
+                email: authUser.email || '',
+                full_name: newProfile.full_name || authUser.email?.split('@')[0] || 'משתמשת',
+                created_at: authUser.created_at,
+                updated_at: authUser.updated_at || authUser.created_at
+              },
+              profile: newProfile,
+              isAdmin: retryData.isAdmin === true,
+              loading: false,
+              error: null
+            });
+            return;
+          } catch (createError) {
+            setState(prev => ({ 
+              ...prev, 
+              error: 'Failed to create profile', 
+              loading: false 
+            }));
+            return;
+          }
+        } else {
+          setState(prev => ({ 
+            ...prev, 
+            error: 'Failed to load profile', 
+            loading: false 
+          }));
+          return;
+        }
       }
+
+      const profileData = await profileResponse.json();
+      const profile = profileData.profile;
 
       setState({
-        user,
+        user: {
+          id: authUser.id,
+          email: authUser.email || '',
+          full_name: profile.full_name || authUser.email?.split('@')[0] || 'משתמשת',
+          created_at: authUser.created_at,
+          updated_at: authUser.updated_at || authUser.created_at
+        },
         profile,
+        isAdmin: profileData.isAdmin === true,
         loading: false,
         error: null
       });
