@@ -533,7 +533,12 @@ export default function DashboardPage() {
                   <h3>{rec.title}</h3>
                 </div>
                 <p className="rec-message">{rec.message}</p>
-                <a href={rec.link} className="rec-action">{rec.action} →</a>
+                <button 
+                  onClick={() => router.push(rec.link)} 
+                  className="rec-action"
+                >
+                  {rec.action} →
+                </button>
         </div>
             ))}
       </div>

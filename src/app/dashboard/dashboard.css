@@ -316,6 +316,11 @@
   overflow: hidden;
 }
 
+.recommendation-card > * {
+  position: relative;
+  z-index: 1;
+}
+
 .recommendation-card::before {
   content: '';
   position: absolute;
@@ -326,6 +331,8 @@
   background: linear-gradient(135deg, rgba(216, 135, 160, 0.03) 0%, rgba(200, 214, 200, 0.03) 100%);
   opacity: 0;
   transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .recommendation-card:hover {
@@ -378,6 +385,9 @@
   text-decoration: none;
   transition: all 0.3s ease;
   float: left;
+  cursor: pointer;
+  position: relative;
+  z-index: 1;
 }
 
 .rec-action:hover {

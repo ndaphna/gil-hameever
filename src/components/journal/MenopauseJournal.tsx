@@ -18,6 +18,17 @@ export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
   const [cycleEntries, setCycleEntries] = useState<CycleEntry[]>([]);
   const [dailyEntries, setDailyEntries] = useState<DailyEntry[]>([]);
 
+  // Read tab parameter from URL on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam === 'daily' || tabParam === 'cycle' || tabParam === 'insights') {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
+
   // Load data when component mounts or userId changes
   useEffect(() => {
     if (userId) {
