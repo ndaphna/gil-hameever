@@ -8,34 +8,35 @@ export async function GET() {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Unauthorized' },
+        { error: 'Unauthorized', isAdmin: false },
         { status: 401 }
       );
     }
 
-    // Get full profile using admin client to bypass RLS
+    // Check if user is admin
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profile')
-      .select('*')
+      .select('is_admin')
       .eq('id', user.id)
       .single();
 
     if (profileError || !profile) {
       return NextResponse.json(
-        { error: 'Profile not found' },
+        { error: 'Profile not found', isAdmin: false },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
-      profile,
-      isAdmin: profile.is_admin === true
+      isAdmin: profile.is_admin === true,
+      userId: user.id,
+      email: user.email
     });
 
   } catch (error) {
-    console.error('Profile fetch error:', error);
+    console.error('Admin check error:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Internal server error', isAdmin: false },
       { status: 500 }
     );
   }

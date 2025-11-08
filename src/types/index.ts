@@ -13,10 +13,14 @@ export interface User {
 
 export interface UserProfile {
   id: string;
-  user_id: string;
-  current_tokens: number;
-  subscription_tier: 'free' | 'premium' | 'pro';
-  subscription_status: 'active' | 'inactive' | 'cancelled';
+  user_id?: string;
+  email?: string;
+  full_name?: string;
+  current_tokens?: number;
+  tokens_remaining?: number;
+  subscription_tier?: 'trial' | 'basic' | 'premium' | 'free' | 'pro';
+  subscription_status?: 'active' | 'inactive' | 'cancelled' | 'expired';
+  is_admin?: boolean;
   created_at: string;
   updated_at: string;
 }

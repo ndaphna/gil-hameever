@@ -11,12 +11,12 @@ export function useTokens() {
       if (user && !error) {
         const { data: profile } = await supabase
           .from('user_profile')
-          .select('current_tokens')
+          .select('current_tokens, tokens_remaining')
           .eq('id', user.id)
           .single();
         
         if (profile) {
-          setTokens(profile.current_tokens || 0);
+          setTokens(profile.tokens_remaining || profile.current_tokens || 0);
         } else {
           setTokens(0);
         }
@@ -38,7 +38,10 @@ export function useTokens() {
       if (user) {
         await supabase
           .from('user_profile')
-          .update({ current_tokens: newTokens })
+          .update({ 
+            tokens_remaining: newTokens,
+            current_tokens: newTokens 
+          })
           .eq('id', user.id);
       }
       setTokens(newTokens);

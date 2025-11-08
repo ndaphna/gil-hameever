@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useTokens } from '@/hooks/useTokens';
+import { useAuth } from '@/hooks/useAuth';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -18,6 +19,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [mounted, setMounted] = useState(false);
   const [roadmapOpen, setRoadmapOpen] = useState(false);
   const { tokens } = useTokens();
+  const { isAdmin } = useAuth();
 
   // Check if current page is a roadmap page
   const isRoadmapPage = useMemo(() => {
@@ -144,7 +146,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       // Load user profile from database
         let { data: profile } = await supabase
           .from('user_profile')
-          .select('name, email')
+          .select('full_name, email')
           .eq('id', user.id)
           .single();
 
@@ -156,14 +158,14 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
             body: JSON.stringify({
               userId: user.id,
               email: user.email || '',
-              name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
+              name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'משתמשת',
             }),
           });
 
           // Fetch the newly created profile
           const { data: newProfile } = await supabase
             .from('user_profile')
-            .select('name, email')
+            .select('full_name, email')
             .eq('id', user.id)
             .single();
           
@@ -171,7 +173,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         }
 
         if (profile) {
-          setUserName(profile.name || profile.email.split('@')[0]);
+          setUserName(profile.full_name || profile.email?.split('@')[0] || 'משתמשת');
         }
     }
 
@@ -190,12 +192,12 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       if (user) {
         const { data: profile } = await supabase
           .from('user_profile')
-          .select('name, email')
+          .select('full_name, email')
           .eq('id', user.id)
           .single();
         
         if (profile) {
-          setUserName(profile.name || profile.email.split('@')[0]);
+          setUserName(profile.full_name || profile.email?.split('@')[0] || 'משתמשת');
         }
       }
     };
@@ -292,6 +294,21 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               </div>
             )}
           </div>
+
+          {/* Admin Panel Link (only for admins) */}
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className={`sidebar-item ${pathname?.startsWith('/admin') ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <span className="sidebar-icon">⚙️</span>
+              <div className="sidebar-content">
+                <span className="sidebar-label">פאנל ניהול</span>
+                <span className="sidebar-description">ניהול המערכת</span>
+              </div>
+            </Link>
+          )}
         </nav>
 
         {/* Sidebar Footer */}

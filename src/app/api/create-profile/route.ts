@@ -53,10 +53,11 @@ export async function POST(request: Request) {
       .insert({
         id: userId,
         email: email,
-        name: name || email.split('@')[0] || 'משתמשת',
+        full_name: name || email.split('@')[0] || 'משתמשת',
         subscription_tier: 'trial',
         subscription_status: 'active',
         current_tokens: 500,
+        tokens_remaining: 500,
       })
       .select()
       .single();
