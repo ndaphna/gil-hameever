@@ -14,6 +14,12 @@ export async function getAuthUser() {
     const headersList = await headers();
     const cookieStore = await cookies();
     
+    // Debug: Log available cookies (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      const allCookies = cookieStore.getAll();
+      console.log('Available cookies:', allCookies.map(c => c.name).join(', '));
+    }
+    
     // Method 1: Try to get token from Authorization header (preferred)
     const authHeader = headersList.get('authorization');
     let accessToken: string | undefined;
@@ -25,22 +31,55 @@ export async function getAuthUser() {
     // Method 2: Try to get from cookies if no header
     if (!accessToken) {
       const projectRef = supabaseUrl.split('//')[1]?.split('.')[0];
-      const cookieName = projectRef ? `sb-${projectRef}-auth-token` : null;
       
-      if (cookieName) {
+      // Try multiple possible cookie names
+      const possibleCookieNames = [
+        projectRef ? `sb-${projectRef}-auth-token` : null,
+        'sb-access-token',
+        'supabase.auth.token',
+        ...(projectRef ? [`sb-${projectRef}-auth-token.0`, `sb-${projectRef}-auth-token.1`] : [])
+      ].filter(Boolean) as string[];
+      
+      for (const cookieName of possibleCookieNames) {
         const authCookie = cookieStore.get(cookieName);
         if (authCookie?.value) {
           try {
             const cookieData = JSON.parse(authCookie.value);
-            accessToken = cookieData.access_token;
+            accessToken = cookieData.access_token || cookieData;
+            if (accessToken) break;
           } catch {
-            accessToken = authCookie.value;
+            // If not JSON, try as direct token
+            if (authCookie.value.length > 50) { // Likely a token
+              accessToken = authCookie.value;
+              break;
+            }
+          }
+        }
+      }
+      
+      // Method 3: Try to find any cookie that looks like a Supabase auth token
+      if (!accessToken) {
+        const allCookies = cookieStore.getAll();
+        for (const cookie of allCookies) {
+          const name = cookie.name.toLowerCase();
+          if ((name.includes('sb-') || name.includes('supabase')) && cookie.value.length > 50) {
+            try {
+              const parsed = JSON.parse(cookie.value);
+              if (parsed.access_token) {
+                accessToken = parsed.access_token;
+                break;
+              }
+            } catch {
+              // Try as direct token
+              accessToken = cookie.value;
+              break;
+            }
           }
         }
       }
     }
     
-    // Create Supabase client
+    // Create Supabase client with proper cookie handling
     const supabase = createClient(supabaseUrl, supabaseAnonKey, {
       cookies: {
         get(name: string) {
@@ -61,21 +100,34 @@ export async function getAuthUser() {
       } : undefined,
     });
 
-    // Try to get user
-    const { data: { user }, error: userError } = await supabase.auth.getUser(accessToken || undefined);
+    // Try to get user - first with token if available, then try getSession
+    let user = null;
+    let userError = null;
+    
+    if (accessToken) {
+      const result = await supabase.auth.getUser(accessToken);
+      user = result.data.user;
+      userError = result.error;
+    }
+    
+    // If getUser failed or no token, try getSession as fallback
+    if (!user) {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (session?.user && !sessionError) {
+        user = session.user;
+        userError = null;
+      } else if (sessionError) {
+        userError = sessionError;
+      }
+    }
 
     if (userError) {
       console.error('Error getting user:', userError.message);
-      // Try session as fallback
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        return session.user;
-      }
       return null;
     }
 
     if (!user) {
-      console.log('No authenticated user found');
+      console.log('No authenticated user found - Auth session missing!');
       return null;
     }
 

@@ -84,9 +84,22 @@ export function useAuth() {
         return;
       }
 
+      // Get access token from Supabase session
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+
       // Load user profile via API route (bypasses RLS issues)
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (accessToken) {
+        headers['Authorization'] = `Bearer ${accessToken}`;
+      }
+
       const profileResponse = await fetch('/api/user/profile', {
-        credentials: 'include'
+        credentials: 'include',
+        headers
       });
       
       if (!profileResponse.ok) {
@@ -105,7 +118,8 @@ export function useAuth() {
 
             // Retry loading profile
             const retryResponse = await fetch('/api/user/profile', {
-              credentials: 'include'
+              credentials: 'include',
+              headers
             });
             if (!retryResponse.ok) {
               setState(prev => ({ 
