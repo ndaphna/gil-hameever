@@ -190,22 +190,49 @@ export default function DashboardPage() {
     
     const weeklyEntries = daily.filter(e => new Date(e.date) >= lastSundayForStats);
     
+    // Helper function to format date as YYYY-MM-DD in local timezone
+    const formatDateLocal = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    // Helper function to extract date string from entry date (handles various formats)
+    const extractDateString = (dateValue: string | Date | null | undefined): string | null => {
+      if (!dateValue) return null;
+      
+      if (typeof dateValue === 'string') {
+        // Handle ISO string or date string
+        const dateMatch = dateValue.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (dateMatch) return dateMatch[1];
+        // Try parsing as date
+        const parsed = new Date(dateValue);
+        if (!isNaN(parsed.getTime())) {
+          return formatDateLocal(parsed);
+        }
+      } else if (dateValue instanceof Date) {
+        return formatDateLocal(dateValue);
+      }
+      
+      return null;
+    };
+
     // Last 7 days for mini chart - Show last 7 days from today (inclusive)
     const last7Days = [];
     const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset to start of day
+    today.setHours(0, 0, 0, 0); // Reset to start of day in local timezone
     
     // Calculate the 7 days (today and 6 days before)
     for (let i = 6; i >= 0; i--) {
       const date = new Date(today);
       date.setDate(today.getDate() - i);
-      const dateStr = date.toISOString().split('T')[0];
+      const dateStr = formatDateLocal(date);
       
       // Find entries for this specific date
       const dayEntries = daily.filter(e => {
-        // Handle date strings (most common case from database)
-        const entryDate = typeof e.date === 'string' ? e.date.split('T')[0] : String(e.date);
-        return entryDate === dateStr;
+        const entryDateStr = extractDateString(e.date);
+        return entryDateStr === dateStr;
       });
       
       const dayInfo = {
@@ -218,14 +245,16 @@ export default function DashboardPage() {
       };
       
       // Debug log for each day
+      console.log(`📅 ${dayInfo.dayName} (${dateStr}): ${dayInfo.hasEntry ? `Found ${dayEntries.length} entries` : 'No entries'}`);
       if (dayInfo.hasEntry) {
-        console.log(`📅 ${dayInfo.dayName} (${dateStr}): Found ${dayEntries.length} entries`);
+        console.log(`   - Hot flash: ${dayInfo.hotFlash}, Good sleep: ${dayInfo.goodSleep}, Low mood: ${dayInfo.lowMood}`);
       }
       
       last7Days.push(dayInfo);
     }
     
     console.log('📊 Last 7 days calculated:', last7Days);
+    console.log('📋 All daily entries dates:', daily.map(e => ({ date: e.date, formatted: extractDateString(e.date) })).slice(0, 10));
     
     // Cycle stats
     const periodEntries = cycle.filter(e => e.is_period).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
