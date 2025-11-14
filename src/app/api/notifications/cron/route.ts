@@ -26,14 +26,15 @@ export async function GET(request: Request) {
       );
     }
 
-    // קרא ל-endpoint של שליחת מיילים
+    // קרא ל-endpoint של מתזמן הניוזלטר
+    // זה בודק את ההעדפות של כל משתמשת ושולח ניוזלטרים לפי התדירות והשעה שבחרה
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || request.url.replace('/api/notifications/cron', '');
-    const response = await fetch(`${baseUrl}/api/notifications/send-smart-email`, {
-      method: 'POST',
+    const response = await fetch(`${baseUrl}/api/notifications/newsletter-scheduler`, {
+      method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({})
+        ...(process.env.CRON_SECRET ? { 'Authorization': `Bearer ${process.env.CRON_SECRET}` } : {})
+      }
     });
 
     const result = await response.json();

@@ -7,25 +7,118 @@ export function useTokens() {
 
   const loadTokens = async () => {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser();
-      if (user && !error) {
-        const { data: profile } = await supabase
-          .from('user_profile')
-          .select('current_tokens, tokens_remaining')
-          .eq('id', user.id)
-          .single();
+      const { data: { user }, error: authError } = await supabase.auth.getUser();
+      
+      if (authError || !user) {
+        console.log('🔐 No authenticated user, setting tokens to 0');
+        setTokens(0);
+        setIsLoading(false);
+        return;
+      }
+
+      console.log('🔍 Loading tokens for user:', user.id);
+      
+      // Get access token from Supabase session for API call
+      const { data: { session } } = await supabase.auth.getSession();
+      const accessToken = session?.access_token;
+      
+      // Try using API endpoint first (bypasses RLS)
+      try {
+        const headers: HeadersInit = {
+          'Content-Type': 'application/json',
+        };
         
-        if (profile) {
-          setTokens(profile.tokens_remaining || profile.current_tokens || 0);
+        if (accessToken) {
+          headers['Authorization'] = `Bearer ${accessToken}`;
+        }
+        
+        const response = await fetch('/api/user/profile', {
+          credentials: 'include', // Include cookies for authentication
+          headers
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('📦 Full API response:', data);
+          const { profile } = data;
+          
+          if (profile) {
+            // Use current_tokens as primary source, fallback to tokens_remaining for backward compatibility
+            const tokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
+            console.log('✅ Tokens loaded from API:', { 
+              current_tokens: profile.current_tokens, 
+              tokens_remaining: profile.tokens_remaining,
+              final: tokens,
+              profileKeys: Object.keys(profile)
+            });
+            setTokens(tokens);
+            
+            // Sync both fields if they differ (fix any inconsistencies, handle null values)
+            const currentTokensValue = profile.current_tokens ?? null;
+            const tokensRemainingValue = profile.tokens_remaining ?? null;
+            if (currentTokensValue !== tokensRemainingValue) {
+              console.log('🔄 Syncing token fields:', { currentTokensValue, tokensRemainingValue });
+              await supabase
+                .from('user_profile')
+                .update({ 
+                  current_tokens: tokens,
+                  tokens_remaining: tokens
+                })
+                .eq('id', user.id);
+            }
+            setIsLoading(false);
+            return;
+          }
         } else {
-          setTokens(0);
+          console.warn('⚠️ API endpoint returned error:', response.status);
+        }
+      } catch (apiError) {
+        console.warn('⚠️ API endpoint failed, trying direct query:', apiError);
+      }
+
+      // Fallback to direct query (may fail due to RLS)
+      const { data: profile, error: queryError } = await supabase
+        .from('user_profile')
+        .select('current_tokens, tokens_remaining')
+        .eq('id', user.id)
+        .single();
+      
+      if (queryError) {
+        console.error('❌ Direct query failed:', queryError);
+        setTokens(0);
+        setIsLoading(false);
+        return;
+      }
+      
+      if (profile) {
+        // Use current_tokens as primary source, fallback to tokens_remaining for backward compatibility
+        const tokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
+        console.log('✅ Tokens loaded from direct query:', { 
+          current_tokens: profile.current_tokens, 
+          tokens_remaining: profile.tokens_remaining,
+          final: tokens 
+        });
+        setTokens(tokens);
+        
+        // Sync both fields if they differ (fix any inconsistencies, handle null values)
+        const currentTokensValue = profile.current_tokens ?? null;
+        const tokensRemainingValue = profile.tokens_remaining ?? null;
+        if (currentTokensValue !== tokensRemainingValue) {
+          console.log('🔄 Syncing token fields:', { currentTokensValue, tokensRemainingValue });
+          await supabase
+            .from('user_profile')
+            .update({ 
+              current_tokens: tokens,
+              tokens_remaining: tokens
+            })
+            .eq('id', user.id);
         }
       } else {
-        // No authenticated user - set tokens to 0
+        console.warn('⚠️ Profile not found, setting tokens to 0');
         setTokens(0);
       }
     } catch (error) {
-      console.log('Token loading failed, setting to 0');
+      console.error('❌ Token loading failed:', error);
       setTokens(0);
     } finally {
       setIsLoading(false);

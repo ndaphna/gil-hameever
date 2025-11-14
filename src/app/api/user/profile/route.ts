@@ -20,12 +20,28 @@ export async function GET() {
       .eq('id', user.id)
       .single();
 
-    if (profileError || !profile) {
+    if (profileError) {
+      console.error('Profile fetch error:', profileError);
+      return NextResponse.json(
+        { error: 'Profile fetch failed', details: profileError.message },
+        { status: 500 }
+      );
+    }
+
+    if (!profile) {
+      console.warn('Profile not found for user:', user.id);
       return NextResponse.json(
         { error: 'Profile not found' },
         { status: 404 }
       );
     }
+
+    // Log token values for debugging
+    console.log('Profile loaded:', {
+      userId: user.id,
+      current_tokens: profile.current_tokens,
+      tokens_remaining: profile.tokens_remaining
+    });
 
     return NextResponse.json({
       profile,

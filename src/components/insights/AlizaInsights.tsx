@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { PersonalizedInsight, InsightSummary } from '@/types/insights';
+import { PersonalizedInsight } from '@/types/insights';
 import { InsightsAI } from '@/lib/insights-ai';
 import InsightsCharts from './InsightsCharts';
 import AlizaMessages from '../journal/AlizaMessages';
@@ -15,7 +15,6 @@ interface AlizaInsightsProps {
 export default function AlizaInsights({ userId }: AlizaInsightsProps) {
   const [insights, setInsights] = useState<PersonalizedInsight[]>([]);
   const [heroInsight, setHeroInsight] = useState<PersonalizedInsight | null>(null);
-  const [summary, setSummary] = useState<InsightSummary | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedInsight, setSelectedInsight] = useState<PersonalizedInsight | null>(null);
   const [timeRange, setTimeRange] = useState<'week' | 'month' | 'quarter'>('month');
@@ -23,29 +22,53 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
   const [cycleEntries, setCycleEntries] = useState<any[]>([]);
 
   useEffect(() => {
-    loadEntries();
+    if (userId) {
+      loadEntries();
+    }
   }, [userId]);
 
   useEffect(() => {
-    loadInsights();
-  }, [userId, timeRange]);
+    if (userId) {
+      // Wait a bit for entries to load, then generate insights
+      const timer = setTimeout(() => {
+        loadInsights();
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [userId, timeRange, dailyEntries.length, cycleEntries.length]);
 
   const loadEntries = async () => {
     try {
+      console.log('📊 Loading entries for user:', userId);
       const [dailyResult, cycleResult] = await Promise.all([
         supabase.from('daily_entries').select('*').eq('user_id', userId).order('date', { ascending: false }),
         supabase.from('cycle_entries').select('*').eq('user_id', userId).order('date', { ascending: false })
       ]);
+      
+      if (dailyResult.error) {
+        console.error('❌ Error loading daily entries:', dailyResult.error);
+      } else {
+        console.log('✅ Loaded daily entries:', dailyResult.data?.length || 0);
+      }
+      
+      if (cycleResult.error) {
+        console.error('❌ Error loading cycle entries:', cycleResult.error);
+      } else {
+        console.log('✅ Loaded cycle entries:', cycleResult.data?.length || 0);
+      }
+      
       setDailyEntries(dailyResult.data || []);
       setCycleEntries(cycleResult.data || []);
     } catch (error) {
-      console.error('Error loading entries:', error);
+      console.error('❌ Error loading entries:', error);
     }
   };
 
   const loadInsights = async () => {
     setIsLoading(true);
     try {
+      console.log('🔍 Starting insights generation for user:', userId);
+      
       // Check if this is a mock user
       if (userId.startsWith('mock-user-')) {
         console.log('Insights: Using mock data for mock user');
@@ -76,26 +99,41 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
         ];
         
         setInsights(mockInsights);
-        
-        const mockSummary: InsightSummary = {
-          totalInsights: mockInsights.length,
-          newInsights: 1,
-          highPriority: 0,
-          categories: {
-            sleep: 1,
-            mood: 1
-          },
-          lastAnalysis: new Date().toISOString(),
-          nextAnalysis: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-        };
-        
-        setSummary(mockSummary);
         setIsLoading(false);
         return;
       }
       
+      // Check if we have data before generating insights
+      if (dailyEntries.length === 0 && cycleEntries.length === 0) {
+        console.log('⚠️ No data available yet, waiting for entries to load...');
+        // Wait a bit and try again if entries are still loading
+        setTimeout(() => {
+          if (dailyEntries.length === 0 && cycleEntries.length === 0) {
+            console.log('⚠️ Still no data available for insights');
+            setInsights([]);
+            setHeroInsight(null);
+          }
+        }, 1000);
+        setIsLoading(false);
+        return;
+      }
+      
+      console.log('📊 Data available:', {
+        dailyEntries: dailyEntries.length,
+        cycleEntries: cycleEntries.length
+      });
+      
       const ai = new InsightsAI(userId);
+      console.log('🤖 Calling InsightsAI.generateInsights()...');
       const generatedInsights = await ai.generateInsights();
+      console.log('✅ Generated insights:', generatedInsights.length);
+      
+      if (generatedInsights.length === 0) {
+        console.log('⚠️ No insights generated - this might indicate:');
+        console.log('  1. No data in database');
+        console.log('  2. Edge function not working');
+        console.log('  3. API error');
+      }
       
       // זיהוי תובנת Hero - התובנה הכי חשובה (עדיפות גבוהה עם השוואה לנורמה, או עדיפות גבוהה, או עם השוואה)
       const hero = generatedInsights.length > 0 
@@ -108,23 +146,10 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
       setHeroInsight(hero || null);
       // אם יש Hero, נציג רק את שאר התובנות. אם אין - נציג את כולן
       setInsights(hero ? generatedInsights.filter(i => i.id !== hero.id) : generatedInsights);
-      
-      // יצירת סיכום
-      const newSummary: InsightSummary = {
-        totalInsights: generatedInsights.length,
-        newInsights: generatedInsights.filter(i => i.priority === 'high').length,
-        highPriority: generatedInsights.filter(i => i.priority === 'high').length,
-        categories: generatedInsights.reduce((acc, insight) => {
-          acc[insight.category] = (acc[insight.category] || 0) + 1;
-          return acc;
-        }, {} as Record<string, number>),
-        lastAnalysis: new Date().toISOString(),
-        nextAnalysis: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-      };
-      
-      setSummary(newSummary);
     } catch (error) {
-      console.error('Error loading insights:', error);
+      console.error('❌ Error loading insights:', error);
+      setInsights([]);
+      setHeroInsight(null);
     } finally {
       setIsLoading(false);
     }
@@ -260,33 +285,6 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
                 <span>יש לך פעולות מעשיות שתוכלי לבצע - לחצי לפרטים</span>
               </div>
             )}
-          </div>
-        </div>
-      )}
-
-      {/* Summary Cards */}
-      {summary && (
-        <div className="insights-summary">
-          <div className="summary-card">
-            <div className="summary-icon">📊</div>
-            <div className="summary-content">
-              <h4>{summary.totalInsights}</h4>
-              <p>תובנות סה&quot;כ</p>
-            </div>
-          </div>
-          <div className="summary-card">
-            <div className="summary-icon">⚠️</div>
-            <div className="summary-content">
-              <h4>{summary.highPriority}</h4>
-              <p>עדיפות גבוהה</p>
-            </div>
-          </div>
-          <div className="summary-card">
-            <div className="summary-icon">🆕</div>
-            <div className="summary-content">
-              <h4>{summary.newInsights}</h4>
-              <p>תובנות חדשות</p>
-            </div>
           </div>
         </div>
       )}

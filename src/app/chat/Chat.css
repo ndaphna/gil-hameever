@@ -154,6 +154,7 @@
   font-size: 0.95rem;
   line-height: 1.6;
   word-wrap: break-word;
+  white-space: pre-wrap; /* Preserve line breaks and wrap text */
   position: relative;
   font-weight: 400;
   letter-spacing: 0.01em;

@@ -1,14 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
-import OpenAI from 'openai';
 import type { ChatMessage } from '@/types';
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
-console.log('OpenAI API Key exists:', !!process.env.OPENAI_API_KEY);
-console.log('OpenAI API Key length:', process.env.OPENAI_API_KEY?.length || 0);
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -64,15 +56,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // Check user tokens
+    // Check user tokens - use current_tokens as primary source, fallback to tokens_remaining
     const { data: profile } = await supabaseAdmin
       .from('user_profile')
-      .select('current_tokens')
+      .select('current_tokens, tokens_remaining')
       .eq('id', userId)
       .single();
 
-    if (!profile || profile.current_tokens <= 0) {
+    // Use current_tokens as primary, fallback to tokens_remaining for backward compatibility
+    const availableTokens = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
+    
+    if (!profile || availableTokens <= 0) {
       return NextResponse.json({ error: 'No tokens available' }, { status: 402 });
+    }
+    
+    // Ensure both fields are in sync if they differ (handle null values)
+    const currentTokensValue = profile.current_tokens ?? null;
+    const tokensRemainingValue = profile.tokens_remaining ?? null;
+    if (currentTokensValue !== tokensRemainingValue) {
+      await supabaseAdmin
+        .from('user_profile')
+        .update({ 
+          current_tokens: availableTokens,
+          tokens_remaining: availableTokens
+        })
+        .eq('id', userId);
     }
 
     // Get conversation history if conversationId exists
@@ -112,38 +120,130 @@ export async function POST(request: NextRequest) {
 
 תגיבי בהודעות קצרות וממוקדות (עד 200 מילים).`;
 
+    // Try Edge Function first, fallback to direct OpenAI call if needed
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    
+    let aiResponse: string;
+    let assistantTokens: number = 0;
+    let deductTokens: number = 0;
+
+    // Prepare messages for OpenAI
     const messages = [
-      { role: 'system', content: systemPrompt },
-      ...conversationHistory,
-      { role: 'user', content: message }
+      { role: 'system' as const, content: systemPrompt },
+      ...(conversationHistory || []),
+      { role: 'user' as const, content: message }
     ];
 
-        // Check if OpenAI API key is available
-        if (!process.env.OPENAI_API_KEY) {
-          console.error('OpenAI API key is missing');
-          return NextResponse.json({ 
-            error: 'OpenAI API key is not configured. Please check your environment variables.' 
-          }, { status: 500 });
-        }
+    // Try Edge Function first
+    if (supabaseUrl && supabaseAnonKey) {
+      try {
+        const response = await fetch(`${supabaseUrl}/functions/v1/aliza-chat`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${supabaseAnonKey}`,
+          },
+          body: JSON.stringify({
+            message,
+            conversationHistory,
+            systemPrompt
+          }),
+        });
 
-        // Call OpenAI API
-        let completion;
+        if (response.ok) {
+          const edgeFunctionResponse = await response.json();
+          aiResponse = edgeFunctionResponse.response || 'מצטערת, לא הצלחתי לענות כרגע.';
+          assistantTokens = edgeFunctionResponse.assistant_tokens || 0;
+          deductTokens = edgeFunctionResponse.deduct_tokens || assistantTokens * 2;
+        } else {
+          // Edge Function failed, try direct OpenAI call
+          throw new Error(`Edge Function returned ${response.status}`);
+        }
+      } catch (edgeError: unknown) {
+        console.warn('Edge Function not available, trying direct OpenAI call:', edgeError);
+        
+        // Fallback to direct OpenAI call if Edge Function is not available
+        if (openaiApiKey && openaiApiKey !== 'dummy-key') {
+          try {
+            const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${openaiApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: 'gpt-4',
+                messages: messages,
+                max_tokens: 300,
+                temperature: 0.7,
+              }),
+            });
+
+            if (!completion.ok) {
+              const errorText = await completion.text();
+              console.error('OpenAI API error:', errorText);
+              throw new Error(`OpenAI API error: ${errorText}`);
+            }
+
+            const data = await completion.json();
+            aiResponse = data.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
+            assistantTokens = data.usage?.completion_tokens || 0;
+            deductTokens = assistantTokens * 2;
+          } catch (openaiError: unknown) {
+            console.error('Direct OpenAI call also failed:', openaiError);
+            // Final fallback
+            aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+            assistantTokens = 0;
+            deductTokens = 0;
+          }
+        } else {
+          // No OpenAI key available, use fallback
+          console.error('Edge Function not available and no OpenAI API key configured');
+          aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+          assistantTokens = 0;
+          deductTokens = 0;
+        }
+      }
+    } else {
+      // No Supabase config, try direct OpenAI
+      if (openaiApiKey && openaiApiKey !== 'dummy-key') {
         try {
-          completion = await openai.chat.completions.create({
-            model: 'gpt-4',
-            messages: messages,
-            max_tokens: 300,
-            temperature: 0.7,
+          const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${openaiApiKey}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              model: 'gpt-4',
+              messages: messages,
+              max_tokens: 300,
+              temperature: 0.7,
+            }),
           });
-        } catch (openaiError: unknown) {
-          console.error('OpenAI API error:', openaiError);
-          const errorMessage = openaiError instanceof Error ? openaiError.message : 'Unknown error';
-          return NextResponse.json({ 
-            error: `OpenAI API error: ${errorMessage}` 
-          }, { status: 500 });
-        }
 
-        const aiResponse = completion.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
+          if (completion.ok) {
+            const data = await completion.json();
+            aiResponse = data.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
+            assistantTokens = data.usage?.completion_tokens || 0;
+            deductTokens = assistantTokens * 2;
+          } else {
+            throw new Error('OpenAI API call failed');
+          }
+        } catch (error) {
+          console.error('OpenAI direct call failed:', error);
+          aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+          assistantTokens = 0;
+          deductTokens = 0;
+        }
+      } else {
+        aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+        assistantTokens = 0;
+        deductTokens = 0;
+      }
+    }
 
     // Save messages to database
     let currentConversationId = conversationId;
@@ -200,16 +300,24 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       });
 
-    // Deduct token
+    // Deduct tokens (deduct_tokens is already calculated as assistant_tokens * 2)
+    // Use the synced token value
+    const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
+    const newTokenBalance = Math.max(0, currentTokens - deductTokens);
     await supabaseAdmin
       .from('user_profile')
-      .update({ current_tokens: profile.current_tokens - 1 })
+      .update({ 
+        current_tokens: newTokenBalance,
+        tokens_remaining: newTokenBalance  // Keep both fields in sync
+      })
       .eq('id', userId);
 
     return NextResponse.json({
       response: aiResponse,
       conversationId: currentConversationId,
-      tokensRemaining: profile.current_tokens - 1
+      tokensRemaining: newTokenBalance,
+      assistant_tokens: assistantTokens,
+      deduct_tokens: deductTokens
     });
 
   } catch (error) {

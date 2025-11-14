@@ -70,57 +70,68 @@ export async function POST(request: NextRequest) {
     const moodTrends = analyzeMoodTrends(checkIns);
 
     const insights = [];
+    let totalAssistantTokens = 0; // Track total tokens from all OpenAI calls
 
     // Generate sleep insight
     if (sleepPatterns.totalDays > 0) {
       const sleepInsight = await generateSleepInsight(sleepPatterns);
       insights.push(sleepInsight);
+      totalAssistantTokens += sleepInsight.assistantTokens || 0;
     }
 
     // Generate mood insight
     if (moodTrends.dominantMood) {
       const moodInsight = await generateMoodInsight(moodTrends);
       insights.push(moodInsight);
+      totalAssistantTokens += moodInsight.assistantTokens || 0;
     }
 
     // Generate encouragement insight
     if (consecutiveDays > 0) {
       const encouragementInsight = await generateEncouragementInsight(consecutiveDays);
       insights.push(encouragementInsight);
+      totalAssistantTokens += encouragementInsight.assistantTokens || 0;
     }
 
-    // Save insights to database
+    // Save insights to database (remove assistantTokens before saving)
     for (const insight of insights) {
+      const { assistantTokens: _, ...insightToSave } = insight;
       await supabaseAdmin
         .from('journal_insights')
         .insert({
           user_id: userId,
-          type: insight.type,
-          title: insight.title,
-          description: insight.description,
-          data: insight.data
+          type: insightToSave.type,
+          title: insightToSave.title,
+          description: insightToSave.description,
+          data: insightToSave.data
         });
     }
 
-    // Deduct tokens for AI-generated insights (only if OpenAI was used)
-    if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'dummy-key' && insights.length > 0) {
-      const tokensToDeduct = insights.length * 10; // 10 tokens per insight
+    // Deduct tokens for AI-generated insights (same formula as chat: assistant_tokens * 2)
+    if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'dummy-key' && totalAssistantTokens > 0) {
+      const tokensToDeduct = totalAssistantTokens * 2; // Same formula: assistant_tokens * 2
+      
       try {
         // Get current tokens first
         const { data: profile } = await supabaseAdmin
           .from('user_profile')
-          .select('current_tokens')
+          .select('current_tokens, tokens_remaining')
           .eq('id', userId)
           .single();
         
         if (profile) {
-          const newTokens = Math.max(0, (profile.current_tokens || 0) - tokensToDeduct);
+          const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
+          const newTokenBalance = Math.max(0, currentTokens - tokensToDeduct);
+          
           await supabaseAdmin
             .from('user_profile')
-            .update({ current_tokens: newTokens })
+            .update({ 
+              current_tokens: newTokenBalance,
+              tokens_remaining: newTokenBalance  // Keep both fields in sync
+            })
             .eq('id', userId);
           
-          console.log(`Deducted ${tokensToDeduct} tokens for ${insights.length} insights. New balance: ${newTokens}`);
+          console.log(`✅ Deducted ${tokensToDeduct} tokens (${totalAssistantTokens} assistant tokens * 2) for ${insights.length} insights. New balance: ${newTokenBalance}`);
         }
       } catch (error) {
         console.error('Error deducting tokens:', error);
@@ -211,7 +222,7 @@ function analyzeMoodTrends(checkIns: DailyEntry[]): MoodTrends {
   };
 }
 
-async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insight> {
+async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על דפוסי שינה בהתבסס על הנתונים.
@@ -239,19 +250,22 @@ async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insig
       temperature: 0.7
     });
 
+    const assistantTokens = completion.usage?.completion_tokens || 0;
+
     return {
       type: 'pattern',
       title: 'דפוס שינה',
       description: completion.choices[0]?.message?.content || getFallbackSleepInsight(sleepPatterns).description,
-      data: sleepPatterns
+      data: sleepPatterns,
+      assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return getFallbackSleepInsight(sleepPatterns);
+    return { ...getFallbackSleepInsight(sleepPatterns), assistantTokens: 0 };
   }
 }
 
-async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight> {
+async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על מגמות מצב רוח.
@@ -279,19 +293,22 @@ async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight> {
       temperature: 0.7
     });
 
+    const assistantTokens = completion.usage?.completion_tokens || 0;
+
     return {
       type: 'trend',
       title: 'מגמת מצב רוח',
       description: completion.choices[0]?.message?.content || getFallbackMoodInsight(moodTrends).description,
-      data: moodTrends
+      data: moodTrends,
+      assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return getFallbackMoodInsight(moodTrends);
+    return { ...getFallbackMoodInsight(moodTrends), assistantTokens: 0 };
   }
 }
 
-async function generateEncouragementInsight(consecutiveDays: number): Promise<any> {
+async function generateEncouragementInsight(consecutiveDays: number): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי הודעת עידוד חכמה ומעודדת.
@@ -317,15 +334,18 @@ async function generateEncouragementInsight(consecutiveDays: number): Promise<an
       temperature: 0.8
     });
 
+    const assistantTokens = completion.usage?.completion_tokens || 0;
+
     return {
       type: 'suggestion',
       title: 'עידוד',
       description: completion.choices[0]?.message?.content || getFallbackEncouragementInsight(consecutiveDays).description,
-      data: { consecutiveDays }
+      data: { consecutiveDays },
+      assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return getFallbackEncouragementInsight(consecutiveDays);
+    return { ...getFallbackEncouragementInsight(consecutiveDays), assistantTokens: 0 };
   }
 }
 

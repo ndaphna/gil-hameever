@@ -272,11 +272,15 @@ export default function AdminUsersPage() {
               <label className="admin-form-label">טוקנים</label>
               <input
                 type="number"
-                value={editingUser.tokens_remaining || editingUser.current_tokens || 0}
-                onChange={(e) => setEditingUser({
-                  ...editingUser,
-                  tokens_remaining: parseInt(e.target.value) || 0
-                })}
+                value={editingUser.current_tokens ?? editingUser.tokens_remaining ?? 0}
+                onChange={(e) => {
+                  const newTokens = parseInt(e.target.value) || 0;
+                  setEditingUser({
+                    ...editingUser,
+                    current_tokens: newTokens,
+                    tokens_remaining: newTokens  // Keep both fields in sync
+                  });
+                }}
                 className="admin-input"
               />
             </div>

@@ -14,10 +14,11 @@ export async function getAuthUser() {
     const headersList = await headers();
     const cookieStore = await cookies();
     
-    // Debug: Log available cookies (only in development)
+    // Debug: Log available cookies and headers (only in development)
     if (process.env.NODE_ENV === 'development') {
       const allCookies = cookieStore.getAll();
-      console.log('Available cookies:', allCookies.map(c => c.name).join(', '));
+      console.log('🍪 Available cookies:', allCookies.map(c => `${c.name}=${c.value.substring(0, 20)}...`).join(', '));
+      console.log('📋 Authorization header:', headersList.get('authorization') ? 'Present' : 'Missing');
     }
     
     // Method 1: Try to get token from Authorization header (preferred)
@@ -127,10 +128,16 @@ export async function getAuthUser() {
     }
 
     if (!user) {
-      console.log('No authenticated user found - Auth session missing!');
+      console.log('❌ No authenticated user found - Auth session missing!');
+      console.log('🔍 Debug info:', {
+        hasAccessToken: !!accessToken,
+        accessTokenLength: accessToken?.length,
+        cookieCount: cookieStore.getAll().length
+      });
       return null;
     }
 
+    console.log('✅ Authenticated user found:', user.id);
     return user;
   } catch (error) {
     console.error('Error in getAuthUser:', error);

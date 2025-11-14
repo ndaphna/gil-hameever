@@ -30,7 +30,7 @@ export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isNewConversation, setIsNewConversation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { tokens: userTokens, decrementTokens } = useTokens();
+  const { tokens: userTokens, decrementTokens, loadTokens, updateTokens } = useTokens();
 
   // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -235,6 +235,48 @@ export default function ChatPage() {
   const handleSendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
+    // Check tokens before sending to prevent unnecessary API calls
+    if (!userId) {
+      console.warn('No user ID available');
+      return;
+    }
+
+    // Double-check tokens from the database before sending (using same logic as API)
+    if (userTokens <= 0) {
+      // Reload tokens to ensure we have the latest value
+      await loadTokens();
+      
+      // Check again after reload using the same logic as the API
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: profile } = await supabase
+          .from('user_profile')
+          .select('current_tokens, tokens_remaining')
+          .eq('id', user.id)
+          .single();
+        
+        // Use current_tokens as primary (same as API), fallback to tokens_remaining
+        const currentTokens = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
+        
+        if (currentTokens <= 0) {
+          const noTokensMessage: Message = {
+            id: (Date.now() + 1).toString(),
+            content: 'אין לך טוקנים זמינים כרגע. 💙\n\nכדי להמשיך לשוחח עם עליזה, תוכלי:\n• לבדוק את המנוי שלך בפרופיל\n• לרכוש טוקנים נוספים\n• לחכות לחידוש הטוקנים החודשי\n\nאני כאן בשבילך תמיד! 🌸',
+            isUser: false,
+            timestamp: new Date()
+          };
+          setMessages(prev => [...prev, noTokensMessage]);
+          updateTokens(currentTokens);
+          return;
+        } else {
+          // Tokens were updated, sync and continue with the request
+          updateTokens(currentTokens);
+        }
+      } else {
+        return;
+      }
+    }
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: inputMessage,
@@ -243,6 +285,7 @@ export default function ChatPage() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    const messageToSend = inputMessage;
     setInputMessage('');
     setIsLoading(true);
 
@@ -251,9 +294,9 @@ export default function ChatPage() {
       let conversationId = currentConversationId;
       if (isNewConversation) {
         // צור שם קצר על בסיס ההודעה הראשונה
-        const title = inputMessage.length > 30 
-          ? inputMessage.substring(0, 30) + '...' 
-          : inputMessage;
+        const title = messageToSend.length > 30 
+          ? messageToSend.substring(0, 30) + '...' 
+          : messageToSend;
         
         // צור שיחה חדשה עם השם
         const { data: newConversation } = await supabase
@@ -276,7 +319,7 @@ export default function ChatPage() {
             id: newConversation.id,
             title: title,
             created_at: new Date().toISOString(),
-            last_message: inputMessage,
+            last_message: messageToSend,
             last_message_time: new Date().toISOString()
           }, ...prev]);
         }
@@ -289,55 +332,77 @@ export default function ChatPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: inputMessage,
+          message: messageToSend,
           conversationId: conversationId,
           userId: userId
         }),
       });
-
-      if (!response.ok) {
-        let errorMessage = 'Failed to send message';
-        try {
-          const responseText = await response.text();
-          try {
-            const errorData = JSON.parse(responseText);
-            errorMessage = errorData.error || errorMessage;
-          } catch (jsonError) {
-            // If response is not JSON (e.g., HTML error page)
-            console.error('Response is not JSON:', responseText);
-            errorMessage = 'Server returned non-JSON response. Please check your configuration.';
-          }
-        } catch (textError) {
-          console.error('Failed to read response text:', textError);
-          errorMessage = 'Failed to read server response. Please check your configuration.';
-        }
-        throw new Error(errorMessage);
-      }
 
       let data;
       try {
         data = await response.json();
       } catch (jsonError) {
         console.error('Failed to parse JSON response:', jsonError);
-        throw new Error('Invalid response from server. Please check your configuration.');
+        // Use fallback response instead of throwing error
+        data = {
+          response: 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.',
+          conversationId: conversationId,
+          tokensRemaining: 0,
+          error: 'Failed to parse response'
+        };
+      }
+
+      // Handle 402 (Payment Required) - No tokens available
+      if (response.status === 402) {
+        // Remove the user message since the request failed
+        setMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+        
+        // Reload tokens to get the latest value
+        await loadTokens();
+        
+        const errorMessage = data.error || 'No tokens available';
+        // Use console.log instead of console.error to avoid error styling in console
+        console.log('ℹ️ No tokens available (402) - handled gracefully');
+        data = {
+          response: 'אין לך טוקנים זמינים כרגע. 💙\n\nכדי להמשיך לשוחח עם עליזה, תוכלי:\n• לבדוק את המנוי שלך בפרופיל\n• לרכוש טוקנים נוספים\n• לחכות לחידוש הטוקנים החודשי\n\nאני כאן בשבילך תמיד! 🌸',
+          conversationId: conversationId,
+          tokensRemaining: undefined,
+          error: errorMessage,
+          isTokenError: true
+        };
+      } else if (!response.ok && !data.response) {
+        // Handle other errors
+        const errorMessage = data.error || 'Failed to send message';
+        console.error('API error:', errorMessage);
+        data = {
+          response: 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.',
+          conversationId: conversationId,
+          tokensRemaining: undefined,
+          error: errorMessage
+        };
       }
       
       const aiResponse: Message = {
         id: (Date.now() + 1).toString(),
-        content: data.response,
+        content: data.response || 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.',
         isUser: false,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, aiResponse]);
       
-      // עדכן את הטוקנים עם הערך החדש מהשרת
-      if (data.tokensRemaining !== undefined) {
+      // עדכן את הטוקנים עם הערך החדש מהשרת רק אם התגובה הייתה תקינה
+      if (response.ok && data.tokensRemaining !== undefined) {
         console.log('🔄 Updating tokens from server:', data.tokensRemaining);
         // Dispatch event to update tokens in all components
         window.dispatchEvent(new CustomEvent('tokensUpdated', { 
           detail: { tokens: data.tokensRemaining } 
         }));
+        updateTokens(data.tokensRemaining);
+      } else if (!response.ok && (response.status === 402 || data.isTokenError)) {
+        // אם זו שגיאת טוקנים, טען את הטוקנים מהמסד נתונים במקום לעדכן ל-0
+        console.log('⚠️ Token error detected, reloading tokens from database');
+        loadTokens();
       }
       
       // עדכן את השיחה הנוכחית ברשימה
@@ -356,7 +421,11 @@ export default function ChatPage() {
       let errorContent = 'מצטערת, אירעה שגיאה. אנא נסי שוב מאוחר יותר.';
       
       if (error instanceof Error) {
-        if (error.message.includes('OpenAI API key')) {
+        if (error.message.includes('tokens') || error.message.includes('No tokens')) {
+          errorContent = 'אין לך טוקנים זמינים כרגע. 💙\n\nכדי להמשיך לשוחח עם עליזה, תוכלי:\n• לבדוק את המנוי שלך בפרופיל\n• לרכוש טוקנים נוספים\n• לחכות לחידוש הטוקנים החודשי\n\nאני כאן בשבילך תמיד! 🌸';
+          // Reload tokens from database instead of setting to 0
+          loadTokens();
+        } else if (error.message.includes('OpenAI API key')) {
           errorContent = 'בעיה בהגדרת OpenAI. אנא בדקי את מפתח ה-API.';
         } else if (error.message.includes('non-JSON response')) {
           errorContent = 'בעיה בהגדרת השרת. אנא בדקי את ההגדרות.';
@@ -445,11 +514,11 @@ export default function ChatPage() {
                       placeholder="שלום עליזה, איך אני יכולה לעזור לך היום?"
                       className="chat-input"
                       rows={1}
-                      disabled={isLoading || userTokens === 0}
+                      disabled={isLoading || userTokens <= 0}
                     />
                 <button
                   onClick={handleSendMessage}
-                  disabled={!inputMessage.trim() || isLoading || userTokens === 0}
+                  disabled={!inputMessage.trim() || isLoading || userTokens <= 0}
                   className="send-button"
                   title={isLoading ? 'שולח...' : 'שלח הודעה'}
                 >
@@ -457,7 +526,7 @@ export default function ChatPage() {
                 </button>
               </div>
               
-              {userTokens === 0 && (
+              {userTokens <= 0 && (
                 <div className="no-tokens-message">
                   <p>✨ אין לך טוקנים זמינים כרגע. אנא רכשי טוקנים נוספים כדי להמשיך את השיחה המרתקת עם עליזה.</p>
                 </div>

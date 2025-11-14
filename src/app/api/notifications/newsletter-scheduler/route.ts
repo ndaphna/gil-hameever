@@ -1,0 +1,400 @@
+import { NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/lib/supabase-server';
+import { SmartNotificationService } from '@/lib/smart-notification-service';
+import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
+
+/**
+ * Newsletter Scheduler - בודק ומשלח ניוזלטרים לפי העדפות המשתמשת
+ * 
+ * המערכת בודקת:
+ * 1. האם המשתמשת הפעילה התראות אימייל
+ * 2. מה התדירות שבחרה (יומי/שבועי/חודשי)
+ * 3. מה השעה שבחרה
+ * 4. מתי נשלח הניוזלטר האחרון
+ * 
+ * ואז שולחת ניוזלטר רק אם הגיע הזמן לפי ההעדפות
+ */
+export async function GET(request: Request) {
+  try {
+    // בדוק API key (אבטחה)
+    const authHeader = request.headers.get('authorization');
+    const cronSecret = process.env.CRON_SECRET;
+    
+    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
+    const result = await processNewsletterScheduler();
+
+    return NextResponse.json({
+      success: true,
+      timestamp: new Date().toISOString(),
+      ...result
+    });
+  } catch (error: any) {
+    console.error('Newsletter scheduler error:', error);
+    return NextResponse.json(
+      { 
+        success: false,
+        error: error.message,
+        timestamp: new Date().toISOString()
+      },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * עיבוד הניוזלטר לפי העדפות כל משתמשת
+ */
+async function processNewsletterScheduler() {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const currentDayOfMonth = now.getDate();
+
+  // קבל כל המשתמשות עם העדפות התראות
+  const { data: preferences, error: prefError } = await supabaseAdmin
+    .from('notification_preferences')
+    .select(`
+      user_id,
+      email,
+      updated_at
+    `);
+
+  if (prefError) {
+    console.error('Error fetching preferences:', prefError);
+    return {
+      processed: 0,
+      sent: 0,
+      skipped: 0,
+      errors: [prefError.message]
+    };
+  }
+
+  if (!preferences || preferences.length === 0) {
+    return {
+      processed: 0,
+      sent: 0,
+      skipped: 0,
+      message: 'No users with notification preferences found'
+    };
+  }
+
+  let sent = 0;
+  let skipped = 0;
+  const errors: any[] = [];
+  const results: any[] = [];
+
+  // עבד כל משתמשת
+  for (const pref of preferences) {
+    try {
+      const emailPrefs = pref.email as {
+        enabled: boolean;
+        frequency: 'daily' | 'weekly' | 'monthly';
+        time: string; // HH:MM format
+      };
+
+      // בדוק אם אימייל מופעל
+      if (!emailPrefs?.enabled) {
+        skipped++;
+        continue;
+      }
+
+      // בדוק אם הגיע הזמן לשלוח לפי השעה
+      // ה-cron רץ בתחילת כל שעה (דקה 0)
+      // נשלח ניוזלטר אם השעה המועדפת היא בשעה הנוכחית
+      // (אם המשתמשת בחרה 18:06, נשלח ב-18:00 - זה קרוב מספיק)
+      const [prefHour, prefMinute] = emailPrefs.time.split(':').map(Number);
+      
+      // בדוק אם השעה המועדפת היא בשעה הנוכחית
+      const isCurrentHour = prefHour === currentHour;
+      
+      if (!isCurrentHour) {
+        skipped++;
+        continue;
+      }
+
+      // בדוק אם הגיע הזמן לפי התדירות
+      const shouldSendByFrequency = await checkFrequency(
+        pref.user_id,
+        emailPrefs.frequency,
+        currentDayOfWeek,
+        currentDayOfMonth
+      );
+
+      if (!shouldSendByFrequency) {
+        skipped++;
+        continue;
+      }
+
+      // בדוק מתי נשלח הניוזלטר האחרון (כדי לא לשלוח יותר מדי)
+      const { data: lastNotification } = await supabaseAdmin
+        .from('notification_history')
+        .select('sent_at')
+        .eq('user_id', pref.user_id)
+        .eq('channel', 'email')
+        .order('sent_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (lastNotification) {
+        const lastSent = new Date(lastNotification.sent_at);
+        const hoursSinceLastSent = (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60);
+        
+        // לא נשלח יותר מפעם ב-23 שעות (אפילו אם התדירות היא יומית)
+        if (hoursSinceLastSent < 23) {
+          skipped++;
+          continue;
+        }
+      }
+
+      // כל התנאים מתקיימים - שלח ניוזלטר!
+      const sendResult = await sendNewsletterToUser(pref.user_id);
+      
+      if (sendResult.sent) {
+        sent++;
+        results.push({
+          userId: pref.user_id,
+          status: 'sent',
+          frequency: emailPrefs.frequency,
+          time: emailPrefs.time
+        });
+      } else {
+        skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: sendResult.reason
+        });
+      }
+    } catch (error: any) {
+      errors.push({ userId: pref.user_id, error: error.message });
+      skipped++;
+    }
+  }
+
+  return {
+    processed: preferences.length,
+    sent,
+    skipped,
+    errors: errors.length > 0 ? errors : undefined,
+    results: results.slice(0, 10) // החזר רק 10 תוצאות ראשונות
+  };
+}
+
+/**
+ * בודק אם צריך לשלוח לפי התדירות
+ */
+async function checkFrequency(
+  userId: string,
+  frequency: 'daily' | 'weekly' | 'monthly',
+  currentDayOfWeek: number,
+  currentDayOfMonth: number
+): Promise<boolean> {
+  if (frequency === 'daily') {
+    return true; // כל יום
+  }
+
+  if (frequency === 'weekly') {
+    // כל יום שני (1 = Monday)
+    return currentDayOfWeek === 1;
+  }
+
+  if (frequency === 'monthly') {
+    // ביום הראשון של החודש
+    return currentDayOfMonth === 1;
+  }
+
+  return false;
+}
+
+/**
+ * שולח ניוזלטר למשתמשת ספציפית
+ */
+async function sendNewsletterToUser(userId: string): Promise<{ sent: boolean; reason?: string }> {
+  try {
+    // קבל פרטי משתמש
+    const { data: profile } = await supabaseAdmin
+      .from('user_profile')
+      .select('id, email, subscription_status, name')
+      .eq('id', userId)
+      .single();
+
+    if (!profile) {
+      return { sent: false, reason: 'User not found' };
+    }
+
+    // בדוק אם המשתמשת מנויה
+    if (profile.subscription_status !== 'active') {
+      return { sent: false, reason: 'User not subscribed' };
+    }
+
+    // בדוק אם צריך לשלוח התראה
+    const notificationService = new SmartNotificationService();
+    const decision = await notificationService.shouldSendNotification(userId);
+
+    if (!decision.shouldSend) {
+      return { sent: false, reason: decision.reason || 'Should not send' };
+    }
+
+    if (!decision.insight) {
+      return { sent: false, reason: 'No insight generated' };
+    }
+
+    // חישוב סטטיסטיקות מהנתונים
+    let statistics = undefined;
+    if (decision.userData) {
+      statistics = calculateUserStatistics(
+        decision.userData.dailyEntries,
+        decision.userData.cycleEntries
+      );
+    }
+
+    // יצירת תבנית המייל
+    const emailTemplate = createInsightEmail(
+      profile.name || profile.email?.split('@')[0] || 'יקרה',
+      decision.insight,
+      statistics
+    );
+
+    // שליחת המייל
+    const emailSent = await sendEmail(
+      profile.email!,
+      emailTemplate.subject,
+      emailTemplate.html,
+      emailTemplate.text
+    );
+
+    if (emailSent) {
+      // שמירה בהיסטוריה
+      await notificationService.saveNotificationHistory(userId, decision.insight, 'sent');
+      
+      return { sent: true };
+    } else {
+      await notificationService.saveNotificationHistory(userId, decision.insight, 'failed');
+      return { sent: false, reason: 'Email sending failed' };
+    }
+  } catch (error: any) {
+    console.error('Error sending newsletter to user:', error);
+    return { sent: false, reason: error.message };
+  }
+}
+
+/**
+ * שליחת מייל באמצעות Brevo (לשעבר Sendinblue)
+ * אפשר גם להשתמש ב: SendGrid, AWS SES, Resend
+ */
+async function sendEmail(
+  to: string,
+  subject: string,
+  html: string,
+  text: string
+): Promise<boolean> {
+  try {
+    // Brevo (Sendinblue) - מומלץ!
+    const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    if (BREVO_API_KEY) {
+      const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
+      const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
+      
+      const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+        method: 'POST',
+        headers: {
+          'api-key': BREVO_API_KEY,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          sender: {
+            name: fromName,
+            email: fromEmail
+          },
+          to: [{ email: to }],
+          subject: subject,
+          htmlContent: html,
+          textContent: text,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('Brevo API error:', error);
+        return false;
+      }
+
+      const result = await response.json();
+      console.log('✅ Newsletter sent via Brevo:', result);
+      return true;
+    }
+
+    // Resend (אלטרנטיבה)
+    const RESEND_API_KEY = process.env.RESEND_API_KEY;
+    if (RESEND_API_KEY) {
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'עליזה <noreply@gilhameever.com>',
+          to: [to],
+          subject: subject,
+          html: html,
+          text: text,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        console.error('Resend API error:', error);
+        return false;
+      }
+
+      return response.ok;
+    }
+
+    // SendGrid (אלטרנטיבה)
+    const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+    if (SENDGRID_API_KEY) {
+      const response = await fetch('https://api.sendgrid.com/v3/mail/send', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${SENDGRID_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          personalizations: [{ to: [{ email: to }] }],
+          from: { email: 'noreply@gilhameever.com', name: 'עליזה' },
+          subject: subject,
+          content: [
+            { type: 'text/plain', value: text },
+            { type: 'text/html', value: html }
+          ],
+        }),
+      });
+
+      return response.ok;
+    }
+
+    // אם אין שירות מוגדר - לוג למטרות פיתוח
+    console.log('📧 Newsletter would be sent (no service configured):', {
+      to,
+      subject,
+      htmlLength: html.length,
+      textLength: text.length
+    });
+    console.warn('⚠️ No email service configured. Please set BREVO_API_KEY, RESEND_API_KEY, or SENDGRID_API_KEY');
+
+    // במצב פיתוח, נחזיר true כדי לבדוק את הלוגיקה
+    return process.env.NODE_ENV === 'development';
+  } catch (error) {
+    console.error('Error sending email:', error);
+    return false;
+  }
+}
+

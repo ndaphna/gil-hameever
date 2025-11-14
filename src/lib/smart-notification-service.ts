@@ -14,6 +14,12 @@ interface NotificationDecision {
   shouldSend: boolean;
   insight?: UserInsight;
   reason?: string;
+  userData?: {
+    dailyEntries: DailyEntry[];
+    cycleEntries: CycleEntry[];
+    lastEntryDate: string | null;
+    daysSinceLastEntry: number;
+  };
 }
 
 export class SmartNotificationService {
@@ -59,7 +65,8 @@ export class SmartNotificationService {
           title: 'בואי נתחיל את המסע שלך יחד 🌸',
           message: 'אני רואה שהתחלת למלא את היומן. זה נהדר! ככל שתמלאי יותר, כך אוכל לתת לך תובנות מדויקות יותר. בואי נמשיך יחד.',
           actionUrl: '/journal?tab=daily'
-        }
+        },
+        userData
       };
     }
 
@@ -70,7 +77,7 @@ export class SmartNotificationService {
       return { shouldSend: false, reason: 'No valuable insight found' };
     }
 
-    return { shouldSend: true, insight };
+    return { shouldSend: true, insight, userData };
   }
 
   /**
@@ -272,8 +279,9 @@ export class SmartNotificationService {
 
   /**
    * מקבל נתונים של המשתמשת
+   * פונקציה ציבורית כדי שניתן יהיה להשתמש בה גם מחוץ לשירות
    */
-  private async getUserData(userId: string) {
+  async getUserData(userId: string) {
     const [dailyResult, cycleResult, profileResult] = await Promise.all([
       supabaseAdmin
         .from('daily_entries')

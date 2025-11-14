@@ -53,7 +53,14 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
         }),
       });
 
-      const result = await response.json();
+      let result;
+      try {
+        result = await response.json();
+      } catch (jsonError) {
+        console.error('Failed to parse JSON response:', jsonError);
+        // Even if JSON parsing fails, try to continue with fallback
+        result = { success: false, error: 'Failed to parse server response' };
+      }
       
       if (result.success && result.message) {
         // If mock user, add to local state
@@ -64,10 +71,24 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
           await loadMessages();
         }
       } else {
-        console.error('Error generating message:', result.error);
+        // Log error but don't show it to user - the API should return a fallback message
+        console.warn('Message generation warning:', result.error || 'Unknown error');
+        // Try to reload messages anyway - maybe a fallback message was saved
+        if (!userId.startsWith('mock-user-')) {
+          await loadMessages();
+        }
       }
     } catch (error) {
       console.error('Error generating message:', error);
+      // Don't show error to user - the API should handle fallbacks
+      // Just try to reload messages in case something was saved
+      if (!userId.startsWith('mock-user-')) {
+        try {
+          await loadMessages();
+        } catch (reloadError) {
+          console.error('Failed to reload messages:', reloadError);
+        }
+      }
     } finally {
       setGenerating(false);
     }

@@ -52,6 +52,23 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    // If updating tokens, ensure both fields are synced
+    if (updates.tokens_remaining !== undefined || updates.current_tokens !== undefined) {
+      const tokenValue = updates.current_tokens ?? updates.tokens_remaining ?? 0;
+      updates.current_tokens = tokenValue;
+      updates.tokens_remaining = tokenValue;
+      console.log('🔄 Syncing token fields in admin update:', { 
+        tokenValue, 
+        userId,
+        originalUpdates: { 
+          tokens_remaining: updates.tokens_remaining, 
+          current_tokens: updates.current_tokens 
+        }
+      });
+    }
+
+    console.log('📝 Updating user profile:', { userId, updates });
+
     // Update user profile
     const { data, error } = await supabaseAdmin
       .from('user_profile')
@@ -61,12 +78,18 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (error) {
-      console.error('Error updating user:', error);
+      console.error('❌ Error updating user:', error);
       return NextResponse.json(
         { error: error.message },
         { status: 500 }
       );
     }
+
+    console.log('✅ User updated successfully:', { 
+      userId, 
+      current_tokens: data?.current_tokens, 
+      tokens_remaining: data?.tokens_remaining 
+    });
 
     return NextResponse.json({
       success: true,

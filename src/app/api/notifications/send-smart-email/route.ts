@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
-import { createInsightEmail } from '@/lib/email-templates';
+import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
 
 /**
  * API endpoint לשליחת התראות מייל חכמות
@@ -69,10 +69,20 @@ async function processUser(userId: string, force: boolean = false) {
       });
     }
 
+    // חישוב סטטיסטיקות מהנתונים
+    let statistics = undefined;
+    if (decision.userData) {
+      statistics = calculateUserStatistics(
+        decision.userData.dailyEntries,
+        decision.userData.cycleEntries
+      );
+    }
+
     // יצירת תבנית המייל
     const emailTemplate = createInsightEmail(
       profile.name || profile.email?.split('@')[0] || 'יקרה',
-      decision.insight
+      decision.insight,
+      statistics
     );
 
     // שליחת המייל (כאן צריך להוסיף שירות שליחת מיילים אמיתי)

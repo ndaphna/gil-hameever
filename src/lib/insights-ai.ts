@@ -12,6 +12,8 @@ export class InsightsAI {
 
   async generateInsights(): Promise<PersonalizedInsight[]> {
     try {
+      console.log('📊 InsightsAI: Starting data fetch for user:', this.userId);
+      
       // קבלת נתונים מהמסד - רק נתונים אמיתיים
       const [dailyEntries, cycleEntries, emotionEntries, userProfile] = await Promise.all([
         this.getDailyEntries(),
@@ -20,12 +22,20 @@ export class InsightsAI {
         this.getUserProfile()
       ]);
 
+      console.log('📊 InsightsAI: Data fetched:', {
+        dailyEntries: dailyEntries.length,
+        cycleEntries: cycleEntries.length,
+        emotionEntries: emotionEntries.length,
+        hasUserProfile: !!userProfile
+      });
+
       // אם אין מספיק נתונים, נחזיר רשימה ריקה
       if (dailyEntries.length === 0 && cycleEntries.length === 0 && emotionEntries.length === 0) {
-        console.log('No data available for insights generation');
+        console.log('⚠️ InsightsAI: No data available for insights generation');
         return [];
       }
 
+      console.log('🤖 InsightsAI: Calling analyzeWithOpenAI...');
       // שימוש ב-OpenAI API לניתוח מעמיק
       const insights = await this.analyzeWithOpenAI({
         dailyEntries,
@@ -34,17 +44,25 @@ export class InsightsAI {
         userProfile
       });
 
+      console.log('✅ InsightsAI: Received insights from API:', insights.length);
+
       // הוספת נתונים ויזואליים לכל תובנה
       const insightsWithVisuals = await Promise.all(
         insights.map(insight => this.addVisualDataToInsight(insight, dailyEntries))
       );
 
-      return insightsWithVisuals.sort((a, b) => {
+      const sorted = insightsWithVisuals.sort((a, b) => {
         const priorityOrder = { high: 3, medium: 2, low: 1 };
         return priorityOrder[b.priority] - priorityOrder[a.priority];
       });
+
+      console.log('✅ InsightsAI: Returning', sorted.length, 'sorted insights');
+      return sorted;
     } catch (error) {
-      console.error('Error generating insights:', error);
+      console.error('❌ InsightsAI: Error generating insights:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error details:', error.message, error.stack);
+      }
       return [];
     }
   }
@@ -56,6 +74,14 @@ export class InsightsAI {
     userProfile: Record<string, unknown>;
   }): Promise<PersonalizedInsight[]> {
     try {
+      console.log('🌐 InsightsAI: Calling /api/analyze-insights...');
+      console.log('📤 Sending data:', {
+        userId: this.userId,
+        dailyEntriesCount: data.dailyEntries.length,
+        cycleEntriesCount: data.cycleEntries.length,
+        emotionEntriesCount: data.emotionEntries.length
+      });
+      
       // קריאה ל-API route החדש
       const response = await fetch('/api/analyze-insights', {
         method: 'POST',
@@ -74,14 +100,31 @@ export class InsightsAI {
         }),
       });
 
+      console.log('📥 InsightsAI: API response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`API error: ${response.status}`);
+        const errorText = await response.text();
+        console.error('❌ InsightsAI: API error response:', errorText);
+        throw new Error(`API error: ${response.status} - ${errorText}`);
       }
 
       const result = await response.json();
+      console.log('✅ InsightsAI: API response:', {
+        success: result.success,
+        insightsCount: result.insights?.length || 0,
+        hasError: !!result.error
+      });
+      
+      if (result.error) {
+        console.error('❌ InsightsAI: API returned error:', result.error);
+      }
+      
       return result.insights || [];
     } catch (error) {
-      console.error('Error calling OpenAI analysis API:', error);
+      console.error('❌ InsightsAI: Error calling OpenAI analysis API:', error);
+      if (error instanceof Error) {
+        console.error('❌ Error details:', error.message, error.stack);
+      }
       // במקרה של שגיאה, נחזיר רשימה ריקה (לא mock data)
       return [];
     }
@@ -114,48 +157,66 @@ export class InsightsAI {
   }
 
   private async getDailyEntries() {
-    const { data, error } = await supabase
-      .from('daily_entries')
-      .select('*')
-      .eq('user_id', this.userId)
-      .order('date', { ascending: false })
-      .limit(90); // 3 חודשים אחרונים
+    try {
+      const { data, error } = await supabase
+        .from('daily_entries')
+        .select('*')
+        .eq('user_id', this.userId)
+        .order('date', { ascending: false })
+        .limit(90); // 3 חודשים אחרונים
 
-    if (error) {
-      console.error('Error loading daily entries:', error);
+      if (error) {
+        console.error('❌ InsightsAI: Error loading daily entries:', error);
+        return [];
+      }
+      console.log('✅ InsightsAI: Loaded', data?.length || 0, 'daily entries');
+      return data || [];
+    } catch (error) {
+      console.error('❌ InsightsAI: Exception loading daily entries:', error);
       return [];
     }
-    return data || [];
   }
 
   private async getCycleEntries() {
-    const { data, error } = await supabase
-      .from('cycle_entries')
-      .select('*')
-      .eq('user_id', this.userId)
-      .order('date', { ascending: false })
-      .limit(12); // 12 מחזורים אחרונים
+    try {
+      const { data, error } = await supabase
+        .from('cycle_entries')
+        .select('*')
+        .eq('user_id', this.userId)
+        .order('date', { ascending: false })
+        .limit(12); // 12 מחזורים אחרונים
 
-    if (error) {
-      console.error('Error loading cycle entries:', error);
+      if (error) {
+        console.error('❌ InsightsAI: Error loading cycle entries:', error);
+        return [];
+      }
+      console.log('✅ InsightsAI: Loaded', data?.length || 0, 'cycle entries');
+      return data || [];
+    } catch (error) {
+      console.error('❌ InsightsAI: Exception loading cycle entries:', error);
       return [];
     }
-    return data || [];
   }
 
   private async getEmotionEntries() {
-    const { data, error } = await supabase
-      .from('emotion_entry')
-      .select('*')
-      .eq('user_id', this.userId)
-      .order('created_at', { ascending: false })
-      .limit(90);
+    try {
+      const { data, error } = await supabase
+        .from('emotion_entry')
+        .select('*')
+        .eq('user_id', this.userId)
+        .order('created_at', { ascending: false })
+        .limit(90);
 
-    if (error) {
-      console.error('Error loading emotion entries:', error);
+      if (error) {
+        console.error('❌ InsightsAI: Error loading emotion entries:', error);
+        return [];
+      }
+      console.log('✅ InsightsAI: Loaded', data?.length || 0, 'emotion entries');
+      return data || [];
+    } catch (error) {
+      console.error('❌ InsightsAI: Exception loading emotion entries:', error);
       return [];
     }
-    return data || [];
   }
 
   private async getUserProfile() {
