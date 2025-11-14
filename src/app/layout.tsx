@@ -50,8 +50,11 @@ export const metadata: Metadata = {
   title: "מנופאוזית וטוב לה",
   description: "אתר ואפליקציה בעברית לנשים בישראל",
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/favicon.png',
   },
 };
 
