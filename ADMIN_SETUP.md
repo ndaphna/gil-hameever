@@ -172,3 +172,4 @@ END $$;
 2. את ה-console בדפדפן
 3. את ה-Supabase logs
 
+

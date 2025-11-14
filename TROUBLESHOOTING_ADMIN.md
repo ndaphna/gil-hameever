@@ -102,3 +102,4 @@ WHERE up.is_admin = TRUE OR u.email = 'nitzandaphna@gmail.com';
 
 אם אין תוצאות, המשתמש לא קיים או לא מוגדר כמנהל.
 
+

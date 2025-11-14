@@ -13,6 +13,7 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
   const [preferences, setPreferences] = useState<NotificationPreferences | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [sendingTest, setSendingTest] = useState(false);
   const [notificationService] = useState(new NotificationService(userId));
 
   useEffect(() => {
@@ -25,7 +26,7 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
       if (prefs) {
         setPreferences(prefs);
       } else {
-        // יצירת העדפות ברירת מחדל
+        // יצירת העדפות ברירת מחדל (לא נשמרות במסד נתונים עדשתמשת תשמור)
         const defaultPreferences: NotificationPreferences = {
           userId,
           email: {
@@ -53,8 +54,12 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
         };
         setPreferences(defaultPreferences);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error loading preferences:', error);
+      // אם הטבלה לא קיימת, נציג הודעה ידידותית
+      if (error?.code === 'PGRST205' || error?.message?.includes('table') || error?.message?.includes('schema cache')) {
+        console.warn('⚠️ Notification tables not found. Please run CREATE_NOTIFICATION_TABLES.sql in Supabase SQL Editor.');
+      }
     } finally {
       setLoading(false);
     }
@@ -322,16 +327,27 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
         
         <button
           className="test-button"
-          onClick={() => {
-            // שליחת התראה בדיקה
-            notificationService.sendImmediateNotification(
-              'encouragement',
-              'בדיקת התראות',
-              'זוהי הודעת בדיקה מעליזה! הכל עובד כמו שצריך 🌸'
-            );
+          onClick={async () => {
+            setSendingTest(true);
+            try {
+              // שליחת התראה בדיקה - שולח מייל
+              await notificationService.sendImmediateNotification(
+                'encouragement',
+                'בדיקת התראות',
+                'זוהי הודעת בדיקה מעליזה! הכל עובד כמו שצריך 🌸',
+                'email' // שולח מייל במקום push notification
+              );
+              alert('✅ התראת הבדיקה נשלחה בהצלחה!\n\nהמייל נשלח לכתובת המייל שלך. בדקי את תיבת הדואר הנכנס.');
+            } catch (error) {
+              console.error('Error sending test notification:', error);
+              alert('❌ שגיאה בשליחת התראת הבדיקה. בדוק את הקונסול לפרטים.');
+            } finally {
+              setSendingTest(false);
+            }
           }}
+          disabled={sendingTest}
         >
-          שלח התראה בדיקה
+          {sendingTest ? 'שולח...' : 'שלח התראה בדיקה'}
         </button>
       </div>
     </div>

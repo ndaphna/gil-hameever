@@ -200,6 +200,9 @@
   margin: 0 auto;
   padding: 0 var(--space-md) var(--space-lg);
   padding-bottom: var(--space-xxl);
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 /* ================================================
@@ -351,6 +354,9 @@
   margin-bottom: var(--space-xl);
   box-shadow: var(--shadow-soft);
   border: 1px solid var(--neutral-light);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Trend chart polish */
@@ -589,13 +595,15 @@
    CYCLE CALENDAR - לוח שנה יוקרתי
    ================================================ */
 .cycle-calendar {
-  width: 75%;
+  width: 100%;
+  max-width: 100%;
   margin: 0 auto;
   background: var(--neutral-white);
   border-radius: var(--radius-xl);
   padding: var(--space-xl);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   border: 1px solid var(--neutral-light);
+  box-sizing: border-box;
 }
 
 .calendar-header {
@@ -657,6 +665,8 @@
   grid-template-columns: repeat(7, 1fr);
   gap: var(--space-xs);
   margin-bottom: var(--space-lg);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .calendar-day {
@@ -2502,6 +2512,46 @@ input[type="checkbox"]:checked + .checkbox-content {
     padding: 0.75rem 1.5rem;
     font-size: 0.9rem;
   }
+
+  /* Cycle Tracking - Very Small Screens */
+  .cycle-tracking {
+    padding: var(--space-sm);
+  }
+
+  .cycle-calendar {
+    padding: var(--space-sm);
+  }
+
+  .calendar-day {
+    min-height: 35px;
+    font-size: var(--font-size-xs);
+  }
+
+  .day-number {
+    font-size: 10px;
+  }
+
+  .day-icon {
+    font-size: 0.9rem;
+  }
+
+  .calendar-header h3 {
+    font-size: var(--font-size-base);
+  }
+
+  .hero-stat-card {
+    padding: var(--space-sm);
+  }
+
+  .hero-stat-icon {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .hero-stat-number {
+    font-size: var(--font-size-lg);
+  }
 }
 
 /* ================================================
@@ -3090,7 +3140,11 @@ input[type="checkbox"]:checked + .checkbox-content {
   }
   
   .tab-content {
-    padding: 0 var(--space-md) var(--space-xl);
+    padding: 0 var(--space-sm) var(--space-xl);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
   }
   
   .content-card,
@@ -3099,6 +3153,9 @@ input[type="checkbox"]:checked + .checkbox-content {
   .insights-dashboard,
   .aliza-messages {
     padding: var(--space-lg);
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
   }
   
   /* Daily Tracking Mobile */
@@ -3308,6 +3365,117 @@ input[type="checkbox"]:checked + .checkbox-content {
   
   .insight-icon {
     font-size: 1.5rem;
+  }
+
+  /* Cycle Tracking Mobile */
+  .cycle-tracking {
+    padding: var(--space-md);
+    margin: 0;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  .cycle-header h2 {
+    font-size: var(--font-size-xl);
+  }
+
+  .cycle-header .subtitle {
+    font-size: var(--font-size-sm);
+  }
+
+  .cycle-hero-stats {
+    grid-template-columns: 1fr;
+    gap: var(--space-md);
+  }
+
+  .hero-stat-card {
+    padding: var(--space-md);
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .hero-stat-icon {
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    margin-bottom: var(--space-sm);
+  }
+
+  .hero-stat-number {
+    font-size: var(--font-size-xl);
+  }
+
+  .calendar-section {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+  }
+
+  .cycle-calendar {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--space-md);
+    margin: 0;
+    box-sizing: border-box;
+  }
+
+  .calendar-header {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .calendar-header h3 {
+    font-size: var(--font-size-lg);
+    flex: 1;
+    min-width: 100%;
+    text-align: center;
+    order: -1;
+  }
+
+  .calendar-header .nav-btn {
+    width: 36px;
+    height: 36px;
+    font-size: var(--font-size-base);
+  }
+
+  .day-names {
+    gap: 2px;
+  }
+
+  .day-name {
+    font-size: var(--font-size-xs);
+    padding: var(--space-xs) 2px;
+  }
+
+  .calendar-grid {
+    gap: 2px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .calendar-day {
+    min-height: 40px;
+    padding: 2px;
+  }
+
+  .day-number {
+    font-size: var(--font-size-xs);
+  }
+
+  .day-icon {
+    font-size: 1rem;
+  }
+
+  .calendar-legend {
+    flex-direction: column;
+    gap: var(--space-xs);
+    align-items: flex-start;
+  }
+
+  .legend-item {
+    font-size: var(--font-size-xs);
   }
 }
 
