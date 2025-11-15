@@ -274,3 +274,4 @@ BEGIN
   RAISE NOTICE '✅ Notification tables created successfully!';
 END $$;
 
+

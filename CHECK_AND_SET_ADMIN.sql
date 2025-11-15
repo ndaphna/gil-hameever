@@ -64,3 +64,4 @@ FROM public.user_profile
 WHERE is_admin = TRUE;
 
 
+

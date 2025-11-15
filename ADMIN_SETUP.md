@@ -173,3 +173,4 @@ END $$;
 3. את ה-Supabase logs
 
 
+

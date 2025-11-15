@@ -490,6 +490,10 @@ export default function DashboardPage() {
                     {dashboardData.streak === 0 ? 'התחילי רצף!' : dashboardData.streak < 7 ? `עוד ${7 - dashboardData.streak} ליעד שבוע` : 'מדהים! 🎉'}
                   </div>
                 </div>
+                <div className="card-tooltip">
+                  <p><strong>ימים ברצף</strong> = מספר הימים שמילאת דיווח יומי ברצף (בוקר או ערב).</p>
+                  <p>כדי להעלות את הרצף: מלאי דיווח אחד לפחות בכל יום. הרצף מתאפס אם מפספסים יום.</p>
+                </div>
               </div>
 
               <div className="status-hero-card reports">
@@ -498,8 +502,12 @@ export default function DashboardPage() {
                   <div className="card-number">{dashboardData.weeklyReports}</div>
                   <div className="card-label">דיווחים השבוע</div>
                   <div className="card-hint">מתוך מקסימום 14</div>
-            </div>
-          </div>
+                </div>
+                <div className="card-tooltip">
+                  <p><strong>דיווחים השבוע</strong> = מספר הדיווחים שמילאת השבוע (בוקר + ערב).</p>
+                  <p>מקסימום 14 דיווחים בשבוע (2 דיווחים ביום × 7 ימים).</p>
+                </div>
+              </div>
 
               <div className="status-hero-card sleep">
                 <div className="card-icon">😴</div>
@@ -509,6 +517,10 @@ export default function DashboardPage() {
                   <div className="card-hint">
                     {dashboardData.goodSleep >= 5 ? 'מצוין!' : dashboardData.goodSleep >= 3 ? 'לא רע' : 'צריך שיפור'}
                   </div>
+                </div>
+                <div className="card-tooltip">
+                  <p><strong>לילות טובים</strong> = מספר הלילות בהם דיווחת על שינה איכותית (טוב) השבוע.</p>
+                  <p>שינה איכותית חשובה לבריאות הכללית ולניהול תסמיני גיל המעבר.</p>
                 </div>
               </div>
 
@@ -524,6 +536,10 @@ export default function DashboardPage() {
                   <div className="card-hint">
                     {dashboardData.daysSinceLastPeriod > 365 ? '✨ מנופאוזה רשמית' : 'לחצי למעקב'}
                   </div>
+                </div>
+                <div className="card-tooltip">
+                  <p><strong>מאז מחזור אחרון</strong> = מספר הימים שעברו מאז המחזור האחרון שתועד.</p>
+                  <p>לחצי על הכרטיס כדי להוסיף או לעדכן מעקב מחזור. מנופאוזה רשמית מוגדרת לאחר 365 ימים ללא מחזור.</p>
                 </div>
               </div>
             </div>
