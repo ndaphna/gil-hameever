@@ -111,11 +111,14 @@ serve(async (req) => {
       
       // Fallback: Create a general insight if OpenAI didn't return any
       console.log('🔄 Edge Function: Creating fallback insight...');
+      const userProfile = data?.userProfile || {};
+      // Use first_name only for display
+      const userName = userProfile?.first_name || userProfile?.name?.split(' ')[0] || userProfile?.full_name?.split(' ')[0] || 'יקרה';
       const fallbackInsight = {
         id: 'fallback-general-' + Date.now(),
         type: 'recommendation',
         title: 'המשך מעקב וניטור',
-        content: 'עליזה מנתחת את הנתונים שלך. כדי לקבל תובנות מפורטות יותר, המשכי להזין נתונים יומיים על שינה, תסמינים ומצב רוח. ככל שיהיו יותר נתונים, התובנות יהיו מדויקות ואישיות יותר.',
+        content: `היי ${userName}, אני רואה שעליזה מנתחת את הנתונים שלך. כדי לקבל תובנות מפורטות יותר, המשכי להזין נתונים יומיים על שינה, תסמינים ומצב רוח. ככל שיהיו יותר נתונים, התובנות יהיו מדויקות ואישיות יותר.`,
         priority: 'medium',
         category: 'general',
         actionable: true,
@@ -125,7 +128,7 @@ serve(async (req) => {
           questionsToAsk: ['מה הטיפול המתאים עבורי?', 'איך אוכל לשפר את איכות החיים?'],
           lifestyleChanges: ['שמירה על שגרת שינה', 'תזונה מאוזנת', 'פעילות גופנית מתונה']
         },
-        alizaMessage: 'אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות. כל נתון שאת מזינה עוזר לי להבין טוב יותר את המסע שלך.'
+        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות. כל נתון שאת מזינה עוזר לי להבין טוב יותר את המסע שלך.`
       };
       
       insights.push(fallbackInsight);

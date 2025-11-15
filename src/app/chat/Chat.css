@@ -105,16 +105,81 @@
 
 .token-icon {
   font-size: 1rem;
+  transition: all 0.3s ease;
 }
 
 .token-count {
   font-weight: 600;
   font-size: 0.95rem;
+  transition: all 0.3s ease;
+  display: inline-block;
 }
 
 .token-label {
   font-size: 0.8rem;
   opacity: 0.9;
+}
+
+/* Token animation - subtle and minimal */
+.tokens-display.token-decrease {
+  animation: tokenDecrease 0.6s ease-out;
+}
+
+.tokens-display.token-decrease .token-count {
+  animation: tokenCountPulse 0.6s ease-out;
+}
+
+.tokens-display.token-decrease .token-icon {
+  animation: tokenIconGlow 0.6s ease-out;
+}
+
+@keyframes tokenDecrease {
+  0% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-3px) scale(0.98);
+  }
+  60% {
+    transform: translateY(1px) scale(1.02);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes tokenCountPulse {
+  0% {
+    color: inherit;
+    transform: scale(1);
+  }
+  25% {
+    color: #f5576c;
+    transform: scale(1.15);
+  }
+  50% {
+    color: #ff6b9d;
+    transform: scale(0.9);
+  }
+  75% {
+    color: #ff8fb3;
+    transform: scale(1.08);
+  }
+  100% {
+    color: inherit;
+    transform: scale(1);
+  }
+}
+
+@keyframes tokenIconGlow {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.15);
+  }
 }
 
 .chat-messages {

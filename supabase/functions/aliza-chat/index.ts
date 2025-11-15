@@ -31,24 +31,58 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o', // Try gpt-4o first (cheaper and more available)
         messages: messages,
-        max_tokens: 300,
+        max_tokens: 1000,
         temperature: 0.7,
       }),
     })
 
     if (!completion.ok) {
       const error = await completion.text()
-      console.error('OpenAI API error:', error)
+      console.error('❌ OpenAI API error:', { 
+        status: completion.status, 
+        statusText: completion.statusText,
+        error: error 
+      })
+      
+      // Check for specific error types
+      let errorResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+      try {
+        const errorData = JSON.parse(error);
+        const errorCode = errorData.error?.code;
+        const errorMessage = errorData.error?.message || '';
+        
+        if (errorCode === 'insufficient_quota') {
+          errorResponse = 'מצטערת, נגמרה המכסה של OpenAI API. הקרדיטים שלך נמוכים מאוד. אנא הוסיפי קרדיטים בחשבון OpenAI שלך בכתובת: https://platform.openai.com/account/billing';
+        } else if (errorCode === 'rate_limit_exceeded') {
+          errorResponse = 'מצטערת, חרגת ממגבלת הבקשות לדקה. אנא נסי שוב בעוד כמה רגעים.';
+        } else if (errorCode === 'invalid_api_key') {
+          errorResponse = 'מצטערת, מפתח ה-API של OpenAI לא תקין. אנא בדקי את ההגדרות.';
+        } else if (errorMessage) {
+          errorResponse = `מצטערת, יש בעיה טכנית: ${errorMessage}. אנא נסי שוב מאוחר יותר.`;
+        }
+      } catch (e) {
+        // If parsing fails, use default message
+      }
+      
       return new Response(
-        JSON.stringify({ error: `OpenAI API error: ${error}` }),
+        JSON.stringify({ 
+          error: `OpenAI API error: ${error}`,
+          response: errorResponse
+        }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       )
     }
 
     const data = await completion.json()
     const aiResponse = data.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.'
+    
+    console.log('✅ OpenAI response received:', {
+      hasContent: !!aiResponse,
+      contentLength: aiResponse.length,
+      tokens: data.usage?.completion_tokens
+    })
 
     // Calculate tokens
     const assistantTokens = data.usage?.completion_tokens || 0
@@ -65,7 +99,10 @@ serve(async (req) => {
       }
     )
   } catch (error) {
-    console.error('Edge Function error:', error)
+    console.error('❌ Edge Function error:', error)
+    if (error instanceof Error) {
+      console.error('Error details:', error.message, error.stack)
+    }
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'Internal server error',

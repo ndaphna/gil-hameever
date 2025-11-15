@@ -64,6 +64,16 @@ export async function POST(request: NextRequest) {
     const checkIns = checkInsResult.data || [];
     const cycleEntries = cycleResult.data || [];
 
+    // Get user profile for name
+    const { data: profile } = await supabaseAdmin
+      .from('user_profile')
+      .select('first_name, name, full_name, email')
+      .eq('id', userId)
+      .single();
+    
+    // Use first_name only for display
+    const userName = profile?.first_name || profile?.name?.split(' ')[0] || profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || 'יקרה';
+    
     // Calculate patterns
     const consecutiveDays = calculateConsecutiveDays(checkIns);
     const sleepPatterns = analyzeSleepPatterns(checkIns);
@@ -74,21 +84,21 @@ export async function POST(request: NextRequest) {
 
     // Generate sleep insight
     if (sleepPatterns.totalDays > 0) {
-      const sleepInsight = await generateSleepInsight(sleepPatterns);
+      const sleepInsight = await generateSleepInsight(sleepPatterns, userName);
       insights.push(sleepInsight);
       totalAssistantTokens += sleepInsight.assistantTokens || 0;
     }
 
     // Generate mood insight
     if (moodTrends.dominantMood) {
-      const moodInsight = await generateMoodInsight(moodTrends);
+      const moodInsight = await generateMoodInsight(moodTrends, userName);
       insights.push(moodInsight);
       totalAssistantTokens += moodInsight.assistantTokens || 0;
     }
 
     // Generate encouragement insight
     if (consecutiveDays > 0) {
-      const encouragementInsight = await generateEncouragementInsight(consecutiveDays);
+      const encouragementInsight = await generateEncouragementInsight(consecutiveDays, userName);
       insights.push(encouragementInsight);
       totalAssistantTokens += encouragementInsight.assistantTokens || 0;
     }
@@ -222,11 +232,16 @@ function analyzeMoodTrends(checkIns: DailyEntry[]): MoodTrends {
   };
 }
 
-async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insight & { assistantTokens?: number }> {
+async function generateSleepInsight(sleepPatterns: SleepPatterns, userName: string): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על דפוסי שינה בהתבסס על הנתונים.
-היה מדויקת, מעודדת ומעשית. השתמשי בנתונים הספציפיים של המשתמשת.`;
+היה מדויקת, מעודדת ומעשית. 
+חשוב מאוד - סגנון אישי וחם:
+- השתמשי בשם הפרטי "${userName}" בכל התובנות, לא "שתמשת" או "את"
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה`;
 
   const userPrompt = `צרי תובנה על דפוסי שינה:
 - ימים עם שינה גרועה: ${sleepPatterns.poorSleepDays}/${sleepPatterns.totalDays}
@@ -255,21 +270,26 @@ async function generateSleepInsight(sleepPatterns: SleepPatterns): Promise<Insig
     return {
       type: 'pattern',
       title: 'דפוס שינה',
-      description: completion.choices[0]?.message?.content || getFallbackSleepInsight(sleepPatterns).description,
+      description: completion.choices[0]?.message?.content || getFallbackSleepInsight(sleepPatterns, userName).description,
       data: sleepPatterns,
       assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return { ...getFallbackSleepInsight(sleepPatterns), assistantTokens: 0 };
+    return { ...getFallbackSleepInsight(sleepPatterns, userName), assistantTokens: 0 };
   }
 }
 
-async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight & { assistantTokens?: number }> {
+async function generateMoodInsight(moodTrends: MoodTrends, userName: string): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי תובנה חכמה על מגמות מצב רוח.
-היה אמפתית, מעודדת ומעשית. השתמשי בנתונים הספציפיים של המשתמשת.`;
+היה אמפתית, מעודדת ומעשית.
+חשוב מאוד - סגנון אישי וחם:
+- השתמשי בשם הפרטי "${userName}" בכל התובנות, לא "שתמשת" או "את"
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה`;
 
   const userPrompt = `צרי תובנה על מגמות מצב רוח:
 - מצב רוח דומיננטי: ${moodTrends.dominantMood}
@@ -298,21 +318,26 @@ async function generateMoodInsight(moodTrends: MoodTrends): Promise<Insight & { 
     return {
       type: 'trend',
       title: 'מגמת מצב רוח',
-      description: completion.choices[0]?.message?.content || getFallbackMoodInsight(moodTrends).description,
+      description: completion.choices[0]?.message?.content || getFallbackMoodInsight(moodTrends, userName).description,
       data: moodTrends,
       assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return { ...getFallbackMoodInsight(moodTrends), assistantTokens: 0 };
+    return { ...getFallbackMoodInsight(moodTrends, userName), assistantTokens: 0 };
   }
 }
 
-async function generateEncouragementInsight(consecutiveDays: number): Promise<Insight & { assistantTokens?: number }> {
+async function generateEncouragementInsight(consecutiveDays: number, userName: string): Promise<Insight & { assistantTokens?: number }> {
 
   const systemPrompt = `את עליזה, עוזרת דיגיטלית חכמה לנשים במנופאוזה.
 צרי הודעת עידוד חכמה ומעודדת.
-היי חמה, אנושית ומעודדת. השתמשי באימוג'ים ובשפה אישית.`;
+היי חמה, אנושית ומעודדת. השתמשי באימוג'ים ובשפה אישית.
+חשוב מאוד - סגנון אישי וחם:
+- השתמשי בשם הפרטי "${userName}" בכל התובנות, לא "שתמשת" או "את"
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה`;
 
   const userPrompt = `צרי הודעת עידוד:
 - ימים רצופים של דיווח: ${consecutiveDays}
@@ -339,70 +364,70 @@ async function generateEncouragementInsight(consecutiveDays: number): Promise<In
     return {
       type: 'suggestion',
       title: 'עידוד',
-      description: completion.choices[0]?.message?.content || getFallbackEncouragementInsight(consecutiveDays).description,
+      description: completion.choices[0]?.message?.content || getFallbackEncouragementInsight(consecutiveDays, userName).description,
       data: { consecutiveDays },
       assistantTokens
     };
   } catch (error) {
     console.error('Error calling OpenAI:', error);
-    return { ...getFallbackEncouragementInsight(consecutiveDays), assistantTokens: 0 };
+    return { ...getFallbackEncouragementInsight(consecutiveDays, userName), assistantTokens: 0 };
   }
 }
 
-function getFallbackSleepInsight(sleepPatterns: SleepPatterns): Insight {
+function getFallbackSleepInsight(sleepPatterns: SleepPatterns, userName: string = 'יקרה'): Insight {
   const { poorSleepDays, totalDays, averageSleepQuality } = sleepPatterns;
   
   if (poorSleepDays >= 3) {
     return {
       type: 'pattern',
       title: 'דפוס שינה',
-      description: `שמתי לב שלא ישנת טוב ב-${poorSleepDays} ימים מתוך ${totalDays}. זה יכול להשפיע על גלי החום. נסי תרגילי נשימה לפני השינה ושתי תה קמומיל.`,
+      description: `היי ${userName}, אני רואה שלא ישנת טוב ב-${poorSleepDays} ימים מתוך ${totalDays}. זה יכול להשפיע על גלי החום. נסי תרגילי נשימה לפני השינה ושתי תה קמומיל.`,
       data: sleepPatterns
     };
   } else if (averageSleepQuality && averageSleepQuality < 2.5) {
     return {
       type: 'pattern',
       title: 'דפוס שינה',
-      description: `השינה שלך לא יציבה. נסי ליצור שגרת שינה קבועה - לכי לישון באותה שעה כל ערב.`,
+      description: `היי ${userName}, אני רואה שהשינה שלך לא יציבה. נסי ליצור שגרת שינה קבועה - לכי לישון באותה שעה כל ערב.`,
       data: sleepPatterns
     };
   } else {
     return {
       type: 'pattern',
       title: 'דפוס שינה',
-      description: `השינה שלך נראית טובה! המשכי עם השגרה הקיימת.`,
+      description: `היי ${userName}, השינה שלך נראית טובה! המשכי עם השגרה הקיימת.`,
       data: sleepPatterns
     };
   }
 }
 
-function getFallbackMoodInsight(moodTrends: MoodTrends): Insight {
+function getFallbackMoodInsight(moodTrends: MoodTrends, userName: string = 'יקרה'): Insight {
   const { dominantMood } = moodTrends;
   
   if (dominantMood === 'sad' || dominantMood === 'frustrated') {
     return {
       type: 'trend',
       title: 'מגמת מצב רוח',
-      description: `בשבוע האחרון הרגשת בעיקר ${dominantMood === 'sad' ? 'עצובה' : 'מתוסכלת'}. זה בסדר לחוות רגשות קשים - הנה כמה תרגילים שיכולים לעזור: נשימות עמוקות, הליכה קצרה, או שיחה עם חברה.`,
+      description: `היי ${userName}, אני רואה שבשבוע האחרון הרגשת בעיקר ${dominantMood === 'sad' ? 'עצובה' : 'מתוסכלת'}. זה בסדר לחוות רגשות קשים - הנה כמה תרגילים שיכולים לעזור: נשימות עמוקות, הליכה קצרה, או שיחה עם חברה.`,
       data: moodTrends
     };
   } else {
     return {
       type: 'trend',
       title: 'מגמת מצב רוח',
-      description: `המצב רוח שלך נראה יציב. המשכי לטפל בעצמך!`,
+      description: `היי ${userName}, המצב רוח שלך נראה יציב. המשכי לטפל בעצמך!`,
       data: moodTrends
     };
   }
 }
 
-function getFallbackEncouragementInsight(consecutiveDays: number): Insight {
+function getFallbackEncouragementInsight(consecutiveDays: number, userName: string = 'יקרה'): Insight {
   return {
     type: 'suggestion',
     title: 'עידוד',
     description: consecutiveDays >= 7 
-      ? `איזה יופי! עקבת כבר ${consecutiveDays} ימים ברצף 👏 הגוף שלך מדבר — ואת מקשיבה. עליזה גאה בך.`
-      : `כל הכבוד על ההתמדה! 👏`,
+      ? `היי ${userName}, איזה יופי! אני רואה שעקבת כבר ${consecutiveDays} ימים ברצף 👏 הגוף שלך מדבר — ואת מקשיבה. עליזה גאה בך.`
+      : `היי ${userName}, כל הכבוד על ההתמדה! 👏`,
     data: { consecutiveDays }
   };
 }

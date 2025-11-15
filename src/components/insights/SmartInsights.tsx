@@ -10,6 +10,7 @@ interface SmartInsightsProps {
 
 export default function SmartInsights({ entries }: SmartInsightsProps) {
   const [selectedPeriod, setSelectedPeriod] = useState<'week' | 'month'>('month');
+  const [showSupportModal, setShowSupportModal] = useState(false);
   
   // Filter entries by period
   const getFilteredEntries = () => {
@@ -229,7 +230,12 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
               </div>
             </div>
             
-            <div className="metric-card">
+            <div 
+              className={`metric-card ${mood.negative >= mood.positive ? 'clickable' : ''}`}
+              onClick={() => mood.negative >= mood.positive && setShowSupportModal(true)}
+              style={{ cursor: mood.negative >= mood.positive ? 'pointer' : 'default' }}
+              title={mood.negative >= mood.positive ? 'לחצי לפרטים' : ''}
+            >
               <div className="metric-icon">😊</div>
               <div className="metric-content">
                 <div className="metric-number">{mood.positiveRate}%</div>
@@ -301,7 +307,12 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
             <h3>😊 פילוח מצבי רוח</h3>
             <div className="mood-stats">
               <div className="mood-summary">
-                <div className="mood-pie">
+                <div 
+                  className={`mood-pie ${mood.negative >= mood.positive ? 'clickable' : ''}`}
+                  onClick={() => mood.negative >= mood.positive && setShowSupportModal(true)}
+                  style={{ cursor: mood.negative >= mood.positive ? 'pointer' : 'default' }}
+                  title={mood.negative >= mood.positive ? 'לחצי לפרטים' : ''}
+                >
                   <div 
                     className={`pie-value ${
                       mood.positiveRate >= 60 ? 'pie-positive' : 
@@ -388,6 +399,108 @@ export default function SmartInsights({ entries }: SmartInsightsProps) {
             )}
           </div>
         </>
+      )}
+
+      {/* Support Modal - "זקוק לתמיכה" Explanation */}
+      {showSupportModal && (
+        <div className="support-modal-overlay" onClick={() => setShowSupportModal(false)}>
+          <div className="support-modal-container" onClick={(e) => e.stopPropagation()}>
+            <div className="support-modal-header">
+              <div className="support-modal-icon">💙</div>
+              <h2>זקוק לתמיכה - מה זה אומר?</h2>
+              <button 
+                className="support-modal-close"
+                onClick={() => setShowSupportModal(false)}
+              >
+                ✕
+              </button>
+            </div>
+            
+            <div className="support-modal-content">
+              <div className="support-explanation-section">
+                <h3>📊 מה הנתונים מראים?</h3>
+                <p>
+                  אני רואה שבתקופה האחרונה יש לך יותר ימים עם מצב רוח נמוך (עצובה, עצבנית, מתוסכלת) 
+                  מאשר ימים עם מצב רוח חיובי (רגועה, שמחה).
+                </p>
+                <p>
+                  <strong>זה תקין לחלוטין בגיל המעבר.</strong> שינויים הורמונליים משפיעים על מצב הרוח, 
+                  וזה חלק טבעי מהתהליך שעוברות נשים רבות.
+                </p>
+              </div>
+
+              <div className="support-explanation-section">
+                <h3>💡 למה זה קורה?</h3>
+                <ul>
+                  <li><strong>שינויים הורמונליים:</strong> ירידה ברמות האסטרוגן משפיעה על נוירוטרנסמיטרים במוח שקשורים למצב הרוח</li>
+                  <li><strong>תסמינים פיזיים:</strong> גלי חום, בעיות שינה, ותסמינים אחרים יכולים להשפיע על מצב הרוח</li>
+                  <li><strong>שינויים בחיים:</strong> גיל המעבר מגיע עם שינויים רבים בחיים, וזה טבעי שזה משפיע</li>
+                  <li><strong>עייפות:</strong> שינה לא איכותית יכולה להשפיע מאוד על מצב הרוח</li>
+                </ul>
+              </div>
+
+              <div className="support-explanation-section">
+                <h3>🤗 מה אפשר לעשות?</h3>
+                <div className="support-actions-grid">
+                  <div className="support-action-card">
+                    <div className="action-icon">💬</div>
+                    <h4>שיחה ותמיכה</h4>
+                    <p>דברי עם חברה טובה, משפחה, או קבוצת תמיכה. שיתוף עוזר מאוד.</p>
+                  </div>
+                  
+                  <div className="support-action-card">
+                    <div className="action-icon">🏃‍♀️</div>
+                    <h4>פעילות גופנית</h4>
+                    <p>פעילות קלה כמו הליכה, יוגה, או שחייה משחררת אנדורפינים ומשפרת מצב רוח.</p>
+                  </div>
+                  
+                  <div className="support-action-card">
+                    <div className="action-icon">🧘‍♀️</div>
+                    <h4>טכניקות הרגעה</h4>
+                    <p>נשימות עמוקות, מדיטציה, או פעילויות מרגיעות יכולות לעזור מאוד.</p>
+                  </div>
+                  
+                  <div className="support-action-card">
+                    <div className="action-icon">👩‍⚕️</div>
+                    <h4>ייעוץ מקצועי</h4>
+                    <p>אם מצב הרוח משפיע על החיים שלך, כדאי לשקול להתייעץ עם פסיכולוג/ית או רופא/ה.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="support-explanation-section highlight">
+                <h3>💚 חשוב לזכור</h3>
+                <p>
+                  <strong>את לא לבד.</strong> נשים רבות חוות שינויים במצב הרוח בגיל המעבר, 
+                  וזה חלק טבעי מהתהליך. זה לא אומר שמשהו לא בסדר איתך - זה אומר שהגוף שלך 
+                  עובר שינויים משמעותיים, וזה משפיע גם על מצב הרוח.
+                </p>
+                <p>
+                  המעקב שלך עוזר לזהות דפוסים ולהבין מה עובד בשבילך. המשכי לתעד, 
+                  וזכרי שיש דרכים לעזור ולשפר את ההרגשה.
+                </p>
+              </div>
+
+              <div className="support-modal-footer">
+                <button 
+                  className="support-action-button"
+                  onClick={() => {
+                    setShowSupportModal(false);
+                    window.location.href = '/belonging-sisterhood-emotional-connection';
+                  }}
+                >
+                  למשאבים לתמיכה →
+                </button>
+                <button 
+                  className="support-close-button"
+                  onClick={() => setShowSupportModal(false)}
+                >
+                  סגור
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

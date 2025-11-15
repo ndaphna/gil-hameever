@@ -53,6 +53,11 @@ export function useTokens() {
             });
             setTokens(tokens);
             
+            // Dispatch event to update all components
+            window.dispatchEvent(new CustomEvent('tokensUpdated', { 
+              detail: { tokens } 
+            }));
+            
             // Sync both fields if they differ (fix any inconsistencies, handle null values)
             const currentTokensValue = profile.current_tokens ?? null;
             const tokensRemainingValue = profile.tokens_remaining ?? null;
@@ -100,6 +105,11 @@ export function useTokens() {
         });
         setTokens(tokens);
         
+        // Dispatch event to update all components
+        window.dispatchEvent(new CustomEvent('tokensUpdated', { 
+          detail: { tokens } 
+        }));
+        
         // Sync both fields if they differ (fix any inconsistencies, handle null values)
         const currentTokensValue = profile.current_tokens ?? null;
         const tokensRemainingValue = profile.tokens_remaining ?? null;
@@ -116,6 +126,10 @@ export function useTokens() {
       } else {
         console.warn('⚠️ Profile not found, setting tokens to 0');
         setTokens(0);
+        // Dispatch event even for 0 tokens
+        window.dispatchEvent(new CustomEvent('tokensUpdated', { 
+          detail: { tokens: 0 } 
+        }));
       }
     } catch (error) {
       console.error('❌ Token loading failed:', error);

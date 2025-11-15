@@ -30,7 +30,9 @@ export default function ChatPage() {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [isNewConversation, setIsNewConversation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { tokens: userTokens, decrementTokens, loadTokens, updateTokens } = useTokens();
+  const { tokens: userTokens, decrementTokens, loadTokens, updateTokens, isLoading: tokensLoading } = useTokens();
+  const [tokenAnimation, setTokenAnimation] = useState<'decrease' | null>(null);
+  const [prevTokens, setPrevTokens] = useState<number | null>(null);
 
   // Auto-scroll to bottom when messages change
   const scrollToBottom = () => {
@@ -40,6 +42,37 @@ export default function ChatPage() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Initialize prevTokens after tokens are loaded
+  useEffect(() => {
+    if (!tokensLoading && prevTokens === null) {
+      setPrevTokens(userTokens);
+    }
+  }, [tokensLoading, userTokens, prevTokens]);
+
+  // Detect token changes and trigger animation
+  useEffect(() => {
+    if (prevTokens !== null && prevTokens !== userTokens) {
+      console.log('🔍 Token change detected in chat:', { prevTokens, userTokens, isDecrease: userTokens < prevTokens });
+      if (userTokens < prevTokens) {
+        console.log('🎬 Triggering token animation in chat:', { prevTokens, userTokens, difference: prevTokens - userTokens });
+        setTokenAnimation('decrease');
+        const timer = setTimeout(() => {
+          console.log('⏰ Animation timer ended in chat');
+          setTokenAnimation(null);
+        }, 600); // Animation duration
+        setPrevTokens(userTokens);
+        return () => {
+          console.log('🧹 Cleaning up animation timer in chat');
+          clearTimeout(timer);
+        };
+      } else {
+        // Update prevTokens even if not decreasing (for next comparison)
+        console.log('📊 Tokens increased or same in chat, updating prevTokens');
+        setPrevTokens(userTokens);
+      }
+    }
+  }, [userTokens, prevTokens]);
 
   useEffect(() => {
     loadUserId();
@@ -465,7 +498,10 @@ export default function ChatPage() {
                 <span className="chat-icon">💜</span>
                 <h1>שיחה עם עליזה</h1>
               </div>
-              <div className="tokens-display">
+              <div 
+                className={`tokens-display ${tokenAnimation ? `token-${tokenAnimation}` : ''}`}
+                data-animation={tokenAnimation || 'none'}
+              >
                 <span className="token-icon">✨</span>
                 <span className="token-count">{userTokens}</span>
                 <span className="token-label">טוקנים זמינים</span>

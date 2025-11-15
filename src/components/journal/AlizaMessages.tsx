@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { DailyEntry, CycleEntry, AlizaMessage } from '@/types/journal';
 import { supabase } from '@/lib/supabase';
+import { useTokens } from '@/hooks/useTokens';
 import './AlizaMessages.css';
 
 interface AlizaMessagesProps {
@@ -15,6 +16,7 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
   const [messages, setMessages] = useState<AlizaMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [generating, setGenerating] = useState(false);
+  const { loadTokens } = useTokens();
 
   useEffect(() => {
     loadMessages();
@@ -22,17 +24,30 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
 
   const loadMessages = async () => {
     try {
+      // Load ALL messages (not just today's) - ordered by date, newest first
+      console.log('🔍 Loading all Aliza messages for user:', userId);
       const { data, error } = await supabase
         .from('aliza_messages')
         .select('*')
         .eq('user_id', userId)
+        .order('message_date', { ascending: false })
         .order('created_at', { ascending: false })
-        .limit(20);
+        .limit(50); // Increase limit to show more messages
 
-      if (error) throw error;
+      if (error) {
+        console.error('❌ Error loading messages:', error);
+        throw error;
+      }
+
+      console.log('✅ Loaded messages:', {
+        count: data?.length || 0,
+        dates: data?.map(m => m.message_date || m.created_at) || []
+      });
+
       setMessages(data || []);
     } catch (error) {
-      console.error('Error loading messages:', error);
+      console.error('❌ Error loading messages:', error);
+      setMessages([]);
     } finally {
       setLoading(false);
     }
@@ -41,54 +56,55 @@ export default function AlizaMessages({ userId, dailyEntries, cycleEntries }: Al
   const handleGenerateMessage = async () => {
     setGenerating(true);
     try {
+      console.log('🔄 Generating new smart message...');
+      
+      // Call API to generate a new message using OpenAI
       const response = await fetch('/api/generate-aliza-message', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
+        body: JSON.stringify({ 
           userId,
           dailyEntries,
           cycleEntries
         }),
       });
 
-      let result;
-      try {
-        result = await response.json();
-      } catch (jsonError) {
-        console.error('Failed to parse JSON response:', jsonError);
-        // Even if JSON parsing fails, try to continue with fallback
-        result = { success: false, error: 'Failed to parse server response' };
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('❌ API error:', errorData);
+        throw new Error(errorData.error || 'Failed to generate message');
       }
-      
-      if (result.success && result.message) {
-        // If mock user, add to local state
-        if (userId.startsWith('mock-user-')) {
-          setMessages([result.message, ...messages]);
-        } else {
-          // Reload messages from database
-          await loadMessages();
-        }
-      } else {
-        // Log error but don't show it to user - the API should return a fallback message
-        console.warn('Message generation warning:', result.error || 'Unknown error');
-        // Try to reload messages anyway - maybe a fallback message was saved
-        if (!userId.startsWith('mock-user-')) {
-          await loadMessages();
-        }
+
+      const result = await response.json();
+      console.log('✅ Message generated:', result);
+
+      // Update tokens in real-time if tokens were deducted or if new balance is provided
+      if (result.tokens_remaining !== undefined) {
+        console.log('🔄 Updating tokens after message generation:', { 
+          deduct_tokens: result.deduct_tokens, 
+          new_balance: result.tokens_remaining 
+        });
+        // Update tokens directly from response, then reload to sync
+        window.dispatchEvent(new CustomEvent('tokensUpdated', { 
+          detail: { tokens: result.tokens_remaining } 
+        }));
+        // Also reload to ensure sync
+        await loadTokens();
+      } else if (result.deduct_tokens && result.deduct_tokens > 0) {
+        console.log('🔄 Updating tokens after message generation (fallback):', result.deduct_tokens);
+        // Wait a bit for database to update
+        await new Promise(resolve => setTimeout(resolve, 300));
+        // Reload tokens to get the updated value from database
+        await loadTokens();
       }
+
+      // Reload messages from database to show the new message
+      await loadMessages();
     } catch (error) {
-      console.error('Error generating message:', error);
-      // Don't show error to user - the API should handle fallbacks
-      // Just try to reload messages in case something was saved
-      if (!userId.startsWith('mock-user-')) {
-        try {
-          await loadMessages();
-        } catch (reloadError) {
-          console.error('Failed to reload messages:', reloadError);
-        }
-      }
+      console.error('❌ Error generating message:', error);
+      alert('שגיאה ביצירת הודעה. נסי שוב מאוחר יותר.');
     } finally {
       setGenerating(false);
     }

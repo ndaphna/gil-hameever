@@ -236,6 +236,10 @@
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 2rem;
   animation: fade-in-up 0.6s ease-out;
+  width: 100%;
+  /* Ensure all messages are visible */
+  min-height: auto;
+  overflow: visible;
 }
 
 @keyframes fade-in-up {

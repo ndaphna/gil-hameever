@@ -9,6 +9,8 @@ import NotificationSettings from '@/components/notifications/NotificationSetting
 interface UserProfile {
   id: string;
   name: string | null;
+  first_name: string | null;
+  last_name: string | null;
   email: string;
   subscription_status: string;
   current_tokens: number;
@@ -18,7 +20,8 @@ interface UserProfile {
 export default function ProfilePage() {
   const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [fullName, setFullName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
@@ -66,7 +69,8 @@ export default function ProfilePage() {
 
         if (profileData) {
           setProfile(profileData);
-          setFullName(profileData.name || '');
+          setFirstName(profileData.first_name || '');
+          setLastName(profileData.last_name || '');
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -76,7 +80,8 @@ export default function ProfilePage() {
     }
 
     loadProfile();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -86,14 +91,23 @@ export default function ProfilePage() {
     try {
       const { error } = await supabase
         .from('user_profile')
-        .update({ name: fullName })
+        .update({ 
+          first_name: firstName,
+          last_name: lastName,
+          name: firstName + (lastName ? ' ' + lastName : '') // Keep for backward compatibility
+        })
         .eq('id', profile?.id);
 
       if (error) throw error;
 
       setMessage('הפרופיל עודכן בהצלחה');
       if (profile) {
-        setProfile({ ...profile, name: fullName });
+        setProfile({ 
+          ...profile, 
+          first_name: firstName,
+          last_name: lastName,
+          name: firstName + (lastName ? ' ' + lastName : '')
+        });
       }
       
       // Dispatch custom event to notify other components
@@ -158,13 +172,25 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="fullName">שם מלא</label>
+                  <label htmlFor="firstName">שם פרטי</label>
                   <input
-                    id="fullName"
+                    id="firstName"
                     type="text"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    placeholder="הכניסי את שמך המלא"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    placeholder="הכניסי את שמך הפרטי"
+                    disabled={saving}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="lastName">שם משפחה</label>
+                  <input
+                    id="lastName"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="הכניסי את שם המשפחה"
                     disabled={saving}
                   />
                 </div>

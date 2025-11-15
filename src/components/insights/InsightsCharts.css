@@ -10,6 +10,7 @@
   scroll-behavior: smooth;
   border: 1px solid rgba(102, 126, 234, 0.08);
   position: relative;
+  min-height: 600px;
 }
 
 .insights-charts::before {
@@ -98,6 +99,8 @@
   overflow: visible;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.06);
   border: 1px solid rgba(102, 126, 234, 0.1);
+  min-height: 500px;
+  position: relative;
 }
 
 .chart-header-section {

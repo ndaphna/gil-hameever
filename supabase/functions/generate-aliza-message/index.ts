@@ -29,7 +29,7 @@ serve(async (req) => {
           { role: 'system', content: contextPrompt },
           { role: 'user', content: 'צרי הודעה חכמה ואישית המבוססת על הנתונים שסופקו.' }
         ],
-        max_tokens: 200,
+        max_tokens: 600,
         temperature: 0.8,
       }),
     })

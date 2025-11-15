@@ -39,10 +39,29 @@ export async function POST(request: NextRequest) {
     const isEvening = hour >= 18;
     const isMorning = hour >= 5 && hour < 12;
     
+    // Get user profile for name
+    const { data: profile } = await supabaseAdmin
+      .from('user_profile')
+      .select('first_name, name, full_name, email')
+      .eq('id', userId)
+      .single();
+    
+    // Use first_name only for display
+    const userName = profile?.first_name || profile?.name?.split(' ')[0] || profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0] || 'יקרה';
+    
     // Build context prompt
     const contextPrompt = `את עליזה, יועצת אישית מקצועית ומנופאוזית מנוסה לנשים בגיל המעבר. 
 
-תפקידך: ליצור הודעה חכמה, אישית וחמה המבוססת על הנתונים האמיתיים של המשתמשת.
+תפקידך: ליצור הודעה חכמה, אישית וחמה המבוססת על הנתונים האמיתיים של ${userName}.
+
+חשוב מאוד - שימוש בשם פרטי וסגנון אישי:
+- תמיד השתמשי בשם הפרטי "${userName}" בהודעה
+- לעולם אל תכתבי "שתמשת" או "את" - תמיד השתמשי בשם "${userName}"
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
+- במקום "${userName}, חשוב שתשימי..." כתבי "היי ${userName}, חשוב שתשימי..." או "${userName} יקרה, חשוב שתשימי..."
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה, לא מנותק וקר
+- פני ישירות ל-${userName} בשמה בהתייחסות אישית
 
 כללי התנהגות:
 - השתמשי בשפה חמה, אמפתית ומעודדת
@@ -53,7 +72,7 @@ export async function POST(request: NextRequest) {
 - כתוב בעברית בלבד
 - ההודעה צריכה להיות 2-4 משפטים, אישית ומרתקת
 
-הנתונים של המשתמשת:
+הנתונים של ${userName}:
 - מספר ימים במעקב: ${recentEntries.length}
 - גלי חום: ${hotFlashesCount}/${recentEntries.length} ימים
 - בעיות שינה: ${sleepIssuesCount}/${recentEntries.length} ימים (${poorSleepDays} ימים עם שינה גרועה)
@@ -66,10 +85,15 @@ export async function POST(request: NextRequest) {
 צרי הודעה חכמה, אישית ומעודדת המבוססת על הנתונים האלה.`;
 
     // Determine message type and action URL based on patterns
+    // Balanced approach: prioritize time-based, then cycle, then issues, then encouragement
     let messageType: string = 'encouragement';
     let actionUrl: string = '';
     let emoji: string = '💕';
 
+    // Use timestamp for variety (not just entry count) to ensure different types
+    const varietySeed = Date.now() % 10;
+    
+    // Morning messages (5-12) - higher priority
     if (isMorning && recentEntries.length > 0) {
       const todayEntry = recentEntries.find((e: DailyEntry) => {
         const entryDate = new Date(e.date).toISOString().split('T')[0];
@@ -82,36 +106,62 @@ export async function POST(request: NextRequest) {
         actionUrl = '/physical-activity';
         emoji = '🌅';
       }
-    } else if (isEvening) {
+    } 
+    // Evening messages (18+) - higher priority
+    else if (isEvening) {
       messageType = 'evening';
       actionUrl = '/menopausal-sleep';
       emoji = '🌙';
-    } else if (hotFlashesCount >= 3 && nightSweatsCount >= 2) {
-      messageType = 'tip';
-      actionUrl = '/heat-waves';
-      emoji = '🔥';
-    } else if (sleepIssuesCount >= 3 && energyLowCount >= 3) {
-      messageType = 'tip';
-      actionUrl = '/physical-activity';
-      emoji = '⚡';
-    } else if (moodIssuesCount >= 3) {
-      messageType = 'encouragement';
-      actionUrl = '/self-worth';
-      emoji = '🤗';
-    } else if (recentCycles.length > 0) {
+    } 
+    // Cycle-related messages - if has cycle data, 40% chance
+    else if (recentCycles.length > 0) {
       const lastPeriod = recentCycles.find((e: CycleEntry) => e.is_period);
       if (lastPeriod) {
         const daysSince = Math.floor(
           (new Date().getTime() - new Date(lastPeriod.date).getTime()) / (1000 * 60 * 60 * 24)
         );
-        if (daysSince > 35) {
+        // If long cycle (>35 days) or variety seed suggests cycle message
+        if (daysSince > 35 || varietySeed < 4) {
           messageType = 'cycle';
           emoji = '🌸';
         }
+      } else if (varietySeed < 4) {
+        // Has cycle entries but no period - still can be cycle message
+        messageType = 'cycle';
+        emoji = '🌸';
       }
-    } else if (recentEntries.length >= 7) {
-      messageType = 'encouragement';
-      emoji = '🎆';
+    }
+    
+    // Only set tip if not already set to cycle/morning/evening AND issues are significant
+    if (messageType === 'encouragement') {
+      // Tip for hot flashes - only if significant (3+ days) AND variety allows
+      if ((hotFlashesCount >= 3 || nightSweatsCount >= 3) && varietySeed >= 4 && varietySeed < 7) {
+        messageType = 'tip';
+        actionUrl = '/heat-waves';
+        emoji = '🔥';
+      } 
+      // Tip for sleep issues - only if significant (3+ days) AND variety allows
+      else if ((sleepIssuesCount >= 3 || energyLowCount >= 3) && varietySeed >= 7 && varietySeed < 9) {
+        messageType = 'tip';
+        actionUrl = '/physical-activity';
+        emoji = '⚡';
+      } 
+      // Mood issues - encouragement with action
+      else if (moodIssuesCount >= 2) {
+        messageType = 'encouragement';
+        actionUrl = '/self-worth';
+        emoji = '🤗';
+      } 
+      // General encouragement for consistent tracking
+      else if (recentEntries.length >= 5) {
+        messageType = 'encouragement';
+        emoji = '🎆';
+      }
+      // Default: general encouragement
+      else {
+        messageType = 'encouragement';
+        emoji = '💕';
+      }
     }
 
     // Try Edge Function first, fallback to direct OpenAI call if needed
@@ -179,7 +229,7 @@ export async function POST(request: NextRequest) {
                   { role: 'system', content: contextPrompt },
                   { role: 'user', content: 'צרי הודעה חכמה, אישית ומעודדת המבוססת על הנתונים שניתנו.' }
                 ],
-                max_tokens: 200,
+                max_tokens: 600,
                 temperature: 0.7,
               }),
             });
@@ -249,8 +299,14 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Save message to database (if not mock user)
+    // Save message to database and handle tokens (if not mock user)
+    let newTokenBalance: number | null = null;
+    
     if (!userId.startsWith('mock-user-')) {
+      const today = new Date().toISOString().split('T')[0];
+      
+      // Insert new message WITHOUT deleting old ones - keep all messages
+      // Each message gets a unique timestamp to preserve history
       const { error } = await supabaseAdmin
         .from('aliza_messages')
         .insert({
@@ -259,11 +315,14 @@ export async function POST(request: NextRequest) {
           message: generatedMessage,
           emoji: emoji,
           action_url: actionUrl || null,
+          message_date: today,
           created_at: new Date().toISOString()
         });
 
       if (error) {
         console.error('Error saving message to database:', error);
+      } else {
+        console.log('✅ Message saved to database for date:', today);
       }
 
       // Deduct tokens if AI was used (same formula as chat: assistant_tokens * 2)
@@ -278,7 +337,7 @@ export async function POST(request: NextRequest) {
 
           if (profile) {
             const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-            const newTokenBalance = Math.max(0, currentTokens - deductTokens);
+            newTokenBalance = Math.max(0, currentTokens - deductTokens);
             
             await supabaseAdmin
               .from('user_profile')
@@ -292,6 +351,21 @@ export async function POST(request: NextRequest) {
           }
         } catch (tokenError) {
           console.error('Error deducting tokens for smart message:', tokenError);
+        }
+      } else {
+        // Get current token balance even if no deduction
+        try {
+          const { data: profile } = await supabaseAdmin
+            .from('user_profile')
+            .select('current_tokens, tokens_remaining')
+            .eq('id', userId)
+            .single();
+          
+          if (profile) {
+            newTokenBalance = profile.current_tokens ?? profile.tokens_remaining ?? 0;
+          }
+        } catch (error) {
+          console.error('Error getting token balance:', error);
         }
       }
     }
@@ -308,7 +382,8 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       },
       assistant_tokens: assistantTokens,
-      deduct_tokens: deductTokens
+      deduct_tokens: deductTokens,
+      tokens_remaining: newTokenBalance // Include new balance in response
     });
 
   } catch (error: unknown) {

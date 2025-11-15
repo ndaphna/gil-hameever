@@ -137,7 +137,17 @@ async function generateInsightsWithEdgeFunction(
 - תן המלצות ספציפיות ומעשיות
 - היה מדויקת עם המספרים והנתונים
 - כתוב בעברית בלבד
-- חובה להחזיר לפחות תובנה אחת - לעולם לא insights: []`;
+- חובה להחזיר לפחות תובנה אחת - לעולם לא insights: []
+
+חשוב מאוד - שימוש בשם פרטי וסגנון אישי:
+- תמיד השתמשי בשם הפרטי של המשתמשת (שמועבר ב-userPrompt)
+- לעולם אל תכתבי "שתמשת" או "את" - תמיד השתמשי בשם הפרטי
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה, לא מנותק וקר
+- בכל התובנות, ההמלצות וההודעות - השתמשי בשם הפרטי בלבד
+- סגנון הפניה: "היי [שם]" או "[שם] יקרה" - פניה ישירה ואישית
+- במקום "[שם] חוותה..." כתבי "אני רואה שאת חווה..." או "[שם] יקרה, אני רואה שאת חווה..."
+- במקום "[שם], חשוב שתשימי..." כתבי "היי [שם], חשוב שתשימי..." או "[שם] יקרה, חשוב שתשימי..."
+- הפניה היא אישית למשתמשת בשמה הפרטי ובהתייחסות אישית אליה כמו בשיחה עם חברה טובה`;
 
   let userPrompt = '';
 
@@ -178,11 +188,9 @@ async function generateInsightsWithEdgeFunction(
       console.error('❌ Edge Function: Supabase configuration missing');
       console.error('❌ Edge Function: URL:', supabaseUrl);
       console.error('❌ Edge Function: Key:', supabaseAnonKey ? 'EXISTS' : 'MISSING');
-      return {
-        insights: [],
-        assistant_tokens: 0,
-        deduct_tokens: 0
-      };
+      // Fallback to direct OpenAI call if Supabase config is missing
+      console.warn('⚠️ Supabase config missing, trying direct OpenAI call...');
+      return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
     }
 
     const edgeFunctionUrl = `${supabaseUrl}/functions/v1/analyze-insights`;
@@ -216,11 +224,10 @@ async function generateInsightsWithEdgeFunction(
       console.error('❌ Edge Function: Error response:', errorText);
       console.error('❌ Edge Function: Status:', response.status);
       console.error('❌ Edge Function: Status text:', response.statusText);
-      return {
-        insights: [],
-        assistant_tokens: 0,
-        deduct_tokens: 0
-      };
+      
+      // Fallback to direct OpenAI call if Edge Function is not available
+      console.warn('⚠️ Edge Function not available, trying direct OpenAI call...');
+      return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
     }
 
     const result = await response.json();
@@ -234,8 +241,33 @@ async function generateInsightsWithEdgeFunction(
       console.error('❌ Edge Function: Result contains error:', result.error);
     }
     
+    // Ensure we always have at least one insight
+    const insights = result.insights || [];
+    if (insights.length === 0) {
+      console.warn('⚠️ Edge Function returned empty insights, adding fallback...');
+      const userProfile = data?.userProfile || {};
+      // Use first_name only for display
+      const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
+      insights.push({
+        id: 'fallback-empty',
+        type: 'encouragement',
+        title: 'מעקב חשוב',
+        content: `היי ${userName}, המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
+        priority: 'low',
+        category: 'general',
+        actionable: true,
+        actionableSteps: {
+          reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
+          whoToContact: [],
+          questionsToAsk: [],
+          lifestyleChanges: []
+        },
+        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
+      });
+    }
+    
     return {
-      insights: result.insights || [],
+      insights,
       assistant_tokens: result.assistant_tokens || 0,
       deduct_tokens: result.deduct_tokens || 0
     };
@@ -245,8 +277,132 @@ async function generateInsightsWithEdgeFunction(
       console.error('❌ Edge Function: Error message:', error.message);
       console.error('❌ Edge Function: Error stack:', error.stack);
     }
+    
+    // Fallback to direct OpenAI call if Edge Function fails
+    console.warn('⚠️ Edge Function exception, trying direct OpenAI call...');
+    return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
+  }
+}
+
+async function generateInsightsWithOpenAI(
+  analysisType: string,
+  data: AnalysisRequest['data'],
+  systemPrompt: string,
+  userPrompt: string
+): Promise<any> {
+  try {
+    const openaiApiKey = process.env.OPENAI_API_KEY;
+    const userProfile = data?.userProfile || {};
+    // Use first_name only for display
+    const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
+    
+    if (!openaiApiKey || openaiApiKey === 'dummy-key') {
+      console.error('❌ OpenAI: API key not configured');
+      // Return at least one fallback insight
+      return {
+        insights: [{
+          id: 'fallback-no-data',
+          type: 'encouragement',
+          title: 'מעקב חשוב',
+          content: `היי ${userName}, אני רואה שאת מתחילה את המסע שלך. המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
+          priority: 'low',
+          category: 'general',
+          actionable: true,
+          actionableSteps: {
+            reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור', 'תיעוד תסמינים'],
+            whoToContact: [],
+            questionsToAsk: [],
+            lifestyleChanges: []
+          },
+          alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות. כל נתון שאת מזינה עוזר לי להבין טוב יותר את המסע שלך.`
+        }],
+        assistant_tokens: 0,
+        deduct_tokens: 0
+      };
+    }
+
+    console.log('🤖 OpenAI: Calling OpenAI API directly...');
+    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
+        ],
+        response_format: { type: 'json_object' },
+        max_tokens: 3000,
+        temperature: 0.7
+      }),
+    });
+
+    if (!completion.ok) {
+      const errorText = await completion.text();
+      console.error('❌ OpenAI: API error:', errorText);
+      throw new Error(`OpenAI API error: ${completion.status}`);
+    }
+
+    const result = await completion.json();
+    const content = result.choices[0]?.message?.content || '{}';
+    const parsed = JSON.parse(content);
+    
+    // Ensure we always have at least one insight
+    const insights = parsed.insights || [];
+    if (insights.length === 0) {
+      insights.push({
+        id: 'fallback-general',
+        type: 'encouragement',
+        title: 'מעקב חשוב',
+        content: `היי ${userName}, המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
+        priority: 'low',
+        category: 'general',
+        actionable: true,
+        actionableSteps: {
+          reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
+          whoToContact: [],
+          questionsToAsk: [],
+          lifestyleChanges: []
+        },
+        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
+      });
+    }
+
+    const assistantTokens = result.usage?.completion_tokens || 0;
+    
+    console.log('✅ OpenAI: Success! Generated insights:', {
+      insightsCount: insights.length,
+      assistantTokens
+    });
+
     return {
-      insights: [],
+      insights,
+      assistant_tokens: assistantTokens,
+      deduct_tokens: assistantTokens * 2
+    };
+  } catch (error: any) {
+    console.error('❌ OpenAI: Exception calling OpenAI:', error);
+    // Return at least one fallback insight
+    return {
+      insights: [{
+        id: 'fallback-error',
+        type: 'encouragement',
+        title: 'מעקב חשוב',
+        content: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
+        priority: 'low',
+        category: 'general',
+        actionable: true,
+        actionableSteps: {
+          reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
+          whoToContact: [],
+          questionsToAsk: [],
+          lifestyleChanges: []
+        },
+        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
+      }],
       assistant_tokens: 0,
       deduct_tokens: 0
     };
@@ -294,14 +450,23 @@ function buildComprehensiveAnalysisPrompt(data: AnalysisRequest['data']): string
   };
 
   const userAge = userProfile.birth_year ? new Date().getFullYear() - userProfile.birth_year : null;
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
 
   // אם אין מספיק נתונים, נבקש מ-OpenAI להסביר למה אין תובנות
   if (totalDays === 0 && cycleEntries.length === 0 && emotionEntries.length === 0) {
     console.log('⚠️ buildComprehensiveAnalysisPrompt: No data available');
-    return `אין נתונים זמינים לניתוח. אנא הסבירי למה אין תובנות והחזירי JSON עם insights ריק.`;
+    return `אין נתונים זמינים לניתוח עבור ${userName}. אנא הסבירי למה אין תובנות והחזירי JSON עם insights ריק. חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה...".`;
   }
 
-  const prompt = `נתח את הנתונים הבאים באופן מעמיק ומקצועי:
+  const prompt = `נתח את הנתונים הבאים באופן מעמיק ומקצועי עבור ${userName}:
+
+חשוב מאוד - סגנון אישי וחם:
+- בכל התובנות, ההמלצות וההודעות - השתמשי בשם הפרטי "${userName}" בלבד
+- לעולם אל תכתבי "שתמשת" או "את" - תמיד השתמשי בשם "${userName}"
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
+- במקום "${userName}, חשוב שתשימי..." כתבי "היי ${userName}, חשוב שתשימי..." או "${userName} יקרה, חשוב שתשימי..."
+- היחס הוא אישי וחם, כמו בשיחה עם חברה טובה, לא מנותק וקר
 
 נתונים כללים:
 - מספר ימים של נתונים: ${totalDays}
@@ -346,18 +511,23 @@ ${Object.entries(symptoms).map(([key, count]) =>
 function buildSleepAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
   const sleepEntries = entries.filter(e => e.sleep_quality);
+  const userProfile = data.userProfile || {};
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   
-  return `נתח את דפוסי השינה:
+  return `נתח את דפוסי השינה של ${userName}:
 - סה"כ רשומות: ${sleepEntries.length}
 - איכות שינה ממוצעת: ${calculateAvgSleepQuality(sleepEntries)}
 - ימים עם בעיות שינה: ${entries.filter(e => e.sleep_issues).length}
 - ימים עם הזעות לילה: ${entries.filter(e => e.night_sweats).length}
 
-צור תובנה מפורטת עם השוואה לנורמה (60% נשים בגיל המעבר מדווחות על בעיות שינה).`;
+צור תובנה מפורטת עם השוואה לנורמה (60% נשים בגיל המעבר מדווחות על בעיות שינה).
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildSymptomsAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
+  const userProfile = data.userProfile || {};
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   
   const symptomsCount = {
     hot_flashes: entries.filter(e => e.hot_flashes).length,
@@ -369,18 +539,21 @@ function buildSymptomsAnalysisPrompt(data: AnalysisRequest['data']): string {
     bloating: entries.filter(e => e.bloating).length
   };
 
-  return `נתח את התסמינים הבאים:
+  return `נתח את התסמינים הבאים של ${userName}:
 ${Object.entries(symptomsCount).map(([key, count]) => 
   `- ${key}: ${count}/${entries.length} (${((count/entries.length)*100).toFixed(1)}%)`
 ).join('\n')}
 
-זהה תסמינים דומיננטיים והשווה לנורמות (75% חוות גלי חום, 65% הזעות לילה, וכו').`;
+זהה תסמינים דומיננטיים והשווה לנורמות (75% חוות גלי חום, 65% הזעות לילה, וכו').
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildMoodAnalysisPrompt(data: AnalysisRequest['data']): string {
   const dailyEntries = data.dailyEntries || [];
   const emotionEntries = data.emotionEntries || [];
   const moodEntries = emotionEntries.length > 0 ? emotionEntries : dailyEntries.filter(e => e.mood);
+  const userProfile = data.userProfile || {};
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   
   const moodCounts = moodEntries.reduce((acc: any, entry: any) => {
     const mood = entry.emotion || entry.mood;
@@ -390,24 +563,28 @@ function buildMoodAnalysisPrompt(data: AnalysisRequest['data']): string {
     return acc;
   }, {});
 
-  return `נתח את מצב הרוח:
+  return `נתח את מצב הרוח של ${userName}:
 - סה"כ רשומות: ${moodEntries.length}
 - התפלגות: ${JSON.stringify(moodCounts)}
 - מצב רוח שלילי: ${calculateNegativeMoodPercent(moodEntries)}%
 
-השווה לנורמה (50% נשים בגיל המעבר מדווחות על שינויים במצב הרוח).`;
+השווה לנורמה (50% נשים בגיל המעבר מדווחות על שינויים במצב הרוח).
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildCycleAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.cycleEntries || [];
   const periodEntries = entries.filter(e => e.is_period);
+  const userProfile = data.userProfile || {};
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   
-  return `נתח את דפוסי המחזור:
+  return `נתח את דפוסי המחזור של ${userName}:
 - סה"כ רשומות: ${entries.length}
 - ימים עם מחזור: ${periodEntries.length}
 - אי-סדירות: ${calculateIrregularity(entries)}
 
-השווה לנורמה של גיל המעבר.`;
+השווה לנורמה של גיל המעבר.
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildHormonesAnalysisPrompt(data: AnalysisRequest['data']): string {
@@ -416,35 +593,40 @@ function buildHormonesAnalysisPrompt(data: AnalysisRequest['data']): string {
   const userProfile = data.userProfile || {};
   
   const userAge = userProfile.birth_year ? new Date().getFullYear() - userProfile.birth_year : null;
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   const symptoms = {
     hot_flashes: dailyEntries.filter(e => e.hot_flashes).length,
     night_sweats: dailyEntries.filter(e => e.night_sweats).length,
     mood_issues: dailyEntries.filter(e => ['irritated', 'sad', 'frustrated'].includes(e.mood)).length
   };
 
-  return `נתח את השלב ההורמונלי:
+  return `נתח את השלב ההורמונלי של ${userName}:
 - גיל: ${userAge || 'לא ידוע'}
 - תסמינים: ${JSON.stringify(symptoms)}
 - מספר רשומות: ${dailyEntries.length}
 
-קבע את השלב ההורמונלי (premenopausal/perimenopausal/postmenopausal) עם ביטחון.`;
+קבע את השלב ההורמונלי (premenopausal/perimenopausal/postmenopausal) עם ביטחון.
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildTrendsAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
+  const userProfile = data.userProfile || {};
+  const userName = userProfile.name || userProfile.full_name || 'יקרה';
   
   if (entries.length < 14) {
-    return 'אין מספיק נתונים לניתוח מגמות (נדרש לפחות שבועיים).';
+    return `אין מספיק נתונים לניתוח מגמות עבור ${userName} (נדרש לפחות שבועיים). חשוב: השתמשי בשם "${userName}" בכל התובנות. סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה...".`;
   }
 
   const recent = entries.slice(0, 7);
   const older = entries.slice(7, 14);
 
-  return `נתח מגמות:
+  return `נתח מגמות עבור ${userName}:
 - שבוע אחרון: ${recent.length} רשומות
 - שבוע קודם: ${older.length} רשומות
 
-זהה מגמות של שיפור או החמרה בתסמינים.`;
+זהה מגמות של שיפור או החמרה בתסמינים.
+חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 // Helper functions

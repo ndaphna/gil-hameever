@@ -54,7 +54,8 @@ export default function DashboardPage() {
 
   useEffect(() => {
     loadProfile();
-  }, [router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadProfile = async () => {
       try {
@@ -456,7 +457,7 @@ export default function DashboardPage() {
         {/* Hero Welcome */}
         <section className="dashboard-hero">
           <div className="welcome-header">
-            <h1>👋 שלום {profile?.name || profile?.email?.split('@')[0]}!</h1>
+            <h1>👋 שלום {profile?.first_name || profile?.name?.split(' ')[0] || profile?.full_name?.split(' ')[0] || profile?.email?.split('@')[0]}!</h1>
             <p className="date-subtitle">{today}</p>
           </div>
 

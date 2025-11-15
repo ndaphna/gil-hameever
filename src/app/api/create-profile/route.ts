@@ -59,13 +59,22 @@ export async function POST(request: Request) {
     // Check if this is the admin email
     const isAdmin = email === 'nitzandaphna@gmail.com';
 
+    // Split name into first_name and last_name
+    const fullName = name || email.split('@')[0] || 'משתמשת';
+    const nameParts = fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || fullName;
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : null;
+
     // Create the profile with admin privileges if applicable
     const { data, error } = await supabaseAdmin
       .from('user_profile')
       .insert({
         id: userId,
         email: email,
-        full_name: name || email.split('@')[0] || 'משתמשת',
+        first_name: firstName,
+        last_name: lastName,
+        name: fullName, // Keep for backward compatibility
+        full_name: fullName, // Keep for backward compatibility
         subscription_tier: 'trial',
         subscription_status: 'active',
         current_tokens: 500,

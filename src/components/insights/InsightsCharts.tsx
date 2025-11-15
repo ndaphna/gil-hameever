@@ -17,9 +17,14 @@ export default function InsightsCharts({ dailyEntries, cycleEntries, timeRange, 
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    // עיבוד נתונים אמיתיים
-    setTimeout(() => setIsLoading(false), 300);
+    if (dailyEntries.length > 0 || cycleEntries.length > 0) {
+      setIsLoading(true);
+      // עיבוד נתונים אמיתיים - עיכוב קצר כדי שהקונטיינרים יסתדרו
+      const timer = setTimeout(() => setIsLoading(false), 100);
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(false);
+    }
   }, [timeRange, dailyEntries, cycleEntries]);
 
   const symptomsAnalysis = generateSymptomsData(dailyEntries, timeRange);

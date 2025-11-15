@@ -18,8 +18,41 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const [userName, setUserName] = useState<string>('');
   const [mounted, setMounted] = useState(false);
   const [roadmapOpen, setRoadmapOpen] = useState(false);
-  const { tokens } = useTokens();
+  const { tokens, isLoading: tokensLoading } = useTokens();
   const { isAdmin } = useAuth();
+  const [tokenAnimation, setTokenAnimation] = useState<'decrease' | null>(null);
+  const [prevTokens, setPrevTokens] = useState<number | null>(null);
+
+  // Initialize prevTokens after tokens are loaded
+  useEffect(() => {
+    if (!tokensLoading && prevTokens === null) {
+      setPrevTokens(tokens);
+    }
+  }, [tokensLoading, tokens, prevTokens]);
+
+  // Detect token changes and trigger animation
+  useEffect(() => {
+    if (prevTokens !== null && prevTokens !== tokens) {
+      console.log('🔍 Token change detected:', { prevTokens, tokens, isDecrease: tokens < prevTokens });
+      if (tokens < prevTokens) {
+        console.log('🎬 Triggering token animation:', { prevTokens, tokens, difference: prevTokens - tokens });
+        setTokenAnimation('decrease');
+        const timer = setTimeout(() => {
+          console.log('⏰ Animation timer ended');
+          setTokenAnimation(null);
+        }, 600); // Animation duration
+        setPrevTokens(tokens);
+        return () => {
+          console.log('🧹 Cleaning up animation timer');
+          clearTimeout(timer);
+        };
+      } else {
+        // Update prevTokens even if not decreasing (for next comparison)
+        console.log('📊 Tokens increased or same, updating prevTokens');
+        setPrevTokens(tokens);
+      }
+    }
+  }, [tokens, prevTokens]);
 
   // Check if current page is a roadmap page
   const isRoadmapPage = useMemo(() => {
@@ -146,7 +179,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       // Load user profile from database
         let { data: profile } = await supabase
           .from('user_profile')
-          .select('full_name, email')
+          .select('first_name, last_name, name, full_name, email')
           .eq('id', user.id)
           .single();
 
@@ -165,7 +198,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           // Fetch the newly created profile
           const { data: newProfile } = await supabase
             .from('user_profile')
-            .select('full_name, email')
+            .select('first_name, last_name, name, full_name, email')
             .eq('id', user.id)
             .single();
           
@@ -173,7 +206,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         }
 
         if (profile) {
-          setUserName(profile.full_name || profile.email?.split('@')[0] || 'משתמשת');
+          // Use first_name only for display
+          setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
         }
     }
 
@@ -234,7 +268,10 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </div>
           <div className="user-info">
             <h3 className="user-name">שלום, {userName}</h3>
-            <div className="user-tokens">
+            <div 
+              className={`user-tokens ${tokenAnimation ? `token-${tokenAnimation}` : ''}`}
+              data-animation={tokenAnimation || 'none'}
+            >
               <span className="token-icon">✨</span>
               <span className="token-count">{tokens}</span>
               <span className="token-label">טוקנים</span>
