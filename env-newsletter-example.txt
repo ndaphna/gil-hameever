@@ -1,0 +1,65 @@
+# ==============================================================================
+# Newsletter Configuration for Brevo
+# ==============================================================================
+#
+# INSTRUCTIONS:
+# 1. Copy these lines to your .env.local file
+# 2. Replace the values with your actual credentials
+# 3. Restart your dev server (npm run dev)
+#
+# ==============================================================================
+
+# Brevo API Key (Required)
+# Get from: https://app.brevo.com → Settings → SMTP & API → API Keys
+# Create a v3 API key (not v2)
+BREVO_API_KEY=xkeysib-your_api_key_here
+
+# Sender Email (Required)
+# MUST be verified in Brevo: Settings → Senders & IP
+# Recommended: Use your verified domain email (e.g., newsletter@gilhameever.com)
+BREVO_FROM_EMAIL=newsletter@gilhameever.com
+
+# Sender Name (Required)
+# This will appear as the "From" name in emails
+BREVO_FROM_NAME=עליזה - מנופאוזית וטוב לה
+
+# ==============================================================================
+# Optional: List ID for Waitlist
+# ==============================================================================
+# If you want to add waitlist signups to a specific list in Brevo
+# Get from: https://app.brevo.com → Contacts → Lists → Click your list → See ID in URL
+# BREVO_LIST_ID_WAITLIST=123
+
+# ==============================================================================
+# IMPORTANT NOTES:
+# ==============================================================================
+# 
+# 1. VERIFY SENDER EMAIL
+#    Before sending any emails, you MUST verify your sender email in Brevo:
+#    → Go to: Settings → Senders & IP
+#    → Add your email address
+#    → Check your inbox for verification email
+#    → Click the verification link
+#
+# 2. DOMAIN SETUP (Optional but Recommended)
+#    For better deliverability, set up SPF and DKIM records for your domain
+#    → Go to: Settings → Senders & IP → Select your domain
+#    → Follow the instructions to add DNS records
+#
+# 3. TESTING
+#    After adding these variables:
+#    → Restart your dev server: npm run dev
+#    → Go to: http://localhost:3000/test-newsletter
+#    → Send a test email to yourself
+#    → Check server console for detailed logs
+#
+# 4. TROUBLESHOOTING
+#    If emails aren't sending:
+#    → Check server console logs (terminal where npm run dev is running)
+#    → Verify sender email is confirmed in Brevo dashboard
+#    → Check Brevo account status and quota
+#    → Look in spam folder
+#
+# ==============================================================================
+
+

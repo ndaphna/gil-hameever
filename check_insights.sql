@@ -43,3 +43,7 @@ SELECT
   MAX(analysis_date) as latest_date
 FROM public.personalized_insights;
 
+
+
+
+

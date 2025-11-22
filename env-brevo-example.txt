@@ -1,0 +1,31 @@
+# ==============================================================================
+# Brevo (Sendinblue) Configuration for Waitlist
+# ==============================================================================
+#
+# INSTRUCTIONS:
+# 1. Copy the lines below to your .env.local file
+# 2. Replace the placeholder values with your actual Brevo credentials
+# 3. Restart your dev server (npm run dev)
+#
+# WHERE TO GET THESE VALUES:
+# - Login to Brevo: https://app.brevo.com
+# - API Key: Settings → SMTP & API → API Keys → Create new v3 key
+# - List ID: Contacts → Lists → Click your list → See ID in URL
+# - IMPORTANT: Verify sender email in Settings → Senders & IP
+#
+# ==============================================================================
+
+# Required: Your Brevo v3 API key
+BREVO_API_KEY=xkeysib-your_key_here
+
+# Required: Verified sender email (must be verified in Brevo!)
+BREVO_FROM_EMAIL=gil.hameever@gmail.com
+
+# Required: Display name for emails
+BREVO_FROM_NAME=מנופאוזית וטוב לה
+
+# Optional: List ID for waitlist contacts (get from Brevo dashboard)
+# If set, contacts will be automatically added to this list
+BREVO_LIST_ID_WAITLIST=123
+
+

@@ -93,3 +93,7 @@ curl -H "Authorization: Bearer your-secret-here" https://your-app.vercel.app/api
 
 אם לא מגדירים את המשתנה, ה-cron job עדיין יעבוד (כי יש בדיקה `if (cronSecret && ...)`), אבל זה פחות מאובטח. מומלץ מאוד להגדיר אותו.
 
+
+
+
+

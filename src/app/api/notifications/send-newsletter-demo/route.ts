@@ -162,38 +162,72 @@ async function sendEmail(
   text: string
 ): Promise<boolean> {
   try {
+    console.log('\n' + '='.repeat(60));
+    console.log('📧 Sending newsletter email via Brevo');
+    console.log('='.repeat(60));
+
     // Brevo (Sendinblue) - מומלץ!
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
+    
+    console.log('🔑 Checking Brevo configuration...');
+    console.log('   BREVO_API_KEY:', BREVO_API_KEY ? '✅ Set' : '❌ Missing');
+    console.log('   BREVO_FROM_EMAIL:', process.env.BREVO_FROM_EMAIL || '⚠️ Not set (using default)');
+    console.log('   BREVO_FROM_NAME:', process.env.BREVO_FROM_NAME || '⚠️ Not set (using default)');
+
     if (BREVO_API_KEY) {
       const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
       const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
       
+      console.log('📤 Sending email:');
+      console.log('   From:', `${fromName} <${fromEmail}>`);
+      console.log('   To:', to);
+      console.log('   Subject:', subject);
+      console.log('   HTML length:', html.length, 'chars');
+      console.log('   Text length:', text.length, 'chars');
+
+      const payload = {
+        sender: {
+          name: fromName,
+          email: fromEmail
+        },
+        to: [{ email: to }],
+        subject: subject,
+        htmlContent: html,
+        textContent: text,
+      };
+
+      console.log('🌐 Calling Brevo API...');
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
         method: 'POST',
         headers: {
           'api-key': BREVO_API_KEY,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          sender: {
-            name: fromName,
-            email: fromEmail
-          },
-          to: [{ email: to }],
-          subject: subject,
-          htmlContent: html,
-          textContent: text,
-        }),
+        body: JSON.stringify(payload),
       });
 
+      console.log('📥 Brevo API response status:', response.status);
+
       if (!response.ok) {
-        const error = await response.text();
-        console.error('Brevo API error:', error);
+        const errorText = await response.text();
+        let errorJson;
+        try {
+          errorJson = JSON.parse(errorText);
+        } catch {
+          errorJson = { rawError: errorText };
+        }
+
+        console.error('❌ Brevo API error:');
+        console.error('   Status:', response.status);
+        console.error('   Response:', JSON.stringify(errorJson, null, 2));
+        console.log('='.repeat(60) + '\n');
         return false;
       }
 
       const result = await response.json();
-      console.log('✅ Newsletter demo sent via Brevo:', result);
+      console.log('✅ Newsletter demo sent via Brevo successfully!');
+      console.log('   Message ID:', result.messageId || 'N/A');
+      console.log('='.repeat(60) + '\n');
       return true;
     }
 

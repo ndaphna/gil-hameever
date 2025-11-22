@@ -17,31 +17,31 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Handwritten fonts collection for Hebrew
+// Handwritten fonts collection
 const satisfy = Satisfy({
   variable: "--font-handwritten",
-  subsets: ["latin", "hebrew"],
+  subsets: ["latin"],
   weight: ["400"],
   display: "swap",
 });
 
 const dancingScript = Dancing_Script({
   variable: "--font-handwritten-luxury",
-  subsets: ["latin", "hebrew"],
+  subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 const caveat = Caveat({
   variable: "--font-handwritten-elegant",
-  subsets: ["latin", "hebrew"],
+  subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
 const kalam = Kalam({
   variable: "--font-handwritten-casual",
-  subsets: ["latin", "hebrew"],
+  subsets: ["latin"],
   weight: ["300", "400", "700"],
   display: "swap",
 });
