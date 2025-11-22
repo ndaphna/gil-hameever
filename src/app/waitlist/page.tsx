@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import './waitlist.css';
+import '@/styles/waitlist.css';
 import '../globals.css';
 import { landingCopy } from '@/content/landing-copy';
 

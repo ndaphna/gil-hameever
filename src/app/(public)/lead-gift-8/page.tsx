@@ -9,7 +9,7 @@
 
 import { useState, FormEvent, ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import '../../waitlist/waitlist.css';
+import '@/styles/waitlist.css';
 
 // ========================================
 // CONFIGURATION

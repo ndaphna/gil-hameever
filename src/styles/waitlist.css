@@ -1,0 +1,556 @@
+/* ============================================
+   WAITLIST PAGE - BOLD & DYNAMIC DESIGN
+   ============================================ */
+
+/* Import global variables */
+:root {
+  --magenta: #FF0080;
+  --magenta-dark: #E0006E;
+  --purple: #9D4EDD;
+  --purple-light: #C77DFF;
+  --black: #1A1A1A;
+  --white: #FFFFFF;
+  --gradient-main: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+}
+
+/* ============================================
+   MAIN CONTAINER
+   ============================================ */
+.waitlist-landing {
+  min-height: 100vh;
+  background: var(--white);
+  position: relative;
+  font-family: var(--font-assistant), sans-serif;
+  overflow-x: hidden;
+}
+
+/* ============================================
+   HERO SECTION - DYNAMIC & BOLD (Matching Site Style)
+   ============================================ */
+.waitlist-hero {
+  min-height: 75vh;
+  background: linear-gradient(135deg, rgba(255,0,128,0.1) 0%, rgba(157,78,221,0.1) 100%);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 80px 0 60px;
+}
+
+/* Dynamic animated background */
+.waitlist-hero::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 50%, var(--magenta) 0%, transparent 25%),
+              radial-gradient(circle at 70% 70%, var(--purple-light) 0%, transparent 30%);
+  opacity: 0.12;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translate(-10%, -10%) rotate(0deg); }
+  33% { transform: translate(-5%, -15%) rotate(120deg); }
+  66% { transform: translate(-15%, -5%) rotate(240deg); }
+}
+
+/* Decorative circles */
+.waitlist-hero::after {
+  content: '';
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: 10%;
+  left: -100px;
+  border-radius: 50%;
+  background: var(--gradient-main);
+  opacity: 0.08;
+  animation: pulse 4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.08; }
+  50% { transform: scale(1.1); opacity: 0.12; }
+}
+
+.hero-content {
+  text-align: center;
+  position: relative;
+  z-index: 10;
+  padding: 30px 0;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hero-content h1 {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
+  color: var(--black);
+  line-height: 1.25;
+  margin-bottom: 0;
+  font-family: var(--font-assistant), sans-serif;
+  letter-spacing: -0.02em;
+  text-align: center !important;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ============================================
+   CONTAINER - TIGHT & FOCUSED
+   ============================================ */
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(40px, 7vw, 60px) clamp(20px, 4vw, 32px);
+  position: relative;
+  z-index: 1;
+  background: var(--white);
+}
+
+/* ============================================
+   TYPOGRAPHY - BOLD & CLEAR
+   ============================================ */
+.container h2 {
+  font-size: clamp(1.875rem, 4.5vw, 2.5rem);
+  font-weight: 700;
+  color: var(--black);
+  text-align: center;
+  margin-bottom: clamp(24px, 5vw, 32px);
+  font-family: var(--font-assistant), sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.container p {
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  line-height: 1.8;
+  margin-bottom: 18px;
+  color: var(--black);
+  font-family: var(--font-assistant), sans-serif;
+  font-weight: 400;
+  text-align: center;
+}
+
+/* ============================================
+   CONTENT BOXES - PREMIUM CARDS
+   ============================================ */
+.content-box {
+  background: var(--white);
+  padding: clamp(36px, 7vw, 48px) clamp(32px, 6vw, 44px);
+  border-radius: 24px;
+  margin: clamp(28px, 5vw, 40px) 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+}
+
+.content-box:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(255, 0, 128, 0.15);
+}
+
+.content-box h3 {
+  font-size: clamp(1.5rem, 3.5vw, 1.875rem);
+  font-weight: 700;
+  color: var(--black);
+  text-align: center;
+  margin-bottom: clamp(24px, 5vw, 32px);
+  font-family: var(--font-assistant), sans-serif;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.content-box p {
+  font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
+  line-height: 1.85;
+  margin-bottom: 18px;
+  color: var(--black);
+  font-family: var(--font-assistant), sans-serif;
+  font-weight: 400;
+  text-align: right;
+}
+
+.content-box p:last-child {
+  margin-bottom: 0;
+}
+
+.content-box p strong {
+  font-weight: 700;
+  color: var(--black);
+}
+
+/* Lists in content boxes */
+.content-box ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.content-box ul li {
+  padding: clamp(12px, 2.5vw, 16px) 0 clamp(12px, 2.5vw, 16px) clamp(32px, 6vw, 44px);
+  font-size: clamp(1.0625rem, 2.4vw, 1.1875rem);
+  line-height: 1.85;
+  color: var(--black);
+  font-family: var(--font-assistant), sans-serif;
+  font-weight: 400;
+  position: relative;
+  text-align: right;
+}
+
+.content-box ul li span {
+  position: absolute;
+  right: 0;
+  color: var(--magenta);
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+}
+
+/* ============================================
+   HIGHLIGHT - BOLD YELLOW MARKER (Matching Site Style)
+   ============================================ */
+.highlight {
+  color: #000000 !important;
+  font-weight: 700 !important;
+  background: none !important;
+  -webkit-text-fill-color: #000000 !important;
+  text-shadow: none !important;
+  position: relative;
+  display: inline;
+  padding: 0 4px;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: #FFD700;
+  border-radius: 2px;
+  z-index: -1;
+  opacity: 0.85;
+}
+
+/* ============================================
+   WAITLIST FORM - PREMIUM & BOLD
+   ============================================ */
+.waitlist-form {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 242, 250, 0.6) 100%);
+  backdrop-filter: blur(10px);
+  padding: clamp(40px, 7vw, 52px) clamp(36px, 6vw, 48px);
+  border-radius: 24px;
+  margin: clamp(36px, 7vw, 52px) 0;
+  box-shadow: 0 12px 40px rgba(255, 0, 128, 0.15);
+  border: 2px solid rgba(255, 0, 128, 0.1);
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.waitlist-form:hover {
+  box-shadow: 0 16px 48px rgba(255, 0, 128, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Decorative element */
+.waitlist-form::before {
+  content: '✨';
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  font-size: 32px;
+  opacity: 0.2;
+  animation: pulse 3s ease-in-out infinite;
+}
+
+.form-group {
+  margin-bottom: clamp(22px, 4.5vw, 28px);
+}
+
+.form-group:last-of-type {
+  margin-bottom: clamp(32px, 6vw, 40px);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: clamp(10px, 2vw, 12px);
+  color: var(--black);
+  font-weight: 700;
+  font-size: clamp(1.0625rem, 2.3vw, 1.125rem);
+  font-family: var(--font-assistant), sans-serif;
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+
+.form-group input {
+  width: 100%;
+  padding: clamp(16px, 3vw, 18px) clamp(18px, 3.5vw, 20px);
+  border: 2px solid rgba(255, 0, 128, 0.2);
+  border-radius: 12px;
+  font-size: clamp(1rem, 2.2vw, 1.0625rem);
+  color: var(--black);
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-assistant), sans-serif;
+  text-align: right;
+  box-sizing: border-box;
+  font-weight: 500;
+}
+
+.form-group input::placeholder {
+  color: rgba(26, 26, 26, 0.4);
+  font-weight: 400;
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--magenta);
+  background: white;
+  box-shadow: 
+    0 0 0 4px rgba(255, 0, 128, 0.1),
+    0 4px 16px rgba(255, 0, 128, 0.15);
+  transform: translateY(-1px);
+}
+
+.form-group input:disabled {
+  background: rgba(241, 241, 241, 0.5);
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* ============================================
+   CTA BUTTON - WOW FACTOR (Matching Site Style)
+   ============================================ */
+.cta-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: clamp(18px, 3.5vw, 20px) clamp(36px, 7vw, 52px);
+  background: var(--gradient-main);
+  color: var(--white);
+  border: none;
+  border-radius: 30px;
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: var(--font-assistant), sans-serif;
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.3);
+  letter-spacing: 0.02em;
+  min-width: 280px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Button shine effect */
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  transition: left 0.6s ease;
+}
+
+.cta-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 0, 128, 0.5);
+}
+
+.cta-button:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.cta-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.cta-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ============================================
+   ERROR MESSAGE
+   ============================================ */
+.error-message {
+  background: linear-gradient(135deg, #fee 0%, #fdd 100%);
+  color: #c33;
+  padding: clamp(14px, 3vw, 16px) clamp(18px, 3.5vw, 20px);
+  border-radius: 12px;
+  margin-bottom: 24px;
+  text-align: center;
+  font-size: clamp(0.9375rem, 2.1vw, 1.0625rem);
+  font-family: var(--font-assistant), sans-serif;
+  font-weight: 600;
+  border: 2px solid rgba(204, 51, 51, 0.2);
+  animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* ============================================
+   CTA SECTION
+   ============================================ */
+.cta-section {
+  text-align: center;
+  margin: clamp(52px, 10vw, 80px) 0 clamp(44px, 8vw, 64px);
+}
+
+.cta-section p {
+  font-size: clamp(1.375rem, 3.5vw, 1.75rem);
+  color: var(--black);
+  margin-bottom: clamp(36px, 7vw, 52px);
+  font-weight: 700;
+  line-height: 1.4;
+  font-family: var(--font-assistant), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+.cta-section p .emoji {
+  font-size: clamp(1.625rem, 4.5vw, 2.25rem);
+  margin-left: 8px;
+  display: inline-block;
+}
+
+/* ============================================
+   THANK YOU CARD
+   ============================================ */
+.thank-you-card {
+  margin-top: clamp(56px, 10vw, 88px);
+  text-align: center;
+  background: linear-gradient(135deg, rgba(255, 242, 250, 0.8) 0%, rgba(255, 235, 248, 0.6) 100%);
+  padding: clamp(52px, 9vw, 76px) clamp(40px, 7vw, 64px);
+  border-radius: 28px;
+  border: 2px solid rgba(255, 0, 128, 0.15);
+  box-shadow: 0 12px 48px rgba(255, 0, 128, 0.12);
+  position: relative;
+  overflow: hidden;
+}
+
+.thank-you-card::before {
+  content: '';
+  position: absolute;
+  bottom: -30%;
+  left: -10%;
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(255, 0, 128, 0.1) 0%, transparent 70%);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.thank-you-card p {
+  font-size: clamp(1.625rem, 4vw, 2.125rem);
+  color: var(--black);
+  margin-bottom: clamp(28px, 5.5vw, 36px);
+  font-weight: 700;
+  line-height: 1.35;
+  font-family: var(--font-assistant), sans-serif;
+  letter-spacing: -0.01em;
+  position: relative;
+  z-index: 1;
+}
+
+.thank-you-card p .emoji {
+  font-size: clamp(2.25rem, 5.5vw, 3.25rem);
+  display: block;
+  margin-bottom: clamp(18px, 3.5vw, 28px);
+}
+
+.thank-you-card .message {
+  font-size: clamp(1.1875rem, 3vw, 1.4375rem);
+  color: var(--black);
+  line-height: 1.75;
+  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  position: relative;
+  z-index: 1;
+  font-weight: 500;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+@media (max-width: 768px) {
+  .waitlist-hero {
+    min-height: 65vh;
+    padding: 70px 0 50px;
+  }
+
+  .container {
+    padding: clamp(36px, 6vw, 48px) clamp(18px, 4vw, 24px);
+  }
+
+  .content-box {
+    padding: clamp(28px, 5.5vw, 36px) clamp(24px, 5vw, 32px);
+    margin: clamp(24px, 4.5vw, 32px) 0;
+  }
+
+  .waitlist-form {
+    padding: clamp(32px, 6vw, 40px) clamp(28px, 5vw, 36px);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-content h1 {
+    line-height: 1.3;
+  }
+  
+  .form-group input {
+    padding: 15px 17px;
+  }
+
+  .cta-button {
+    padding: 17px 32px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY ENHANCEMENTS
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+  .content-box,
+  .waitlist-form,
+  .thank-you-card {
+    border: 3px solid var(--black);
+  }
+  
+  .form-group input {
+    border: 2px solid var(--black);
+  }
+  
+  .cta-button {
+    border: 2px solid white;
+  }
+}
