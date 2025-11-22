@@ -11,7 +11,7 @@
 'use client';
 
 import Link from 'next/link';
-import '../../waitlist/waitlist.css';
+import '@/styles/waitlist.css';
 
 export default function EmergencyMapPage() {
   return (
