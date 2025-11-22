@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Assistant, Geist_Mono, Satisfy, Dancing_Script, Caveat, Kalam } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import CookieBanner from "../components/CookieBanner";
@@ -77,6 +78,7 @@ export default function RootLayout({
           <CookieBanner />
           <AccessibilityBubble />
         </div>
+        <SpeedInsights />
       </body>
     </html>
   );
