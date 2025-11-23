@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { executeAIRequest } from '@/lib/ai-usage-service';
+import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
 
 interface AnalysisRequest {
   userId: string;
@@ -30,49 +32,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID and analysis type required' }, { status: 400 });
     }
 
-    // Generate insights using Edge Function
-    console.log('🌐 API: Calling generateInsightsWithEdgeFunction...');
-    const result = await generateInsightsWithEdgeFunction(analysisType, data);
-    console.log('✅ API: Edge function returned:', {
+    // Generate insights using the unified AI service
+    console.log('🤖 API: Generating insights with AI service...');
+    const result = await generateInsightsWithAI(userId, analysisType, data);
+    
+    console.log('✅ API: AI service returned:', {
       insightsCount: result.insights?.length || 0,
-      assistantTokens: result.assistant_tokens || 0
+      tokensDeducted: result.tokensDeducted || 0,
+      tokensRemaining: result.tokensRemaining || 0
     });
-
-    // Deduct tokens if AI was used (same formula as chat: assistant_tokens * 2)
-    const deductTokens = result.deduct_tokens || 0;
-    if (deductTokens > 0 && !userId.startsWith('mock-user-')) {
-      try {
-        // Get current tokens
-        const { data: profile } = await supabaseAdmin
-          .from('user_profile')
-          .select('current_tokens, tokens_remaining')
-          .eq('id', userId)
-          .single();
-
-        if (profile) {
-          const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-          const newTokenBalance = Math.max(0, currentTokens - deductTokens);
-          
-          await supabaseAdmin
-            .from('user_profile')
-            .update({ 
-              current_tokens: newTokenBalance,
-              tokens_remaining: newTokenBalance  // Keep both fields in sync
-            })
-            .eq('id', userId);
-
-          console.log(`✅ Deducted ${deductTokens} tokens (${result.assistant_tokens || 0} assistant tokens * 2) for insights analysis. New balance: ${newTokenBalance}`);
-        }
-      } catch (tokenError) {
-        console.error('Error deducting tokens for insights analysis:', tokenError);
-      }
-    }
 
     return NextResponse.json({ 
       success: true, 
       insights: result.insights,
-      assistant_tokens: result.assistant_tokens || 0,
-      deduct_tokens: deductTokens
+      tokensDeducted: result.tokensDeducted || 0,
+      tokensRemaining: result.tokensRemaining || 0,
+      transparencyMessage: result.transparencyMessage,
+      warningMessage: result.warningMessage,
     });
   } catch (error: any) {
     console.error('Error in analyze-insights API:', error);
@@ -83,10 +59,34 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function generateInsightsWithEdgeFunction(
+/**
+ * Generate insights using the unified AI service
+ * This replaces the old Edge Function approach
+ */
+async function generateInsightsWithAI(
+  userId: string,
   analysisType: string,
   data: AnalysisRequest['data']
-): Promise<any[]> {
+): Promise<{
+  insights: any[];
+  tokensDeducted: number;
+  tokensRemaining: number;
+  transparencyMessage?: string;
+  warningMessage?: string;
+}> {
+  // Determine action type based on analysis type
+  const actionTypeMap: Record<string, string> = {
+    comprehensive: TOKEN_ACTION_TYPES.COMPREHENSIVE_ANALYSIS,
+    sleep: TOKEN_ACTION_TYPES.SLEEP_ANALYSIS,
+    symptoms: TOKEN_ACTION_TYPES.SYMPTOMS_ANALYSIS,
+    mood: TOKEN_ACTION_TYPES.MOOD_ANALYSIS,
+    cycle: TOKEN_ACTION_TYPES.CYCLE_ANALYSIS,
+    hormones: TOKEN_ACTION_TYPES.HORMONES_ANALYSIS,
+    trends: TOKEN_ACTION_TYPES.TRENDS_ANALYSIS,
+  };
+  
+  const actionType = actionTypeMap[analysisType] || TOKEN_ACTION_TYPES.COMPREHENSIVE_ANALYSIS;
+  
   const systemPrompt = `את עליזה, מומחית רפואית ומנטורית לנשים בגיל המעבר. את מתמחה בניתוח נתונים רפואיים, השוואה לנורמות, ומתן המלצות מעשיות ומקצועיות.
 
 תפקידך:
@@ -176,216 +176,36 @@ async function generateInsightsWithEdgeFunction(
       break;
   }
 
-  try {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    
-    console.log('🔍 Edge Function: Checking configuration...');
-    console.log('🔍 Edge Function: Supabase URL exists:', !!supabaseUrl);
-    console.log('🔍 Edge Function: Supabase Anon Key exists:', !!supabaseAnonKey);
-    
-    if (!supabaseUrl || !supabaseAnonKey) {
-      console.error('❌ Edge Function: Supabase configuration missing');
-      console.error('❌ Edge Function: URL:', supabaseUrl);
-      console.error('❌ Edge Function: Key:', supabaseAnonKey ? 'EXISTS' : 'MISSING');
-      // Fallback to direct OpenAI call if Supabase config is missing
-      console.warn('⚠️ Supabase config missing, trying direct OpenAI call...');
-      return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
-    }
-
-    const edgeFunctionUrl = `${supabaseUrl}/functions/v1/analyze-insights`;
-    console.log('🌐 Edge Function: Calling:', edgeFunctionUrl);
-    console.log('📤 Edge Function: Sending request with:', {
+  // Use the unified AI service to execute the request
+  console.log('🤖 Calling executeAIRequest with unified token engine...');
+  
+  const aiResult = await executeAIRequest({
+    userId,
+    actionType,
+    messages: [
+      { role: 'system', content: systemPrompt },
+      { role: 'user', content: userPrompt }
+    ],
+    model: 'gpt-4o',
+    maxTokens: 3000,
+    temperature: 0.7,
+    responseFormat: { type: 'json_object' },
+    description: `${analysisType} analysis`,
+    metadata: {
       analysisType,
-      dataSize: JSON.stringify(data).length,
-      systemPromptLength: systemPrompt.length,
-      userPromptLength: userPrompt.length
-    });
-
-    const response = await fetch(edgeFunctionUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${supabaseAnonKey}`,
-      },
-      body: JSON.stringify({
-        analysisType,
-        data,
-        systemPrompt,
-        userPrompt
-      }),
-    });
-
-    console.log('📥 Edge Function: Response status:', response.status);
-    console.log('📥 Edge Function: Response ok:', response.ok);
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ Edge Function: Error response:', errorText);
-      console.error('❌ Edge Function: Status:', response.status);
-      console.error('❌ Edge Function: Status text:', response.statusText);
-      
-      // Fallback to direct OpenAI call if Edge Function is not available
-      console.warn('⚠️ Edge Function not available, trying direct OpenAI call...');
-      return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
+      dailyEntriesCount: data?.dailyEntries?.length || 0,
+      cycleEntriesCount: data?.cycleEntries?.length || 0,
+      emotionEntriesCount: data?.emotionEntries?.length || 0,
     }
-
-    const result = await response.json();
-    console.log('✅ Edge Function: Success! Received:', {
-      insightsCount: result.insights?.length || 0,
-      assistantTokens: result.assistant_tokens || 0,
-      hasError: !!result.error
-    });
+  });
+  
+  if (!aiResult.success) {
+    console.error('❌ AI request failed:', aiResult.error);
     
-    if (result.error) {
-      console.error('❌ Edge Function: Result contains error:', result.error);
-    }
-    
-    // Ensure we always have at least one insight
-    const insights = result.insights || [];
-    if (insights.length === 0) {
-      console.warn('⚠️ Edge Function returned empty insights, adding fallback...');
-      const userProfile = data?.userProfile || {};
-      // Use first_name only for display
-      const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
-      insights.push({
-        id: 'fallback-empty',
-        type: 'encouragement',
-        title: 'מעקב חשוב',
-        content: `היי ${userName}, המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
-        priority: 'low',
-        category: 'general',
-        actionable: true,
-        actionableSteps: {
-          reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
-          whoToContact: [],
-          questionsToAsk: [],
-          lifestyleChanges: []
-        },
-        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
-      });
-    }
-    
-    return {
-      insights,
-      assistant_tokens: result.assistant_tokens || 0,
-      deduct_tokens: result.deduct_tokens || 0
-    };
-  } catch (error: any) {
-    console.error('❌ Edge Function: Exception calling edge function:', error);
-    if (error instanceof Error) {
-      console.error('❌ Edge Function: Error message:', error.message);
-      console.error('❌ Edge Function: Error stack:', error.stack);
-    }
-    
-    // Fallback to direct OpenAI call if Edge Function fails
-    console.warn('⚠️ Edge Function exception, trying direct OpenAI call...');
-    return await generateInsightsWithOpenAI(analysisType, data, systemPrompt, userPrompt);
-  }
-}
-
-async function generateInsightsWithOpenAI(
-  analysisType: string,
-  data: AnalysisRequest['data'],
-  systemPrompt: string,
-  userPrompt: string
-): Promise<any> {
-  try {
-    const openaiApiKey = process.env.OPENAI_API_KEY;
+    // Return fallback insights if AI failed
     const userProfile = data?.userProfile || {};
-    // Use first_name only for display
     const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
     
-    if (!openaiApiKey || openaiApiKey === 'dummy-key') {
-      console.error('❌ OpenAI: API key not configured');
-      // Return at least one fallback insight
-      return {
-        insights: [{
-          id: 'fallback-no-data',
-          type: 'encouragement',
-          title: 'מעקב חשוב',
-          content: `היי ${userName}, אני רואה שאת מתחילה את המסע שלך. המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
-          priority: 'low',
-          category: 'general',
-          actionable: true,
-          actionableSteps: {
-            reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור', 'תיעוד תסמינים'],
-            whoToContact: [],
-            questionsToAsk: [],
-            lifestyleChanges: []
-          },
-          alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות. כל נתון שאת מזינה עוזר לי להבין טוב יותר את המסע שלך.`
-        }],
-        assistant_tokens: 0,
-        deduct_tokens: 0
-      };
-    }
-
-    console.log('🤖 OpenAI: Calling OpenAI API directly...');
-    const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: userPrompt }
-        ],
-        response_format: { type: 'json_object' },
-        max_tokens: 3000,
-        temperature: 0.7
-      }),
-    });
-
-    if (!completion.ok) {
-      const errorText = await completion.text();
-      console.error('❌ OpenAI: API error:', errorText);
-      throw new Error(`OpenAI API error: ${completion.status}`);
-    }
-
-    const result = await completion.json();
-    const content = result.choices[0]?.message?.content || '{}';
-    const parsed = JSON.parse(content);
-    
-    // Ensure we always have at least one insight
-    const insights = parsed.insights || [];
-    if (insights.length === 0) {
-      insights.push({
-        id: 'fallback-general',
-        type: 'encouragement',
-        title: 'מעקב חשוב',
-        content: `היי ${userName}, המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
-        priority: 'low',
-        category: 'general',
-        actionable: true,
-        actionableSteps: {
-          reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
-          whoToContact: [],
-          questionsToAsk: [],
-          lifestyleChanges: []
-        },
-        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
-      });
-    }
-
-    const assistantTokens = result.usage?.completion_tokens || 0;
-    
-    console.log('✅ OpenAI: Success! Generated insights:', {
-      insightsCount: insights.length,
-      assistantTokens
-    });
-
-    return {
-      insights,
-      assistant_tokens: assistantTokens,
-      deduct_tokens: assistantTokens * 2
-    };
-  } catch (error: any) {
-    console.error('❌ OpenAI: Exception calling OpenAI:', error);
-    // Return at least one fallback insight
     return {
       insights: [{
         id: 'fallback-error',
@@ -401,13 +221,54 @@ async function generateInsightsWithOpenAI(
           questionsToAsk: [],
           lifestyleChanges: []
         },
-        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
+        alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך!`
       }],
-      assistant_tokens: 0,
-      deduct_tokens: 0
+      tokensDeducted: 0,
+      tokensRemaining: aiResult.tokensRemaining,
+      transparencyMessage: aiResult.transparencyMessage,
+      warningMessage: aiResult.warningMessage,
     };
   }
+  
+  // Parse insights from response
+  const insights = aiResult.data?.insights || [];
+  
+  // Ensure we always have at least one insight
+  if (insights.length === 0) {
+    console.warn('⚠️ AI returned empty insights, adding fallback...');
+    const userProfile = data?.userProfile || {};
+    const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
+    
+    insights.push({
+      id: 'fallback-empty',
+      type: 'encouragement',
+      title: 'מעקב חשוב',
+      content: `היי ${userName}, המשכי להזין נתונים יומיים ומעקב מחזור, ואני אנתח אותם ואתן לך תובנות אישיות ומעשיות.`,
+      priority: 'low',
+      category: 'general',
+      actionable: true,
+      actionableSteps: {
+        reliefMethods: ['הזנת נתונים יומיים', 'מעקב אחר מחזור'],
+        whoToContact: [],
+        questionsToAsk: [],
+        lifestyleChanges: []
+      },
+      alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך! המשכי להזין נתונים ואני אנתח אותם.`
+    });
+  }
+  
+  console.log(`✅ Generated ${insights.length} insights using ${aiResult.tokensDeducted} tokens`);
+  
+  return {
+    insights,
+    tokensDeducted: aiResult.tokensDeducted,
+    tokensRemaining: aiResult.tokensRemaining,
+    transparencyMessage: aiResult.transparencyMessage,
+    warningMessage: aiResult.warningMessage,
+  };
 }
+
+// Removed generateInsightsWithOpenAI - now using unified executeAIRequest service
 
 function buildComprehensiveAnalysisPrompt(data: AnalysisRequest['data']): string {
   const dailyEntries = data.dailyEntries || [];

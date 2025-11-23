@@ -29,3 +29,6 @@ BREVO_FROM_NAME=מנופאוזית וטוב לה
 BREVO_LIST_ID_WAITLIST=123
 
 
+
+
+

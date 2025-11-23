@@ -52,3 +52,6 @@ COMMENT ON TABLE public.early_adopters IS 'Early adopter waitlist signups for bo
 
 
 
+
+
+

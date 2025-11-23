@@ -75,3 +75,6 @@ CREATE TRIGGER update_personalized_insights_updated_at
 
 
 
+
+
+

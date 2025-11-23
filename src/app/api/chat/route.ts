@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
+import { executeAIRequest } from '@/lib/ai-usage-service';
+import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
 import type { ChatMessage } from '@/types';
 
 export async function DELETE(request: NextRequest) {
@@ -46,13 +48,14 @@ export async function DELETE(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, conversationId, userId } = await request.json();
+    const { message, conversationId, userId, agentType } = await request.json();
     
     console.log('📨 Chat API called:', { 
       hasMessage: !!message, 
       messageLength: message?.length,
       hasConversationId: !!conversationId,
-      hasUserId: !!userId 
+      hasUserId: !!userId,
+      agentType: agentType || 'aliza'
     });
 
     if (!message) {
@@ -63,31 +66,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // Check user tokens - use current_tokens as primary source, fallback to tokens_remaining
+    // Check user profile and tokens
     const { data: profile } = await supabaseAdmin
       .from('user_profile')
-      .select('current_tokens, tokens_remaining')
+      .select('current_tokens, tokens_remaining, first_name, name, full_name')
       .eq('id', userId)
       .single();
 
-    // Use current_tokens as primary, fallback to tokens_remaining for backward compatibility
     const availableTokens = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
     
     if (!profile || availableTokens <= 0) {
-      return NextResponse.json({ error: 'No tokens available' }, { status: 402 });
-    }
-    
-    // Ensure both fields are in sync if they differ (handle null values)
-    const currentTokensValue = profile.current_tokens ?? null;
-    const tokensRemainingValue = profile.tokens_remaining ?? null;
-    if (currentTokensValue !== tokensRemainingValue) {
-      await supabaseAdmin
-        .from('user_profile')
-        .update({ 
-          current_tokens: availableTokens,
-          tokens_remaining: availableTokens
-        })
-        .eq('id', userId);
+      return NextResponse.json({ 
+        error: 'No tokens available',
+        transparencyMessage: 'יתרת הטוקנים שלך אזלה. אנא מלאי מחדש כדי להמשיך לשוחח עם עליזה.',
+      }, { status: 402 });
     }
 
     // Get conversation history if conversationId exists
@@ -108,8 +100,27 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Prepare messages for OpenAI
-    const systemPrompt = `את עליזה, יועצת אישית מקצועית לגיל המעבר. את מומחית בתמיכה בנשים במהלך תקופת גיל המעבר.
+    // Determine action type and system prompt based on agent
+    const isExpertAgent = agentType === 'expert';
+    const actionType = isExpertAgent ? TOKEN_ACTION_TYPES.CHAT_EXPERT : TOKEN_ACTION_TYPES.CHAT_ALIZA;
+    
+    const systemPrompt = isExpertAgent
+      ? `את סוכנת מומחית לגיל המעבר. את מתמחה בניתוח מעמיק, המלצות מקצועיות, והשוואה לנורמות רפואיות.
+
+תפקידך:
+- לספק ניתוח מעמיק ומקצועי
+- להשוות תסמינים לנורמות רפואיות מוכרות
+- להמליץ על גורמים מקצועיים לפנות אליהם
+- לספק דוחות מפורטים ותובנות מבוססות נתונים
+- להיות מדויקת ואובייקטיבית
+
+כללי התנהגות:
+- השתמשי בשפה מקצועית אך נגישה
+- תמכי את המלצותיך בנתונים ומחקרים
+- היי ברורה לגבי מתי צריך להיוועץ עם רופא/ה
+- השתמשי בשפה עברית בלבד
+- תגיבי בהודעות ממוקדות (עד 300 מילים)`
+      : `את עליזה, יועצת אישית מקצועית לגיל המעבר. את מומחית בתמיכה בנשים במהלך תקופת גיל המעבר.
 
 תפקידך:
 - לספק תמיכה רגשית ומקצועית
@@ -127,15 +138,6 @@ export async function POST(request: NextRequest) {
 
 תגיבי בהודעות קצרות וממוקדות (עד 200 מילים).`;
 
-    // Try Edge Function first, fallback to direct OpenAI call if needed
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    
-    let aiResponse: string;
-    let assistantTokens: number = 0;
-    let deductTokens: number = 0;
-
     // Prepare messages for OpenAI
     const messages = [
       { role: 'system' as const, content: systemPrompt },
@@ -143,256 +145,44 @@ export async function POST(request: NextRequest) {
       { role: 'user' as const, content: message }
     ];
 
-    // Try Edge Function first
-    if (supabaseUrl && supabaseAnonKey) {
-      try {
-        const response = await fetch(`${supabaseUrl}/functions/v1/aliza-chat`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${supabaseAnonKey}`,
-          },
-          body: JSON.stringify({
-            message,
-            conversationHistory,
-            systemPrompt
-          }),
-        });
-
-        if (response.ok) {
-          const edgeFunctionResponse = await response.json();
-          console.log('✅ Edge Function response:', { 
-            hasResponse: !!edgeFunctionResponse.response,
-            responseLength: edgeFunctionResponse.response?.length,
-            hasError: !!edgeFunctionResponse.error,
-            assistantTokens: edgeFunctionResponse.assistant_tokens 
-          });
-          
-          // Check if Edge Function returned an error
-          if (edgeFunctionResponse.error && !edgeFunctionResponse.response) {
-            console.error('❌ Edge Function returned error:', edgeFunctionResponse.error);
-            throw new Error(`Edge Function error: ${edgeFunctionResponse.error}`);
-          }
-          
-          aiResponse = edgeFunctionResponse.response || 'מצטערת, לא הצלחתי לענות כרגע.';
-          assistantTokens = edgeFunctionResponse.assistant_tokens || 0;
-          deductTokens = edgeFunctionResponse.deduct_tokens || assistantTokens * 2;
-        } else {
-          // Edge Function failed, try direct OpenAI call
-          const errorText = await response.text();
-          console.error('❌ Edge Function failed:', { 
-            status: response.status, 
-            statusText: response.statusText,
-            error: errorText 
-          });
-          throw new Error(`Edge Function returned ${response.status}: ${errorText}`);
-        }
-      } catch (edgeError: unknown) {
-        console.warn('⚠️ Edge Function not available, trying direct OpenAI call:', edgeError);
-        if (edgeError instanceof Error) {
-          console.error('Edge Function error details:', edgeError.message, edgeError.stack);
-        }
-        
-        // Fallback to direct OpenAI call if Edge Function is not available
-        if (openaiApiKey && openaiApiKey !== 'dummy-key') {
-          console.log('🔄 Attempting direct OpenAI call...');
-          try {
-            const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${openaiApiKey}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                model: 'gpt-4o', // Try gpt-4o first (cheaper and more available)
-                messages: messages,
-                max_tokens: 1000,
-                temperature: 0.7,
-              }),
-            });
-
-            if (!completion.ok) {
-              const errorText = await completion.text();
-              console.error('OpenAI API error:', errorText);
-              
-              // Try to parse error to check for specific error types
-              let errorMessage = `OpenAI API error: ${errorText}`;
-              let errorCode = null;
-              try {
-                const errorData = JSON.parse(errorText);
-                errorCode = errorData.error?.code;
-                if (errorCode === 'insufficient_quota') {
-                  errorMessage = 'insufficient_quota';
-                } else if (errorCode) {
-                  errorMessage = `OpenAI API error: ${errorCode} - ${errorData.error?.message || errorText}`;
-                }
-              } catch (e) {
-                // If parsing fails, use original error text
-              }
-              
-              throw new Error(errorMessage);
-            }
-
-            const data = await completion.json();
-            console.log('✅ Direct OpenAI call succeeded:', { 
-              hasContent: !!data.choices[0]?.message?.content,
-              contentLength: data.choices[0]?.message?.content?.length,
-              tokens: data.usage?.completion_tokens 
-            });
-            aiResponse = data.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
-            assistantTokens = data.usage?.completion_tokens || 0;
-            deductTokens = assistantTokens * 2;
-          } catch (openaiError: unknown) {
-            console.error('❌ Direct OpenAI call with gpt-4o failed, trying gpt-3.5-turbo as fallback:', openaiError);
-            
-            let fallbackSucceeded = false;
-            
-            // Try fallback to gpt-3.5-turbo if gpt-4o fails (might be model access issue)
-            if (openaiError instanceof Error && 
-                (openaiError.message.includes('insufficient_quota') || 
-                 openaiError.message.includes('model_not_found') ||
-                 openaiError.message.includes('model_access'))) {
-              try {
-                console.log('🔄 Trying fallback to gpt-3.5-turbo...');
-                const fallbackCompletion = await fetch('https://api.openai.com/v1/chat/completions', {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${openaiApiKey}`,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    model: 'gpt-3.5-turbo',
-                    messages: messages,
-                    max_tokens: 1000,
-                    temperature: 0.7,
-                  }),
-                });
-
-                if (fallbackCompletion.ok) {
-                  const fallbackData = await fallbackCompletion.json();
-                  console.log('✅ Fallback to gpt-3.5-turbo succeeded');
-                  aiResponse = fallbackData.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
-                  assistantTokens = fallbackData.usage?.completion_tokens || 0;
-                  deductTokens = assistantTokens * 2;
-                  fallbackSucceeded = true;
-                } else {
-                  throw new Error('Fallback also failed');
-                }
-              } catch (fallbackError) {
-                console.error('❌ Fallback to gpt-3.5-turbo also failed:', fallbackError);
-                // Continue to error handling below
-              }
-            }
-            
-            // If we still don't have a response, handle the error
-            if (!fallbackSucceeded) {
-              if (openaiError instanceof Error) {
-                console.error('OpenAI error details:', openaiError.message, openaiError.stack);
-                
-                // Check for specific error types
-                if (openaiError.message.includes('insufficient_quota')) {
-                  aiResponse = 'מצטערת, יש בעיה עם המכסה של OpenAI API. ייתכן שהמודל gpt-4o לא זמין בתוכנית שלך. אנא בדקי את ההגדרות בחשבון OpenAI שלך בכתובת: https://platform.openai.com/account/billing';
-                } else if (openaiError.message.includes('rate_limit_exceeded')) {
-                  aiResponse = 'מצטערת, חרגת ממגבלת הבקשות לדקה. אנא נסי שוב בעוד כמה רגעים.';
-                } else if (openaiError.message.includes('invalid_api_key')) {
-                  aiResponse = 'מצטערת, מפתח ה-API של OpenAI לא תקין. אנא בדקי את ההגדרות.';
-                } else if (openaiError.message.includes('model_not_found') || openaiError.message.includes('model_access')) {
-                  aiResponse = 'מצטערת, המודל gpt-4o לא זמין בתוכנית שלך. אנא בדקי את ההגדרות בחשבון OpenAI או נסי שוב מאוחר יותר.';
-                } else {
-                  // Final fallback - show the actual error message
-                  const errorMsg = openaiError.message.replace('OpenAI API error: ', '');
-                  aiResponse = `מצטערת, יש בעיה טכנית: ${errorMsg}. אנא נסי שוב מאוחר יותר או בדקי את ההגדרות.`;
-                }
-              } else {
-                // Final fallback
-                aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
-              }
-              assistantTokens = 0;
-              deductTokens = 0;
-            }
-          }
-        } else {
-          // No OpenAI key available, use fallback
-          console.error('❌ Edge Function not available and no OpenAI API key configured');
-          console.error('OpenAI API key check:', { 
-            hasKey: !!openaiApiKey, 
-            isDummy: openaiApiKey === 'dummy-key',
-            keyLength: openaiApiKey?.length 
-          });
-          aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
-          assistantTokens = 0;
-          deductTokens = 0;
-        }
+    // Execute AI request using the unified service
+    const aiResult = await executeAIRequest({
+      userId,
+      actionType,
+      messages,
+      model: 'gpt-4o',
+      maxTokens: isExpertAgent ? 1500 : 1000,
+      temperature: 0.7,
+      description: `Chat with ${isExpertAgent ? 'Expert Agent' : 'Aliza'}`,
+      metadata: {
+        conversationId: conversationId || 'new',
+        agentType: agentType || 'aliza',
+        messageLength: message.length,
       }
-    } else {
-      // No Supabase config, try direct OpenAI
-      if (openaiApiKey && openaiApiKey !== 'dummy-key') {
-        try {
-          const completion = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-              'Authorization': `Bearer ${openaiApiKey}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'gpt-4',
-              messages: messages,
-              max_tokens: 1000,
-              temperature: 0.7,
-            }),
-          });
+    });
 
-          if (!completion.ok) {
-            const errorText = await completion.text();
-            console.error('OpenAI API error:', errorText);
-            
-            // Try to parse error to check for specific error types
-            let errorMessage = `OpenAI API error: ${errorText}`;
-            let errorCode = null;
-            try {
-              const errorData = JSON.parse(errorText);
-              errorCode = errorData.error?.code;
-              if (errorCode === 'insufficient_quota') {
-                errorMessage = 'insufficient_quota';
-              } else if (errorCode) {
-                errorMessage = `OpenAI API error: ${errorCode} - ${errorData.error?.message || errorText}`;
-              }
-            } catch (e) {
-              // If parsing fails, use original error text
-            }
-            
-            throw new Error(errorMessage);
-          }
-
-          const data = await completion.json();
-          aiResponse = data.choices[0]?.message?.content || 'מצטערת, לא הצלחתי לענות כרגע.';
-          assistantTokens = data.usage?.completion_tokens || 0;
-          deductTokens = assistantTokens * 2;
-        } catch (error) {
-          console.error('OpenAI direct call failed:', error);
-          if (error instanceof Error) {
-            if (error.message.includes('insufficient_quota')) {
-              aiResponse = 'מצטערת, נגמרה המכסה של OpenAI API. הקרדיטים שלך נמוכים מאוד ($0.08 מתוך $5.00). אנא הוסיפי קרדיטים בחשבון OpenAI שלך בכתובת: https://platform.openai.com/account/billing';
-            } else if (error.message.includes('rate_limit_exceeded')) {
-              aiResponse = 'מצטערת, חרגת ממגבלת הבקשות לדקה. אנא נסי שוב בעוד כמה רגעים.';
-            } else if (error.message.includes('invalid_api_key')) {
-              aiResponse = 'מצטערת, מפתח ה-API של OpenAI לא תקין. אנא בדקי את ההגדרות.';
-            } else {
-              const errorMsg = error.message.replace('OpenAI API error: ', '');
-              aiResponse = `מצטערת, יש בעיה טכנית: ${errorMsg}. אנא נסי שוב מאוחר יותר או בדקי את ההגדרות.`;
-            }
-          } else {
-            aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
-          }
-          assistantTokens = 0;
-          deductTokens = 0;
-        }
-      } else {
-        aiResponse = 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
-        assistantTokens = 0;
-        deductTokens = 0;
-      }
+    // If AI request failed, return error
+    if (!aiResult.success) {
+      console.error('❌ AI request failed:', aiResult.error);
+      
+      // Return user-friendly error message
+      const fallbackResponse = aiResult.error === 'Insufficient tokens'
+        ? 'מצטערת, אין מספיק טוקנים לביצוע פעולה זו. אנא מלאי מחדש כדי להמשיך.'
+        : 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
+      
+      return NextResponse.json({
+        response: fallbackResponse,
+        conversationId: null,
+        tokensRemaining: aiResult.tokensRemaining,
+        transparencyMessage: aiResult.transparencyMessage,
+        warningMessage: aiResult.warningMessage,
+        error: aiResult.error
+      }, { 
+        status: aiResult.error === 'Insufficient tokens' ? 402 : 500 
+      });
     }
+
+    const aiResponse = aiResult.response || 'מצטערת, לא הצלחתי לענות כרגע.';
 
     // Save messages to database
     let currentConversationId = conversationId;
@@ -449,24 +239,16 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       });
 
-    // Deduct tokens (deduct_tokens is already calculated as assistant_tokens * 2)
-    // Use the synced token value
-    const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-    const newTokenBalance = Math.max(0, currentTokens - deductTokens);
-    await supabaseAdmin
-      .from('user_profile')
-      .update({ 
-        current_tokens: newTokenBalance,
-        tokens_remaining: newTokenBalance  // Keep both fields in sync
-      })
-      .eq('id', userId);
+    console.log(`✅ Chat completed: ${aiResult.tokensDeducted} tokens deducted, ${aiResult.tokensRemaining} remaining`);
 
     return NextResponse.json({
       response: aiResponse,
       conversationId: currentConversationId,
-      tokensRemaining: newTokenBalance,
-      assistant_tokens: assistantTokens,
-      deduct_tokens: deductTokens
+      tokensRemaining: aiResult.tokensRemaining,
+      tokensDeducted: aiResult.tokensDeducted,
+      openaiTokens: aiResult.usage?.totalTokens || 0,
+      transparencyMessage: aiResult.transparencyMessage,
+      warningMessage: aiResult.warningMessage,
     });
 
   } catch (error) {
@@ -482,7 +264,8 @@ export async function POST(request: NextRequest) {
       response: fallbackResponse,
       conversationId: null,
       tokensRemaining: 0,
+      transparencyMessage: 'אירעה שגיאה טכנית.',
       error: error instanceof Error ? error.message : 'Technical issue - using fallback response'
-    });
+    }, { status: 500 });
   }
 }
