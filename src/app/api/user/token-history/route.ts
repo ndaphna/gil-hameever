@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getTokenHistory } from '@/lib/ai-usage-service';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
+export const runtime = 'edge';
+
 /**
  * GET /api/user/token-history
  * 
@@ -68,6 +70,7 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
 
 
 

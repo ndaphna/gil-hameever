@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { executeAIRequest } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
 
+export const runtime = 'edge';
+
 interface AnalysisRequest {
   userId: string;
   analysisType: 'comprehensive' | 'sleep' | 'symptoms' | 'mood' | 'cycle' | 'hormones' | 'trends';

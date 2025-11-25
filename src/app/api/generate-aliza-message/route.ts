@@ -4,6 +4,8 @@ import { executeAIRequest } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
 import type { DailyEntry, CycleEntry } from '@/types/journal';
 
+export const runtime = 'edge';
+
 export async function POST(request: NextRequest) {
   let userId: string | undefined;
   let dailyEntries: DailyEntry[] = [];

@@ -4,6 +4,8 @@ import { executeAIRequest } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
 import type { ChatMessage } from '@/types';
 
+export const runtime = 'edge';
+
 export async function DELETE(request: NextRequest) {
   try {
     const { conversationId, userId } = await request.json();
