@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 
+export const runtime = 'edge';
+
 /**
  * API endpoint for waitlist signups
  * Saves user data to early_adopters table and adds contact to Brevo

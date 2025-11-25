@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import type { PersonalizedInsight } from '@/types/insights';
 
+export const runtime = 'edge';
+
 /**
  * Daily Insights Cron Job
  * Runs once per day in the early morning to generate insights for all users
