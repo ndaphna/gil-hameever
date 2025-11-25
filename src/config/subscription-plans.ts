@@ -401,3 +401,5 @@ export function getUpgradeSuggestion(
   return `את משתמשת הרבה במערכת! 🎉 שדרוג לתוכנית ${nextPlan.nameHebrew} ייתן לך ${nextPlan.monthlyTokens.toLocaleString()} טוקנים בחודש.`;
 }
 
+
+

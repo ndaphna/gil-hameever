@@ -352,3 +352,5 @@ CREATE INDEX IF NOT EXISTS idx_user_profile_subscription ON public.user_profile(
 -- WHERE user_id = '<user_id>'
 -- ORDER BY total_tokens_used DESC;
 
+
+
