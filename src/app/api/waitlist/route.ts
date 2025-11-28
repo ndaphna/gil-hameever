@@ -148,9 +148,12 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
   try {
     // Step 1: Create or update contact in Brevo
     console.log('📧 Step 1/2: Creating/updating contact in Brevo...');
-    const listIds = process.env.BREVO_LIST_ID_WAITLIST 
-      ? [parseInt(process.env.BREVO_LIST_ID_WAITLIST)] 
-      : [];
+    // Use BREVO_LIST_ID_WAITLIST if set, otherwise default to list 6 for waitlist
+    const waitlistListId = process.env.BREVO_LIST_ID_WAITLIST 
+      ? parseInt(process.env.BREVO_LIST_ID_WAITLIST) 
+      : 6; // Default to list 6 for waitlist
+    
+    const listIds = [waitlistListId];
 
     const contactPayload = {
       email: email.toLowerCase().trim(),
@@ -158,13 +161,14 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
         FIRSTNAME: name.trim(),
       },
       updateEnabled: true,
-      ...(listIds.length > 0 && { listIds }),
+      listIds,
     };
 
     console.log('📤 Brevo contact payload:', {
       email: email,
       attributes: contactPayload.attributes,
-      listIds: listIds.length > 0 ? listIds : 'none (no list ID configured)',
+      listIds: listIds,
+      listIdSource: process.env.BREVO_LIST_ID_WAITLIST ? 'BREVO_LIST_ID_WAITLIST env var' : 'default (6)',
       updateEnabled: true,
     });
 
@@ -192,9 +196,32 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
       console.error('   Status:', contactResponse.status);
       console.error('   Response:', JSON.stringify(errorJson, null, 2));
       
-      // If contact already exists (code: duplicate_parameter), that's actually OK
+      // If contact already exists (code: duplicate_parameter), add to list separately
       if (errorJson.code === 'duplicate_parameter') {
-        console.log('ℹ️ Contact already exists in Brevo - will update instead');
+        console.log('ℹ️ Contact already exists in Brevo - adding to list separately');
+        
+        // Add existing contact to the list using the list contacts endpoint
+        const addToListResponse = await fetch(
+          `https://api.brevo.com/v3/contacts/lists/${waitlistListId}/contacts/add`,
+          {
+            method: 'POST',
+            headers: {
+              'api-key': BREVO_API_KEY,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              emails: [email.toLowerCase().trim()],
+            }),
+          }
+        );
+
+        if (!addToListResponse.ok) {
+          const addToListError = await addToListResponse.text();
+          console.error('⚠️ Failed to add existing contact to list:', addToListError);
+          // Continue anyway - contact exists, just not in the list
+        } else {
+          console.log('✅ Existing contact added to list successfully');
+        }
       } else {
         throw new Error(`Brevo contact error (${contactResponse.status}): ${errorText}`);
       }
