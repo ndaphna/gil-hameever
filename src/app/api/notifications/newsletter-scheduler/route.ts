@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
 import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
 
+export const runtime = 'edge';
+
 /**
  * Newsletter Scheduler - בודק ומשלח ניוזלטרים לפי העדפות המשתמשת
  * 
@@ -140,9 +142,9 @@ async function processNewsletterScheduler() {
         .eq('channel', 'email')
         .order('sent_at', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
-      if (lastNotification) {
+      if (lastNotification?.sent_at) {
         const lastSent = new Date(lastNotification.sent_at);
         const hoursSinceLastSent = (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60);
         
@@ -238,27 +240,62 @@ async function sendNewsletterToUser(userId: string): Promise<{ sent: boolean; re
     const notificationService = new SmartNotificationService();
     const decision = await notificationService.shouldSendNotification(userId);
 
-    if (!decision.shouldSend) {
-      return { sent: false, reason: decision.reason || 'Should not send' };
-    }
+    // אם אין insight, ניצור insight כללי לניוזלטר היומי
+    let insight = decision.insight;
+    let userData = decision.userData;
 
-    if (!decision.insight) {
-      return { sent: false, reason: 'No insight generated' };
+    if (!insight || !decision.shouldSend) {
+      // קבל נתונים למקרה שאין insight
+      if (!userData) {
+        const { data: dailyEntries } = await supabaseAdmin
+          .from('daily_entries')
+          .select('*')
+          .eq('user_id', userId)
+          .order('date', { ascending: false })
+          .limit(30);
+        
+        const { data: cycleEntries } = await supabaseAdmin
+          .from('cycle_entries')
+          .select('*')
+          .eq('user_id', userId)
+          .order('date', { ascending: false })
+          .limit(10);
+
+        userData = {
+          dailyEntries: dailyEntries || [],
+          cycleEntries: cycleEntries || [],
+          lastEntryDate: dailyEntries?.[0]?.date || null,
+          daysSinceLastEntry: dailyEntries?.[0]?.date 
+            ? Math.floor((Date.now() - new Date(dailyEntries[0].date).getTime()) / (1000 * 60 * 60 * 24))
+            : 999
+        };
+      }
+
+      // יצירת insight כללי לניוזלטר היומי
+      insight = {
+        type: 'encouragement',
+        priority: 'medium',
+        title: 'הניוזלטר היומי שלך 🌸',
+        message: userData.dailyEntries.length > 0
+          ? `שלום ${profile.name || 'יקרה'}! הנה הניוזלטר היומי שלך עם תובנות, טיפים ומשאבים שיעזרו לך במסע שלך. אני כאן בשבילך!`
+          : `שלום ${profile.name || 'יקרה'}! בואי נתחיל את המסע שלך יחד. הניוזלטר הזה יכלול טיפים, משאבים ותובנות שיעזרו לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך.`,
+        actionUrl: '/journal?tab=daily'
+      };
     }
 
     // חישוב סטטיסטיקות מהנתונים
     let statistics = undefined;
-    if (decision.userData) {
+    if (userData) {
       statistics = calculateUserStatistics(
-        decision.userData.dailyEntries,
-        decision.userData.cycleEntries
+        userData.dailyEntries,
+        userData.cycleEntries
       );
     }
 
     // יצירת תבנית המייל
     const emailTemplate = createInsightEmail(
       profile.name || profile.email?.split('@')[0] || 'יקרה',
-      decision.insight,
+      insight,
       statistics
     );
 
@@ -272,11 +309,11 @@ async function sendNewsletterToUser(userId: string): Promise<{ sent: boolean; re
 
     if (emailSent) {
       // שמירה בהיסטוריה
-      await notificationService.saveNotificationHistory(userId, decision.insight, 'sent');
+      await notificationService.saveNotificationHistory(userId, insight, 'sent');
       
       return { sent: true };
     } else {
-      await notificationService.saveNotificationHistory(userId, decision.insight, 'failed');
+      await notificationService.saveNotificationHistory(userId, insight, 'failed');
       return { sent: false, reason: 'Email sending failed' };
     }
   } catch (error: any) {
