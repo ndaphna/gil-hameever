@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import MenopauseJournal from '@/components/journal/MenopauseJournal';
 import { supabase } from '@/lib/supabase';
@@ -11,32 +11,38 @@ export default function JournalPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    // Reset loading state when pathname or searchParams change (user navigates to this page)
+    setLoading(true);
+    setUserId(null);
+    
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        console.log('Journal: User check result:', user);
+        
+        // Redirect to login if no authenticated user
+        if (!user) {
+          console.log('Journal: No authenticated user found, redirecting to login');
+          router.push('/login');
+          return;
+        }
 
-  const checkUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      console.log('Journal: User check result:', user);
-      
-      // Redirect to login if no authenticated user
-      if (!user) {
-        console.log('Journal: No authenticated user found, redirecting to login');
+        setUserId(user.id);
+      } catch (error) {
+        console.error('Error checking user:', error);
         router.push('/login');
-        return;
+      } finally {
+        setLoading(false);
       }
-
-      setUserId(user.id);
-    } catch (error) {
-      console.error('Error checking user:', error);
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    
+    checkUser();
+  }, [pathname, searchParams, router]);
 
   if (loading) {
     return (

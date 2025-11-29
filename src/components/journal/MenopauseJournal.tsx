@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { CycleEntry, DailyEntry } from '@/types/journal';
 import DailyTracking from './DailyTracking';
 import CycleTracking from './CycleTracking';
@@ -14,20 +15,18 @@ interface MenopauseJournalProps {
 }
 
 export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
+  const searchParams = useSearchParams();
   const [activeTab, setActiveTab] = useState<'daily' | 'cycle' | 'insights'>('daily');
   const [cycleEntries, setCycleEntries] = useState<CycleEntry[]>([]);
   const [dailyEntries, setDailyEntries] = useState<DailyEntry[]>([]);
 
-  // Read tab parameter from URL on mount
+  // Read tab parameter from URL and update when it changes
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const tabParam = params.get('tab');
-      if (tabParam === 'daily' || tabParam === 'cycle' || tabParam === 'insights') {
-        setActiveTab(tabParam);
-      }
+    const tabParam = searchParams.get('tab');
+    if (tabParam === 'daily' || tabParam === 'cycle' || tabParam === 'insights') {
+      setActiveTab(tabParam);
     }
-  }, []);
+  }, [searchParams]);
 
   // Load data when component mounts or userId changes
   useEffect(() => {
