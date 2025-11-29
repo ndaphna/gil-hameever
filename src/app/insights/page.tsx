@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../components/DashboardLayout';
-import AlizaInsights from '@/components/insights/AlizaInsights';
-import './Insights.css';
+import ModernInsights from '@/components/insights/ModernInsights';
+import './insights.css';
 
 export default function InsightsPage() {
   const [userId, setUserId] = useState<string | null>(null);
@@ -14,7 +14,7 @@ export default function InsightsPage() {
   const pathname = usePathname();
 
   useEffect(() => {
-    // Reset loading state when pathname changes (user navigates to this page)
+    // Reset loading state when pathname changes
     setLoading(true);
     setUserId(null);
     
@@ -72,9 +72,14 @@ export default function InsightsPage() {
     return (
       <DashboardLayout>
         <div className="insights-page">
-          <div className="loading-container">
-            <div className="loading-spinner"></div>
-            <p>טוען תובנות...</p>
+          <div className="modern-loading">
+            <div className="loading-spinner-modern">
+              <div className="spinner-ring"></div>
+              <div className="spinner-ring"></div>
+              <div className="spinner-ring"></div>
+            </div>
+            <h3>מנתחת את הנתונים שלך...</h3>
+            <p>רגע קט ואני אציג לך תובנות מרתקות</p>
           </div>
         </div>
       </DashboardLayout>
@@ -88,7 +93,7 @@ export default function InsightsPage() {
   return (
     <DashboardLayout>
       <div className="insights-page">
-        <AlizaInsights userId={userId} />
+        <ModernInsights userId={userId} />
       </div>
     </DashboardLayout>
   );
