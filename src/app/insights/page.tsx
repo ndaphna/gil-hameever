@@ -18,9 +18,23 @@ export default function InsightsPage() {
     setLoading(true);
     setUserId(null);
     
+    let isMounted = true;
+    let timeoutId: NodeJS.Timeout;
+    
     const checkUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        // Add timeout to prevent infinite loading
+        const userCheckPromise = supabase.auth.getUser();
+        const timeoutPromise = new Promise((_, reject) => {
+          timeoutId = setTimeout(() => {
+            reject(new Error('User check timeout'));
+          }, 10000); // 10 seconds timeout
+        });
+        
+        const result = await Promise.race([userCheckPromise, timeoutPromise]) as { data: { user: any } };
+        const { data: { user } } = result;
+        
+        if (!isMounted) return;
         
         console.log('Insights: User check result:', user);
         
@@ -34,13 +48,24 @@ export default function InsightsPage() {
         setUserId(user.id);
       } catch (error) {
         console.error('Error checking user:', error);
-        router.push('/login');
+        if (isMounted) {
+          router.push('/login');
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
     
     checkUser();
+    
+    return () => {
+      isMounted = false;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    };
   }, [pathname, router]);
 
   if (loading) {
