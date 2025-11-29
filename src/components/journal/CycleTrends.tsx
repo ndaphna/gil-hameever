@@ -145,17 +145,24 @@ export default function CycleTrends({ entries }: CycleTrendsProps) {
           <>
             <div className="cycle-chart">
               <div className="chart-bars">
-                {cycleData.map((cycle, index) => (
-                  <div key={index} className="chart-bar-container">
-                    <div 
-                      className={`chart-bar ${cycle.isRegular ? 'regular' : 'irregular'} ${cycle.hasSkip ? 'skip' : ''}`}
-                      style={{ height: `${Math.min(cycle.cycleLength * 3, 150)}px` }}
-                    >
-                      <span className="cycle-days">{cycle.cycleLength} ימים</span>
+                {cycleData.map((cycle, index) => {
+                  // Calculate max cycle length for scaling
+                  const maxLength = Math.max(...cycleData.map(c => c.cycleLength), 35);
+                  // Scale height: min 40px, max 200px, proportional to max
+                  const barHeight = Math.max(40, Math.min(200, (cycle.cycleLength / maxLength) * 200));
+                  
+                  return (
+                    <div key={index} className="chart-bar-container">
+                      <div 
+                        className={`chart-bar ${cycle.isRegular ? 'regular' : 'irregular'} ${cycle.hasSkip ? 'skip' : ''}`}
+                        style={{ height: `${barHeight}px` }}
+                      >
+                        <span className="cycle-days">{cycle.cycleLength} ימים</span>
+                      </div>
+                      <div className="chart-label">{cycle.month}</div>
                     </div>
-                    <div className="chart-label">{cycle.month}</div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
               
               <div className="chart-legend">

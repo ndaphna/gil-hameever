@@ -346,7 +346,335 @@
 .insights-dashboard,
 .aliza-messages,
 .daily-progress,
-.cycle-trends,
+.cycle-trends {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xl);
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Trend chart section - קלף נפרד */
+.trend-chart-section {
+  background: var(--neutral-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 40px);
+  margin-bottom: 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--neutral-light);
+}
+
+.trend-chart-section h3 {
+  margin: 0 0 clamp(24px, 4vw, 32px) 0;
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 700;
+  color: var(--neutral-dark);
+  text-align: right;
+}
+
+.cycle-chart {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.02) 0%, rgba(157, 78, 221, 0.02) 100%);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 32px);
+  border: 2px solid rgba(255, 0, 128, 0.1);
+  margin-bottom: clamp(24px, 4vw, 32px);
+}
+
+.chart-bars {
+  display: flex;
+  gap: clamp(12px, 2vw, 20px);
+  align-items: flex-end;
+  justify-content: center;
+  min-height: 220px;
+  padding: 20px 0 40px 0;
+  position: relative;
+}
+
+.chart-bar-container {
+  flex: 1;
+  max-width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+}
+
+.chart-bar {
+  width: 100%;
+  min-width: 48px;
+  max-width: 64px;
+  border-radius: 8px 8px 0 0;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+}
+
+.chart-bar.regular { 
+  background: linear-gradient(180deg, #81D4FA 0%, #4FC3F7 100%);
+  border: 2px solid #29B6F6;
+}
+
+.chart-bar.irregular { 
+  background: linear-gradient(180deg, #F48FB1 0%, #F06292 100%);
+  border: 2px solid #EC407A;
+}
+
+.chart-bar.skip { 
+  outline: 3px dashed #E91E63;
+  outline-offset: 3px;
+}
+
+.chart-bar:hover { 
+  transform: translateY(-6px) scale(1.05);
+  filter: brightness(1.1);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  z-index: 10;
+}
+
+.cycle-days {
+  position: absolute;
+  top: -32px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  font-weight: 700;
+  color: var(--neutral-dark);
+  background: var(--neutral-white);
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  white-space: nowrap;
+  z-index: 5;
+}
+
+.chart-label { 
+  font-size: clamp(0.75rem, 1.5vw, 0.875rem);
+  color: var(--neutral-text);
+  font-weight: 500;
+  text-align: center;
+  line-height: 1.4;
+  margin-top: 4px;
+}
+
+.chart-legend { 
+  display: flex;
+  gap: clamp(16px, 3vw, 24px);
+  margin-top: clamp(20px, 3vw, 28px);
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-top: clamp(16px, 3vw, 24px);
+  border-top: 1px solid var(--neutral-light);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(0.8125rem, 1.5vw, 0.9375rem);
+  color: var(--neutral-dark);
+  font-weight: 500;
+}
+
+.legend-dot { 
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: inline-block;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.legend-dot.regular { background: #4FC3F7; }
+.legend-dot.irregular { background: #F06292; }
+
+/* תובנות עליזה - קלף נפרד */
+.trend-insight {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.05) 0%, rgba(157, 78, 221, 0.05) 100%);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 32px);
+  border: 2px solid rgba(255, 0, 128, 0.15);
+  display: flex;
+  gap: clamp(16px, 3vw, 24px);
+  margin-top: clamp(24px, 4vw, 32px);
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.1);
+}
+
+.trend-insight .insight-icon {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.trend-insight .insight-content {
+  flex: 1;
+  text-align: right;
+}
+
+.trend-insight .insight-content h4 {
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+  color: var(--neutral-dark);
+}
+
+.trend-insight .insight-content p {
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-size: clamp(1rem, 2vw, 1.0625rem);
+  line-height: 1.7;
+  color: var(--neutral-dark);
+}
+
+.trend-insight .average-info {
+  background: var(--neutral-white);
+  padding: clamp(10px, 2vw, 14px) clamp(16px, 3vw, 20px);
+  border-radius: 8px;
+  margin: clamp(8px, 1.5vw, 12px) 0;
+  border-right: 3px solid var(--primary-rose-light);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  line-height: 1.6;
+}
+
+.trend-insight .average-info strong {
+  color: var(--primary-rose-dark);
+  font-weight: 700;
+}
+
+.trend-insight .agent-suggestions {
+  margin: clamp(16px, 3vw, 20px) 0 0 0;
+  padding-inline-start: 20px;
+  list-style: none;
+}
+
+.trend-insight .agent-suggestions li {
+  line-height: 1.8;
+  color: var(--neutral-dark);
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  margin-bottom: clamp(8px, 1.5vw, 12px);
+  padding-right: 8px;
+  position: relative;
+}
+
+.trend-insight .agent-suggestions li::before {
+  content: '•';
+  position: absolute;
+  right: -12px;
+  color: var(--primary-rose-light);
+  font-weight: bold;
+  font-size: 1.2em;
+}
+
+/* השוואה לקהילה - קלף נפרד */
+.community-comparison {
+  background: var(--neutral-white);
+  border-radius: var(--radius-lg);
+  padding: clamp(24px, 4vw, 40px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid var(--neutral-light);
+}
+
+.community-comparison h3 {
+  margin: 0 0 clamp(24px, 4vw, 32px) 0;
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 700;
+  color: var(--neutral-dark);
+  text-align: right;
+}
+
+.comparison-stats {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(24px, 4vw, 32px);
+}
+
+.stat-item {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.03) 0%, rgba(157, 78, 221, 0.03) 100%);
+  border-radius: var(--radius-md);
+  padding: clamp(16px, 3vw, 20px);
+  border: 1px solid rgba(255, 0, 128, 0.1);
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  transform: translateX(-4px);
+  border-color: rgba(255, 0, 128, 0.2);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.1);
+}
+
+.stat-percentage {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: 700;
+  color: var(--primary-rose-dark);
+  margin-bottom: clamp(8px, 1.5vw, 12px);
+  text-align: right;
+}
+
+.stat-label {
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  color: var(--neutral-dark);
+  font-weight: 500;
+  margin-bottom: clamp(10px, 2vw, 14px);
+  text-align: right;
+  line-height: 1.5;
+}
+
+.stat-bar {
+  height: 8px;
+  background: var(--neutral-light);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.stat-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--primary-rose-light) 0%, var(--primary-rose-dark) 100%);
+  border-radius: 4px;
+  transition: width 0.6s ease;
+  box-shadow: 0 2px 4px rgba(255, 0, 128, 0.2);
+}
+
+.community-message {
+  background: linear-gradient(135deg, rgba(255, 0, 128, 0.05) 0%, rgba(157, 78, 221, 0.05) 100%);
+  border-radius: var(--radius-md);
+  padding: clamp(20px, 4vw, 28px);
+  border-right: 4px solid var(--primary-rose-light);
+  text-align: right;
+}
+
+.community-message p {
+  margin: 0 0 clamp(12px, 2vw, 16px) 0;
+  font-size: clamp(1rem, 2vw, 1.0625rem);
+  line-height: 1.7;
+  color: var(--neutral-dark);
+}
+
+.community-message strong {
+  color: var(--primary-rose-dark);
+  font-weight: 700;
+}
+
+.learn-more-link {
+  display: inline-block;
+  color: var(--primary-rose-dark);
+  font-weight: 600;
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  text-decoration: none;
+  margin-top: clamp(8px, 1.5vw, 12px);
+  transition: all 0.3s ease;
+  padding: 8px 0;
+}
+
+.learn-more-link:hover {
+  color: var(--primary-rose-light);
+  transform: translateX(-4px);
+}
+
 .time-selection {
   background: var(--neutral-white);
   border-radius: var(--radius-lg);
@@ -358,66 +686,6 @@
   max-width: 100%;
   box-sizing: border-box;
 }
-
-/* Trend chart polish */
-.trend-chart-section h3 {
-  margin-top: 0;
-}
-
-.cycle-chart {
-  background: var(--neutral-off-white);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  border: 1px solid var(--neutral-light);
-}
-
-.chart-bars {
-  display: flex;
-  gap: var(--space-md);
-  align-items: flex-end;
-  min-height: 180px;
-}
-
-.chart-bar-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--space-xs);
-}
-
-.chart-bar {
-  width: 32px;
-  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-  position: relative;
-  transition: all var(--transition-normal);
-}
-
-.chart-bar.regular { background: linear-gradient(180deg, #B3E5FC 0%, #81D4FA 100%); }
-.chart-bar.irregular { background: linear-gradient(180deg, #F8BBD0 0%, #F48FB1 100%); }
-.chart-bar.skip { outline: 2px dashed var(--primary-rose-dark); outline-offset: 2px; }
-
-.chart-bar:hover { transform: translateY(-4px); filter: brightness(1.05); }
-
-.cycle-days {
-  position: absolute;
-  top: -22px;
-  font-size: var(--font-size-xs);
-  color: var(--neutral-dark);
-}
-
-.chart-label { font-size: var(--font-size-sm); color: var(--neutral-text); }
-
-.chart-legend { display: flex; gap: var(--space-lg); margin-top: var(--space-md); }
-.legend-dot { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
-.legend-dot.regular { background: #81D4FA; }
-.legend-dot.irregular { background: #F48FB1; }
-
-.trend-insight { display: flex; gap: var(--space-md); margin-top: var(--space-lg); }
-.trend-insight .insight-icon { font-size: 1.6rem; }
-.trend-insight .insight-content h4 { margin: 0 0 var(--space-xs) 0; }
-.trend-insight .agent-suggestions { margin: var(--space-sm) 0 0 0; padding-inline-start: 16px; }
-.trend-insight .agent-suggestions li { line-height: 1.8; color: var(--neutral-dark); }
 
 /* ================================================
    CYCLE TRACKING - מעקב מחזור יוקרתי
