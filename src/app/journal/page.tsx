@@ -1,21 +1,24 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useEffect, useState, Suspense } from 'react';
+import { useRouter, usePathname } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import MenopauseJournal from '@/components/journal/MenopauseJournal';
 import { supabase } from '@/lib/supabase';
 // CSS imported in MenopauseJournal component
+
+function JournalContent({ userId }: { userId: string }) {
+  return <MenopauseJournal userId={userId} />;
+}
 
 export default function JournalPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    // Reset loading state when pathname or searchParams change (user navigates to this page)
+    // Reset loading state when pathname changes (user navigates to this page)
     setLoading(true);
     setUserId(null);
     
@@ -42,7 +45,7 @@ export default function JournalPage() {
     };
     
     checkUser();
-  }, [pathname, searchParams, router]);
+  }, [pathname, router]);
 
   if (loading) {
     return (
@@ -60,7 +63,13 @@ export default function JournalPage() {
 
   return (
     <DashboardLayout>
-      <MenopauseJournal userId={userId} />
+      <Suspense fallback={
+        <div className="loading-container">
+          <div className="loading">טוען...</div>
+        </div>
+      }>
+        {userId && <JournalContent userId={userId} />}
+      </Suspense>
     </DashboardLayout>
   );
 }
