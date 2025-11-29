@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { useTokens } from '@/hooks/useTokens';
 import DashboardLayout from '../components/DashboardLayout';
@@ -22,6 +23,7 @@ interface Conversation {
 }
 
 export default function ChatPage() {
+  const pathname = usePathname();
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputMessage, setInputMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -75,9 +77,15 @@ export default function ChatPage() {
   }, [userTokens, prevTokens]);
 
   useEffect(() => {
+    // Reset state when pathname changes (user navigates to this page)
+    setMessages([]);
+    setCurrentConversationId(null);
+    setUserId(null);
+    setConversations([]);
+    setIsNewConversation(false);
     loadUserId();
     loadChatHistory();
-  }, []);
+  }, [pathname]);
 
   const loadUserId = async () => {
     try {

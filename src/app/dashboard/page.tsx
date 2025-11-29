@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import { DailyEntry, CycleEntry } from '@/types/journal';
 import './dashboard.css';
@@ -45,6 +45,7 @@ interface DashboardData {
 
 export default function DashboardPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [dailyEntries, setDailyEntries] = useState<DailyEntry[]>([]);
@@ -53,9 +54,16 @@ export default function DashboardPage() {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Reset loading state when pathname changes (user navigates to this page)
+    setLoading(true);
+    setProfile(null);
+    setDailyEntries([]);
+    setCycleEntry([]);
+    setDashboardData(null);
+    setUserId(null);
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname]);
 
   const loadProfile = async () => {
       try {

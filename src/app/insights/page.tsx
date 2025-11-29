@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../components/DashboardLayout';
 import AlizaInsights from '@/components/insights/AlizaInsights';
@@ -11,32 +11,37 @@ export default function InsightsPage() {
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   useEffect(() => {
-    checkUser();
-  }, []);
+    // Reset loading state when pathname changes (user navigates to this page)
+    setLoading(true);
+    setUserId(null);
+    
+    const checkUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        console.log('Insights: User check result:', user);
+        
+        // Redirect to login if no authenticated user
+        if (!user) {
+          console.log('Insights: No authenticated user found, redirecting to login');
+          router.push('/login');
+          return;
+        }
 
-  const checkUser = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      console.log('Insights: User check result:', user);
-      
-      // Redirect to login if no authenticated user
-      if (!user) {
-        console.log('Insights: No authenticated user found, redirecting to login');
+        setUserId(user.id);
+      } catch (error) {
+        console.error('Error checking user:', error);
         router.push('/login');
-        return;
+      } finally {
+        setLoading(false);
       }
-
-      setUserId(user.id);
-    } catch (error) {
-      console.error('Error checking user:', error);
-      router.push('/login');
-    } finally {
-      setLoading(false);
-    }
-  };
+    };
+    
+    checkUser();
+  }, [pathname, router]);
 
   if (loading) {
     return (

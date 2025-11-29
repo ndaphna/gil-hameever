@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import NotificationSettings from '@/components/notifications/NotificationSettings';
 
@@ -19,6 +19,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const router = useRouter();
+  const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -28,6 +29,12 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications'>('profile');
 
   useEffect(() => {
+    // Reset loading state when pathname changes (user navigates to this page)
+    setLoading(true);
+    setProfile(null);
+    setFirstName('');
+    setLastName('');
+    
     async function loadProfile() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -81,7 +88,7 @@ export default function ProfilePage() {
 
     loadProfile();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [pathname]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
