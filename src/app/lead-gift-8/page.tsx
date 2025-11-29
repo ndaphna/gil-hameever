@@ -41,6 +41,7 @@ export default function LeadGift8Page() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [consent, setConsent] = useState(false);
 
   // Form handlers
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +54,12 @@ export default function LeadGift8Page() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    if (!consent) {
+      setError('יש לאשר את תנאי ההרשמה');
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
@@ -220,17 +227,19 @@ export default function LeadGift8Page() {
         {/* Form */}
         <div className="waitlist-form">
           <form onSubmit={handleSubmit}>
+            <h2 className="waitlist-form-title">הירשמי לקבלת מדריך חינמי</h2>
+            <p className="waitlist-form-subtitle">הכניסי את הפרטים כאן למטה והצטרפי לגלי ההשראה</p>
+            
             {/* Error Message */}
             {error && <div className="error-message">{error}</div>}
 
             {/* First Name */}
             <div className="form-group">
-              <label htmlFor="firstName">שם פרטי</label>
               <input
                 type="text"
                 id="firstName"
                 name="firstName"
-                placeholder="הכנסי את שמך הפרטי"
+                placeholder="שם פרטי"
                 value={formData.firstName}
                 onChange={handleInputChange}
                 required
@@ -241,12 +250,11 @@ export default function LeadGift8Page() {
 
             {/* Last Name */}
             <div className="form-group">
-              <label htmlFor="lastName">שם משפחה</label>
               <input
                 type="text"
                 id="lastName"
                 name="lastName"
-                placeholder="הכנסי את שם המשפחה שלך"
+                placeholder="שם משפחה"
                 value={formData.lastName}
                 onChange={handleInputChange}
                 required
@@ -257,18 +265,33 @@ export default function LeadGift8Page() {
 
             {/* Email */}
             <div className="form-group">
-              <label htmlFor="email">אימייל</label>
               <input
                 type="email"
                 id="email"
                 name="email"
-                placeholder="your.email@example.com"
+                placeholder="אימייל"
                 value={formData.email}
                 onChange={handleInputChange}
                 required
                 disabled={isSubmitting}
                 autoComplete="email"
               />
+            </div>
+
+            {/* Consent Checkbox */}
+            <div className="waitlist-form-consent">
+              <label className="waitlist-consent-label">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                  required
+                  disabled={isSubmitting}
+                />
+                <span className="waitlist-consent-text">
+                  אני מאשרת להצטרף ולקבל עדכונים ומידע מעצימים ממני.
+                </span>
+              </label>
             </div>
 
             {/* Submit Button */}
