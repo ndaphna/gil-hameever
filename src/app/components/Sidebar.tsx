@@ -231,7 +231,8 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           .single();
         
         if (profile) {
-          setUserName(profile.full_name || profile.email?.split('@')[0] || 'משתמשת');
+          // Use first_name only for display
+          setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
         }
       }
     };

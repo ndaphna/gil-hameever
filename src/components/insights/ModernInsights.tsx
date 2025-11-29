@@ -163,6 +163,19 @@ export default function ModernInsights({ userId }: ModernInsightsProps) {
     return icons[category] || '💡';
   };
 
+  const getCategoryLink = (category: string): string | null => {
+    const links: Record<string, string> = {
+      sleep: '/menopausal-sleep',
+      symptoms: '/heat-waves',
+      mood: '/belonging-sisterhood-emotional-connection',
+      cycle: '/preparing-for-menopause',
+      hormones: '/hormones',
+      lifestyle: '/walking-benefits-menopause',
+      general: '/articles'
+    };
+    return links[category] || null;
+  };
+
   const filteredInsights = selectedCategory === 'all' 
     ? insights 
     : insights.filter(i => i.category === selectedCategory);
@@ -343,11 +356,28 @@ export default function ModernInsights({ userId }: ModernInsightsProps) {
                     </div>
                   )}
                   
-                  {insight.actionable && (
-                    <div className="actionable-indicator">
-                      <span>💡</span> יש לך צעדים מעשיים
-                    </div>
-                  )}
+                  {insight.actionable && (() => {
+                    const categoryLink = getCategoryLink(insight.category);
+                    if (categoryLink) {
+                      return (
+                        <a 
+                          href={categoryLink}
+                          className="actionable-indicator actionable-link"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            window.location.href = categoryLink;
+                          }}
+                        >
+                          <span>💡</span> יש לך צעדים מעשיים
+                        </a>
+                      );
+                    }
+                    return (
+                      <div className="actionable-indicator">
+                        <span>💡</span> יש לך צעדים מעשיים
+                      </div>
+                    );
+                  })()}
                   
                   {insight.alizaMessage && (
                     <div className="aliza-message">

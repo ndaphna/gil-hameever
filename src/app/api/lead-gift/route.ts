@@ -15,6 +15,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getAbsoluteUrl } from '@/lib/urls';
 
+export const runtime = 'edge';
+
 // ========================================
 // VALIDATE ENVIRONMENT VARIABLES
 // ========================================

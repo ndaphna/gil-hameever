@@ -156,10 +156,11 @@ async function processUserInsights(userId: string): Promise<{
     }
 
     // Get user profile data - use first_name only for display
+    const firstName = profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'יקרה';
     const userProfile = {
-      first_name: profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'יקרה',
-      name: profile.name || profile.full_name || profile.email?.split('@')[0] || 'יקרה',
-      full_name: profile.full_name,
+      first_name: firstName,
+      name: firstName, // Use first name only, not full name
+      full_name: profile.full_name, // Keep for backward compatibility but don't use for display
       email: profile.email
     };
 

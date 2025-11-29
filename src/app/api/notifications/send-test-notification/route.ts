@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
+export const runtime = 'edge';
+
 /**
  * API endpoint לשליחת התראת בדיקה
  * נקרא מ-NotificationService.sendImmediateNotification
@@ -19,7 +21,7 @@ export async function POST(request: Request) {
     // קבל את כתובת המייל של המשתמש
     const { data: profile } = await supabaseAdmin
       .from('user_profile')
-      .select('email, name')
+      .select('email, first_name, name, full_name')
       .eq('id', userId)
       .single();
 
@@ -35,7 +37,7 @@ export async function POST(request: Request) {
       const emailSent = await sendEmail(
         profile.email,
         title,
-        createTestEmailHTML(profile.name || 'יקרה', title, message),
+        createTestEmailHTML(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || 'יקרה', title, message),
         createTestEmailText(title, message)
       );
 

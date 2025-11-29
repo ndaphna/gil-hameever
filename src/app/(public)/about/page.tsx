@@ -198,9 +198,26 @@ export default function AboutPage() {
             />
           </div>
           <div className="cta-buttons">
-            <button className="cta-button">💌 הצטרפי לגלי השראה</button>
-            <button className="cta-button">🎥 עקבי אחרי באינסטגרם</button>
-            <button className="cta-button">📘 קראי על הספר</button>
+            <a 
+              href="/inspiration-waves" 
+              className="cta-button"
+            >
+              💌 הצטרפי לגלי השראה
+            </a>
+            <a 
+              href="https://www.instagram.com/inbal_daphna/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="cta-button"
+            >
+              🎥 עקבי אחרי באינסטגרם
+            </a>
+            <a 
+              href="/book-preview" 
+              className="cta-button"
+            >
+              📘 קראי על הספר
+            </a>
           </div>
         </div>
         <p className="cta-text">המסע שלך אל גיל המֵעֵבֶר מתחיל כאן.</p>

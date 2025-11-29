@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
 import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
 
+export const runtime = 'edge';
+
 /**
  * API endpoint לשליחת התראות מייל חכמות
  * נקרא על ידי cron job או scheduled task
@@ -35,7 +37,7 @@ async function processUser(userId: string, force: boolean = false) {
     // קבל פרטי משתמש
     const { data: profile } = await supabaseAdmin
       .from('user_profile')
-      .select('id, email, subscription_status, name')
+      .select('id, email, subscription_status, first_name, name, full_name')
       .eq('id', userId)
       .single();
 
@@ -78,9 +80,10 @@ async function processUser(userId: string, force: boolean = false) {
       );
     }
 
-    // יצירת תבנית המייל
+    // יצירת תבנית המייל - use first_name only for display
+    const userName = profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'יקרה';
     const emailTemplate = createInsightEmail(
-      profile.name || profile.email?.split('@')[0] || 'יקרה',
+      userName,
       decision.insight,
       statistics
     );
@@ -129,7 +132,7 @@ async function processAllSubscribedUsers(force: boolean = false) {
     // קבל כל המשתמשות המנויות
     const { data: users } = await supabaseAdmin
       .from('user_profile')
-      .select('id, email, subscription_status, name')
+      .select('id, email, subscription_status, first_name, name, full_name')
       .eq('subscription_status', 'active');
 
     if (!users || users.length === 0) {

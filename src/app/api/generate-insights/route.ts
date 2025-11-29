@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import OpenAI from 'openai';
 import type { DailyEntry } from '@/types/journal';
 
+export const runtime = 'edge';
+
 interface SleepPatterns {
   totalDays: number;
   poorSleepDays: number;

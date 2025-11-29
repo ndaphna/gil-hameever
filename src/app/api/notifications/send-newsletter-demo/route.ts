@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
 import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
 
+export const runtime = 'edge';
+
 /**
  * שליחת ניוזלטר לדוגמה למשתמשת ספציפית לפי אימייל
  * 
@@ -22,7 +24,7 @@ export async function POST(request: Request) {
     // מצא את המשתמשת לפי אימייל
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profile')
-      .select('id, email, subscription_status, name, full_name')
+      .select('id, email, subscription_status, first_name, name, full_name')
       .eq('email', email)
       .single();
 
@@ -37,7 +39,8 @@ export async function POST(request: Request) {
     }
 
     const userId = profile.id;
-    const userName = profile.name || profile.full_name || profile.email?.split('@')[0] || 'יקרה';
+    // Use first_name only for display
+    const userName = profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'יקרה';
 
     // קבל נתונים של המשתמשת
     const notificationService = new SmartNotificationService();

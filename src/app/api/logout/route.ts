@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 
+export const runtime = 'edge';
+
 export async function POST() {
   const headers = new Headers();
   // Clear the demo cookie

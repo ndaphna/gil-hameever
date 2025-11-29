@@ -142,13 +142,16 @@ async function generateInsightsWithAI(
 - חובה להחזיר לפחות תובנה אחת - לעולם לא insights: []
 
 חשוב מאוד - שימוש בשם פרטי וסגנון אישי:
-- תמיד השתמשי בשם הפרטי של המשתמשת (שמועבר ב-userPrompt)
-- לעולם אל תכתבי "שתמשת" או "את" - תמיד השתמשי בשם הפרטי
+- תמיד השתמשי בשם הפרטי בלבד של המשתמשת (שמועבר ב-userPrompt) - רק השם הפרטי, לא שם משפחה
+- במקום "אני רואה ש[שם]..." תמיד כתבי "אני רואה שאת..." - פניה ישירה בגוף שני
+- במקום "[שם מלא] יקרה..." כתבי "[שם פרטי] יקרה..." - רק שם פרטי
 - היחס הוא אישי וחם, כמו בשיחה עם חברה טובה, לא מנותק וקר
 - בכל התובנות, ההמלצות וההודעות - השתמשי בשם הפרטי בלבד
-- סגנון הפניה: "היי [שם]" או "[שם] יקרה" - פניה ישירה ואישית
-- במקום "[שם] חוותה..." כתבי "אני רואה שאת חווה..." או "[שם] יקרה, אני רואה שאת חווה..."
-- במקום "[שם], חשוב שתשימי..." כתבי "היי [שם], חשוב שתשימי..." או "[שם] יקרה, חשוב שתשימי..."
+- סגנון הפניה: "היי [שם פרטי]" או "[שם פרטי] יקרה" - פניה ישירה ואישית
+- דוגמאות נכונות:
+  * "אני רואה שאת חווה..." (לא "אני רואה שניצן דפנה חווה...")
+  * "ניצן יקרה, אני רואה שאת..." (לא "ניצן דפנה יקרה...")
+  * "היי ניצן, חשוב שתשימי..." (לא "ניצן דפנה, חשוב שתשימי...")
 - הפניה היא אישית למשתמשת בשמה הפרטי ובהתייחסות אישית אליה כמו בשיחה עם חברה טובה`;
 
   let userPrompt = '';
@@ -313,23 +316,27 @@ function buildComprehensiveAnalysisPrompt(data: AnalysisRequest['data']): string
   };
 
   const userAge = userProfile.birth_year ? new Date().getFullYear() - userProfile.birth_year : null;
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
 
   // אם אין מספיק נתונים, נבקש מ-OpenAI להסביר למה אין תובנות
   if (totalDays === 0 && cycleEntries.length === 0 && emotionEntries.length === 0) {
     console.log('⚠️ buildComprehensiveAnalysisPrompt: No data available');
-    return `אין נתונים זמינים לניתוח עבור ${userName}. אנא הסבירי למה אין תובנות והחזירי JSON עם insights ריק. חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה...".`;
+    return `אין נתונים זמינים לניתוח עבור ${userName}. אנא הסבירי למה אין תובנות והחזירי JSON עם insights ריק. חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
   }
 
   const prompt = `נתח את הנתונים הבאים באופן מעמיק ומקצועי עבור ${userName}:
 
 חשוב מאוד - סגנון אישי וחם:
-- בכל התובנות, ההמלצות וההודעות - השתמשי בשם הפרטי "${userName}" בלבד
-- לעולם אל תכתבי "שתמשת" או "את" - תמיד השתמשי בשם "${userName}"
-- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
+- בכל התובנות, ההמלצות וההודעות - השתמשי בשם הפרטי "${userName}" בלבד (רק שם פרטי, לא שם משפחה)
+- במקום "אני רואה ש${userName}..." תמיד כתבי "אני רואה שאת..." - פניה ישירה בגוף שני
 - במקום "${userName} חוותה..." כתבי "אני רואה שאת חווה..." או "${userName} יקרה, אני רואה שאת חווה..."
 - במקום "${userName}, חשוב שתשימי..." כתבי "היי ${userName}, חשוב שתשימי..." או "${userName} יקרה, חשוב שתשימי..."
+- סגנון הפניה: "היי ${userName}" או "${userName} יקרה" - פניה ישירה ואישית כמו בשיחה עם חברה טובה
 - היחס הוא אישי וחם, כמו בשיחה עם חברה טובה, לא מנותק וקר
+- דוגמאות נכונות:
+  * "אני רואה שאת חווה בעיות שינה..." (לא "אני רואה ש${userName} חווה...")
+  * "${userName} יקרה, אני רואה שאת..." (לא "${userName} [שם משפחה] יקרה...")
 
 נתונים כללים:
 - מספר ימים של נתונים: ${totalDays}
@@ -375,7 +382,8 @@ function buildSleepAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
   const sleepEntries = entries.filter(e => e.sleep_quality);
   const userProfile = data.userProfile || {};
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   
   return `נתח את דפוסי השינה של ${userName}:
 - סה"כ רשומות: ${sleepEntries.length}
@@ -384,13 +392,14 @@ function buildSleepAnalysisPrompt(data: AnalysisRequest['data']): string {
 - ימים עם הזעות לילה: ${entries.filter(e => e.night_sweats).length}
 
 צור תובנה מפורטת עם השוואה לנורמה (60% נשים בגיל המעבר מדווחות על בעיות שינה).
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildSymptomsAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
   const userProfile = data.userProfile || {};
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   
   const symptomsCount = {
     hot_flashes: entries.filter(e => e.hot_flashes).length,
@@ -408,7 +417,7 @@ ${Object.entries(symptomsCount).map(([key, count]) =>
 ).join('\n')}
 
 זהה תסמינים דומיננטיים והשווה לנורמות (75% חוות גלי חום, 65% הזעות לילה, וכו').
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildMoodAnalysisPrompt(data: AnalysisRequest['data']): string {
@@ -416,7 +425,8 @@ function buildMoodAnalysisPrompt(data: AnalysisRequest['data']): string {
   const emotionEntries = data.emotionEntries || [];
   const moodEntries = emotionEntries.length > 0 ? emotionEntries : dailyEntries.filter(e => e.mood);
   const userProfile = data.userProfile || {};
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   
   const moodCounts = moodEntries.reduce((acc: any, entry: any) => {
     const mood = entry.emotion || entry.mood;
@@ -432,14 +442,15 @@ function buildMoodAnalysisPrompt(data: AnalysisRequest['data']): string {
 - מצב רוח שלילי: ${calculateNegativeMoodPercent(moodEntries)}%
 
 השווה לנורמה (50% נשים בגיל המעבר מדווחות על שינויים במצב הרוח).
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildCycleAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.cycleEntries || [];
   const periodEntries = entries.filter(e => e.is_period);
   const userProfile = data.userProfile || {};
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   
   return `נתח את דפוסי המחזור של ${userName}:
 - סה"כ רשומות: ${entries.length}
@@ -447,7 +458,7 @@ function buildCycleAnalysisPrompt(data: AnalysisRequest['data']): string {
 - אי-סדירות: ${calculateIrregularity(entries)}
 
 השווה לנורמה של גיל המעבר.
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildHormonesAnalysisPrompt(data: AnalysisRequest['data']): string {
@@ -456,7 +467,8 @@ function buildHormonesAnalysisPrompt(data: AnalysisRequest['data']): string {
   const userProfile = data.userProfile || {};
   
   const userAge = userProfile.birth_year ? new Date().getFullYear() - userProfile.birth_year : null;
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   const symptoms = {
     hot_flashes: dailyEntries.filter(e => e.hot_flashes).length,
     night_sweats: dailyEntries.filter(e => e.night_sweats).length,
@@ -469,16 +481,17 @@ function buildHormonesAnalysisPrompt(data: AnalysisRequest['data']): string {
 - מספר רשומות: ${dailyEntries.length}
 
 קבע את השלב ההורמונלי (premenopausal/perimenopausal/postmenopausal) עם ביטחון.
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 function buildTrendsAnalysisPrompt(data: AnalysisRequest['data']): string {
   const entries = data.dailyEntries || [];
   const userProfile = data.userProfile || {};
-  const userName = userProfile.name || userProfile.full_name || 'יקרה';
+  // Use only first name
+  const userName = userProfile.first_name || userProfile.name?.split(' ')[0] || userProfile.full_name?.split(' ')[0] || 'יקרה';
   
   if (entries.length < 14) {
-    return `אין מספיק נתונים לניתוח מגמות עבור ${userName} (נדרש לפחות שבועיים). חשוב: השתמשי בשם "${userName}" בכל התובנות. סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה...".`;
+    return `אין מספיק נתונים לניתוח מגמות עבור ${userName} (נדרש לפחות שבועיים). חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
   }
 
   const recent = entries.slice(0, 7);
@@ -489,7 +502,7 @@ function buildTrendsAnalysisPrompt(data: AnalysisRequest['data']): string {
 - שבוע קודם: ${older.length} רשומות
 
 זהה מגמות של שיפור או החמרה בתסמינים.
-חשוב: השתמשי בשם "${userName}" בכל התובנות, לא "שתמשת" או "את". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
+חשוב: השתמשי בשם הפרטי "${userName}" בלבד. במקום "אני רואה ש${userName}..." כתבי "אני רואה שאת...". סגנון אישי: "היי ${userName}" או "${userName} יקרה, אני רואה שאת...".`;
 }
 
 // Helper functions

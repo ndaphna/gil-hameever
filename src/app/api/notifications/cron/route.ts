@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
+export const runtime = 'edge';
+
 /**
  * Cron endpoint לבדיקה ושליחת התראות
  * צריך להיות מוגדר ב-Vercel Cron או שירות אחר

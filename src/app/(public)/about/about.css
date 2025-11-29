@@ -860,6 +860,14 @@
   letter-spacing: 0.02em;
   position: relative;
   overflow: hidden;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+a.cta-button {
+  text-decoration: none;
+  color: white;
 }
 
 .cta-button::before {

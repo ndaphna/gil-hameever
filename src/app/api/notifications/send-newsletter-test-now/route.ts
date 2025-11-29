@@ -68,7 +68,7 @@ export async function POST(request: Request) {
         // קבל פרטי משתמש
         const { data: profile } = await supabaseAdmin
           .from('user_profile')
-          .select('id, email, subscription_status, name')
+          .select('id, email, subscription_status, first_name, name, full_name')
           .eq('id', pref.user_id)
           .single();
 
@@ -124,8 +124,8 @@ export async function POST(request: Request) {
             priority: 'medium',
             title: 'הניוזלטר היומי שלך 🌸',
             message: userData.dailyEntries.length > 0
-              ? `שלום ${profile.name || 'יקרה'}! הנה הניוזלטר היומי שלך עם תובנות, טיפים ומשאבים שיעזרו לך במסע שלך. אני כאן בשבילך!`
-              : `שלום ${profile.name || 'יקרה'}! בואי נתחיל את המסע שלך יחד. הניוזלטר הזה יכלול טיפים, משאבים ותובנות שיעזרו לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך.`,
+              ? `שלום ${profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || 'יקרה'}! הנה הניוזלטר היומי שלך עם תובנות, טיפים ומשאבים שיעזרו לך במסע שלך. אני כאן בשבילך!`
+              : `שלום ${profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || 'יקרה'}! בואי נתחיל את המסע שלך יחד. הניוזלטר הזה יכלול טיפים, משאבים ותובנות שיעזרו לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך.`,
             actionUrl: '/journal?tab=daily'
           };
         }
@@ -139,9 +139,10 @@ export async function POST(request: Request) {
           );
         }
 
-        // יצירת תבנית המייל
+        // יצירת תבנית המייל - use first_name only for display
+        const userName = profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'יקרה';
         const emailTemplate = createInsightEmail(
-          profile.name || profile.email?.split('@')[0] || 'יקרה',
+          userName,
           insight,
           statistics
         );

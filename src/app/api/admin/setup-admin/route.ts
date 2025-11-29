@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
+export const runtime = 'edge';
+
 // This endpoint can be called to ensure nitzandaphna@gmail.com is set as admin
 // It can be called by anyone, but only sets the specific email as admin
 export async function POST(request: Request) {

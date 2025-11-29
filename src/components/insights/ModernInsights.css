@@ -446,6 +446,19 @@
   margin: 1rem 0;
 }
 
+.actionable-indicator.actionable-link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+}
+
+.actionable-indicator.actionable-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 172, 254, 0.4);
+  background: linear-gradient(135deg, #3d9ce8 0%, #00d9f5 100%);
+}
+
 /* Aliza Message */
 .aliza-message {
   background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
