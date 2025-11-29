@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../components/DashboardLayout';
 import ModernInsights from '@/components/insights/ModernInsights';
-import './insights.css';
+import './Insights.css';
 
 export default function InsightsPage() {
   const [userId, setUserId] = useState<string | null>(null);
