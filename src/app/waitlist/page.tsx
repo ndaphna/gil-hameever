@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, FormEvent } from 'react';
 import '@/styles/waitlist.css';
 import '../globals.css';
 import { landingCopy } from '@/content/landing-copy';
@@ -10,9 +10,16 @@ export default function WaitlistPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [consent, setConsent] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    
+    if (!consent) {
+      setError('יש לאשר את תנאי ההרשמה');
+      return;
+    }
+
     setIsSubmitting(true);
     setError('');
 
@@ -188,72 +195,86 @@ export default function WaitlistPage() {
         </div>
 
         {/* Waitlist Form */}
-        <div className="waitlist-form">
-          <form onSubmit={handleSubmit}>
-            {error && (
-              <div className="error-message">
-                {error}
-              </div>
-            )}
+        <div className="waitlist-form-section">
+          <div className="waitlist-form-container">
+            <div className="waitlist-form-wrapper">
+              <h2 className="waitlist-form-title">הצטרפי לרשימת ההמתנה</h2>
+              <p className="waitlist-form-subtitle">הכניסי את הפרטים כאן למטה והצטרפי לרשימת ההמתנה</p>
+              
+              <form onSubmit={handleSubmit} className="waitlist-form-form">
+                {error && (
+                  <div className="waitlist-form-error">
+                    {error}
+                  </div>
+                )}
 
-            <div className="form-group">
-              <label htmlFor="firstName">
-                {landingCopy.formFields.firstName}
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                name="firstName"
-                placeholder="הכנסי את שמך הפרטי"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-                disabled={isSubmitting}
-                autoComplete="given-name"
-              />
+                <div className="waitlist-form-group">
+                  <input
+                    type="text"
+                    id="firstName"
+                    name="firstName"
+                    placeholder="שם פרטי"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="given-name"
+                  />
+                </div>
+
+                <div className="waitlist-form-group">
+                  <input
+                    type="text"
+                    id="lastName"
+                    name="lastName"
+                    placeholder="שם משפחה"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="family-name"
+                  />
+                </div>
+
+                <div className="waitlist-form-group">
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="אימייל"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="waitlist-form-consent">
+                  <label className="waitlist-consent-label">
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <span className="waitlist-consent-text">
+                      אני מאשרת להצטרף לרשימת ההמתנה ולקבל עדכונים על הספר ומתנות בלעדיות.
+                    </span>
+                  </label>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="waitlist-form-submit-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'שולח...' : landingCopy.ctaButton}
+                </button>
+              </form>
             </div>
-
-            <div className="form-group">
-              <label htmlFor="lastName">
-                {landingCopy.formFields.lastName}
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                placeholder="הכנסי את שם המשפחה שלך"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-                disabled={isSubmitting}
-                autoComplete="family-name"
-              />
-            </div>
-
-            <div className="form-group">
-              <label htmlFor="email">
-                {landingCopy.formFields.email}
-              </label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="your.email@example.com"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              className="cta-button" 
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? 'שולח...' : landingCopy.ctaButton}
-            </button>
-          </form>
+          </div>
         </div>
 
         {/* Thank You Message */}
