@@ -4,6 +4,11 @@
   margin: 0 auto;
   padding: 2rem;
   overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .aliza-insights-loading {
@@ -128,6 +133,8 @@
 /* Hero Insight Section - התובנה המרכזית */
 .hero-insight-section {
   margin-bottom: 3rem;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-insight-card {
@@ -452,6 +459,8 @@
 /* Insights Section */
 .insights-section {
   margin-bottom: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .section-header {
@@ -1180,6 +1189,8 @@
   margin-top: 3rem;
   padding-top: 2rem;
   border-top: 2px solid #e9ecef;
+  position: relative;
+  z-index: 2;
 }
 
 /* Animations */

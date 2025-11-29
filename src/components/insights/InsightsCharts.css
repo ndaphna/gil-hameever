@@ -5,14 +5,12 @@
   padding: 3rem;
   box-shadow: 0 20px 60px rgba(102, 126, 234, 0.12);
   margin-bottom: 3rem;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+  overflow: visible;
   border: 1px solid rgba(102, 126, 234, 0.08);
   position: relative;
-  min-height: 600px;
   display: flex;
   flex-direction: column;
+  z-index: 2;
 }
 
 .insights-charts::before {

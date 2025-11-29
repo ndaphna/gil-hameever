@@ -6,14 +6,14 @@ export const runtime = 'edge';
 
 /**
  * Daily Insights Cron Job
- * Runs once per day in the early morning to generate insights for all users
+ * Runs once per day in the evening to generate insights for all users
  * 
  * This endpoint should be called by:
  * - Vercel Cron Jobs (recommended)
  * - Supabase Edge Functions with pg_cron
  * - External cron service
  * 
- * Schedule: Every day at 6:00 AM (or as configured)
+ * Schedule: Every day at 20:00 (8:00 PM) - evening analysis
  */
 export async function GET(request: NextRequest) {
   // Verify cron secret to prevent unauthorized access

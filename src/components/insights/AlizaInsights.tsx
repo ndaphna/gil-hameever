@@ -461,6 +461,12 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
                           await new Promise(resolve => setTimeout(resolve, 300));
                           // Reload tokens to get the updated value from database
                           await loadTokens();
+                          
+                          // Show transparency message to user
+                          const tokensMessage = `נוצרו ${result.insightsCount || 0} תובנות חדשות.\nהופחתו ${result.deduct_tokens} טוקנים ממאגר הטוקנים שלך.\n${result.tokensRemaining !== undefined ? `נשארו לך ${result.tokensRemaining} טוקנים.` : ''}`;
+                          alert(tokensMessage);
+                        } else if (result.insightsCount) {
+                          alert(`נוצרו ${result.insightsCount} תובנות חדשות.`);
                         }
 
                         // Wait a bit to ensure data is saved to database
@@ -482,7 +488,9 @@ export default function AlizaInsights({ userId }: AlizaInsightsProps) {
                     {isLoading ? 'יוצר תובנות...' : 'יצירת תובנות עכשיו'}
                   </button>
                   <p className="generate-hint">
-                    התובנות נוצרות אוטומטית פעם ביום בבוקר. לחיצה כאן תיצור תובנות חדשות עכשיו על בסיס כל הנתונים שלך.
+                    התובנות נוצרות אוטומטית פעם ביום בערב (20:00). לחיצה כאן תיצור תובנות חדשות עכשיו על בסיס כל הנתונים שלך.
+                    <br />
+                    <strong>שימי לב:</strong> יצירת תובנות כרוכה בשימוש בטוקנים. הטוקנים יופחתו ממאגר הטוקנים שלך לאחר הניתוח.
                   </p>
                 </div>
               )}

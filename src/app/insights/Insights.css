@@ -2,10 +2,7 @@
 .insights-page {
   background: var(--gray-light);
   padding: 40px 20px 100px 20px;
-  min-height: 100vh;
-  overflow-y: auto;
-  overflow-x: hidden;
-  scroll-behavior: smooth;
+  overflow: visible;
 }
 
 /* Custom scrollbar for insights page */
