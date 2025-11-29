@@ -305,12 +305,31 @@
   border-radius: 0 0 12px 12px;
 }
 
+/* Social Icons - Always visible in header (Desktop only) */
+.nav-social-icons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+  margin-left: 16px;
+}
+
+/* Social Icons in Mobile Menu - Hidden on Desktop */
+.nav-social-icons-mobile {
+  display: none;
+}
+
 /* Auth Buttons */
 .nav-auth {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-shrink: 0;
+}
+
+/* Hide login button temporarily - will be shown when subscription system is ready */
+.nav-auth .btn {
+  display: none;
 }
 
 /* Social Icons Group */
@@ -529,6 +548,26 @@
     width: 24px;
   }
 
+  /* Social Icons in Mobile */
+  .nav-social-icons {
+    display: none; /* Hide desktop social icons in mobile */
+  }
+
+  /* Social Icons in Mobile Menu - Only show when menu is active */
+  .nav-social-icons-mobile {
+    display: none; /* Hidden by default */
+  }
+
+  .nav-auth.active .nav-social-icons-mobile {
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--color-gray-100);
+  }
+
   /* Auth Buttons in Mobile */
   .nav-auth {
     padding: 16px 24px;
@@ -539,6 +578,16 @@
     bottom: 0;
     height: auto;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+  }
+
+  .nav-auth.active {
+    display: flex;
+  }
+
+  /* Hide login button in mobile - will be shown when subscription system is ready */
+  .nav-auth .btn {
+    display: none !important;
   }
 
   .nav-auth form {

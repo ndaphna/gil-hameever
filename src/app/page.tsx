@@ -152,20 +152,25 @@ export default function Home() {
             <p className="cta-description">
               הצטרפי לאלפי נשים שכבר גילו כיצד לחיות את גיל המעבר בביטחון, בשלווה ובכוח
             </p>
-            <div className="cta-buttons">
-              <Link href="/signup" className="cta-button primary-cta">
-                <span>התחילי בחינם עכשיו</span>
+            <div className="cta-links">
+              <Link href="/articles" className="cta-link articles-link">
+                <span className="cta-link-text">התחילי כאן, קבלי מידע חשוב שלא מעיזים לדבר עליו...</span>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                   <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </Link>
-              <Link href="/pricing" className="cta-button secondary-cta">
-                <span>למידע על המחירים</span>
-              </Link>
+              <a 
+                href="https://www.instagram.com/inbal_daphna/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-link instagram-link"
+              >
+                <span className="cta-link-text">עקבי אחרי באינסטגרם לעדכונים "חמים" 🔥</span>
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                  <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </a>
             </div>
-            <p className="cta-note">
-              ללא כרטיס אשראי • ביטול בכל עת • תמיכה מלאה בעברית
-            </p>
           </div>
         </div>
       </section>

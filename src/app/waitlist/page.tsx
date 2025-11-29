@@ -6,7 +6,7 @@ import '../globals.css';
 import { landingCopy } from '@/content/landing-copy';
 
 export default function WaitlistPage() {
-  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -16,7 +16,7 @@ export default function WaitlistPage() {
     setIsSubmitting(true);
     setError('');
 
-    console.log('📤 Submitting waitlist form...', { name: formData.name, email: formData.email });
+    console.log('📤 Submitting waitlist form...', { firstName: formData.firstName, lastName: formData.lastName, email: formData.email });
 
     try {
       const response = await fetch('/api/waitlist', {
@@ -25,8 +25,9 @@ export default function WaitlistPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
         }),
       });
 
@@ -196,18 +197,36 @@ export default function WaitlistPage() {
             )}
 
             <div className="form-group">
-              <label htmlFor="name">
-                {landingCopy.formFields.fullName}
+              <label htmlFor="firstName">
+                {landingCopy.formFields.firstName}
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                placeholder="הכנסי את שמך המלא"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                id="firstName"
+                name="firstName"
+                placeholder="הכנסי את שמך הפרטי"
+                value={formData.firstName}
+                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 required
                 disabled={isSubmitting}
+                autoComplete="given-name"
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">
+                {landingCopy.formFields.lastName}
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                placeholder="הכנסי את שם המשפחה שלך"
+                value={formData.lastName}
+                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                required
+                disabled={isSubmitting}
+                autoComplete="family-name"
               />
             </div>
 

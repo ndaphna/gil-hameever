@@ -37,7 +37,8 @@ export const landingCopy = {
   
     ctaButton: "אני רוצה את המתנה 🎁",
     formFields: {
-      fullName: "שם מלא:",
+      firstName: "שם פרטי:",
+      lastName: "שם משפחה:",
       email: "אימייל:",
     },
   

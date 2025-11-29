@@ -12,14 +12,14 @@ export async function POST(request: Request) {
   console.log('='.repeat(60));
 
   try {
-    const { name, email } = await request.json();
-    console.log('📥 Request data:', { name, email: email ? '***@' + email.split('@')[1] : 'missing' });
+    const { firstName, lastName, email } = await request.json();
+    console.log('📥 Request data:', { firstName, lastName, email: email ? '***@' + email.split('@')[1] : 'missing' });
 
     // Validate input
-    if (!name || !email) {
-      console.error('❌ Validation failed: Missing name or email');
+    if (!firstName || !lastName || !email) {
+      console.error('❌ Validation failed: Missing firstName, lastName or email');
       return NextResponse.json(
-        { success: false, error: 'שם ואימייל הם שדות חובה' },
+        { success: false, error: 'שם פרטי, שם משפחה ואימייל הם שדות חובה' },
         { status: 400 }
       );
     }
@@ -69,11 +69,12 @@ export async function POST(request: Request) {
 
       // Insert new early adopter into database
       console.log('💾 Inserting into database...');
+      const fullName = `${firstName.trim()} ${lastName.trim()}`;
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from('early_adopters')
         .insert([
           {
-            name: name.trim(),
+            name: fullName,
             email: email.toLowerCase().trim(),
           },
         ])
@@ -97,7 +98,7 @@ export async function POST(request: Request) {
     // Add contact to Brevo
     console.log('📧 Adding contact to Brevo...');
     try {
-      await addContactToBrevo(email, name);
+      await addContactToBrevo(email, firstName.trim(), lastName.trim());
       console.log('✅ Contact added to Brevo successfully');
     } catch (brevoError: any) {
       console.error('⚠️ Brevo error (non-critical):', brevoError.message);
@@ -107,12 +108,15 @@ export async function POST(request: Request) {
     console.log('✅ Waitlist signup complete!');
     console.log('='.repeat(60) + '\n');
 
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     return NextResponse.json({
       success: true,
       message: 'ההרשמה בוצעה בהצלחה!',
       data: {
         id: userId,
-        name: name,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        name: fullName,
         email: email,
       },
     });
@@ -130,7 +134,7 @@ export async function POST(request: Request) {
 /**
  * Add contact to Brevo and send welcome email
  */
-async function addContactToBrevo(email: string, name: string): Promise<void> {
+async function addContactToBrevo(email: string, firstName: string, lastName: string): Promise<void> {
   const BREVO_API_KEY = process.env.BREVO_API_KEY;
   
   console.log('🔑 Checking Brevo configuration...');
@@ -158,7 +162,8 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
     const contactPayload = {
       email: email.toLowerCase().trim(),
       attributes: {
-        FIRSTNAME: name.trim(),
+        FIRSTNAME: firstName.trim(),
+        LASTNAME: lastName.trim(),
       },
       updateEnabled: true,
       listIds,
@@ -236,15 +241,16 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
     const fromEmail = process.env.BREVO_FROM_EMAIL || 'gil.hameever@gmail.com';
     const fromName = process.env.BREVO_FROM_NAME || 'מנופאוזית וטוב לה';
 
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     const emailPayload = {
       sender: {
         name: fromName,
         email: fromEmail,
       },
-      to: [{ email: email, name: name }],
+      to: [{ email: email, name: fullName }],
       subject: '🌸 ברוכה הבאה לרשימת ההמתנה - המתנה שלך בדרך!',
-      htmlContent: createWelcomeEmailHTML(name),
-      textContent: createWelcomeEmailText(name),
+      htmlContent: createWelcomeEmailHTML(fullName),
+      textContent: createWelcomeEmailText(fullName),
     };
 
     console.log('📤 Sending email from:', `${fromName} <${fromEmail}>`);

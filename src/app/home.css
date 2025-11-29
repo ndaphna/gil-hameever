@@ -429,6 +429,94 @@
   margin-bottom: 24px;
 }
 
+.cta-links {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.cta-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 40px;
+  border-radius: 50px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  text-align: center;
+}
+
+.cta-link::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.3) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.cta-link:hover::before {
+  opacity: 1;
+}
+
+.cta-link-text {
+  flex: 1;
+  text-align: center;
+}
+
+.articles-link {
+  background: linear-gradient(135deg, #FF0080 0%, #9D4EDD 100%);
+  color: white;
+  box-shadow: 
+    0 6px 24px rgba(255, 0, 128, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.articles-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 40px rgba(255, 0, 128, 0.4),
+    0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.instagram-link {
+  background: linear-gradient(135deg, #E4405F 0%, #F56040 50%, #FCAF45 100%);
+  color: white;
+  box-shadow: 
+    0 6px 24px rgba(228, 64, 95, 0.3),
+    0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.instagram-link:hover {
+  transform: translateY(-4px);
+  box-shadow: 
+    0 12px 40px rgba(228, 64, 95, 0.4),
+    0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.cta-link svg {
+  transition: transform 0.3s ease;
+  flex-shrink: 0;
+}
+
+.cta-link:hover svg {
+  transform: translateX(-3px);
+}
+
 .cta-button {
   display: inline-flex;
   align-items: center;
@@ -857,6 +945,17 @@
   .cta-buttons {
     flex-direction: column;
     width: 100%;
+  }
+
+  .cta-links {
+    width: 100%;
+    gap: 16px;
+  }
+
+  .cta-link {
+    width: 100%;
+    padding: 18px 32px;
+    font-size: 1.05rem;
   }
 
   .cta-button {
