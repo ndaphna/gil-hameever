@@ -108,28 +108,22 @@ export default function WaitlistPage() {
           <h1>
             {landingCopy.mainTitle}
           </h1>
+          
+          {/* Waitlist CTA Box - Above the fold */}
+          <div className="hero-waitlist-cta-box">
+            <h2 className="waitlist-cta-title">הצטרפי לרשימת ההמתנה</h2>
+            <p className="waitlist-cta-subtitle">וקבלי ממני <span className="highlight-word">מתנה</span> מידית:</p>
+            <p className="waitlist-cta-gift">7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר</p>
+            <p className="waitlist-cta-disclaimer">
+              <span className="heart-icon">❤️</span>
+              הרשמה ללא התחייבות - רק <span className="highlight-word">הזדמנות</span>
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Main Content Section */}
       <section className="container">
-        <h2>
-          <span dangerouslySetInnerHTML={{ __html: landingCopy.subTitleBlock[0].replace(/ספר/g, '<span class="highlight">ספר</span>') }} />
-        </h2>
-        <p>
-          {landingCopy.subTitleBlock[1]}
-        </p>
-        <p>
-          {landingCopy.subTitleBlock[2]}
-        </p>
-        <p style={{ 
-          color: 'var(--magenta)',
-          fontWeight: '700',
-          marginBottom: 'clamp(40px, 7vw, 60px)'
-        }}>
-          <span dangerouslySetInnerHTML={{ __html: landingCopy.subTitleBlock[3].replace(/(המתנה|בלעדי)/gi, '<span class="highlight">$1</span>') }} />
-        </p>
-
         {/* About Section */}
         <div className="content-box" style={{ marginTop: '0' }}>
           <p style={{ fontWeight: '600', marginBottom: 'clamp(20px, 4vw, 28px)' }}>
@@ -198,9 +192,6 @@ export default function WaitlistPage() {
         <div className="waitlist-form-section">
           <div className="waitlist-form-container">
             <div className="waitlist-form-wrapper">
-              <h2 className="waitlist-form-title">הצטרפי לרשימת ההמתנה</h2>
-              <p className="waitlist-form-subtitle">הכניסי את הפרטים כאן למטה והצטרפי לרשימת ההמתנה</p>
-              
               <form onSubmit={handleSubmit} className="waitlist-form-form">
                 {error && (
                   <div className="waitlist-form-error">

@@ -599,3 +599,4 @@ function getPriorityLabel(priority: string): string {
   return labels[priority] || 'בינוני';
 }
 
+
