@@ -324,7 +324,7 @@ function createWelcomeEmailHTML(name: string): string {
     <div style="margin-bottom: 25px;">
       <h2 style="color: #6D3D47; font-size: 20px; font-weight: 600; margin: 0 0 15px 0;">מה את מקבלת ברשימה?</h2>
       <ul style="list-style: none; padding: 0; margin: 0;">
-        <li style="padding: 8px 0; color: #6D3D47; font-size: 15px;">✔ PDF מתנה בלעדי</li>
+        <li style="padding: 8px 0; color: #6D3D47; font-size: 15px;">✔ מתנה בלעדי</li>
         <li style="padding: 8px 0; color: #6D3D47; font-size: 15px;">✔ עדכונים ראשונים על הספר</li>
         <li style="padding: 8px 0; color: #6D3D47; font-size: 15px;">✔ הצצות לפרקים ולתכנים</li>
         <li style="padding: 8px 0; color: #6D3D47; font-size: 15px;">✔ תוכן אישי שלא יעלה באינסטגרם</li>
@@ -366,7 +366,7 @@ function createWelcomeEmailText(name: string): string {
 בקרוב תקבלי את המתנה המיוחדת שלי: 7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר
 
 מה את מקבלת ברשימה?
-✔ PDF מתנה בלעדי
+✔ מתנה בלעדי
 ✔ עדכונים ראשונים על הספר
 ✔ הצצות לפרקים ולתכנים
 ✔ תוכן אישי שלא יעלה באינסטגרם
