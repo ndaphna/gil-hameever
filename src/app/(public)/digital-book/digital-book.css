@@ -1,0 +1,848 @@
+/* ============================================
+   DIGITAL BOOK PAGE - יוקרתי, מינימליסטי, מרשים
+   ============================================ */
+
+/* Reset main padding for digital book page */
+#main-content:has(.digital-book-container) {
+  padding: 0;
+  margin: 0;
+  min-height: auto;
+  height: auto;
+}
+
+/* Container */
+.digital-book-container {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(
+    180deg,
+    #fafafa 0%,
+    #ffffff 20%,
+    #ffffff 80%,
+    #fafafa 100%
+  );
+  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
+  direction: rtl;
+}
+
+/* ============================================
+   COVER/HEADER SECTION - יוקרתי ומרשים
+   ============================================ */
+
+.book-cover {
+  position: relative;
+  min-height: 50vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 20px 80px;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 26, 26, 0.98) 0%,
+    rgba(40, 40, 40, 0.98) 100%
+  );
+  position: relative;
+  overflow: hidden;
+}
+
+.book-cover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 30%, rgba(255, 0, 128, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 80% 70%, rgba(157, 78, 221, 0.08) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.book-cover::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(255, 255, 255, 0.02) 2px,
+      rgba(255, 255, 255, 0.02) 4px
+    );
+  pointer-events: none;
+}
+
+.cover-content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 30px;
+  animation: fadeInUp 1s ease-out;
+}
+
+.secret-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+  padding: 8px 24px;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 2px;
+  margin-bottom: 40px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  text-transform: uppercase;
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+.book-title {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.2;
+  margin: 0 0 24px;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.book-subtitle {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+  font-weight: 400;
+  line-height: 1.6;
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  animation: fadeIn 0.8s ease-out 0.4s both;
+}
+
+/* ============================================
+   MAIN CONTENT SECTION - קריא ויוקרתי
+   ============================================ */
+
+.book-content {
+  padding: 80px 20px;
+  position: relative;
+}
+
+.content-wrapper {
+  max-width: 800px;
+  margin: 0 auto;
+  position: relative;
+}
+
+/* Book Section */
+.book-section {
+  margin-bottom: 80px;
+  position: relative;
+}
+
+.book-section:last-child {
+  margin-bottom: 0;
+}
+
+/* Section Title - כותרת פרק */
+.section-title {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  line-height: 1.3;
+  color: #1A1A1A;
+  margin: 0 0 40px;
+  padding-bottom: 20px;
+  border-bottom: 3px solid #1A1A1A;
+  position: relative;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: -3px;
+  right: 0;
+  width: 120px;
+  height: 3px;
+  background: linear-gradient(90deg, #FF0080, #9D4EDD);
+}
+
+/* Content Block */
+.content-block {
+  margin-top: 32px;
+}
+
+/* Subsection Title - כותרת משנה */
+.subsection-title {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.5rem, 3vw, 1.875rem);
+  font-weight: 600;
+  line-height: 1.4;
+  color: #2A2A2A;
+  margin: 48px 0 24px;
+  position: relative;
+  padding-right: 16px;
+}
+
+.subsection-title::before {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 24px;
+  background: linear-gradient(180deg, #FF0080, #9D4EDD);
+  border-radius: 2px;
+}
+
+.subsection-title:first-child {
+  margin-top: 0;
+}
+
+/* Book Paragraph */
+.book-paragraph {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.0625rem, 2vw, 1.1875rem);
+  line-height: 1.85;
+  color: #2A2A2A;
+  margin: 0 0 24px;
+  text-align: right;
+  letter-spacing: 0.01em;
+}
+
+.book-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Illustration Container */
+.illustration-container {
+  margin: 48px 0;
+  position: relative;
+}
+
+.illustration-placeholder {
+  width: 100%;
+  min-height: 300px;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 240, 250, 0.5) 0%,
+    rgba(248, 237, 255, 0.5) 100%
+  );
+  border: 2px dashed rgba(255, 0, 128, 0.2);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.illustration-placeholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(255, 0, 128, 0.03) 10px,
+      rgba(255, 0, 128, 0.03) 20px
+    );
+}
+
+.illustration-label {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 1rem;
+  font-weight: 500;
+  color: rgba(255, 0, 128, 0.5);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 20px;
+}
+
+/* When actual image is added, use this class */
+.illustration-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  display: block;
+}
+
+/* Small Illustration Container (40% of original size) */
+.illustration-container-small {
+  flex-shrink: 0;
+  width: 40%;
+  max-width: 200px;
+  min-width: 150px;
+}
+
+.illustration-image-small {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 2px solid rgba(255, 0, 128, 0.25);
+  box-shadow: 
+    0 4px 16px rgba(255, 0, 128, 0.15),
+    0 0 0 1px rgba(157, 78, 221, 0.1);
+  display: block;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 240, 250, 0.3) 0%,
+    rgba(248, 237, 255, 0.3) 100%
+  );
+  padding: 4px;
+  transition: all 0.3s ease;
+}
+
+.illustration-image-small:hover {
+  border-color: rgba(255, 0, 128, 0.4);
+  box-shadow: 
+    0 6px 20px rgba(255, 0, 128, 0.2),
+    0 0 0 1px rgba(157, 78, 221, 0.15);
+  transform: translateY(-2px);
+}
+
+/* Cover Image */
+.cover-image-container {
+  margin: 0 auto 60px;
+  max-width: 100%;
+}
+
+.cover-image {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  display: block;
+}
+
+/* Book Author */
+.book-author {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 32px 0 8px;
+  animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.book-author-sub {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.75);
+  margin: 4px 0;
+  animation: fadeIn 0.8s ease-out 0.6s both;
+}
+
+/* Highlight List */
+.highlight-list {
+  margin: 32px 0;
+  padding-right: 24px;
+}
+
+.highlight-list .book-paragraph {
+  position: relative;
+  padding-right: 16px;
+  margin-bottom: 12px;
+}
+
+.highlight-list .book-paragraph::before {
+  content: '→';
+  position: absolute;
+  right: 0;
+  color: #FF0080;
+  font-weight: 700;
+}
+
+/* Aliza with Illustration Container */
+.aliza-with-illustration {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  margin: 40px 0;
+  flex-wrap: wrap;
+}
+
+/* Aliza Quote Box */
+.aliza-quote {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 240, 250, 0.6) 0%,
+    rgba(248, 237, 255, 0.6) 100%
+  );
+  border-right: 4px solid #FF0080;
+  border-radius: 12px;
+  padding: 24px 28px;
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+}
+
+.aliza-text {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #FF0080;
+  margin: 0 0 12px;
+}
+
+.aliza-quote-text {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 1.0625rem;
+  font-style: italic;
+  line-height: 1.7;
+  color: #2A2A2A;
+  margin: 0;
+}
+
+/* Book List */
+.book-list {
+  list-style: none;
+  padding: 0;
+  margin: 24px 0;
+}
+
+.book-list li {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.0625rem, 2vw, 1.1875rem);
+  line-height: 1.85;
+  color: #2A2A2A;
+  margin-bottom: 12px;
+  padding-right: 24px;
+  position: relative;
+  text-align: right;
+}
+
+.book-list li::before {
+  content: '•';
+  position: absolute;
+  right: 0;
+  color: #FF0080;
+  font-weight: 700;
+  font-size: 1.2em;
+}
+
+.book-list.checklist li::before {
+  content: '✓';
+  color: #9D4EDD;
+}
+
+.book-list.warning-list li::before {
+  content: '⚠';
+  color: #ff6b6b;
+}
+
+/* Check List */
+.check-list {
+  margin: 32px 0;
+}
+
+.book-paragraph-indent {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.0625rem, 2vw, 1.1875rem);
+  line-height: 1.85;
+  color: #2A2A2A;
+  margin: 8px 0 8px 24px;
+  text-align: right;
+  padding-right: 16px;
+  position: relative;
+}
+
+.book-paragraph-indent::before {
+  content: '└';
+  position: absolute;
+  right: 0;
+  color: #9D4EDD;
+  font-size: 0.9em;
+}
+
+/* Fear List */
+.fear-list {
+  margin: 40px 0;
+}
+
+.fear-item {
+  background: rgba(255, 240, 250, 0.3);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border-right: 3px solid rgba(255, 0, 128, 0.3);
+}
+
+.fear-item:last-child {
+  margin-bottom: 0;
+}
+
+.fear-item .subsection-title {
+  margin-top: 0;
+}
+
+/* Truth Box */
+.truth-box {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 0, 128, 0.05) 0%,
+    rgba(157, 78, 221, 0.05) 100%
+  );
+  border: 1px solid rgba(255, 0, 128, 0.2);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+}
+
+.truth-box .subsection-title {
+  margin-top: 0;
+  color: #FF0080;
+}
+
+/* Chain Effect */
+.chain-effect {
+  background: rgba(248, 237, 255, 0.4);
+  border-radius: 12px;
+  padding: 32px;
+  margin: 32px 0;
+  text-align: center;
+}
+
+.chain-effect .book-paragraph {
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #4A4A4A;
+}
+
+.chain-effect .book-paragraph::after {
+  content: ' ↓';
+  color: #9D4EDD;
+  font-weight: 700;
+}
+
+.chain-effect .book-paragraph:last-child::after {
+  content: '';
+}
+
+/* Tip Box */
+.tip-box {
+  background: rgba(255, 255, 255, 0.8);
+  border: 2px solid rgba(255, 0, 128, 0.2);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 24px 0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.tip-box .book-paragraph:first-child {
+  font-weight: 600;
+  color: #FF0080;
+  margin-bottom: 16px;
+}
+
+/* Micro Actions */
+.micro-actions {
+  margin: 32px 0;
+}
+
+.action-item {
+  background: rgba(255, 255, 255, 0.6);
+  border-right: 3px solid #9D4EDD;
+  border-radius: 8px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.action-item:last-child {
+  margin-bottom: 0;
+}
+
+.action-item .book-paragraph:first-child {
+  font-weight: 600;
+  color: #9D4EDD;
+  margin-bottom: 8px;
+}
+
+/* AI Prompt Box */
+.ai-prompt-box {
+  background: linear-gradient(
+    135deg,
+    rgba(157, 78, 221, 0.08) 0%,
+    rgba(255, 0, 128, 0.08) 100%
+  );
+  border: 1px solid rgba(157, 78, 221, 0.3);
+  border-radius: 12px;
+  padding: 28px;
+  margin: 24px 0;
+}
+
+.ai-prompt-box .book-paragraph:first-child {
+  font-weight: 600;
+  color: #9D4EDD;
+  margin-bottom: 12px;
+}
+
+/* ============================================
+   DECORATIVE ELEMENTS - אפקטים עדינים
+   ============================================ */
+
+.book-section::before {
+  content: '';
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  width: 100px;
+  height: 100px;
+  background: radial-gradient(
+    circle,
+    rgba(255, 0, 128, 0.05) 0%,
+    transparent 70%
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.book-section:hover::before {
+  opacity: 1;
+}
+
+/* ============================================
+   ANIMATIONS
+   ============================================ */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (min-width: 768px) {
+  .book-cover {
+    min-height: 60vh;
+    padding: 120px 40px 100px;
+  }
+
+  .cover-content {
+    padding: 0 40px;
+  }
+
+  .book-content {
+    padding: 100px 40px;
+  }
+
+  .content-wrapper {
+    max-width: 900px;
+  }
+
+  .book-section {
+    margin-bottom: 100px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .content-wrapper {
+    max-width: 950px;
+  }
+
+  .book-paragraph {
+    font-size: 1.25rem;
+    line-height: 1.9;
+  }
+}
+
+@media (max-width: 768px) {
+  .book-cover {
+    min-height: 40vh;
+    padding: 80px 20px 60px;
+  }
+
+  .cover-content {
+    padding: 0 20px;
+  }
+
+  .book-content {
+    padding: 60px 16px;
+  }
+
+  .book-section {
+    margin-bottom: 60px;
+  }
+
+  .section-title {
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+  }
+
+  .subsection-title {
+    font-size: clamp(1.375rem, 4vw, 1.625rem);
+    margin: 36px 0 20px;
+  }
+
+  .book-paragraph {
+    font-size: 1.0625rem;
+    line-height: 1.8;
+    margin-bottom: 20px;
+  }
+
+  .illustration-container {
+    margin: 36px 0;
+  }
+
+  .illustration-placeholder {
+    min-height: 250px;
+  }
+
+  .aliza-with-illustration {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .illustration-container-small {
+    width: 100%;
+    max-width: 250px;
+    margin: 0 auto;
+  }
+
+  .aliza-quote {
+    min-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .book-cover {
+    min-height: 35vh;
+    padding: 60px 16px 50px;
+  }
+
+  .secret-badge {
+    font-size: 0.75rem;
+    padding: 6px 20px;
+    margin-bottom: 30px;
+  }
+
+  .book-title {
+    font-size: clamp(2rem, 8vw, 3rem);
+    margin-bottom: 20px;
+  }
+
+  .book-subtitle {
+    font-size: 1rem;
+  }
+
+  .book-content {
+    padding: 50px 12px;
+  }
+
+  .book-section {
+    margin-bottom: 50px;
+  }
+
+  .section-title {
+    font-size: 1.625rem;
+    margin-bottom: 28px;
+    padding-bottom: 14px;
+  }
+
+  .section-title::after {
+    width: 80px;
+  }
+
+  .subsection-title {
+    font-size: 1.25rem;
+    margin: 28px 0 16px;
+    padding-right: 12px;
+  }
+
+  .subsection-title::before {
+    width: 3px;
+    height: 20px;
+  }
+
+  .book-paragraph {
+    font-size: 1rem;
+    line-height: 1.75;
+    margin-bottom: 18px;
+  }
+
+  .illustration-container {
+    margin: 28px 0;
+  }
+
+  .illustration-placeholder {
+    min-height: 200px;
+    border-radius: 8px;
+  }
+
+  .aliza-with-illustration {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .illustration-container-small {
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
+  }
+
+  .aliza-quote {
+    min-width: 100%;
+    padding: 20px 24px;
+  }
+}
+
+/* ============================================
+   PRINT STYLES (for future PDF export)
+   ============================================ */
+
+@media print {
+  .digital-book-container {
+    background: white;
+  }
+
+  .book-cover {
+    background: #1A1A1A;
+    page-break-after: always;
+  }
+
+  .book-section {
+    page-break-inside: avoid;
+    margin-bottom: 40px;
+  }
+
+  .illustration-container {
+    page-break-inside: avoid;
+  }
+}
+
