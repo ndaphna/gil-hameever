@@ -277,6 +277,76 @@ export default function DigitalBookPage() {
               <p className="book-paragraph">
                 והדו״ח הזה יעזור לך להבין בדיוק איך לחזור לשקט.
               </p>
+
+              {/* Hormones Infographic */}
+              <div className="hormones-infographic-container">
+                <div className="hormones-infographic">
+                  <h2 className="hormones-infographic-title">איך שלושת ההורמונים משפיעים עלייך</h2>
+                  
+                  <div className="hormones-infographic-content">
+                    <div className="hormones-effects-column">
+                      <div className="hormone-effect-item">
+                        <div className="hormone-effect-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#d97e6e" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                            <line x1="9" y1="9" x2="9.01" y2="9"/>
+                            <line x1="15" y1="9" x2="15.01" y2="9"/>
+                          </svg>
+                        </div>
+                        <span>מצב רוח</span>
+                      </div>
+                      
+                      <div className="hormone-effect-item">
+                        <div className="hormone-effect-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#d97e6e" strokeWidth="2">
+                            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            <path d="M16 12l-1-1-1 1" strokeLinecap="round" strokeLinejoin="round"/>
+                          </svg>
+                        </div>
+                        <span>שינה</span>
+                      </div>
+                      
+                      <div className="hormone-effect-item">
+                        <div className="hormone-effect-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#d97e6e" strokeWidth="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <circle cx="12" cy="10" r="3"/>
+                            <path d="M12 13v4"/>
+                            <path d="M10 15l2 2 2-2"/>
+                          </svg>
+                        </div>
+                        <span>גוף</span>
+                      </div>
+                      
+                      <div className="hormone-effect-item">
+                        <div className="hormone-effect-icon">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="#d97e6e" strokeWidth="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                          </svg>
+                        </div>
+                        <span>חשק</span>
+                      </div>
+                    </div>
+                    
+                    <div className="hormones-arrow">
+                      <svg viewBox="0 0 200 150" fill="none">
+                        <path d="M20 75 L140 75 L140 40 L180 75 L140 110 L140 75" 
+                              fill="#ffb5a0" 
+                              stroke="#ffa18f" 
+                              strokeWidth="2"/>
+                      </svg>
+                    </div>
+                    
+                    <div className="hormones-column">
+                      <div className="hormone-circle">אסטרוגן</div>
+                      <div className="hormone-circle">פרוגסטרון</div>
+                      <div className="hormone-circle">קורטיזול</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
               <div className="aliza-with-illustration">
                 <div className="aliza-quote">
                   <p className="aliza-text">עליזה לוחשת:</p>

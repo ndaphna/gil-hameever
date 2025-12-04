@@ -823,6 +823,193 @@
 }
 
 /* ============================================
+   HORMONES INFOGRAPHIC - אינפוגרפיקת הורמונים
+   ============================================ */
+
+.hormones-infographic-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 60px 0;
+  padding: 0 20px;
+  width: 100%;
+}
+
+.hormones-infographic {
+  background: #fff5f0;
+  border-radius: 30px;
+  padding: clamp(30px, 4vw, 50px);
+  max-width: 65%;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  margin: 0 auto;
+}
+
+.hormones-infographic-title {
+  text-align: center;
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+  color: #d97e6e;
+  margin: 0 0 clamp(40px, 5vw, 60px);
+  font-weight: 700;
+}
+
+.hormones-infographic-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(20px, 3vw, 30px);
+}
+
+.hormones-effects-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(25px, 3vw, 35px);
+}
+
+.hormone-effect-item {
+  display: flex;
+  align-items: center;
+  gap: clamp(15px, 2vw, 20px);
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  color: #8b5e54;
+  font-weight: 500;
+}
+
+.hormone-effect-icon {
+  width: clamp(45px, 5vw, 60px);
+  height: clamp(45px, 5vw, 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.hormone-effect-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.hormones-arrow {
+  flex: 0 0 clamp(120px, 15vw, 200px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hormones-arrow svg {
+  width: 100%;
+  height: auto;
+  max-width: 200px;
+  max-height: 150px;
+}
+
+.hormones-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(25px, 3vw, 35px);
+}
+
+.hormone-circle {
+  width: clamp(120px, 15vw, 160px);
+  height: clamp(120px, 15vw, 160px);
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffb5a0 0%, #ffa18f 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  color: #8b5e54;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(217, 126, 110, 0.3);
+  transition: transform 0.3s ease;
+  margin: 0 auto;
+}
+
+.hormone-circle:hover {
+  transform: scale(1.05);
+}
+
+/* Responsive adjustments for infographic */
+@media (max-width: 768px) {
+  .hormones-infographic {
+    max-width: 90%;
+    padding: 30px 20px;
+  }
+
+  .hormones-infographic-title {
+    font-size: 1.8rem;
+    margin-bottom: 40px;
+  }
+
+  .hormones-infographic-content {
+    flex-direction: column-reverse;
+    gap: 20px;
+  }
+
+  .hormones-arrow {
+    transform: rotate(90deg);
+    margin: 20px 0;
+    flex: 0 0 auto;
+  }
+
+  .hormone-effect-item {
+    font-size: 1.4rem;
+    justify-content: flex-start;
+  }
+
+  .hormone-circle {
+    width: 140px;
+    height: 140px;
+    font-size: 1.4rem;
+  }
+
+  .hormones-effects-column,
+  .hormones-column {
+    width: 100%;
+    align-items: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .hormones-infographic {
+    max-width: 95%;
+    padding: 24px 16px;
+    border-radius: 20px;
+  }
+
+  .hormones-infographic-title {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+  }
+
+  .hormone-effect-item {
+    font-size: 1.2rem;
+    gap: 12px;
+  }
+
+  .hormone-effect-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hormone-circle {
+    width: 120px;
+    height: 120px;
+    font-size: 1.2rem;
+  }
+
+  .hormones-effects-column,
+  .hormones-column {
+    gap: 20px;
+  }
+}
+
+/* ============================================
    PRINT STYLES (for future PDF export)
    ============================================ */
 
