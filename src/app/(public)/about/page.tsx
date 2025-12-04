@@ -197,27 +197,29 @@ export default function AboutPage() {
               className="road-sign-image"
             />
           </div>
-          <div className="cta-buttons">
+          <div className="cta-buttons-wrapper">
             <a 
               href="/inspiration-waves" 
-              className="cta-button"
+              className="cta-button cta-button-primary"
             >
-              💌 הצטרפי לגלי השראה
+              💌 הצטרפי לרשימת התפוצה של ענבל - גלי השראה
             </a>
-            <a 
-              href="https://www.instagram.com/inbal_daphna/" 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="cta-button"
-            >
-              🎥 עקבי אחרי באינסטגרם
-            </a>
-            <a 
-              href="/book-preview" 
-              className="cta-button"
-            >
-              📘 קראי על הספר
-            </a>
+            <div className="cta-buttons">
+              <a 
+                href="https://www.instagram.com/inbal_daphna/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-button"
+              >
+                🎥 עקבי אחרי באינסטגרם
+              </a>
+              <a 
+                href="/book-preview" 
+                className="cta-button"
+              >
+                📘 קראי על הספר
+              </a>
+            </div>
           </div>
         </div>
         <p className="cta-text">המסע שלך אל גיל המֵעֵבֶר מתחיל כאן.</p>

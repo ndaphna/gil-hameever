@@ -1,14 +1,63 @@
 'use client';
 
 import Link from "next/link";
+import { useState, FormEvent } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import "./home.css";
+import "../app/(public)/inspiration-waves/inspiration-waves.css";
 
 export default function Home() {
   const { user, profile, loading } = useAuth();
   
   // Check if user is logged in and has active subscription
   const hasActiveSubscription = user && profile && profile.subscription_status === 'active';
+  
+  // Form state for inspiration waves subscription
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [consent, setConsent] = useState(false);
+
+  const handleFormSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!consent) {
+      setError('יש לאשר את תנאי ההרשמה');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/inspiration-waves', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'שגיאה בשליחת הטופס');
+      }
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      console.error('Form submission error:', err);
+      setError(err.message || 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const scrollToFeatures = () => {
     const featuresSection = document.querySelector('.features-section');
     if (featuresSection) {
@@ -144,28 +193,93 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="cta-section">
-        <div className="cta-container">
-          <div className="cta-content">
-            <h2 className="cta-title">מוכנה להתחיל את המסע?</h2>
-            <p className="cta-description">
-              הצטרפי לאלפי נשים שכבר גילו כיצד לחיות את גיל המעבר בביטחון, בשלווה ובכוח
-            </p>
-            <div className="cta-buttons">
-              <Link href="/signup" className="cta-button primary-cta">
-                <span>התחילי בחינם עכשיו</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </Link>
-              <Link href="/pricing" className="cta-button secondary-cta">
-                <span>למידע על המחירים</span>
-              </Link>
-            </div>
-            <p className="cta-note">
-              ללא כרטיס אשראי • ביטול בכל עת • תמיכה מלאה בעברית
-            </p>
+      {/* Inspiration Waves Form Section */}
+      <section className="inspiration-form-section">
+        <div className="inspiration-form-container">
+          <div className="inspiration-form-wrapper">
+            <h2 className="form-title">הזמנה אישית לרשימת תפוצה של גלי ההשראה:</h2>
+            <p className="form-subtitle">הכניסי את הפרטים כאן למטה והצטרפי לגלי ההשראה</p>
+            
+            {isSubmitted ? (
+              <div className="form-success">
+                <p className="success-icon">✨</p>
+                <h3>ברוכה הבאה לגלי ההשראה!</h3>
+                <p>תודה שהצטרפת. בקרוב תקבלי את הגל הראשון שלך.</p>
+              </div>
+            ) : (
+              <form onSubmit={handleFormSubmit} className="inspiration-form">
+                {error && (
+                  <div className="form-error">
+                    {error}
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <input
+                    type="text"
+                    id="homepage-firstName"
+                    name="firstName"
+                    placeholder="שם"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="given-name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    type="text"
+                    id="homepage-lastName"
+                    name="lastName"
+                    placeholder="שם משפחה"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="family-name"
+                  />
+                </div>
+
+                <div className="form-group">
+                  <input
+                    type="email"
+                    id="homepage-email"
+                    name="email"
+                    placeholder="אימייל"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    disabled={isSubmitting}
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="form-consent">
+                  <label className="consent-label">
+                    <input
+                      type="checkbox"
+                      checked={consent}
+                      onChange={(e) => setConsent(e.target.checked)}
+                      required
+                      disabled={isSubmitting}
+                    />
+                    <span className="consent-text">
+                      אני מאשרת להצטרף לגלי ההשראה ולקבל ממני עדכונים מעצימים ואנושיים באהבה.
+                    </span>
+                  </label>
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="form-submit-button"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? 'מצטרפת...' : 'אני רוצה להצטרף לגלי ההשראה'}
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
