@@ -3,7 +3,8 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
 import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
 
-export const runtime = 'edge';
+// שינוי ל-nodejs runtime כדי לתמוך בכל הפונקציות הנדרשות
+export const runtime = 'nodejs';
 
 /**
  * Newsletter Scheduler - בודק ומשלח ניוזלטרים לפי העדפות המשתמשת
@@ -101,9 +102,25 @@ async function processNewsletterScheduler() {
         time: string; // HH:MM format
       };
 
+      console.log(`📧 Processing user ${pref.user_id}:`, {
+        enabled: emailPrefs?.enabled,
+        frequency: emailPrefs?.frequency,
+        time: emailPrefs?.time,
+        currentHour,
+        currentMinute,
+        currentDayOfWeek,
+        currentDayOfMonth
+      });
+
       // בדוק אם אימייל מופעל
       if (!emailPrefs?.enabled) {
+        console.log(`⏭️ Skipping user ${pref.user_id}: email not enabled`);
         skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: 'Email not enabled'
+        });
         continue;
       }
 
@@ -111,13 +128,60 @@ async function processNewsletterScheduler() {
       // ה-cron רץ בתחילת כל שעה (דקה 0)
       // נשלח ניוזלטר אם השעה המועדפת היא בשעה הנוכחית
       // (אם המשתמשת בחרה 18:06, נשלח ב-18:00 - זה קרוב מספיק)
-      const [prefHour, prefMinute] = emailPrefs.time.split(':').map(Number);
+      
+      // תיקון פורמט השעה (אם יש "20:1" נהפוך ל-"20:01")
+      let timeStr = emailPrefs.time;
+      if (!timeStr.includes(':')) {
+        console.warn(`⚠️ Invalid time format for user ${pref.user_id}: ${timeStr}`);
+        skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: `Invalid time format: ${timeStr}`
+        });
+        continue;
+      }
+      
+      const [prefHour, prefMinute] = timeStr.split(':').map(Number);
+      
+      // בדוק שהשעה תקינה
+      if (isNaN(prefHour) || isNaN(prefMinute) || prefHour < 0 || prefHour > 23 || prefMinute < 0 || prefMinute > 59) {
+        console.warn(`⚠️ Invalid time values for user ${pref.user_id}: ${timeStr} (hour: ${prefHour}, minute: ${prefMinute})`);
+        skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: `Invalid time values: ${timeStr}`
+        });
+        continue;
+      }
       
       // בדוק אם השעה המועדפת היא בשעה הנוכחית
+      // אם הדקה המועדפת היא 0-59, נשלח בשעה הנוכחית (כי ה-cron רץ בדקה 0)
       const isCurrentHour = prefHour === currentHour;
       
+      // אם השעה לא תואמת, דלג
       if (!isCurrentHour) {
+        console.log(`⏭️ Skipping user ${pref.user_id}: hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`);
         skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: `Hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`
+        });
+        continue;
+      }
+      
+      // אם השעה תואמת אבל הדקה המועדפת גדולה מ-0, נשלח רק אם אנחנו בדקה 0
+      // (כי ה-cron רץ בדקה 0 של כל שעה)
+      if (prefMinute > 0 && currentMinute !== 0) {
+        console.log(`⏭️ Skipping user ${pref.user_id}: minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`);
+        skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: `Minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`
+        });
         continue;
       }
 
@@ -130,7 +194,13 @@ async function processNewsletterScheduler() {
       );
 
       if (!shouldSendByFrequency) {
+        console.log(`⏭️ Skipping user ${pref.user_id}: frequency check failed (frequency: ${emailPrefs.frequency}, dayOfWeek: ${currentDayOfWeek}, dayOfMonth: ${currentDayOfMonth})`);
         skipped++;
+        results.push({
+          userId: pref.user_id,
+          status: 'skipped',
+          reason: `Frequency check failed (${emailPrefs.frequency}, day ${currentDayOfWeek}, month day ${currentDayOfMonth})`
+        });
         continue;
       }
 
@@ -150,12 +220,19 @@ async function processNewsletterScheduler() {
         
         // לא נשלח יותר מפעם ב-23 שעות (אפילו אם התדירות היא יומית)
         if (hoursSinceLastSent < 23) {
+          console.log(`⏭️ Skipping user ${pref.user_id}: sent recently (${hoursSinceLastSent.toFixed(2)} hours ago)`);
           skipped++;
+          results.push({
+            userId: pref.user_id,
+            status: 'skipped',
+            reason: `Sent recently (${hoursSinceLastSent.toFixed(2)} hours ago)`
+          });
           continue;
         }
       }
 
       // כל התנאים מתקיימים - שלח ניוזלטר!
+      console.log(`✅ All checks passed for user ${pref.user_id}, sending newsletter...`);
       const sendResult = await sendNewsletterToUser(pref.user_id);
       
       if (sendResult.sent) {
@@ -166,6 +243,7 @@ async function processNewsletterScheduler() {
           frequency: emailPrefs.frequency,
           time: emailPrefs.time
         });
+        console.log(`✅ Newsletter sent successfully to user ${pref.user_id}`);
       } else {
         skipped++;
         results.push({
@@ -173,19 +251,33 @@ async function processNewsletterScheduler() {
           status: 'skipped',
           reason: sendResult.reason
         });
+        console.log(`❌ Newsletter sending failed for user ${pref.user_id}: ${sendResult.reason}`);
       }
     } catch (error: any) {
+      console.error(`❌ Error processing user ${pref.user_id}:`, error);
       errors.push({ userId: pref.user_id, error: error.message });
       skipped++;
+      results.push({
+        userId: pref.user_id,
+        status: 'error',
+        reason: error.message
+      });
     }
   }
+
+  console.log(`📊 Newsletter scheduler summary:`, {
+    processed: preferences.length,
+    sent,
+    skipped,
+    errors: errors.length
+  });
 
   return {
     processed: preferences.length,
     sent,
     skipped,
     errors: errors.length > 0 ? errors : undefined,
-    results: results.slice(0, 10) // החזר רק 10 תוצאות ראשונות
+    results: results // החזר את כל התוצאות עם הסיבות
   };
 }
 

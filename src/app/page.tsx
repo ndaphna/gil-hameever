@@ -298,17 +298,7 @@ export default function Home() {
             <div className="footer-column">
               <h4>קישורים מהירים</h4>
               <Link href="/about">אודות</Link>
-              <Link href="/pricing">מחירים</Link>
               <Link href="/hormones">הורמונים</Link>
-            </div>
-            
-            <div className="footer-column">
-              <h4>חשבון</h4>
-              <Link href="/login">התחברות</Link>
-              <Link href="/signup">הרשמה</Link>
-              {hasActiveSubscription && (
-                <Link href="/dashboard">לוח בקרה</Link>
-              )}
             </div>
           </div>
         </div>
