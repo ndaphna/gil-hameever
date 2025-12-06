@@ -11,9 +11,56 @@
 'use client';
 
 import Link from 'next/link';
+import { useState, FormEvent } from 'react';
 import '@/styles/waitlist.css';
 
 export default function EmergencyMapPage() {
+  // Form state for inspiration waves subscription
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [error, setError] = useState('');
+  const [consent, setConsent] = useState(false);
+
+  const handleFormSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!consent) {
+      setError('יש לאשר את תנאי ההרשמה');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/inspiration-waves', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          firstName: formData.firstName.trim(),
+          lastName: formData.lastName.trim(),
+          email: formData.email.trim(),
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'שגיאה בשליחת הטופס');
+      }
+
+      setIsSubmitted(true);
+    } catch (err: any) {
+      console.error('Form submission error:', err);
+      setError(err.message || 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="waitlist-landing">
       {/* Hero Section */}
@@ -506,6 +553,115 @@ export default function EmergencyMapPage() {
           }}>
             ❤️
           </p>
+        </div>
+
+        {/* Inspiration Waves Subscription Form */}
+        <div className="waitlist-form-section" style={{ marginTop: 'clamp(60px, 10vw, 80px)' }}>
+          <div className="waitlist-form-container">
+            <div className="waitlist-form-wrapper">
+              {!isSubmitted ? (
+                <>
+                  <h2 className="waitlist-form-title">
+                    הזמנה אישית לרשימת תפוצה של גלי ההשראה:
+                  </h2>
+                  <p className="waitlist-form-subtitle">
+                    הכניסי את הפרטים כאן למטה והצטרפי לגלי ההשראה
+                  </p>
+
+                  {error && (
+                    <div className="waitlist-form-error">
+                      {error}
+                    </div>
+                  )}
+
+                  <form onSubmit={handleFormSubmit} className="waitlist-form-form">
+                    <div className="waitlist-form-group">
+                      <input
+                        type="text"
+                        id="emergency-map-firstName"
+                        name="firstName"
+                        placeholder="שם"
+                        value={formData.firstName}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                        required
+                        disabled={isSubmitting}
+                        autoComplete="given-name"
+                      />
+                    </div>
+
+                    <div className="waitlist-form-group">
+                      <input
+                        type="text"
+                        id="emergency-map-lastName"
+                        name="lastName"
+                        placeholder="שם משפחה"
+                        value={formData.lastName}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                        required
+                        disabled={isSubmitting}
+                        autoComplete="family-name"
+                      />
+                    </div>
+
+                    <div className="waitlist-form-group">
+                      <input
+                        type="email"
+                        id="emergency-map-email"
+                        name="email"
+                        placeholder="אימייל"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                        disabled={isSubmitting}
+                        autoComplete="email"
+                      />
+                    </div>
+
+                    <div className="waitlist-form-consent">
+                      <label className="waitlist-consent-label">
+                        <input
+                          type="checkbox"
+                          checked={consent}
+                          onChange={(e) => setConsent(e.target.checked)}
+                          required
+                          disabled={isSubmitting}
+                        />
+                        <span className="waitlist-consent-text">
+                          אני מאשרת להצטרף לגלי ההשראה ולקבל עדכונים, כלים מעשיים ומסרים מעצימים.
+                        </span>
+                      </label>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className="waitlist-form-submit-button"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'מצטרפת...' : 'אני רוצה להצטרף לגלי ההשראה'}
+                    </button>
+                  </form>
+                </>
+              ) : (
+                <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+                  <p style={{ 
+                    fontSize: 'clamp(1.25rem, 3vw, 1.5rem)', 
+                    fontWeight: '700', 
+                    color: 'white',
+                    marginBottom: '16px'
+                  }}>
+                    🎉 תודה שהצטרפת!
+                  </p>
+                  <p style={{ 
+                    fontSize: '1rem', 
+                    color: 'rgba(255, 255, 255, 0.9)',
+                    lineHeight: '1.6'
+                  }}>
+                    נשלח לך אימייל אישור. נתראה בגלי ההשראה! 💜
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         {/* Back to Home */}

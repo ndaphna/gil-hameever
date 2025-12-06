@@ -289,7 +289,7 @@ export default function LeadGift8Page() {
                   disabled={isSubmitting}
                 />
                 <span className="waitlist-consent-text">
-                  אני מאשרת להצטרף ולקבל עדכונים ומידע מעצימים ממני.
+                  אני מאשרת להצטרף לגלי ההשראה ולקבל עדכונים, כלים מעשיים ומסרים מעצימים.
                 </span>
               </label>
             </div>

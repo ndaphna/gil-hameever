@@ -266,7 +266,7 @@ export default function Home() {
                       disabled={isSubmitting}
                     />
                     <span className="consent-text">
-                      אני מאשרת להצטרף לגלי ההשראה ולקבל ממני עדכונים מעצימים ואנושיים באהבה.
+                      אני מאשרת להצטרף לגלי ההשראה ולקבל עדכונים, כלים מעשיים ומסרים מעצימים.
                     </span>
                   </label>
                 </div>
