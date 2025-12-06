@@ -1,10 +1,10 @@
 'use client';
 
-import './digital-book.css';
+import './secret-report.css';
 
-export default function DigitalBookPage() {
+export default function SecretReportPage() {
   return (
-    <div className="digital-book-container">
+    <div className="secret-report-container">
       {/* Cover/Header Section */}
       <section className="book-cover">
         <div className="cover-content">
@@ -1202,3 +1202,4 @@ export default function DigitalBookPage() {
     </div>
   );
 }
+

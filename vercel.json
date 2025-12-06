@@ -8,5 +8,12 @@
       "path": "/api/cron/daily-insights",
       "schedule": "0 20 * * *"
     }
+  ],
+  "redirects": [
+    {
+      "source": "/digital-book",
+      "destination": "/secret-report",
+      "permanent": true
+    }
   ]
 }
