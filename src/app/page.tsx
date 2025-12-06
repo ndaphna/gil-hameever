@@ -79,7 +79,7 @@ export default function Home() {
           </h1>
           
           <p className="hero-subtitle">
-            המקום שמראה לך איך לפרוח באמצע החיים ומֵעֵבֶר לו.
+            המקום שמראה לך איך לפרוח באמצע החיים ומֵעֵבֶר.
           </p>
           
           <button 
