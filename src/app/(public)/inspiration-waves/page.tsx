@@ -81,7 +81,7 @@ export default function InspirationWavesPage() {
               גל של השראה, ידע, הומור ותמיכה אמיתית לנשים בגיל המעבר.
             </p>
             
-            <p className="intro-text" style={{ marginTop: '30px' }}>
+            <p className="intro-text intro-text-spacing">
               אם את מרגישה לפעמים שאת לא מזהה את עצמך, מוצפת, עייפה, מבולבלת…
             </p>
             <p className="intro-text">
@@ -90,7 +90,7 @@ export default function InspirationWavesPage() {
             <p className="intro-text">
               המיילים של גלי השראה הם המקום שלך לעצור רגע, לנשום, ולהיזכר:
             </p>
-            <p className="highlight-text-large" style={{ margin: '24px auto' }}>
+            <p className="highlight-text-large highlight-text-spacing">
               את לא לבד. ואת לא רק תעברי את זה, את תתחזקי, ותפרחי דווקא עכשיו.
             </p>
           </div>
@@ -150,19 +150,20 @@ export default function InspirationWavesPage() {
       <section className="preview-content-section">
         <div className="preview-container">
           <div className="content-card highlight-box">
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.3rem', lineHeight: '1.9', fontWeight: '600' }}>
+            <p className="intro-text intro-text-center intro-text-bold">
               זה לא "ניוזלטר".
             </p>
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.3rem', lineHeight: '1.9', fontWeight: '600' }}>
+            <p className="intro-text intro-text-center intro-text-bold">
               זו תמיכה שבועית לנשמה.
             </p>
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.3rem', lineHeight: '1.9', fontWeight: '600' }}>
+            <p className="intro-text intro-text-center intro-text-bold">
               זו קהילה שמתחילה במייל - ונוגעת עמוק בלב.
             </p>
-            <p className="highlight-text-large" style={{ margin: '30px auto', fontSize: '1.5rem' }}>
-              ✨ מזמינה אותך להצטרף
+            <p className="highlight-text-invite-wrapper">
+              <span className="invite-icon">✨</span>
+              <span className="highlight-text-large highlight-text-invite">מזמינה אותך להצטרף</span>
             </p>
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.2rem', lineHeight: '1.9' }}>
+            <p className="intro-text intro-text-center intro-text-subtitle">
               ולהתחיל לקבל ממני גלים קטנים של כוח, השראה ושקט פנימי.
             </p>
           </div>
