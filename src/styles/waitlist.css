@@ -500,8 +500,32 @@
   height: 20px;
   margin-top: 2px;
   cursor: pointer;
-  accent-color: white;
+  accent-color: var(--magenta);
   flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.waitlist-form .waitlist-consent-label input[type="checkbox"]:checked {
+  background-color: var(--magenta);
+  border-color: var(--magenta);
+}
+
+.waitlist-form .waitlist-consent-label input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .waitlist-form .waitlist-consent-text {
@@ -781,8 +805,32 @@
   height: 20px;
   margin-top: 2px;
   cursor: pointer;
-  accent-color: white;
+  accent-color: var(--magenta);
   flex-shrink: 0;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.waitlist-consent-label input[type="checkbox"]:checked {
+  background-color: var(--magenta);
+  border-color: var(--magenta);
+}
+
+.waitlist-consent-label input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .waitlist-consent-text {

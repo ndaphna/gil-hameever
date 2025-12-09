@@ -540,9 +540,33 @@
   height: clamp(18px, 4vw, 20px);
   margin-top: 2px;
   cursor: pointer;
-  accent-color: white;
+  accent-color: #FF0080;
   flex-shrink: 0;
   min-width: 18px;
+  -webkit-appearance: none;
+  appearance: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.consent-label input[type="checkbox"]:checked {
+  background-color: #FF0080;
+  border-color: #FF0080;
+}
+
+.consent-label input[type="checkbox"]:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: clamp(12px, 3vw, 14px);
+  font-weight: 700;
+  line-height: 1;
 }
 
 .consent-text {
