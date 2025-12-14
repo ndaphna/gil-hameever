@@ -31,17 +31,90 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
     generateInsights();
   }, [dailyEntries, cycleEntries]);
 
+  // Helper function to get current week entries (Sunday to Saturday, Israeli week)
+  const getCurrentWeekEntries = (entries: DailyEntry[]): DailyEntry[] => {
+    const now = new Date();
+    const currentDayOfWeek = now.getDay(); // 0 = Sunday
+    
+    // Find last Sunday (start of current Israeli week)
+    const lastSunday = new Date(now);
+    lastSunday.setDate(now.getDate() - currentDayOfWeek);
+    lastSunday.setHours(0, 0, 0, 0);
+    
+    // Helper function to format date as YYYY-MM-DD in local timezone
+    const formatDateLocal = (date: Date): string => {
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+
+    // Helper function to extract date string from entry date
+    const extractDateString = (dateValue: string | Date | null | undefined): string | null => {
+      if (!dateValue) return null;
+      
+      if (typeof dateValue === 'string') {
+        const dateMatch = dateValue.match(/^(\d{4}-\d{2}-\d{2})/);
+        if (dateMatch) return dateMatch[1];
+        const parsed = new Date(dateValue);
+        if (!isNaN(parsed.getTime())) {
+          return formatDateLocal(parsed);
+        }
+      } else if (dateValue instanceof Date) {
+        return formatDateLocal(dateValue);
+      }
+      
+      return null;
+    };
+
+    // Filter entries from current week only
+    return entries.filter(e => {
+      const entryDateStr = extractDateString(e.date);
+      if (!entryDateStr) return false;
+      
+      const entryDate = new Date(entryDateStr);
+      entryDate.setHours(0, 0, 0, 0);
+      
+      return entryDate >= lastSunday;
+    });
+  };
+
   const generateInsights = () => {
     const newInsights: Insight[] = [];
 
-    // Sleep Quality Insight
-    const recentSleepEntries = dailyEntries
-      .filter(e => e.sleep_quality)
-      .slice(0, 7);
+    // Get only current week entries - ALL calculations must use real data from current week only
+    const weeklyEntries = getCurrentWeekEntries(dailyEntries);
     
-    if (recentSleepEntries.length > 0) {
-      const goodSleepCount = recentSleepEntries.filter(e => e.sleep_quality === 'good').length;
-      const sleepPercentage = Math.round((goodSleepCount / recentSleepEntries.length) * 100);
+    console.log('📊 InsightsDashboard: Generating insights from', {
+      totalEntries: dailyEntries.length,
+      weeklyEntries: weeklyEntries.length,
+      weeklyDates: weeklyEntries.map(e => e.date).slice(0, 5)
+    });
+
+    // Only show insights if there's at least one entry in the current week
+    if (weeklyEntries.length === 0) {
+      newInsights.push({
+        id: 'no-data',
+        icon: '📝',
+        title: 'אין נתונים השבוע',
+        value: '0 דיווחים',
+        trend: 'stable',
+        message: 'עדיין לא דיווחת השבוע. התחילי למלא דיווח יומי כדי לראות תובנות!',
+        color: '#9E9E9E',
+        priority: 'low'
+      });
+      setInsights(newInsights);
+      setAnimationKey(prev => prev + 1);
+      setIsLoading(false);
+      return;
+    }
+
+    // Sleep Quality Insight - ONLY from current week
+    const weeklySleepEntries = weeklyEntries.filter(e => e.sleep_quality);
+    
+    if (weeklySleepEntries.length > 0) {
+      const goodSleepCount = weeklySleepEntries.filter(e => e.sleep_quality === 'good').length;
+      const sleepPercentage = Math.round((goodSleepCount / weeklySleepEntries.length) * 100);
       
       newInsights.push({
         id: 'sleep',
@@ -57,11 +130,10 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
       });
     }
 
-    // Hot Flashes Pattern
-    const hotFlashesCount = dailyEntries.filter(e => e.hot_flashes).length;
-    if (dailyEntries.length > 0) {
-      const hotFlashesPercentage = Math.round((hotFlashesCount / dailyEntries.length) * 100);
-      
+    // Hot Flashes Pattern - ONLY from current week
+    const hotFlashesCount = weeklyEntries.filter(e => e.hot_flashes).length;
+    
+    if (weeklyEntries.length > 0) {
       newInsights.push({
         id: 'hot-flashes',
         icon: '🔥',
@@ -70,30 +142,36 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
         trend: hotFlashesCount > 10 ? 'up' : hotFlashesCount < 5 ? 'down' : 'stable',
         message: hotFlashesCount > 10 
           ? 'גלי החום מוגברים - נסי טכניקות הרגעה' 
-          : 'גלי החום בשליטה - כל הכבוד!',
+          : hotFlashesCount > 0
+          ? 'גלי החום בשליטה - כל הכבוד!'
+          : 'לא דווחו גלי חום השבוע',
         color: '#E91E63',
         priority: hotFlashesCount > 10 ? 'high' : 'low'
       });
     }
 
-    // Mood Stability
-    const moodVariety = new Set(dailyEntries.map(e => e.mood)).size;
-    const moodStability = moodVariety <= 2 ? 'יציב' : moodVariety <= 4 ? 'משתנה' : 'תנודתי';
-    
-    newInsights.push({
-      id: 'mood',
-      icon: '😊',
-      title: 'מצב רוח',
-      value: moodStability,
-      trend: moodVariety <= 2 ? 'stable' : moodVariety > 4 ? 'down' : 'stable',
-      message: moodVariety <= 2 
-        ? 'מצב רוח יציב - סימן מצוין!' 
-        : 'תנודות במצב הרוח - זה נורמלי בתקופה זו',
-      color: '#4FACFE',
-      priority: moodVariety > 4 ? 'medium' : 'low'
-    });
+    // Mood Stability - ONLY from current week
+    const weeklyMoodEntries = weeklyEntries.filter(e => e.mood);
+    if (weeklyMoodEntries.length > 0) {
+      const moodVariety = new Set(weeklyMoodEntries.map(e => e.mood)).size;
+      const moodStability = moodVariety <= 2 ? 'יציב' : moodVariety <= 4 ? 'משתנה' : 'תנודתי';
+      
+      newInsights.push({
+        id: 'mood',
+        icon: '😊',
+        title: 'מצב רוח',
+        value: moodStability,
+        trend: moodVariety <= 2 ? 'stable' : moodVariety > 4 ? 'down' : 'stable',
+        message: moodVariety <= 2 
+          ? 'מצב רוח יציב - סימן מצוין!' 
+          : 'תנודות במצב הרוח - זה נורמלי בתקופה זו',
+        color: '#4FACFE',
+        priority: moodVariety > 4 ? 'medium' : 'low'
+      });
+    }
 
-    // Cycle Regularity
+    // Cycle Regularity - based on historical data (needs multiple periods to calculate)
+    // This is OK to use historical data as it requires multiple periods to determine regularity
     if (cycleEntries.length >= 3) {
       const periodDates = cycleEntries
         .filter(e => e.is_period)
@@ -124,11 +202,11 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
       }
     }
 
-    // Energy Levels
-    const energyLevels = dailyEntries.filter(e => e.energy_level);
-    if (energyLevels.length > 0) {
-      const highEnergyCount = energyLevels.filter(e => e.energy_level === 'high').length;
-      const energyPercentage = Math.round((highEnergyCount / energyLevels.length) * 100);
+    // Energy Levels - ONLY from current week
+    const weeklyEnergyEntries = weeklyEntries.filter(e => e.energy_level);
+    if (weeklyEnergyEntries.length > 0) {
+      const highEnergyCount = weeklyEnergyEntries.filter(e => e.energy_level === 'high').length;
+      const energyPercentage = Math.round((highEnergyCount / weeklyEnergyEntries.length) * 100);
       
       newInsights.push({
         id: 'energy',
@@ -144,8 +222,8 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
       });
     }
 
-    // Overall Wellness Score
-    const wellnessScore = calculateWellnessScore(dailyEntries);
+    // Overall Wellness Score - ONLY from current week
+    const wellnessScore = calculateWellnessScore(weeklyEntries);
     newInsights.push({
       id: 'wellness',
       icon: '🌟',
@@ -165,7 +243,11 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
   };
 
   const calculateWellnessScore = (entries: DailyEntry[]): number => {
-    if (entries.length === 0) return 50;
+    // Only calculate from real data - no default values or speculations
+    if (entries.length === 0) {
+      console.warn('calculateWellnessScore called with empty entries - this should not happen');
+      return 0; // Return 0 instead of default 50 to avoid showing fake data
+    }
 
     let score = 0;
     let factors = 0;
@@ -200,6 +282,7 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
     }
 
     // Symptoms factor (inverted - less symptoms = higher score)
+    // This is always calculated from entries, so factors will be at least 1
     const symptomScore = entries.reduce((acc, e) => {
       const symptoms = [
         e.hot_flashes, e.night_sweats, e.pain, e.bloating,
@@ -209,6 +292,12 @@ export default function InsightsDashboard({ dailyEntries, cycleEntries }: Insigh
     }, 0) / entries.length;
     score += symptomScore;
     factors++;
+
+    // Safety check - should never happen since symptomScore always adds to factors
+    if (factors === 0) {
+      console.warn('calculateWellnessScore: No factors calculated - this should not happen');
+      return 0;
+    }
 
     return Math.round(score / factors);
   };

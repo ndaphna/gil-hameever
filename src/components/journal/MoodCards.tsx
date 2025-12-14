@@ -57,11 +57,12 @@ export default function MoodCards({ entries }: MoodCardsProps) {
   console.log('📊 Mood statistics:', moodStats);
   
   // Fix: Properly find the most common mood by sorting entries by count
+  // Only use real data - no default values
   const mostCommonMood = Object.keys(moodStats).length > 0
     ? Object.entries(moodStats)
         .sort((a, b) => b[1] - a[1]) // Sort by count descending
         [0][0] // Get the first (highest count) mood
-    : 'calm'; // Default if no moods found
+    : null; // No default - will show "no data" message
   
   console.log(`📊 Most common mood: ${mostCommonMood} (${moodStats[mostCommonMood] || 0}/${totalEntries} entries)`);
 
@@ -77,7 +78,7 @@ export default function MoodCards({ entries }: MoodCardsProps) {
     ? Object.entries(energyStats)
         .sort((a, b) => b[1] - a[1]) // Sort by count descending
         [0][0] // Get the first (highest count) energy level
-    : 'medium'; // Default if no energy levels found
+    : null; // No default - will show "no data" message
 
   // Calculate sleep quality statistics
   const sleepStats = filteredEntries.reduce((acc, entry) => {
@@ -91,7 +92,7 @@ export default function MoodCards({ entries }: MoodCardsProps) {
     ? Object.entries(sleepStats)
         .sort((a, b) => b[1] - a[1]) // Sort by count descending
         [0][0] // Get the first (highest count) sleep quality
-    : 'good'; // Default if no sleep quality found
+    : null; // No default - will show "no data" message
 
   // Calculate symptoms frequency
   const symptomCount = filteredEntries.reduce((acc, entry) => {
@@ -316,29 +317,41 @@ export default function MoodCards({ entries }: MoodCardsProps) {
       
       <div className="mood-cards-container">
         <div className="mood-card mood-highlight">
-          <span className="mood-card-icon">{moodEmojis[mostCommonMood as keyof typeof moodEmojis] || '😊'}</span>
+          <span className="mood-card-icon">{mostCommonMood ? (moodEmojis[mostCommonMood as keyof typeof moodEmojis] || '😊') : '📝'}</span>
           <div className="mood-card-title">מצב רוח {selectedPeriod === 'week' ? 'השבוע' : selectedPeriod === 'month' ? 'החודש' : 'הרבעון'}</div>
-          <div className="mood-card-value">{getMoodLabel(mostCommonMood)}</div>
+          <div className="mood-card-value">
+            {mostCommonMood ? getMoodLabel(mostCommonMood) : 'אין נתונים'}
+          </div>
           <div className="mood-card-stat">
-            {Math.round((moodStats[mostCommonMood] || 0) / totalEntries * 100)}% מהזמן
+            {mostCommonMood && totalEntries > 0 
+              ? `${Math.round((moodStats[mostCommonMood] || 0) / totalEntries * 100)}% מהזמן`
+              : 'עדיין לא דיווחת'}
           </div>
         </div>
 
       <div className="mood-card energy-highlight">
-        <span className="mood-card-icon">{energyEmojis[mostCommonEnergy as keyof typeof energyEmojis] || '⚡'}</span>
+        <span className="mood-card-icon">{mostCommonEnergy ? (energyEmojis[mostCommonEnergy as keyof typeof energyEmojis] || '⚡') : '📝'}</span>
         <div className="mood-card-title">רמת אנרגיה ממוצעת</div>
-        <div className="mood-card-value">{getEnergyLabel(mostCommonEnergy)}</div>
+        <div className="mood-card-value">
+          {mostCommonEnergy ? getEnergyLabel(mostCommonEnergy) : 'אין נתונים'}
+        </div>
         <div className="mood-card-trend">
-          {energyStats.high > energyStats.low ? '📈 במגמת עלייה' : '📉 יש מקום לשיפור'}
+          {mostCommonEnergy 
+            ? (energyStats.high > energyStats.low ? '📈 במגמת עלייה' : '📉 יש מקום לשיפור')
+            : 'עדיין לא דיווחת'}
         </div>
       </div>
 
       <div className="mood-card sleep-highlight">
-        <span className="mood-card-icon">{sleepEmojis[mostCommonSleep as keyof typeof sleepEmojis] || '😊'}</span>
+        <span className="mood-card-icon">{mostCommonSleep ? (sleepEmojis[mostCommonSleep as keyof typeof sleepEmojis] || '😊') : '📝'}</span>
         <div className="mood-card-title">איכות שינה</div>
-        <div className="mood-card-value">{getSleepLabel(mostCommonSleep)}</div>
+        <div className="mood-card-value">
+          {mostCommonSleep ? getSleepLabel(mostCommonSleep) : 'אין נתונים'}
+        </div>
         <div className="mood-card-trend">
-          {sleepQualityTrend > 0 ? '✨ משתפרת' : sleepQualityTrend < 0 ? '⚠️ דורשת תשומת לב' : '📊 יציבה'}
+          {mostCommonSleep
+            ? (sleepQualityTrend > 0 ? '✨ משתפרת' : sleepQualityTrend < 0 ? '⚠️ דורשת תשומת לב' : '📊 יציבה')
+            : 'עדיין לא דיווחת'}
         </div>
       </div>
 
