@@ -115,7 +115,6 @@ export default function WaitlistPage() {
             <p className="waitlist-cta-subtitle">וקבלי ממני <span className="highlight-word">מתנה</span> מידית:</p>
             <p className="waitlist-cta-gift">7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר</p>
             <p className="waitlist-cta-disclaimer">
-              <span className="heart-icon">❤️</span>
               הרשמה ללא התחייבות - רק <span className="highlight-word">הזדמנות</span>
             </p>
           </div>

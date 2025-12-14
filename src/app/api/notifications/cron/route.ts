@@ -21,14 +21,44 @@ export const runtime = 'nodejs';
 export async function GET(request: Request) {
   try {
     // בדוק API key (אבטחה)
+    // Vercel Cron שולח אוטומטית Authorization header עם CRON_SECRET
+    // אבל גם נתמך x-vercel-cron header (אם קיים) או Authorization לבדיקות ידניות
     const authHeader = request.headers.get('authorization');
+    const vercelCronHeader = request.headers.get('x-vercel-cron');
     const cronSecret = process.env.CRON_SECRET;
     
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+    console.log('🔐 Cron authentication check:', {
+      hasCronSecret: !!cronSecret,
+      hasAuthHeader: !!authHeader,
+      hasVercelHeader: !!vercelCronHeader,
+      authHeaderValue: authHeader ? authHeader.substring(0, 20) + '...' : null,
+      vercelCronValue: vercelCronHeader
+    });
+    
+    // אם יש CRON_SECRET מוגדר, נדרוש אימות
+    if (cronSecret) {
+      // Vercel Cron שולח אוטומטית: Authorization: Bearer <CRON_SECRET>
+      // או x-vercel-cron header (אם קיים)
+      const isVercelCron = vercelCronHeader === '1' || vercelCronHeader === 'true';
+      const isAuthorized = authHeader === `Bearer ${cronSecret}`;
+      
+      if (!isVercelCron && !isAuthorized) {
+        console.error('❌ Unauthorized cron request:', {
+          hasVercelHeader: !!vercelCronHeader,
+          hasAuthHeader: !!authHeader,
+          vercelCronValue: vercelCronHeader,
+          expectedAuth: `Bearer ${cronSecret.substring(0, 10)}...`,
+          receivedAuth: authHeader ? authHeader.substring(0, 20) : 'none'
+        });
+        return NextResponse.json(
+          { error: 'Unauthorized', message: 'Missing or invalid CRON_SECRET' },
+          { status: 401 }
+        );
+      }
+      
+      console.log('✅ Cron request authorized');
+    } else {
+      console.warn('⚠️ CRON_SECRET not set - allowing request (not recommended for production)');
     }
 
     // קרא ישירות לפונקציה של מתזמן הניוזלטר
@@ -54,15 +84,56 @@ export async function GET(request: Request) {
 }
 
 /**
+ * מקבל את הזמן הנוכחי ב-Israel timezone ומחזיר את הערכים הרלוונטיים
+ */
+function getIsraelTimeValues() {
+  const now = new Date();
+  // המרה ל-Israel timezone (Asia/Jerusalem)
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Jerusalem',
+    hour: '2-digit',
+    minute: '2-digit',
+    day: 'numeric',
+    weekday: 'short',
+    month: 'numeric',
+    year: 'numeric',
+    hour12: false
+  });
+  
+  const parts = formatter.formatToParts(now);
+  const hour = parseInt(parts.find(p => p.type === 'hour')?.value || '0');
+  const minute = parseInt(parts.find(p => p.type === 'minute')?.value || '0');
+  const day = parseInt(parts.find(p => p.type === 'day')?.value || '0');
+  const month = parseInt(parts.find(p => p.type === 'month')?.value || '0');
+  const year = parseInt(parts.find(p => p.type === 'year')?.value || '0');
+  
+  // חישוב יום השבוע (0 = Sunday, 1 = Monday, etc.)
+  const dateInIsrael = new Date(year, month - 1, day, hour, minute);
+  const dayOfWeek = dateInIsrael.getDay();
+  
+  return {
+    hour,
+    minute,
+    dayOfWeek,
+    dayOfMonth: day,
+    fullDate: now // נשמור את התאריך המקורי לבדיקות נוספות
+  };
+}
+
+/**
  * עיבוד הניוזלטר לפי העדפות כל משתמשת
  * (העתק מהקובץ newsletter-scheduler/route.ts)
  */
 async function processNewsletterScheduler() {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const currentDayOfWeek = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const currentDayOfMonth = now.getDate();
+  // שימוש ב-Israel timezone במקום server time
+  const israelTime = getIsraelTimeValues();
+  const currentHour = israelTime.hour;
+  const currentMinute = israelTime.minute;
+  const currentDayOfWeek = israelTime.dayOfWeek;
+  const currentDayOfMonth = israelTime.dayOfMonth;
+  const now = israelTime.fullDate;
+  
+  console.log(`🕐 Current Israel time: Hour: ${currentHour}, Minute: ${currentMinute}, DayOfWeek: ${currentDayOfWeek} (${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][currentDayOfWeek]}), DayOfMonth: ${currentDayOfMonth}`);
 
   // קבל כל המשתמשות עם העדפות התראות
   const { data: preferences, error: prefError } = await supabaseAdmin
@@ -452,15 +523,35 @@ async function sendEmail(
         }),
       });
 
+      // קרא את התגובה כ-text קודם (אפשר לקרוא רק פעם אחת)
+      const responseText = await response.text();
+      
       if (!response.ok) {
-        const error = await response.text();
-        console.error('Brevo API error:', error);
+        console.error('Brevo API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: responseText.substring(0, 500) // רק 500 תווים ראשונים
+        });
         return false;
       }
 
-      const result = await response.json();
-      console.log('✅ Newsletter sent via Brevo:', result);
-      return true;
+      // ננסה לפרסר כ-JSON אם אפשר
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          const result = JSON.parse(responseText);
+          console.log('✅ Newsletter sent via Brevo:', result);
+          return true;
+        } catch (jsonError) {
+          // אם יש בעיה בפרסור JSON, אבל התגובה OK - נחשוב שהמייל נשלח
+          console.warn('⚠️ Brevo response is not valid JSON:', responseText.substring(0, 200));
+          return true;
+        }
+      } else {
+        // אם זה לא JSON, נחשוב שהמייל נשלח (התגובה OK)
+        console.log('✅ Newsletter sent via Brevo (non-JSON response):', responseText.substring(0, 200));
+        return true;
+      }
     }
 
     // Resend (אלטרנטיבה)
@@ -482,9 +573,24 @@ async function sendEmail(
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        console.error('Resend API error:', error);
+        const errorText = await response.text();
+        console.error('Resend API error:', {
+          status: response.status,
+          statusText: response.statusText,
+          error: errorText.substring(0, 500)
+        });
         return false;
+      }
+
+      // בדוק את content-type לפני פרסור JSON (אם צריך)
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+        try {
+          await response.json(); // נקרא את התגובה (אם יש)
+        } catch (jsonError) {
+          // לא קריטי - התגובה OK
+          console.warn('⚠️ Resend response parsing warning:', jsonError);
+        }
       }
 
       return response.ok;

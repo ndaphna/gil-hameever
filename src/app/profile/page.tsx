@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useRouter, usePathname } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import NotificationSettings from '@/components/notifications/NotificationSettings';
+import { waitForSession, loadUserProfileWithRetry } from '@/lib/auth-helpers';
 
 interface UserProfile {
   id: string;
@@ -37,47 +38,52 @@ export default function ProfilePage() {
     
     async function loadProfile() {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        // Wait for session to be ready with retry mechanism
+        const sessionResult = await waitForSession();
         
-        // Redirect to login if no authenticated user
-        if (!user) {
-          console.log('Profile: No authenticated user found, redirecting to login');
+        if (!sessionResult || !sessionResult.user) {
+          console.log('Profile: No authenticated user found after retries, redirecting to login');
           router.push('/login');
           return;
         }
 
-        let { data: profileData } = await supabase
-          .from('user_profile')
-          .select('*')
-          .eq('id', user.id)
-          .single();
+        const user = sessionResult.user;
+        console.log('Profile: User found:', user.id);
+
+        // Try to load profile with retry
+        let profileData = await loadUserProfileWithRetry(user.id);
 
         // Create profile if it doesn't exist - use API to bypass RLS
         if (!profileData) {
-          await fetch('/api/create-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: user.id,
-              email: user.email || '',
-              name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
-            }),
-          });
+          console.log('Profile: Profile not found, creating new profile...');
+          try {
+            const createResponse = await fetch('/api/create-profile', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: user.id,
+                email: user.email || '',
+                name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
+              }),
+            });
 
-          // Fetch the newly created profile
-          const { data: newProfile } = await supabase
-            .from('user_profile')
-            .select('*')
-            .eq('id', user.id)
-            .single();
-          
-          profileData = newProfile;
+            if (!createResponse.ok) {
+              throw new Error('Failed to create profile');
+            }
+
+            // Retry loading profile after creation
+            profileData = await loadUserProfileWithRetry(user.id);
+          } catch (createError) {
+            console.error('Error creating profile:', createError);
+          }
         }
 
         if (profileData) {
           setProfile(profileData);
           setFirstName(profileData.first_name || '');
           setLastName(profileData.last_name || '');
+        } else {
+          console.error('Profile: Failed to load profile after all retries');
         }
       } catch (error) {
         console.error('Error loading profile:', error);
