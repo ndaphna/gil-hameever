@@ -178,7 +178,7 @@ async function sendEmail(
     console.log('   BREVO_FROM_NAME:', process.env.BREVO_FROM_NAME || '⚠️ Not set (using default)');
 
     if (BREVO_API_KEY) {
-      const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
+      const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
       const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
       
       console.log('📤 Sending email:');

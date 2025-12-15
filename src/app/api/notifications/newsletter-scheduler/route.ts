@@ -227,31 +227,34 @@ async function processNewsletterScheduler() {
         continue;
       }
       
-      // בדוק אם השעה המועדפת היא בשעה הנוכחית
-      // אם הדקה המועדפת היא 0-59, נשלח בשעה הנוכחית (כי ה-cron רץ בדקה 0)
+      // ה-cron רץ כל שעה בדקה 0 (0 * * * *)
+      // אם המשתמשת בחרה 21:02, נשלח ב-21:00 (השעה הקרובה ביותר)
+      // אם המשתמשת בחרה 21:00, נשלח ב-21:00
+      // לכן, נשלח אם השעה הנוכחית תואמת לשעה המועדפת (לא משנה מה הדקה)
       const isCurrentHour = prefHour === currentHour;
       
       // אם השעה לא תואמת, דלג
       if (!isCurrentHour) {
-        console.log(`⏭️ Skipping user ${pref.user_id}: hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`);
+        console.log(`⏭️ Skipping user ${pref.user_id}: hour mismatch (preferred: ${prefHour}:${String(prefMinute).padStart(2, '0')}, current: ${currentHour}:${String(currentMinute).padStart(2, '0')})`);
         skipped++;
         results.push({
           userId: pref.user_id,
           status: 'skipped',
-          reason: `Hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`
+          reason: `Hour mismatch (preferred: ${prefHour}:${String(prefMinute).padStart(2, '0')}, current: ${currentHour}:${String(currentMinute).padStart(2, '0')})`
         });
         continue;
       }
       
-      // אם השעה תואמת אבל הדקה המועדפת גדולה מ-0, נשלח רק אם אנחנו בדקה 0
-      // (כי ה-cron רץ בדקה 0 של כל שעה)
-      if (prefMinute > 0 && currentMinute !== 0) {
-        console.log(`⏭️ Skipping user ${pref.user_id}: minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`);
+      // אם השעה תואמת, נשלח (כי ה-cron רץ בדקה 0, אז זה הזמן הנכון)
+      // לא צריך לבדוק את הדקה, כי אם המשתמשת בחרה 21:02, נשלח ב-21:00
+      if (currentMinute !== 0) {
+        // זה לא אמור לקרות כי ה-cron רץ בדקה 0, אבל נבדוק בכל זאת
+        console.log(`⏭️ Skipping user ${pref.user_id}: not at minute 0 (current: ${currentMinute})`);
         skipped++;
         results.push({
           userId: pref.user_id,
           status: 'skipped',
-          reason: `Minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`
+          reason: `Not at minute 0 (current: ${currentMinute})`
         });
         continue;
       }
@@ -500,7 +503,7 @@ async function sendEmail(
     // Brevo (Sendinblue) - מומלץ!
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     if (BREVO_API_KEY) {
-      const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
+      const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
       const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
       
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {

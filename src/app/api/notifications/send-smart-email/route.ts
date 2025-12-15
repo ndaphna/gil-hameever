@@ -196,7 +196,7 @@ async function sendEmail(
     // Brevo (Sendinblue) - מומלץ!
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     if (BREVO_API_KEY) {
-      const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
+      const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
       const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
       
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {

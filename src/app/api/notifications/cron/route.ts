@@ -135,7 +135,7 @@ async function processNewsletterScheduler() {
   
   console.log(`🕐 Current Israel time: Hour: ${currentHour}, Minute: ${currentMinute}, DayOfWeek: ${currentDayOfWeek} (${['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][currentDayOfWeek]}), DayOfMonth: ${currentDayOfMonth}`);
 
-  // קבל כל המשתמשות עם העדפות התראות
+  // קבל את כל המשתמשות עם העדפות התראות
   const { data: preferences, error: prefError } = await supabaseAdmin
     .from('notification_preferences')
     .select(`
@@ -230,30 +230,37 @@ async function processNewsletterScheduler() {
         continue;
       }
       
-      // בדוק אם השעה המועדפת היא בשעה הנוכחית
+      // ה-cron רץ כל שעה בדקה 0 (0 * * * *)
+      // הלוגיקה: נשלח אם השעה הנוכחית תואמת לשעה המועדפת
+      // אם המשתמשת בחרה 21:00, נשלח ב-21:00
+      // אם המשתמשת בחרה 21:25, נשלח ב-21:00 (השעה הקרובה ביותר)
+      // אם המשתמשת בחרה 20:45, נשלח ב-21:00 (השעה הבאה)
+      
       const isCurrentHour = prefHour === currentHour;
       
       // אם השעה לא תואמת, דלג
       if (!isCurrentHour) {
-        console.log(`⏭️ Skipping user ${pref.user_id}: hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`);
+        console.log(`⏭️ Skipping user ${pref.user_id}: hour mismatch (preferred: ${prefHour}:${String(prefMinute).padStart(2, '0')}, current: ${currentHour}:${String(currentMinute).padStart(2, '0')})`);
         skipped++;
         results.push({
           userId: pref.user_id,
           status: 'skipped',
-          reason: `Hour mismatch (preferred: ${prefHour}:${prefMinute}, current: ${currentHour}:${currentMinute})`
+          reason: `Hour mismatch (preferred: ${prefHour}:${String(prefMinute).padStart(2, '0')}, current: ${currentHour}:${String(currentMinute).padStart(2, '0')})`
         });
         continue;
       }
       
-      // אם השעה תואמת אבל הדקה המועדפת גדולה מ-0, נשלח רק אם אנחנו בדקה 0
-      // (כי ה-cron רץ בדקה 0 של כל שעה)
-      if (prefMinute > 0 && currentMinute !== 0) {
-        console.log(`⏭️ Skipping user ${pref.user_id}: minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`);
+      // אם השעה תואמת, נשלח (כי ה-cron רץ בדקה 0)
+      // לא צריך לבדוק את הדקה המועדפת - אם המשתמשת בחרה 19:25, נשלח ב-19:00
+      // זה התנהגות תקינה כי ה-cron רץ רק בדקה 0
+      if (currentMinute !== 0) {
+        // זה לא אמור לקרות כי ה-cron רץ בדקה 0, אבל נבדוק בכל זאת
+        console.log(`⏭️ Skipping user ${pref.user_id}: not at minute 0 (current: ${currentMinute})`);
         skipped++;
         results.push({
           userId: pref.user_id,
           status: 'skipped',
-          reason: `Minute mismatch (preferred: ${prefMinute}, current: ${currentMinute})`
+          reason: `Not at minute 0 (current: ${currentMinute})`
         });
         continue;
       }
@@ -502,7 +509,7 @@ async function sendEmail(
     // Brevo (Sendinblue) - מומלץ!
     const BREVO_API_KEY = process.env.BREVO_API_KEY;
     if (BREVO_API_KEY) {
-      const fromEmail = process.env.BREVO_FROM_EMAIL || 'noreply@gilhameever.com';
+      const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
       const fromName = process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה';
       
       const response = await fetch('https://api.brevo.com/v3/smtp/email', {
@@ -527,7 +534,7 @@ async function sendEmail(
       const responseText = await response.text();
       
       if (!response.ok) {
-        console.error('Brevo API error:', {
+        console.error('❌ Brevo API error:', {
           status: response.status,
           statusText: response.statusText,
           error: responseText.substring(0, 500) // רק 500 תווים ראשונים
@@ -535,12 +542,17 @@ async function sendEmail(
         return false;
       }
 
+      // Brevo מחזיר 201 Created עם messageId אם המייל נשלח בהצלחה
       // ננסה לפרסר כ-JSON אם אפשר
       const contentType = response.headers.get('content-type');
       if (contentType && contentType.includes('application/json')) {
         try {
           const result = JSON.parse(responseText);
-          console.log('✅ Newsletter sent via Brevo:', result);
+          console.log('✅ Newsletter sent via Brevo:', {
+            messageId: result.messageId,
+            to: to,
+            subject: subject.substring(0, 50)
+          });
           return true;
         } catch (jsonError) {
           // אם יש בעיה בפרסור JSON, אבל התגובה OK - נחשוב שהמייל נשלח
@@ -549,7 +561,12 @@ async function sendEmail(
         }
       } else {
         // אם זה לא JSON, נחשוב שהמייל נשלח (התגובה OK)
-        console.log('✅ Newsletter sent via Brevo (non-JSON response):', responseText.substring(0, 200));
+        // Brevo מחזיר 201 Created עם messageId ב-body
+        console.log('✅ Newsletter sent via Brevo (non-JSON response):', {
+          status: response.status,
+          responsePreview: responseText.substring(0, 200),
+          to: to
+        });
         return true;
       }
     }

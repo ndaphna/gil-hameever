@@ -238,7 +238,7 @@ async function addContactToBrevo(email: string, firstName: string, lastName: str
 
     // Step 2: Send welcome email
     console.log('📧 Step 2/2: Sending welcome email via Brevo...');
-    const fromEmail = process.env.BREVO_FROM_EMAIL || 'gil.hameever@gmail.com';
+    const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
     const fromName = process.env.BREVO_FROM_NAME || 'מנופאוזית וטוב לה';
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
