@@ -188,9 +188,9 @@ function generateDailyTip(stats: UserStatistics): string {
   // טיפים לפי שינה
   if (stats.sleepStats.goodPercentage < 50) {
     tips.push(`
-      <div style="margin-bottom: 16px; padding: 16px; background: rgba(255, 193, 7, 0.1); border-right: 4px solid #ffc107; border-radius: 8px;">
-        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right;">
-          <strong style="color: #ff6f00;">🌙 לשיפור השינה:</strong> נסי ליצור שגרת שינה קבועה - לכי לישון והתעוררי באותן שעות גם בסופי שבוע. הימנעי ממסכים שעה לפני השינה, ונסי תרגילי נשימה או מדיטציה קצרה.
+      <div style="margin-bottom: 16px; padding: 16px; background: rgba(255, 193, 7, 0.1); border-right: 4px solid #ffc107; border-radius: 8px; direction: rtl;" dir="rtl">
+        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+          <strong style="color: #ff6f00; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">🌙 לשיפור השינה:</strong> נסי ליצור שגרת שינה קבועה - לכי לישון והתעוררי באותן שעות גם בסופי שבוע. הימנעי ממסכים שעה לפני השינה, ונסי תרגילי נשימה או מדיטציה קצרה.
         </p>
       </div>
     `);
@@ -199,9 +199,9 @@ function generateDailyTip(stats: UserStatistics): string {
   // טיפים לפי תסמינים
   if (stats.symptomStats.hotFlashesPercentage > 30) {
     tips.push(`
-      <div style="margin-bottom: 16px; padding: 16px; background: rgba(255, 87, 34, 0.1); border-right: 4px solid #ff5722; border-radius: 8px;">
-        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right;">
-          <strong style="color: #ff6f00;">🔥 לניהול גלי חום:</strong> לבושי שכבות שאפשר להסיר בקלות, שמרי בקבוק מים קרירים לידך, ונשמי עמוק כשמתחיל גל חום. הימנעי מטריגרים כמו קפאין, אלכוהול, ומזון חריף.
+      <div style="margin-bottom: 16px; padding: 16px; background: rgba(255, 87, 34, 0.1); border-right: 4px solid #ff5722; border-radius: 8px; direction: rtl;" dir="rtl">
+        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+          <strong style="color: #ff6f00; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">🔥 לניהול גלי חום:</strong> לבושי שכבות שאפשר להסיר בקלות, שמרי בקבוק מים קרירים לידך, ונשמי עמוק כשמתחיל גל חום. הימנעי מטריגרים כמו קפאין, אלכוהול, ומזון חריף.
         </p>
       </div>
     `);
@@ -210,9 +210,9 @@ function generateDailyTip(stats: UserStatistics): string {
   // טיפים לפי אנרגיה
   if (stats.energyStats.average === 'נמוכה') {
     tips.push(`
-      <div style="margin-bottom: 16px; padding: 16px; background: rgba(76, 175, 80, 0.1); border-right: 4px solid #4caf50; border-radius: 8px;">
-        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right;">
-          <strong style="color: #2e7d32;">⚡ להעלאת האנרגיה:</strong> נסי פעילות גופנית קלה כמו הליכה של 10-15 דקות, הוסיפי מזונות עשירים בברזל ו-B12, ושמרי על שתייה מספקת של מים. גם נשימות עמוקות יכולות לעזור.
+      <div style="margin-bottom: 16px; padding: 16px; background: rgba(76, 175, 80, 0.1); border-right: 4px solid #4caf50; border-radius: 8px; direction: rtl;" dir="rtl">
+        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+          <strong style="color: #2e7d32; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">⚡ להעלאת האנרגיה:</strong> נסי פעילות גופנית קלה כמו הליכה של 10-15 דקות, הוסיפי מזונות עשירים בברזל ו-B12, ושמרי על שתייה מספקת של מים. גם נשימות עמוקות יכולות לעזור.
         </p>
       </div>
     `);
@@ -221,9 +221,9 @@ function generateDailyTip(stats: UserStatistics): string {
   // טיפ כללי אם אין טיפים ספציפיים
   if (tips.length === 0) {
     tips.push(`
-      <div style="margin-bottom: 16px; padding: 16px; background: rgba(156, 39, 176, 0.1); border-right: 4px solid #9c27b0; border-radius: 8px;">
-        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right;">
-          <strong style="color: #7b1fa2;">🌸 טיפ כללי:</strong> זכרי שגיל המעבר הוא מסע אישי, וכל אחת חווה אותו אחרת. הקפידי על פעילות גופנית מתונה, תזונה מאוזנת, ושינה מספקת. והכי חשוב - הקשיבי לגוף שלך.
+      <div style="margin-bottom: 16px; padding: 16px; background: rgba(156, 39, 176, 0.1); border-right: 4px solid #9c27b0; border-radius: 8px; direction: rtl;" dir="rtl">
+        <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+          <strong style="color: #7b1fa2; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">🌸 טיפ כללי:</strong> זכרי שגיל המעבר הוא מסע אישי, וכל אחת חווה אותו אחרת. הקפידי על פעילות גופנית מתונה, תזונה מאוזנת, ושינה מספקת. והכי חשוב - הקשיבי לגוף שלך.
         </p>
       </div>
     `);
@@ -310,11 +310,11 @@ export function createInsightEmail(
   
   const actionButton = insight.actionUrl
     ? `
-      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 32px 0;">
+      <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: 32px 0; direction: rtl;" dir="rtl">
         <tr>
-          <td align="center">
+          <td align="center" dir="rtl">
             <a href="${baseUrl}${insight.actionUrl}" 
-               style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 30px; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3);">
+               style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 30px; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3); font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
               ${actionButtonText}
             </a>
           </td>
@@ -327,61 +327,61 @@ export function createInsightEmail(
   const statsSection = stats.totalEntries > 0 ? `
     <!-- Statistics Section -->
     <tr>
-      <td style="padding: 0 32px 32px 32px;">
-        <h3 style="margin: 0 0 24px 0; color: #333333; font-size: 22px; font-weight: 700; text-align: right;">
+      <td dir="rtl" style="padding: 0 32px 32px 32px; direction: rtl;">
+        <h3 style="margin: 0 0 24px 0; color: #333333; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
           📊 ההתקדמות שלך השבוע
         </h3>
         
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" dir="rtl" style="direction: rtl;">
           <tr>
             <!-- Sleep Stats -->
-            <td width="50%" style="padding: 0 8px 16px 8px; vertical-align: top;">
-              <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #e8e9ff; text-align: center;">
-                <div style="font-size: 36px; margin-bottom: 8px;">≡ƒÿ┤</div>
-                <div style="font-size: 32px; font-weight: 700; color: #ff0080; margin-bottom: 4px;">${stats.sleepStats.goodPercentage}%</div>
-                <div style="font-size: 14px; color: #666666; margin-bottom: 8px;">שינה טובה</div>
-                <div style="font-size: 12px; color: #999999;">${stats.sleepStats.good} מתוך ${stats.sleepStats.good + stats.sleepStats.fair + stats.sleepStats.poor} לילות</div>
+            <td width="50%" dir="rtl" style="padding: 0 8px 16px 8px; vertical-align: top; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #e8e9ff; text-align: center; direction: rtl;">
+                <div style="font-size: 36px; margin-bottom: 8px;">🌙</div>
+                <div style="font-size: 32px; font-weight: 700; color: #ff0080; margin-bottom: 4px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.sleepStats.goodPercentage}%</div>
+                <div style="font-size: 14px; color: #666666; margin-bottom: 8px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">שינה טובה</div>
+                <div style="font-size: 12px; color: #999999; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.sleepStats.good} מתוך ${stats.sleepStats.good + stats.sleepStats.fair + stats.sleepStats.poor} לילות</div>
               </div>
             </td>
             
             <!-- Mood Stats -->
-            <td width="50%" style="padding: 0 8px 16px 8px; vertical-align: top;">
-              <div style="background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #ffe8f0; text-align: center;">
-                <div style="font-size: 36px; margin-bottom: 8px;">≡ƒÆÖ</div>
-                <div style="font-size: 18px; font-weight: 700; color: #8000ff; margin-bottom: 4px;">${stats.moodStats.dominantMood}</div>
-                <div style="font-size: 14px; color: #666666; margin-bottom: 8px;">מצב רוח דומיננטי</div>
-                <div style="font-size: 12px; color: #999999;">${stats.moodStats.happy + stats.moodStats.calm} ימים חיוביים</div>
+            <td width="50%" dir="rtl" style="padding: 0 8px 16px 8px; vertical-align: top; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #fff5f8 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #ffe8f0; text-align: center; direction: rtl;">
+                <div style="font-size: 36px; margin-bottom: 8px;">😊</div>
+                <div style="font-size: 18px; font-weight: 700; color: #8000ff; margin-bottom: 4px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.moodStats.dominantMood}</div>
+                <div style="font-size: 14px; color: #666666; margin-bottom: 8px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">מצב רוח דומיננטי</div>
+                <div style="font-size: 12px; color: #999999; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.moodStats.happy + stats.moodStats.calm} ימים חיוביים</div>
               </div>
             </td>
           </tr>
           
           <tr>
             <!-- Energy Stats -->
-            <td width="50%" style="padding: 0 8px 16px 8px; vertical-align: top;">
-              <div style="background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #e0f5e8; text-align: center;">
-                <div style="font-size: 36px; margin-bottom: 8px;">ΓÜí</div>
-                <div style="font-size: 20px; font-weight: 700; color: #00c853; margin-bottom: 4px;">${stats.energyStats.average}</div>
-                <div style="font-size: 14px; color: #666666; margin-bottom: 8px;">רמת אנרגיה ממוצעת</div>
-                <div style="font-size: 12px; color: #999999;">${stats.energyStats.high} גבוהה, ${stats.energyStats.medium} בינונית</div>
+            <td width="50%" dir="rtl" style="padding: 0 8px 16px 8px; vertical-align: top; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #e0f5e8; text-align: center; direction: rtl;">
+                <div style="font-size: 36px; margin-bottom: 8px;">⚡</div>
+                <div style="font-size: 20px; font-weight: 700; color: #00c853; margin-bottom: 4px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.energyStats.average}</div>
+                <div style="font-size: 14px; color: #666666; margin-bottom: 8px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">רמת אנרגיה ממוצעת</div>
+                <div style="font-size: 12px; color: #999999; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.energyStats.high} גבוהה, ${stats.energyStats.medium} בינונית</div>
               </div>
             </td>
             
             <!-- Symptoms Stats -->
-            <td width="50%" style="padding: 0 8px 16px 8px; vertical-align: top;">
-              <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #ffe0b2; text-align: center;">
-                <div style="font-size: 36px; margin-bottom: 8px;">≡ƒöÑ</div>
-                <div style="font-size: 32px; font-weight: 700; color: #ff6f00; margin-bottom: 4px;">${stats.symptomStats.hotFlashesPercentage}%</div>
-                <div style="font-size: 14px; color: #666666; margin-bottom: 8px;">גלי חום</div>
-                <div style="font-size: 12px; color: #999999;">${stats.symptomStats.hotFlashes} ימים מתוך ${stats.totalEntries}</div>
+            <td width="50%" dir="rtl" style="padding: 0 8px 16px 8px; vertical-align: top; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); border-radius: 12px; padding: 20px; border: 2px solid #ffe0b2; text-align: center; direction: rtl;">
+                <div style="font-size: 36px; margin-bottom: 8px;">🔥</div>
+                <div style="font-size: 32px; font-weight: 700; color: #ff6f00; margin-bottom: 4px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.symptomStats.hotFlashesPercentage}%</div>
+                <div style="font-size: 14px; color: #666666; margin-bottom: 8px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">גלי חום</div>
+                <div style="font-size: 12px; color: #999999; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${stats.symptomStats.hotFlashes} ימים מתוך ${stats.totalEntries}</div>
               </div>
             </td>
           </tr>
         </table>
         
         ${stats.recentTrends.sleepImproving || stats.recentTrends.moodImproving || stats.recentTrends.symptomsDecreasing ? `
-        <div style="background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); border-right: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin-top: 16px;">
-          <div style="font-size: 18px; font-weight: 700; color: #2e7d32; margin-bottom: 8px; text-align: right;">✅ מגמות משתפרות:</div>
-          <ul style="margin: 0; padding-right: 20px; color: #555555; font-size: 14px; line-height: 1.8; text-align: right;">
+        <div style="background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%); border-right: 4px solid #4caf50; padding: 20px; border-radius: 8px; margin-top: 16px; direction: rtl;" dir="rtl">
+          <div style="font-size: 18px; font-weight: 700; color: #2e7d32; margin-bottom: 8px; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">✅ מגמות משתפרות:</div>
+          <ul style="margin: 0; padding-right: 20px; color: #555555; font-size: 14px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
             ${stats.recentTrends.sleepImproving ? '<li>שינה משתפרת! 🌙</li>' : ''}
             ${stats.recentTrends.moodImproving ? '<li>מצב רוח משתפר! 😊</li>' : ''}
             ${stats.recentTrends.symptomsDecreasing ? '<li>תסמינים יורדים! 🔥</li>' : ''}
@@ -398,22 +398,39 @@ export function createInsightEmail(
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      direction: rtl;
+      text-align: right;
+    }
+    body, table, td, div, p, h1, h2, h3, ul, li {
+      direction: rtl;
+      text-align: right;
+    }
+    [dir="rtl"] {
+      direction: rtl;
+      text-align: right;
+    }
+  </style>
   <title>${insight.title}</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f5f5f5 0%, #e8e9ff 100%);">
-  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e9ff 100%); padding: 40px 20px;">
+  <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e9ff 100%); padding: 40px 20px; direction: rtl;">
     <tr>
-      <td align="center">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="650" style="max-width: 650px; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15);">
+      <td align="center" dir="rtl">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="650" style="max-width: 650px; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); direction: rtl;" dir="rtl">
           
           <!-- Premium Header -->
           <tr>
-            <td style="background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); padding: 50px 40px; text-align: center; position: relative; overflow: hidden;">
+            <td dir="rtl" style="background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); padding: 50px 40px; text-align: center; position: relative; overflow: hidden; direction: rtl;">
               <div style="position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px; opacity: 0.3; pointer-events: none;"></div>
-              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; position: relative; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.2);">
+              <h1 style="margin: 0; color: #ffffff; font-size: 32px; font-weight: 700; position: relative; z-index: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.2); font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 🌸 מנופאוזית וטוב לה
               </h1>
-              <p style="margin: 12px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px; position: relative; z-index: 1;">
+              <p style="margin: 12px 0 0 0; color: rgba(255,255,255,0.95); font-size: 16px; position: relative; z-index: 1; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 ${currentDate}
               </p>
             </td>
@@ -421,11 +438,11 @@ export function createInsightEmail(
 
           <!-- Personal Greeting -->
           <tr>
-            <td style="padding: 40px 40px 24px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);">
-              <h2 style="margin: 0 0 8px 0; color: #333333; font-size: 28px; font-weight: 700; text-align: right;">
+            <td dir="rtl" style="padding: 40px 40px 24px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%); direction: rtl;">
+              <h2 style="margin: 0 0 8px 0; color: #333333; font-size: 28px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 שלום ${userName || 'יקרה'} 👋
               </h2>
-              <p style="margin: 0; color: #666666; font-size: 16px; text-align: right; line-height: 1.6;">
+              <p style="margin: 0; color: #666666; font-size: 16px; text-align: right; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 ${empoweringMessage}
               </p>
             </td>
@@ -433,15 +450,12 @@ export function createInsightEmail(
 
           <!-- Main Insight -->
           <tr>
-            <td style="padding: 0 40px 32px 40px; background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%);">
-              <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-right: 5px solid #ff0080; padding: 32px; border-radius: 16px; box-shadow: 0 4px 20px rgba(255, 0, 128, 0.1);">
-                <div style="display: inline-block; background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); color: #ffffff; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px;">
-                  ${insight.type === 'pattern' ? '🔍 דפוס מעניין' : insight.type === 'improvement' ? '📈 שיפור' : insight.type === 'tip' ? '💡 טיפ' : insight.type === 'encouragement' ? '💪 עידוד' : '📊 התובנה'}
-                </div>
-                <h3 style="margin: 0 0 16px 0; color: #ff0080; font-size: 24px; font-weight: 700; text-align: right; line-height: 1.4;">
+            <td dir="rtl" style="padding: 0 40px 32px 40px; background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%); direction: rtl;">
+              <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-right: 5px solid #ff0080; padding: 32px; border-radius: 16px; box-shadow: 0 4px 20px rgba(255, 0, 128, 0.1); direction: rtl;">
+                <h3 style="margin: 0 0 16px 0; color: #ff0080; font-size: 24px; font-weight: 700; text-align: right; line-height: 1.4; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   ${insight.title}
                 </h3>
-                <p style="margin: 0; color: #555555; font-size: 17px; line-height: 1.9; text-align: right;">
+                <p style="margin: 0; color: #555555; font-size: 17px; line-height: 1.9; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   ${insight.message}
                 </p>
               </div>
@@ -454,10 +468,10 @@ export function createInsightEmail(
 
           <!-- Daily Tips Section -->
           <tr>
-            <td style="padding: 0 40px 24px 40px;">
-              <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #ffe0b2; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.1);">
-                <h3 style="margin: 0 0 20px 0; color: #ff6f00; font-size: 22px; font-weight: 700; text-align: right; display: flex; align-items: center; gap: 8px;">
-                  <span>💡</span> טיפ יומי מעשי
+            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #ffe0b2; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.1); direction: rtl;">
+                <h3 style="margin: 0 0 20px 0; color: #ff6f00; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+                  💡 טיפ יומי מעשי
                 </h3>
                 ${generateDailyTip(stats)}
               </div>
@@ -466,20 +480,20 @@ export function createInsightEmail(
 
           <!-- Health Resources Section -->
           <tr>
-            <td style="padding: 0 40px 24px 40px;">
-              <div style="background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #c8e6c9; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1);">
-                <h3 style="margin: 0 0 20px 0; color: #2e7d32; font-size: 22px; font-weight: 700; text-align: right; display: flex; align-items: center; gap: 8px;">
-                  <span>📚</span> משאבים ומאמרים
+            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #c8e6c9; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1); direction: rtl;">
+                <h3 style="margin: 0 0 20px 0; color: #2e7d32; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+                  📚 משאבים ומאמרים
                 </h3>
-                <div style="color: #555555; font-size: 15px; line-height: 1.9; text-align: right;">
-                  <p style="margin: 0 0 12px 0;">
-                    <strong style="color: #2e7d32;">• ניהול גלי חום:</strong> נסי טכניקות נשימה, לבוש שכבות, והימנעות מטריגרים כמו קפאין ואלכוהול.
+                <div style="color: #555555; font-size: 15px; line-height: 1.9; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  <p style="margin: 0 0 12px 0; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                    <strong style="color: #2e7d32; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">• ניהול גלי חום:</strong> נסי טכניקות נשימה, לבוש שכבות, והימנעות מטריגרים כמו קפאין ואלכוהול.
                   </p>
-                  <p style="margin: 0 0 12px 0;">
-                    <strong style="color: #2e7d32;">• שיפור השינה:</strong> שמרי על שגרה קבועה, הימנעי ממסכים לפני השינה, ושקלי תרגילי הרפיה.
+                  <p style="margin: 0 0 12px 0; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                    <strong style="color: #2e7d32; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">• שיפור השינה:</strong> שמרי על שגרה קבועה, הימנעי ממסכים לפני השינה, ושקלי תרגילי הרפיה.
                   </p>
-                  <p style="margin: 0;">
-                    <strong style="color: #2e7d32;">• תמיכה תזונתית:</strong> הוסיפי מזונות עשירים בסידן, ויטמין D, ואומגה 3 לתזונה היומית שלך.
+                  <p style="margin: 0; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                    <strong style="color: #2e7d32; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">• תמיכה תזונתית:</strong> הוסיפי מזונות עשירים בסידן, ויטמין D, ואומגה 3 לתזונה היומית שלך.
                   </p>
                 </div>
               </div>
@@ -488,12 +502,12 @@ export function createInsightEmail(
 
           <!-- Reminders Section -->
           <tr>
-            <td style="padding: 0 40px 24px 40px;">
-              <div style="background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #e1bee7; box-shadow: 0 4px 12px rgba(156, 39, 176, 0.1);">
-                <h3 style="margin: 0 0 20px 0; color: #7b1fa2; font-size: 22px; font-weight: 700; text-align: right; display: flex; align-items: center; gap: 8px;">
-                  <span>⏰</span> תזכורות חשובות
+            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+              <div style="background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #e1bee7; box-shadow: 0 4px 12px rgba(156, 39, 176, 0.1); direction: rtl;">
+                <h3 style="margin: 0 0 20px 0; color: #7b1fa2; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
+                  ⏰ תזכורות חשובות
                 </h3>
-                <ul style="margin: 0; padding-right: 20px; color: #555555; font-size: 15px; line-height: 2; text-align: right;">
+                <ul style="margin: 0; padding-right: 20px; color: #555555; font-size: 15px; line-height: 2; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   <li>עדכני את היומן היומי שלך - זה לוקח רק כמה דקות</li>
                   <li>שמרי על שגרת פעילות גופנית - גם הליכה קצרה עוזרת</li>
                   <li>שתי מספיק מים - חשוב במיוחד בגיל המעבר</li>
@@ -505,12 +519,12 @@ export function createInsightEmail(
 
           <!-- Additional Tips Section -->
           <tr>
-            <td style="padding: 0 40px 32px 40px;">
-              <div style="background: #f8f9ff; border-radius: 12px; padding: 24px; border: 1px solid #e8e9ff;">
-                <p style="margin: 0 0 12px 0; color: #8000ff; font-size: 16px; font-weight: 700; text-align: right;">
+            <td dir="rtl" style="padding: 0 40px 32px 40px; direction: rtl;">
+              <div style="background: #f8f9ff; border-radius: 12px; padding: 24px; border: 1px solid #e8e9ff; direction: rtl;">
+                <p style="margin: 0 0 12px 0; color: #8000ff; font-size: 16px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   💙 טיפ נוסף:
                 </p>
-                <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right;">
+                <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך.
                 </p>
               </div>
@@ -519,14 +533,14 @@ export function createInsightEmail(
 
           <!-- Closing Message -->
           <tr>
-            <td style="padding: 32px 40px 40px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%); border-top: 1px solid #e5e5e5;">
-              <div style="text-align: center; padding: 24px; background: linear-gradient(135deg, #fff5f8 0%, #f8f9ff 100%); border-radius: 12px;">
-                <p style="margin: 0 0 8px 0; color: #666666; font-size: 16px; line-height: 1.6;">
+            <td dir="rtl" style="padding: 32px 40px 40px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%); border-top: 1px solid #e5e5e5; direction: rtl;">
+              <div style="text-align: center; padding: 24px; background: linear-gradient(135deg, #fff5f8 0%, #f8f9ff 100%); border-radius: 12px; direction: rtl;">
+                <p style="margin: 0 0 8px 0; color: #666666; font-size: 16px; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   את לא לבד במסע הזה 💙
                 </p>
-                <p style="margin: 0; color: #888888; font-size: 14px; line-height: 1.6;">
+                <p style="margin: 0; color: #888888; font-size: 14px; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   באהבה,<br>
-                  <strong style="color: #ff0080; font-size: 18px;">עליזה</strong> 🌸
+                  <strong style="color: #ff0080; font-size: 18px; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">עליזה</strong> 🌸
                 </p>
               </div>
             </td>
@@ -534,14 +548,14 @@ export function createInsightEmail(
 
           <!-- Footer -->
           <tr>
-            <td style="background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); padding: 32px 40px; text-align: center;">
-              <p style="margin: 0 0 12px 0; color: #ffffff; font-size: 14px; line-height: 1.6;">
+            <td dir="rtl" style="background: linear-gradient(135deg, #2c2c2c 0%, #1a1a1a 100%); padding: 32px 40px; text-align: center; direction: rtl;">
+              <p style="margin: 0 0 12px 0; color: #ffffff; font-size: 14px; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 את יכולה להפסיק לקבל את ההתראות האלה ב<br>
-                <a href="${baseUrl}/profile" style="color: #ff0080; text-decoration: none; font-weight: 600;">ההגדרות שלך</a>
+                <a href="${baseUrl}/profile" style="color: #ff0080; text-decoration: none; font-weight: 600; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">ההגדרות שלך</a>
               </p>
-              <p style="margin: 16px 0 0 0; color: #999999; font-size: 12px; line-height: 1.6;">
+              <p style="margin: 16px 0 0 0; color: #999999; font-size: 12px; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 © ${new Date().getFullYear()} מנופאוזית וטוב לה. כל הזכויות שמורות.<br>
-                <a href="${baseUrl}" style="color: #888888; text-decoration: none;">${baseUrl}</a>
+                <a href="${baseUrl}" style="color: #888888; text-decoration: none; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">${baseUrl}</a>
               </p>
             </td>
           </tr>

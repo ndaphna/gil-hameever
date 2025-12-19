@@ -429,8 +429,8 @@ async function sendBrevoEmail(
 
     const payload: BrevoEmailPayload = {
       sender: {
-        name: process.env.BREVO_FROM_NAME!,
-        email: process.env.BREVO_FROM_EMAIL!,
+        name: process.env.BREVO_FROM_NAME || 'עליזה - מנופאוזית וטוב לה',
+        email: process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com',
       },
       to: [
         {

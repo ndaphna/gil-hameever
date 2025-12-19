@@ -124,3 +124,6 @@ GET /api/notifications/diagnose
 - [Brevo Domain Verification Guide](https://help.brevo.com/hc/en-us/articles/209467485)
 - [DNS Checker](https://dnschecker.org/)
 
+
+
+
