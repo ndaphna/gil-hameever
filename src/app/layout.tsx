@@ -49,7 +49,7 @@ const kalam = Kalam({
 
 export const metadata: Metadata = {
   title: "מנופאוזית וטוב לה",
-  description: "אתר ואפליקציה בעברית לנשים בישראל",
+  description: "🌺 לפרוח באמצע החיים ומעבר",
   icons: {
     icon: [
       { url: '/favicon.ico', sizes: 'any' },
