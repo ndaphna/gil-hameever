@@ -185,6 +185,8 @@ export default function Navigation() {
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
                 <button onClick={() => handleLinkClick('/articles')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מאמרים">מאמרים</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
+                <button onClick={() => handleLinkClick('/book-preview')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד על הספר">על הספר שלי</button>
+                <button onClick={() => handleLinkClick('/inspiration-waves')} className="nav-link-btn" role="menuitem" aria-label="הירשמי לגלי השראה">הירשמי לגלי השראה</button>
               </>
             ) : (
               // תפריט ציבורי למשתמשים לא מחוברים
@@ -192,6 +194,8 @@ export default function Navigation() {
                 <button onClick={() => handleLinkClick('/')} className="nav-link-btn" role="menuitem" aria-label="עבור לדף הבית">דף הבית</button>
                 <button onClick={() => handleLinkClick('/articles')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד מאמרים">מאמרים</button>
                 <button onClick={() => handleLinkClick('/about')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד אודות">אודות</button>
+                <button onClick={() => handleLinkClick('/book-preview')} className="nav-link-btn" role="menuitem" aria-label="עבור לעמוד על הספר">על הספר שלי</button>
+                <button onClick={() => handleLinkClick('/inspiration-waves')} className="nav-link-btn" role="menuitem" aria-label="הירשמי לגלי השראה">הירשמי לגלי השראה</button>
                 
                 {/* כפתור אזור אישי - רק למשתמשים מחוברים */}
                 {isHydrated && isLoggedIn && (

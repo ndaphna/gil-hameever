@@ -248,16 +248,10 @@ export default function BookPreviewPage() {
       {/* Final Message Section */}
       <section className="preview-content-section bg-light">
         <div className="preview-container">
-          <div className="content-card highlight-box">
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.2rem', lineHeight: '1.9' }}>
-              אם את מרגישה שמשהו משתנה בך - את לא מתפרקת.
-            </p>
-            <p className="highlight-text-large" style={{ margin: '20px auto' }}>
-              את מתעצבת מחדש.
-            </p>
-            <p className="intro-text" style={{ textAlign: 'center', fontSize: '1.2rem', lineHeight: '1.9' }}>
-              והספר הזה ילמד אותך איך לצמוח מזה.
-            </p>
+          <div className="book-message-box">
+            <p className="book-message-line">אם את מרגישה שמשהו משתנה בך - את לא מתפרקת.</p>
+            <p className="book-message-highlight">את מתעצבת מחדש.</p>
+            <p className="book-message-line">והספר הזה ילמד אותך איך לצמוח מזה.</p>
           </div>
         </div>
       </section>

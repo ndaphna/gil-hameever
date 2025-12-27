@@ -299,6 +299,7 @@ export default function Home() {
               <h4>קישורים מהירים</h4>
               <Link href="/about">אודות</Link>
               <Link href="/articles">מאמרים</Link>
+              <Link href="/inspiration-waves">הירשמי לגלי השראה</Link>
             </div>
           </div>
         </div>
