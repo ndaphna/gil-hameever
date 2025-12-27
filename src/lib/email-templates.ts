@@ -14,6 +14,15 @@ export interface UserStatistics {
   totalEntries: number;
   daysTracked: number;
   lastEntryDate: string | null;
+  daysSinceLastEntry: number;
+  reportingContinuity: {
+    daysReported: number;
+    daysNotReported: number;
+    consecutiveDaysReported: number;
+    longestGap: number;
+    reportingRate: number; // percentage of days reported
+    isConsistent: boolean; // true if reporting regularly
+  };
   sleepStats: {
     good: number;
     fair: number;
@@ -135,11 +144,101 @@ export function calculateUserStatistics(
   
   const lastEntry = dailyEntries[0];
   const lastEntryDate = lastEntry?.date || null;
+  const daysSinceLastEntry = lastEntryDate
+    ? Math.floor((Date.now() - new Date(lastEntryDate).getTime()) / (1000 * 60 * 60 * 24))
+    : 999;
+
+  // חישוב רציפות דיווחים
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  
+  // נחשב את כל הימים מהדיווח הראשון עד היום
+  const firstEntry = dailyEntries[dailyEntries.length - 1];
+  const firstEntryDate = firstEntry?.date ? new Date(firstEntry.date) : null;
+  
+  let daysReported = uniqueDates;
+  let daysNotReported = 0;
+  let consecutiveDaysReported = 0;
+  let longestGap = 0;
+  let currentGap = 0;
+  let reportingRate = 0;
+  
+  if (firstEntryDate && dailyEntries.length > 0) {
+    const startDate = new Date(firstEntryDate);
+    startDate.setHours(0, 0, 0, 0);
+    const totalDays = Math.floor((today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    // נבדוק רציפות - כמה ימים רצופים דווחו מהסוף
+    const sortedEntries = [...dailyEntries].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    let consecutiveCount = 0;
+    let lastCheckedDate: Date | null = null;
+    
+    for (const entry of sortedEntries) {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      
+      if (lastCheckedDate === null) {
+        // זה הדיווח האחרון
+        lastCheckedDate = new Date(entryDate);
+        consecutiveCount = 1;
+      } else {
+        const daysDiff = Math.floor((lastCheckedDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysDiff === 1) {
+          // רציף
+          consecutiveCount++;
+          lastCheckedDate = new Date(entryDate);
+        } else {
+          // לא רציף - נעצור
+          break;
+        }
+      }
+    }
+    
+    consecutiveDaysReported = consecutiveCount;
+    
+    // נחשב את הפער הארוך ביותר
+    for (let i = 0; i < sortedEntries.length - 1; i++) {
+      const currentDate = new Date(sortedEntries[i].date);
+      const nextDate = new Date(sortedEntries[i + 1].date);
+      const gap = Math.floor((currentDate.getTime() - nextDate.getTime()) / (1000 * 60 * 60 * 24)) - 1;
+      if (gap > longestGap) {
+        longestGap = gap;
+      }
+    }
+    
+    // נחשב את הפער מהדיווח האחרון עד היום
+    if (lastEntryDate) {
+      const lastEntryDateObj = new Date(lastEntryDate);
+      lastEntryDateObj.setHours(0, 0, 0, 0);
+      const gapFromLast = Math.floor((today.getTime() - lastEntryDateObj.getTime()) / (1000 * 60 * 60 * 24));
+      if (gapFromLast > longestGap) {
+        longestGap = gapFromLast;
+      }
+    }
+    
+    daysNotReported = totalDays - daysReported;
+    reportingRate = totalDays > 0 ? Math.round((daysReported / totalDays) * 100) : 0;
+  }
+  
+  // נחשב אם הדיווח עקבי (יותר מ-50% מהזמן)
+  const isConsistent = reportingRate >= 50 && consecutiveDaysReported >= 3;
 
   return {
     totalEntries,
     daysTracked: uniqueDates,
     lastEntryDate,
+    daysSinceLastEntry,
+    reportingContinuity: {
+      daysReported,
+      daysNotReported,
+      consecutiveDaysReported,
+      longestGap,
+      reportingRate,
+      isConsistent
+    },
     sleepStats: {
       good: goodSleep,
       fair: fairSleep,
@@ -238,6 +337,13 @@ function generateDailyTip(stats: UserStatistics): string {
 function generateEmpoweringMessage(stats: UserStatistics, insight: { type: string; title: string }): string {
   const messages: string[] = [];
   
+  // הודעות על בסיס רציפות דיווחים
+  if (stats.reportingContinuity && stats.reportingContinuity.isConsistent && stats.reportingContinuity.consecutiveDaysReported >= 7) {
+    messages.push(`את עקבית ומסורה - ${stats.reportingContinuity.consecutiveDaysReported} ימים רצופים זה הישג! 💪`);
+  } else if (stats.reportingContinuity && stats.reportingContinuity.consecutiveDaysReported >= 3) {
+    messages.push(`אני רואה שאת עקבית בדיווחים - ${stats.reportingContinuity.consecutiveDaysReported} ימים רצופים! זה נהדר! 🌸`);
+  }
+  
   if (stats.sleepStats.goodPercentage >= 60) {
     messages.push('את עושה עבודה נהדרת בהקפדה על איכות שינה טובה! 🌸💪');
   }
@@ -292,6 +398,15 @@ export function createInsightEmail(
     totalEntries: 0,
     daysTracked: 0,
     lastEntryDate: null,
+    daysSinceLastEntry: 999,
+    reportingContinuity: {
+      daysReported: 0,
+      daysNotReported: 0,
+      consecutiveDaysReported: 0,
+      longestGap: 999,
+      reportingRate: 0,
+      isConsistent: false
+    },
     sleepStats: { good: 0, fair: 0, poor: 0, goodPercentage: 0 },
     moodStats: { happy: 0, calm: 0, sad: 0, frustrated: 0, irritated: 0, dominantMood: 'רגועה 😌' },
     symptomStats: { hotFlashes: 0, hotFlashesPercentage: 0, nightSweats: 0, poorSleep: 0, lowEnergy: 0 },
@@ -314,6 +429,7 @@ export function createInsightEmail(
         <tr>
           <td align="center" dir="rtl">
             <a href="${baseUrl}${insight.actionUrl}" 
+               class="action-button"
                style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #ff0080 0%, #8000ff 100%); color: #ffffff; text-decoration: none; font-weight: 700; border-radius: 30px; font-size: 16px; box-shadow: 0 4px 15px rgba(255, 0, 128, 0.3); font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
               ${actionButtonText}
             </a>
@@ -327,12 +443,12 @@ export function createInsightEmail(
   const statsSection = stats.totalEntries > 0 ? `
     <!-- Statistics Section -->
     <tr>
-      <td dir="rtl" style="padding: 0 32px 32px 32px; direction: rtl;">
+      <td dir="rtl" class="email-padding-small" style="padding: 0 32px 32px 32px; direction: rtl;">
         <h3 style="margin: 0 0 24px 0; color: #333333; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
           📊 ההתקדמות שלך השבוע
         </h3>
         
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" dir="rtl" style="direction: rtl;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" dir="rtl" class="stats-grid" style="direction: rtl;">
           <tr>
             <!-- Sleep Stats -->
             <td width="50%" dir="rtl" style="padding: 0 8px 16px 8px; vertical-align: top; direction: rtl;">
@@ -414,6 +530,37 @@ export function createInsightEmail(
       direction: rtl;
       text-align: right;
     }
+    /* Responsive Design */
+    @media only screen and (max-width: 600px) {
+      .email-container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .email-padding {
+        padding: 20px !important;
+      }
+      .email-padding-small {
+        padding: 0 20px 20px 20px !important;
+      }
+      .stats-grid td {
+        display: block !important;
+        width: 100% !important;
+        padding: 0 0 16px 0 !important;
+      }
+      h1 {
+        font-size: 24px !important;
+      }
+      h2 {
+        font-size: 22px !important;
+      }
+      h3 {
+        font-size: 18px !important;
+      }
+      .action-button {
+        padding: 14px 30px !important;
+        font-size: 14px !important;
+      }
+    }
   </style>
   <title>${insight.title}</title>
 </head>
@@ -421,7 +568,7 @@ export function createInsightEmail(
   <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background: linear-gradient(135deg, #f5f5f5 0%, #e8e9ff 100%); padding: 40px 20px; direction: rtl;">
     <tr>
       <td align="center" dir="rtl">
-        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="650" style="max-width: 650px; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); direction: rtl;" dir="rtl">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="650" class="email-container" style="max-width: 650px; width: 100%; background-color: #ffffff; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.15); direction: rtl;" dir="rtl">
           
           <!-- Premium Header -->
           <tr>
@@ -438,19 +585,42 @@ export function createInsightEmail(
 
           <!-- Personal Greeting -->
           <tr>
-            <td dir="rtl" style="padding: 40px 40px 24px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%); direction: rtl;">
+            <td dir="rtl" class="email-padding" style="padding: 40px 40px 24px 40px; background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%); direction: rtl;">
               <h2 style="margin: 0 0 8px 0; color: #333333; font-size: 28px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 שלום ${userName || 'יקרה'} 👋
               </h2>
               <p style="margin: 0; color: #666666; font-size: 16px; text-align: right; line-height: 1.6; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                 ${empoweringMessage}
               </p>
+              ${stats.reportingContinuity && (stats.daysSinceLastEntry > 3 || !stats.reportingContinuity.isConsistent) ? `
+              <!-- Reporting Continuity Notice -->
+              <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(255, 0, 128, 0.1) 0%, rgba(128, 0, 255, 0.1) 100%); border-right: 4px solid #ff0080; border-radius: 12px; direction: rtl;" dir="rtl">
+                <p style="margin: 0 0 8px 0; color: #ff0080; font-size: 16px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  📝 על הדיווחים שלך:
+                </p>
+                <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  ${stats.daysSinceLastEntry > 3 
+                    ? `עברו ${stats.daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך. יש לך עם מי להתייעץ - אני כאן בשבילך! 💙`
+                    : `אני רואה שיש לך ${stats.reportingContinuity.daysReported} ימים דווחו מתוך ${stats.reportingContinuity.daysReported + stats.reportingContinuity.daysNotReported} ימים (${stats.reportingContinuity.reportingRate}%). ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך.`}
+                </p>
+              </div>
+              ` : stats.reportingContinuity && stats.reportingContinuity.isConsistent ? `
+              <!-- Positive Continuity Notice -->
+              <div style="margin-top: 20px; padding: 20px; background: linear-gradient(135deg, rgba(76, 175, 80, 0.1) 0%, rgba(46, 125, 50, 0.1) 100%); border-right: 4px solid #4caf50; border-radius: 12px; direction: rtl;" dir="rtl">
+                <p style="margin: 0 0 8px 0; color: #2e7d32; font-size: 16px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  ✅ את עקבית בדיווחים!
+                </p>
+                <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.8; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
+                  אני רואה שאת עקבית בדיווחים - ${stats.reportingContinuity.consecutiveDaysReported} ימים רצופים! זה נהדר ומסייע לי לתת לך תובנות מדויקות יותר. המשכי כך! 🌸
+                </p>
+              </div>
+              ` : ''}
             </td>
           </tr>
 
           <!-- Main Insight -->
           <tr>
-            <td dir="rtl" style="padding: 0 40px 32px 40px; background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%); direction: rtl;">
+            <td dir="rtl" class="email-padding-small" style="padding: 0 40px 32px 40px; background: linear-gradient(180deg, #fafafa 0%, #ffffff 100%); direction: rtl;">
               <div style="background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%); border-right: 5px solid #ff0080; padding: 32px; border-radius: 16px; box-shadow: 0 4px 20px rgba(255, 0, 128, 0.1); direction: rtl;">
                 <h3 style="margin: 0 0 16px 0; color: #ff0080; font-size: 24px; font-weight: 700; text-align: right; line-height: 1.4; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   ${insight.title}
@@ -468,7 +638,7 @@ export function createInsightEmail(
 
           <!-- Daily Tips Section -->
           <tr>
-            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+            <td dir="rtl" class="email-padding-small" style="padding: 0 40px 24px 40px; direction: rtl;">
               <div style="background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #ffe0b2; box-shadow: 0 4px 12px rgba(255, 193, 7, 0.1); direction: rtl;">
                 <h3 style="margin: 0 0 20px 0; color: #ff6f00; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
                   💡 טיפ יומי מעשי
@@ -480,7 +650,7 @@ export function createInsightEmail(
 
           <!-- Health Resources Section -->
           <tr>
-            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+            <td dir="rtl" class="email-padding-small" style="padding: 0 40px 24px 40px; direction: rtl;">
               <div style="background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #c8e6c9; box-shadow: 0 4px 12px rgba(76, 175, 80, 0.1); direction: rtl;">
                 <h3 style="margin: 0 0 20px 0; color: #2e7d32; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
                   📚 משאבים ומאמרים
@@ -502,7 +672,7 @@ export function createInsightEmail(
 
           <!-- Reminders Section -->
           <tr>
-            <td dir="rtl" style="padding: 0 40px 24px 40px; direction: rtl;">
+            <td dir="rtl" class="email-padding-small" style="padding: 0 40px 24px 40px; direction: rtl;">
               <div style="background: linear-gradient(135deg, #f3e5f5 0%, #ffffff 100%); border-radius: 16px; padding: 28px; border: 2px solid #e1bee7; box-shadow: 0 4px 12px rgba(156, 39, 176, 0.1); direction: rtl;">
                 <h3 style="margin: 0 0 20px 0; color: #7b1fa2; font-size: 22px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl;">
                   ⏰ תזכורות חשובות
@@ -519,7 +689,7 @@ export function createInsightEmail(
 
           <!-- Additional Tips Section -->
           <tr>
-            <td dir="rtl" style="padding: 0 40px 32px 40px; direction: rtl;">
+            <td dir="rtl" class="email-padding-small" style="padding: 0 40px 32px 40px; direction: rtl;">
               <div style="background: #f8f9ff; border-radius: 12px; padding: 24px; border: 1px solid #e8e9ff; direction: rtl;">
                 <p style="margin: 0 0 12px 0; color: #8000ff; font-size: 16px; font-weight: 700; text-align: right; font-family: 'Assistant', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;">
                   💙 טיפ נוסף:
@@ -579,6 +749,27 @@ ${'='.repeat(insight.title.length)}
 
 ${insight.message}
 `;
+
+  // הוספת מידע על רציפות דיווחים
+  if (stats.reportingContinuity) {
+    if (stats.daysSinceLastEntry > 3 || !stats.reportingContinuity.isConsistent) {
+      textContent += `
+
+📝 על הדיווחים שלך:
+${'-'.repeat(30)}
+${stats.daysSinceLastEntry > 3 
+  ? `עברו ${stats.daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך. יש לך עם מי להתייעץ - אני כאן בשבילך! 💙`
+  : `אני רואה שיש לך ${stats.reportingContinuity.daysReported} ימים דווחו מתוך ${stats.reportingContinuity.daysReported + stats.reportingContinuity.daysNotReported} ימים (${stats.reportingContinuity.reportingRate}%). ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך.`}
+`;
+    } else if (stats.reportingContinuity.isConsistent) {
+      textContent += `
+
+✅ על הדיווחים שלך:
+${'-'.repeat(30)}
+אני רואה שאת עקבית בדיווחים - ${stats.reportingContinuity.consecutiveDaysReported} ימים רצופים! זה נהדר ומסייע לי לתת לך תובנות מדויקות יותר. המשכי כך! 🌸
+`;
+    }
+  }
 
   if (stats.totalEntries > 0) {
     textContent += `

@@ -91,6 +91,12 @@ export class SmartNotificationService {
   }): Promise<UserInsight | null> {
     const { dailyEntries, cycleEntries, lastEntryDate, daysSinceLastEntry } = data;
 
+    // 0. בדוק רציפות דיווחים - זה הקדימות הגבוהה ביותר
+    const continuityInsight = await this.checkReportingContinuity(dailyEntries, daysSinceLastEntry);
+    if (continuityInsight) {
+      return continuityInsight;
+    }
+
     // 1. בדוק אם יש דפוס מעניין
     const pattern = this.detectPattern(dailyEntries);
     if (pattern) {
@@ -121,6 +127,164 @@ export class SmartNotificationService {
     }
 
     return null;
+  }
+
+  /**
+   * בודק רציפות דיווחים ויוצר תובנה מותאמת
+   */
+  private async checkReportingContinuity(
+    dailyEntries: DailyEntry[],
+    daysSinceLastEntry: number
+  ): Promise<UserInsight | null> {
+    if (dailyEntries.length === 0) {
+      // אין דיווחים בכלל
+      return {
+        type: 'encouragement',
+        priority: 'high',
+        title: 'בואי נתחיל את המסע שלך יחד 🌸',
+        message: `אני כאן כדי לעזור לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך. מילוי היומן היומי הוא כלי חזק שיעזור לך לזהות דפוסים, להבין מה עוזר לך, ולשפר את אורחות חייך. כל דיווח חשוב ומסייע לי לתת לך תובנות מדויקות יותר. בואי נתחיל יחד?`,
+        actionUrl: '/journal?tab=daily'
+      };
+    }
+
+    // חשב רציפות
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const sortedEntries = [...dailyEntries].sort((a, b) => 
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    
+    let consecutiveDaysReported = 0;
+    let lastCheckedDate: Date | null = null;
+    
+    for (const entry of sortedEntries) {
+      const entryDate = new Date(entry.date);
+      entryDate.setHours(0, 0, 0, 0);
+      
+      if (lastCheckedDate === null) {
+        lastCheckedDate = new Date(entryDate);
+        consecutiveDaysReported = 1;
+      } else {
+        const daysDiff = Math.floor((lastCheckedDate.getTime() - entryDate.getTime()) / (1000 * 60 * 60 * 24));
+        if (daysDiff === 1) {
+          consecutiveDaysReported++;
+          lastCheckedDate = new Date(entryDate);
+        } else {
+          break;
+        }
+      }
+    }
+
+    // אם יש חוסר רציפות משמעותי (יותר מ-3 ימים ללא דיווח)
+    if (daysSinceLastEntry > 3) {
+      // נשתמש ב-AI ליצירת תוכן מעודד ומותאם
+      const aiMessage = await this.generateEncouragingMessageForContinuity(
+        daysSinceLastEntry,
+        consecutiveDaysReported,
+        dailyEntries.length
+      );
+
+      return {
+        type: 'encouragement',
+        priority: 'high',
+        title: 'אני כאן בשבילך 💙',
+        message: aiMessage,
+        actionUrl: '/journal?tab=daily',
+        data: {
+          daysSinceLastEntry,
+          consecutiveDaysReported,
+          totalEntries: dailyEntries.length
+        }
+      };
+    }
+
+    // אם יש רציפות טובה - נחזיר null כדי לבדוק תובנות אחרות
+    if (consecutiveDaysReported >= 7 && daysSinceLastEntry <= 1) {
+      return null; // נבדוק תובנות אחרות
+    }
+
+    // אם יש רציפות חלקית - נעודד להמשיך
+    if (consecutiveDaysReported >= 3 && consecutiveDaysReported < 7) {
+      return {
+        type: 'encouragement',
+        priority: 'medium',
+        title: 'את עושה עבודה נהדרת! 🌸',
+        message: `אני רואה שאת עקבית בדיווחים - ${consecutiveDaysReported} ימים רצופים! זה נהדר. ככל שתמשיכי למלא את היומן, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך.`,
+        actionUrl: '/journal?tab=daily'
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * יוצר הודעה מעודדת עם AI כשיש חוסר רציפות
+   */
+  private async generateEncouragingMessageForContinuity(
+    daysSinceLastEntry: number,
+    consecutiveDaysReported: number,
+    totalEntries: number
+  ): Promise<string> {
+    // ננסה להשתמש ב-AI אם יש API key
+    const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
+    
+    if (OPENAI_API_KEY && OPENAI_API_KEY !== 'dummy-key') {
+      try {
+        const systemPrompt = `את עליזה, מומחית רפואית ומנטורית חמה ונעימה לנשים בגיל המעבר. את מעודדת, תומכת, ומבינה. את מדברת כמו חברה טובה - חמה, אמפתית, ומעודדת.
+
+תפקידך: ליצור הודעה מעודדת ומכילה למשתמשת שלא דיווחה זמן מה. ההודעה צריכה:
+- להיות מעודדת ולא שיפוטית
+- להסביר את התועלות במילוי היומן
+- להזכיר שיש לה עם מי להתייעץ (עליזה - החברה שלה)
+- להיות אישית וחמה
+- לא לחזור על עצמה - להיות מקורית ומותאמת
+
+כתבי הודעה קצרה (3-4 משפטים) בעברית, בגוף שני, חמה ומעודדת.`;
+
+        const userPrompt = `שתמשת לא דיווחה ${daysSinceLastEntry} ימים. היא דיווחה ${consecutiveDaysReported} ימים רצופים לפני כן, ויש לה ${totalEntries} דיווחים בסך הכל.
+
+צרי הודעה מעודדת ומכילה שתעודד אותה לחזור למלא את היומן, תסביר את התועלות, ותזכיר שיש לה עם מי להתייעץ (עליזה). ההודעה צריכה להיות מקורית ולא לחזור על עצמה.`;
+
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${OPENAI_API_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            model: 'gpt-4o',
+            messages: [
+              { role: 'system', content: systemPrompt },
+              { role: 'user', content: userPrompt }
+            ],
+            max_tokens: 200,
+            temperature: 0.8
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          const aiMessage = data.choices[0]?.message?.content?.trim();
+          if (aiMessage) {
+            return aiMessage;
+          }
+        }
+      } catch (error) {
+        console.error('Error generating AI message for continuity:', error);
+      }
+    }
+
+    // Fallback - הודעות מגוונות שלא חוזרות על עצמן
+    const messages = [
+      `עברו ${daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. אני כאן כדי לעזור לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך. מילוי היומן היומי הוא כלי חזק שיעזור לך לזהות דפוסים, להבין מה עוזר לך, ולשפר את אורחות חייך. ככל שתמלאי יותר את היומן, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך. יש לך עם מי להתייעץ - אני כאן בשבילך! 💙`,
+      `אני רואה שעברו ${daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. אני מבינה שזה יכול להיות קשה לפעמים, אבל אני כאן כדי לתמוך בך. מילוי היומן היומי עוזר לך להבין את הגוף שלך, לזהות דפוסים, ולראות מה עוזר לך. ככל שתמלאי יותר, כך אוכל לתת לך תובנות מדויקות יותר. זכרי - יש לך עם מי להתייעץ, אני כאן בשבילך! 🌸`,
+      `היי! עברו ${daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. אני יודעת שזה יכול להיות מאתגר, אבל מילוי היומן היומי הוא כלי חשוב שיעזור לך להבין טוב יותר את הגוף שלך ואת מה שעובר עלייך. ככל שתמלאי יותר, כך אוכל לתת לך תובנות מדויקות יותר ומותאמות אישית. כל עדכון חשוב ומסייע לי להבין טוב יותר את המסע שלך. יש לך עם מי להתייעץ - אני כאן בשבילך! 💙`,
+      `אני רואה שעברו ${daysSinceLastEntry} ימים מאז הדיווח האחרון שלך. אני מבינה שזה יכול להיות קשה לפעמים, אבל אני כאן כדי לתמוך בך. מילוי היומן היומי עוזר לך להבין את הגוף שלך, לזהות דפוסים, ולראות מה עוזר לך. ככל שתמלאי יותר, כך אוכל לתת לך תובנות מדויקות יותר. זכרי - יש לך עם מי להתייעץ, אני כאן בשבילך! 🌸`
+    ];
+
+    // נבחר הודעה אקראית שלא חזרה לאחרונה (אם יש היסטוריה)
+    return messages[Math.floor(Math.random() * messages.length)];
   }
 
   /**
