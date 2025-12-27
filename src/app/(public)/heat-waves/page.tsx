@@ -250,9 +250,9 @@ export default function HeatWavesPage() {
               <strong>גלי חום: איך להישאר קרירה כשהגוף מחליט להיות תנור?</strong>
             </p>
             <ul className="download-list">
-              <li>📄 להורדת PDF - &quot;7 הדרכים להקלת גלי חום והזעות לילה - מדריך נשי בגובה העיניים&quot;</li>
-              <li>🎥 צפי בסרטון קצר: &quot;גל חום? הנה מה שאת באמת צריכה לעשות&quot;</li>
-              <li>🛍️ מוצרים ומאמרים - מניפה, מאוורר נייד, סדינים מקררים, קרחוניות צבעוניות למצב רוח, ספרים רלוונטיים</li>
+              <li>📄 <a href="https://drive.google.com/file/d/1vqeuol6ZCgO_pet8h9EZnEnGhvJrvZTo/view?usp=sharing" target="_blank" rel="noopener noreferrer">להורדת &quot;7 הדרכים להקלת גלי חום והזעות לילה - מדריך נשי בגובה העיניים&quot;</a></li>
+              <li style={{ display: 'none' }}>🎥 צפי בסרטון קצר: &quot;גל חום? הנה מה שאת באמת צריכה לעשות&quot;</li>
+              <li style={{ display: 'none' }}>🛍️ מוצרים ומאמרים - מניפה, מאוורר נייד, סדינים מקררים, קרחוניות צבעוניות למצב רוח, ספרים רלוונטיים</li>
             </ul>
           </div>
 
