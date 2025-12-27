@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Assistant, Geist_Mono, Satisfy, Dancing_Script, Caveat, Kalam } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import Script from "next/script";
 import "./globals.css";
 import Navigation from "./components/Navigation";
 import CookieBanner from "../components/CookieBanner";
@@ -70,6 +71,19 @@ export default function RootLayout({
         className={`${assistant.variable} ${geistMono.variable} ${satisfy.variable} ${dancingScript.variable} ${caveat.variable} ${kalam.variable} antialiased`}
         suppressHydrationWarning
       >
+        {/* Google Analytics */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-H46638TQ66"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-H46638TQ66');
+          `}
+        </Script>
         <div className="app-wrapper">
           <Navigation />
           <main id="main-content">
