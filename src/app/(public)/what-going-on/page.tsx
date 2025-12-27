@@ -362,7 +362,7 @@ export default function WhatGoingOnPage() {
           <div className="content-card downloads-card fade-in">
             <h2><span className="emoji-icon">📦</span><span className="text-content">קישורים לדברים טובים</span></h2>
             <ul className="download-list">
-              <li>📝 טבלת מעקב סימפטומים (PDF) להורדה</li>
+              <li>📝 <a href="https://drive.google.com/file/d/1v0P12jOBL3rmS269p1gfYn46uTpTCXdU/view?usp=sharing" target="_blank" rel="noopener noreferrer">יומן תסמינים למנופאוזית מתחילה</a></li>
             </ul>
           </div>
 

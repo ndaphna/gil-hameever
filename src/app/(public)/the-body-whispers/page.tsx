@@ -106,7 +106,7 @@ export default function TheBodyWhispersPage() {
               <div className="check-item">
                 <span className="check-icon">📌</span>
                 <div>
-                  <strong>פונה לרופא/ת נשים</strong> - מבקשות בדיקות דם להורמונים (FSH, אסטרדיול ועוד).
+                  <strong>פונה לרופא/ת נשים</strong> - מבקשת בדיקות דם להורמונים (FSH, אסטרדיול ועוד).
                 </div>
               </div>
               <div className="check-item">
