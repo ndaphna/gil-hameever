@@ -175,6 +175,7 @@ async function processNewsletterScheduler() {
         enabled: boolean;
         frequency: 'daily' | 'weekly' | 'monthly';
         time: string; // HH:MM format
+        newsletter_interval_days?: number; // Days between personal newsletters
       };
 
       console.log(`📧 Processing user ${pref.user_id}:`, {
@@ -265,25 +266,6 @@ async function processNewsletterScheduler() {
         continue;
       }
 
-      // בדוק אם הגיע הזמן לפי התדירות
-      const shouldSendByFrequency = await checkFrequency(
-        pref.user_id,
-        emailPrefs.frequency,
-        currentDayOfWeek,
-        currentDayOfMonth
-      );
-
-      if (!shouldSendByFrequency) {
-        console.log(`⏭️ Skipping user ${pref.user_id}: frequency check failed (frequency: ${emailPrefs.frequency}, dayOfWeek: ${currentDayOfWeek}, dayOfMonth: ${currentDayOfMonth})`);
-        skipped++;
-        results.push({
-          userId: pref.user_id,
-          status: 'skipped',
-          reason: `Frequency check failed (${emailPrefs.frequency}, day ${currentDayOfWeek}, month day ${currentDayOfMonth})`
-        });
-        continue;
-      }
-
       // בדוק מתי נשלח הניוזלטר האחרון (כדי לא לשלוח יותר מדי)
       const { data: lastNotification } = await supabaseAdmin
         .from('notification_history')
@@ -294,21 +276,27 @@ async function processNewsletterScheduler() {
         .limit(1)
         .maybeSingle();
 
+      // קבל את newsletter_interval_days (ברירת מחדל: 4 ימים)
+      const newsletterIntervalDays = emailPrefs.newsletter_interval_days || 4;
+
       if (lastNotification?.sent_at) {
         const lastSent = new Date(lastNotification.sent_at);
-        const hoursSinceLastSent = (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60);
+        const daysSinceLastSent = (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60 * 24);
         
-        // לא נשלח יותר מפעם ב-23 שעות (אפילו אם התדירות היא יומית)
-        if (hoursSinceLastSent < 23) {
-          console.log(`⏭️ Skipping user ${pref.user_id}: sent recently (${hoursSinceLastSent.toFixed(2)} hours ago)`);
+        // בדוק אם עברו מספיק ימים לפי newsletter_interval_days
+        if (daysSinceLastSent < newsletterIntervalDays) {
+          console.log(`⏭️ Skipping user ${pref.user_id}: not enough days passed (${daysSinceLastSent.toFixed(2)} days ago, required: ${newsletterIntervalDays} days)`);
           skipped++;
           results.push({
             userId: pref.user_id,
             status: 'skipped',
-            reason: `Sent recently (${hoursSinceLastSent.toFixed(2)} hours ago)`
+            reason: `Not enough days passed (${daysSinceLastSent.toFixed(2)} days ago, required: ${newsletterIntervalDays} days)`
           });
           continue;
         }
+      } else {
+        // אם זה הניוזלטר הראשון, נשלח אותו (אבל רק אם השעה תואמת)
+        console.log(`📧 First newsletter for user ${pref.user_id}, will send if time matches`);
       }
 
       // כל התנאים מתקיימים - שלח ניוזלטר!

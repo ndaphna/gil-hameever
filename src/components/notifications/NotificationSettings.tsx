@@ -32,7 +32,8 @@ export default function NotificationSettings({ userId }: NotificationSettingsPro
           email: {
             enabled: true,
             frequency: 'weekly',
-            time: '09:00'
+            time: '09:00',
+            newsletter_interval_days: 4
           },
           whatsapp: {
             enabled: false,

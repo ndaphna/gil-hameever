@@ -49,6 +49,7 @@ export interface NotificationPreferences {
     enabled: boolean;
     frequency: 'daily' | 'weekly' | 'monthly';
     time: string;
+    newsletter_interval_days?: number; // Days between personal newsletters (default: 4)
   };
   whatsapp: {
     enabled: boolean;

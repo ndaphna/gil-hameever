@@ -501,7 +501,7 @@ export class SmartNotificationService {
     if (!data) {
       // יצירת העדפות ברירת מחדל
       return {
-        email: { enabled: true, frequency: 'weekly', time: '09:00' },
+        email: { enabled: true, frequency: 'weekly', time: '09:00', newsletter_interval_days: 4 },
         categories: { insights: true, encouragements: true, reminders: true, warnings: true }
       };
     }
