@@ -207,7 +207,7 @@ export default function HormonesPage() {
           </div>
 
           {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
+          <div className="content-card downloads-card fade-in" style={{ display: 'none' }}>
             <h2><span className="emoji-icon">📥</span><span className="text-content">רוצה להבין לעומק?</span></h2>
             <ul className="download-list">
               <li>📄 PDF: &quot;10 מיתוסים על טיפול הורמונלי – והאמת מאחוריהם&quot;</li>

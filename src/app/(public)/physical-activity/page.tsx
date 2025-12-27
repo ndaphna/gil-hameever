@@ -128,7 +128,7 @@ export default function PhysicalActivityPage() {
           </div>
 
           {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
+          <div className="content-card downloads-card fade-in" style={{ display: 'none' }}>
             <h2><span className="emoji-icon">📥</span><span className="text-content">בונוסים שמחכים לך:</span></h2>
             <ul className="download-list">
               <li>📄 PDF: &quot;הצלחת המודעת&quot; – מדריך לבניית ארוחה פשוטה ומזינה</li>
