@@ -90,38 +90,46 @@ export default function BelongingSisterhoodEmotionalConnectionPage() {
           </div>
 
           {/* Knowledge */}
-          <div className="content-card fade-in">
+          <div className="content-card fade-in knowledge-card">
             <h2><span className="emoji-icon">🔬</span><span className="text-content">ידע בגובה העיניים – על חיבור, חברות ונשיות בגיל המעבר</span></h2>
-            <table className="topics-table">
-              <thead>
-                <tr>
-                  <th>נושא</th>
-                  <th>על מה נדבר שם</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🤝 מה זאת בכלל שייכות בגיל הזה?</td>
-                  <td>לא קבוצת הורים, אלא תחושת &quot;יש לי שבט משלי&quot;.</td>
-                </tr>
-                <tr>
-                  <td>🧑‍🤝‍🧑 חברות נשית כמרחב ריפוי</td>
-                  <td>למה נשים מרפאות נשים, ואיך מוצאים את אלה שמדברות את השפה שלך.</td>
-                </tr>
-                <tr>
-                  <td>🙅‍♀️ להרפות מקשרים רעילים</td>
-                  <td>מתי פרידה היא דווקא אהבה עצמית, ולא ניתוק.</td>
-                </tr>
-                <tr>
-                  <td>💬 תקשורת כנה ולא מתנצלת</td>
-                  <td>איך לדבר אמת מבלי לחשוש שיאשימו אותך בדרמטיות.</td>
-                </tr>
-                <tr>
-                  <td>🧡 קבוצה, קהילה, חיבורים חדשים</td>
-                  <td>מרחבים שיאפשרו לך להיות בדיוק מי שאת, גם בלי מסקרה.</td>
-                </tr>
-              </tbody>
-            </table>
+            
+            <div className="topics-table">
+              <a href="/what-is-belonging" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🤝</span>
+                  <span className="topic-text">מה זאת בכלל שייכות בגיל הזה?</span>
+                </div>
+                <div className="topic-desc">לא קבוצת הורים, אלא תחושת &quot;יש לי שבט משלי&quot;.</div>
+              </a>
+              <a href="/female-friendship-healing-space" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🧑‍🤝‍🧑</span>
+                  <span className="topic-text">חברות נשית כמרחב ריפוי</span>
+                </div>
+                <div className="topic-desc">למה נשים מרפאות נשים, ואיך מוצאים את אלה שמדברות את השפה שלך.</div>
+              </a>
+              <a href="/letting-go-toxic-relationships" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🙅‍♀️</span>
+                  <span className="topic-text">להרפות מקשרים רעילים</span>
+                </div>
+                <div className="topic-desc">מתי פרידה היא דווקא אהבה עצמית, ולא ניתוק.</div>
+              </a>
+              <a href="/honest-communication" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">💬</span>
+                  <span className="topic-text">תקשורת כנה ולא מתנצלת</span>
+                </div>
+                <div className="topic-desc">איך לדבר אמת מבלי לחשוש שיאשימו אותך בדרמטיות.</div>
+              </a>
+              <a href="/community-new-connections" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🧡</span>
+                  <span className="topic-text">קבוצה, קהילה, חיבורים חדשים</span>
+                </div>
+                <div className="topic-desc">מרחבים שיאפשרו לך להיות בדיוק מי שאת, גם בלי מסקרה.</div>
+              </a>
+            </div>
           </div>
 
           {/* Tools */}
@@ -194,14 +202,19 @@ export default function BelongingSisterhoodEmotionalConnectionPage() {
             </div>
           </div>
 
-          {/* Downloads */}
+          {/* Gift Guide */}
           <div className="content-card downloads-card fade-in">
-            <h2><span className="emoji-icon">📦</span><span className="text-content">קישורים לדברים טובים</span></h2>
-            <ul className="download-list">
-              <li>💌 מדריך PDF: &quot;איך לבנות קהילה קטנה משלך – גם אם את ביישנית&quot;</li>
-              <li>🧶 &quot;קלפי קרבה&quot; להורדה – שאלות קטנות שמביאות שיחות גדולות</li>
-              <li>🎧 פרק מוקלט: &quot;נשים שמרפאות נשים – קולות מהשטח&quot;</li>
-            </ul>
+            <h2><span className="emoji-icon">🎁</span><span className="text-content">מדריך מתנה להורדה</span></h2>
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+              <a 
+                href="https://drive.google.com/file/d/1GfB5dIXsuCkDzn__sog1Konxuv2PftSx/view?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-button"
+              >
+                💌 מדריך: &quot;איך לבנות קהילה קטנה משלך – גם אם את ביישנית&quot;
+              </a>
+            </div>
           </div>
 
           {/* Aliza's Reflection */}

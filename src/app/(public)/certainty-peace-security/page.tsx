@@ -123,45 +123,45 @@ export default function CertaintyPeaceSecurityPage() {
           </div>
 
           {/* Knowledge Section */}
-          <div className="content-card fade-in knowledge-card">
+          <div className="content-card fade-in knowledge-card" id="emotional-regulation">
             <h2><span className="emoji-icon">🔬</span><span className="text-content">ידע בגובה העיניים – על ויסות, גבולות, וחרדה שקטה</span></h2>
             
             <div className="topics-table">
-              <div className="topic-row">
+              <a href="/emotional-regulation" className="topic-row" style={{textDecoration: 'none', color: 'inherit'}}>
                 <div className="topic-title">
                   <span className="topic-icon">⚠️</span>
                   <span className="topic-text">מה זה בכלל &quot;וויסות רגשי&quot;?</span>
                 </div>
                 <div className="topic-desc">הסבר פשוט על המערכת הסימפתטית, והקשר בין הורמונים לרגש.</div>
-              </div>
-              <div className="topic-row">
+              </a>
+              <a href="/anxiety-attacks" className="topic-row" style={{textDecoration: 'none', color: 'inherit'}} id="anxiety-attacks">
                 <div className="topic-title">
                   <span className="topic-icon">🧯</span>
                   <span className="topic-text">התקפי חרדה קלים או פתאומיים</span>
                 </div>
                 <div className="topic-desc">למה הם מופיעים דווקא עכשיו, ואיך להוריד מהם את העוקץ.</div>
-              </div>
-              <div className="topic-row">
+              </a>
+              <a href="/setting-boundaries" className="topic-row" style={{textDecoration: 'none', color: 'inherit'}} id="boundaries">
                 <div className="topic-title">
                   <span className="topic-icon">🧍‍♀️</span>
                   <span className="topic-text">להציב גבולות – בלי רגשות אשם</span>
                 </div>
                 <div className="topic-desc">איך לזהות מתי את אומרת &quot;כן&quot; כשבא לך להגיד &quot;לא&quot;, ואיך לתקן את זה.</div>
-              </div>
-              <div className="topic-row">
+              </a>
+              <a href="/building-safe-routine" className="topic-row" style={{textDecoration: 'none', color: 'inherit'}} id="safe-routine">
                 <div className="topic-title">
                   <span className="topic-icon">📆</span>
                   <span className="topic-text">בניית שגרה בטוחה</span>
                 </div>
                 <div className="topic-desc">למה ריטואלים קטנים הם עוגן רגשי, ואיך ליצור כאלה שמתאימים לך.</div>
-              </div>
-              <div className="topic-row">
+              </a>
+              <a href="/impulsivity-to-calm" className="topic-row" style={{textDecoration: 'none', color: 'inherit'}} id="impulsivity-to-calm">
                 <div className="topic-title">
                   <span className="topic-icon">🔄</span>
                   <span className="topic-text">המעבר מאימפולסיביות לרוגע</span>
                 </div>
                 <div className="topic-desc">כלים קטנים לשים שנייה בין הגירוי לתגובה. זה כל ההבדל.</div>
-              </div>
+              </a>
             </div>
           </div>
 
@@ -282,11 +282,24 @@ export default function CertaintyPeaceSecurityPage() {
           <div className="content-card fade-in downloads-card">
             <h2><span className="emoji-icon">📦</span><span className="text-content">קישורים לדברים טובים:</span></h2>
             
-            <ul className="download-list">
-              <li>📘 מדריך PDF: &quot;10 סימנים שהנפש שלך מבקשת ביטחון – ומה עושים איתם&quot;</li>
-              <li>🧘 הקלטת מדיטציה קצרה: &quot;מרחב בטוח בתוך הראש שלי&quot;</li>
-              <li>📥 דף עבודה: &quot;הגבולות שלי – מפת גבולות אישית לתרגול&quot;</li>
-            </ul>
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'center' }}>
+              <a 
+                href="https://drive.google.com/file/d/173HcDymNIWeb8X7vZv2ehcxOqrjXHr1Q/view?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-button"
+              >
+                📘 מדריך: &quot;10 סימנים שהנפש שלך מבקשת ביטחון – ומה עושים איתם&quot;
+              </a>
+              <a 
+                href="https://drive.google.com/file/d/1ja3CyHo-fRqmAU3w0pmXooB1h0xb1V66/view?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-button"
+              >
+                📥 דף עבודה: &quot;הגבולות שלי – מפת גבולות אישית לתרגול&quot;
+              </a>
+            </div>
           </div>
 
           {/* Aliza's Story */}

@@ -91,38 +91,46 @@ export default function WisdomGivingPage() {
           </div>
 
           {/* Knowledge */}
-          <div className="content-card fade-in">
+          <div className="content-card fade-in knowledge-card">
             <h2><span className="emoji-icon">🔬</span><span className="text-content">ידע בגובה העיניים – על תבונה נשית, נתינה וערך עצמי</span></h2>
-            <table className="topics-table">
-              <thead>
-                <tr>
-                  <th>נושא</th>
-                  <th>על מה נדבר שם</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🌿 מהי תבונה נשית בגיל המעבר?</td>
-                  <td>ואיך לזהות אותה בתוכך – גם בלי תעודה</td>
-                </tr>
-                <tr>
-                  <td>🎁 נתינה מתוך מלאות</td>
-                  <td>לא לתת כדי לרצות – אלא כדי להתחבר לעצמך עוד יותר</td>
-                </tr>
-                <tr>
-                  <td>👩‍🏫 להעביר את זה הלאה</td>
-                  <td>כל הדרכים להשפיע, לשתף, ללוות – בלי להיות &quot;גורו&quot;</td>
-                </tr>
-                <tr>
-                  <td>🎯 תחושת משמעות</td>
-                  <td>איך לדעת שאת חיה עם תכלית – גם בלי להפוך את העולם</td>
-                </tr>
-                <tr>
-                  <td>👣 מה השארתי כאן?</td>
-                  <td>מבט אישי על מורשת, נוכחות והשפעה גם דרך פעולות יומיומיות</td>
-                </tr>
-              </tbody>
-            </table>
+            
+            <div className="topics-table">
+              <a href="/what-is-feminine-wisdom" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🌿</span>
+                  <span className="topic-text">מהי תבונה נשית בגיל המעבר?</span>
+                </div>
+                <div className="topic-desc">ואיך לזהות אותה בתוכך – גם בלי תעודה</div>
+              </a>
+              <a href="/giving-from-fullness" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🎁</span>
+                  <span className="topic-text">נתינה מתוך מלאות</span>
+                </div>
+                <div className="topic-desc">לא לתת כדי לרצות – אלא כדי להתחבר לעצמך עוד יותר</div>
+              </a>
+              <a href="/passing-it-on" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">👩‍🏫</span>
+                  <span className="topic-text">להעביר את זה הלאה</span>
+                </div>
+                <div className="topic-desc">כל הדרכים להשפיע, לשתף, ללוות – בלי להיות &quot;גורו&quot;</div>
+              </a>
+              <a href="/sense-of-meaning" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🎯</span>
+                  <span className="topic-text">תחושת משמעות</span>
+                </div>
+                <div className="topic-desc">איך לדעת שאת חיה עם תכלית – גם בלי להפוך את העולם</div>
+              </a>
+              <a href="/what-did-i-leave-here" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">👣</span>
+                  <span className="topic-text">מה השארתי כאן?</span>
+                </div>
+                <div className="topic-desc">מבט אישי על מורשת, נוכחות והשפעה גם דרך פעולות יומיומיות</div>
+              </a>
+            </div>
           </div>
 
           {/* Tools */}
@@ -155,16 +163,6 @@ export default function WisdomGivingPage() {
                 <li>אילו משפטים הייתי רוצה לומר לאישה צעירה ממני – או לעצמי של פעם?</li>
               </ul>
             </div>
-          </div>
-
-          {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
-            <h2><span className="emoji-icon">📦</span><span className="text-content">קישורים לדברים טובים</span></h2>
-            <ul className="download-list">
-              <li>📘 PDF: &quot;התבונה שלי – מפת תובנות אישית&quot;</li>
-              <li>🧭 ערכת שיתוף: איך ליצור שיחה משמעותית עם מישהי צעירה ממך</li>
-              <li>🎧 מדיטציית סיכום מסע: &quot;מה אני רוצה להשאיר אחריי?&quot;</li>
-            </ul>
           </div>
 
           {/* Aliza's Reflection */}

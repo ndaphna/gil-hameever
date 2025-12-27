@@ -92,38 +92,46 @@ export default function SelfWorthPage() {
           </div>
 
           {/* Knowledge */}
-          <div className="content-card fade-in">
+          <div className="content-card fade-in knowledge-card">
             <h2><span className="emoji-icon">🔬</span><span className="text-content">ידע בגובה העיניים – על הגשמה, ייעוד, ושינוי בגיל הזה</span></h2>
-            <table className="topics-table">
-              <thead>
-                <tr>
-                  <th>נושא</th>
-                  <th>על מה נדבר שם</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>🔍 מה זה בכלל הגשמה עצמית בגיל המעבר?</td>
-                  <td>ולמה היא נראית אחרת ממה שחשבת</td>
-                </tr>
-                <tr>
-                  <td>💡 איך מגלים מה בא לי עכשיו?</td>
-                  <td>כלים פשוטים לחיבור בין &quot;מה אני טובה בו&quot; ל&quot;מה עושה לי חשק&quot;</td>
-                </tr>
-                <tr>
-                  <td>🧭 לעשות שינוי – גם בגיל 50+</td>
-                  <td>סיפורים של נשים שהתחילו מחדש – וגם את יכולה</td>
-                </tr>
-                <tr>
-                  <td>🌈 איך בונים חלום מעשי</td>
-                  <td>מדריך לאיך לוקחים רעיון ומתחילים לזוז</td>
-                </tr>
-                <tr>
-                  <td>😱 פחדים, אשמה וספק עצמי</td>
-                  <td>כל הקולות שמעכבים אותך – ואיך מתמודדים איתם</td>
-                </tr>
-              </tbody>
-            </table>
+            
+            <div className="topics-table">
+              <a href="/what-is-self-fulfillment" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🔍</span>
+                  <span className="topic-text">מה זה בכלל הגשמה עצמית בגיל המעבר?</span>
+                </div>
+                <div className="topic-desc">ולמה היא נראית אחרת ממה שחשבת</div>
+              </a>
+              <a href="/how-to-discover-what-i-want" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">💡</span>
+                  <span className="topic-text">איך מגלים מה בא לי עכשיו?</span>
+                </div>
+                <div className="topic-desc">כלים פשוטים לחיבור בין &quot;מה אני טובה בו&quot; ל&quot;מה עושה לי חשק&quot;</div>
+              </a>
+              <a href="/making-change-50-plus" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🧭</span>
+                  <span className="topic-text">לעשות שינוי – גם בגיל 50+</span>
+                </div>
+                <div className="topic-desc">סיפורים של נשים שהתחילו מחדש – וגם את יכולה</div>
+              </a>
+              <a href="/how-to-build-practical-dream" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">🌈</span>
+                  <span className="topic-text">איך בונים חלום מעשי</span>
+                </div>
+                <div className="topic-desc">מדריך לאיך לוקחים רעיון ומתחילים לזוז</div>
+              </a>
+              <a href="/fears-guilt-self-doubt" className="topic-row">
+                <div className="topic-title">
+                  <span className="topic-icon">😲</span>
+                  <span className="topic-text">פחדים, אשמה וספק עצמי</span>
+                </div>
+                <div className="topic-desc">כל הקולות שמעכבים אותך – ואיך מתמודדים איתם</div>
+              </a>
+            </div>
           </div>
 
           {/* Tools */}
@@ -161,16 +169,6 @@ export default function SelfWorthPage() {
               &quot;בעלי שאל אותי השבוע אם אני משתעממת בפנסיה...<br />
               אמרתי לו – &apos;פנסיה?! אני רק עכשיו קיבלתי רשות להיות מי שאני!&apos;&quot;
             </blockquote>
-          </div>
-
-          {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
-            <h2><span className="emoji-icon">📦</span><span className="text-content">קישורים לדברים טובים</span></h2>
-            <ul className="download-list">
-              <li>📘 PDF: &quot;הגשמה עצמית – המדריך למנופאוזית הסקרנית&quot;</li>
-              <li>🎥 תרגול וידאו: עליזה מדברת על חלומות שנולדו בגיל 52</li>
-              <li>🎧 מדיטציית בוקר להשראה ומיקוד: &quot;מה בא לי ליצור היום?&quot;</li>
-            </ul>
           </div>
 
           {/* Aliza's Reflection */}

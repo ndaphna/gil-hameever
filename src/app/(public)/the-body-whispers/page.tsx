@@ -271,7 +271,17 @@ export default function TheBodyWhispersPage() {
               <p>בסוף השבוע, התבונני על מה חוזר על עצמו. זה הרמז שלך להתחלה חדשה.</p>
               <p><em>רצוי לנהל יומן תסמינים שישמש אותך בביקורייך במרפאה.</em></p>
               <div className="journal-link">
-                📔 <strong>יומן המנופאוזית המתחילה</strong> - יומן אישי להדפסה שילווה אותך לאורך כל התחנות במסע שלך <span className="coming-soon">**נעלה את היומן בהמשך</span>
+                📔 <strong>יומן המנופאוזית המתחילה</strong> - לחצי על הכפתור להורדת יומן אישי להדפסה שילווה אותך לאורך כל התחנות במסע שלך.
+              </div>
+              <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                <a 
+                  href="https://drive.google.com/file/d/1wI6QZ51oWYlGqe8boVvdjdtvLrkss9Rz/view?usp=sharing" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="cta-button"
+                >
+                  להורדת היומן
+                </a>
               </div>
             </div>
 
@@ -379,25 +389,16 @@ export default function TheBodyWhispersPage() {
             <h2>רוצה להעמיק?</h2>
             <p>קראי עוד מאמרים באתר.</p>
             
-            <ul className="resources-list">
-              <li>צפי בסרטון: &quot;10 סימנים שאת בפרי-מנופאוזה – ואיך לזהות אותם בגוף שלך&quot; <span className="coming-soon">**ניצור בהמשך</span></li>
-              <li>[להוסיף איור של גוף אישה שכל איבר - mouse over יפתח תווית עם הסבר לסימפטום אופייני לאיבר…]</li>
-              <li>[להוסיף קישור למאמר רלוונטי באתר שלי שכבר כתבתי] <span className="coming-soon">**נוסיף בהמשך</span></li>
-            </ul>
+            <div style={{ marginTop: '24px', textAlign: 'center' }}>
+              <a 
+                href="/articles" 
+                className="cta-button"
+              >
+                למאמרים באתר
+              </a>
+            </div>
           </div>
 
-          {/* Downloads Section */}
-          <div className="content-card fade-in downloads-card">
-            <h2>📦 קישורים לדברים טובים:</h2>
-            <p className="coming-soon-note">**הדפים עוד לא נבנו, נקשר אותם בהמשך</p>
-            
-            <ul className="download-list">
-              <li>📝 טבלת מעקב סימפטומים (PDF) להורדה</li>
-              <li>🔄 יומן מעקב יומי למנופאוזית המתחילה</li>
-              <li>🎧 פרק פודקאסט מומלץ: &quot;הגוף שלי ואני - הסכם שלום&quot; (מגיע בקרוב…)</li>
-              <li>📔 יומן המנופאוזית המתחילה - יומן אישי להדפסה שילווה אותך לאורך כל התחנות במסע שלך</li>
-            </ul>
-          </div>
 
           {/* Next Steps */}
           <div className="content-card fade-in next-steps-card">
