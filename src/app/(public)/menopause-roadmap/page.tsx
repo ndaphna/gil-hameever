@@ -270,7 +270,7 @@ export default function MenopauseRoadmapPage() {
                 </div>
                 <a href="/wisdom-giving" className="pyramid-level level-5">
                   <div className="level-content">
-                    <h3>חכמה ונתינה</h3>
+                    <h3 style={{ textAlign: 'center' }}>חכמה ונתינה</h3>
                   </div>
                 </a>
               </div>
@@ -282,7 +282,7 @@ export default function MenopauseRoadmapPage() {
                 </div>
                 <a href="/self-worth" className="pyramid-level level-4">
                   <div className="level-content">
-                    <h3>ערך עצמי, משמעות, השפעה והערכה</h3>
+                    <h3 style={{ textAlign: 'center' }}>ערך עצמי, משמעות, השפעה והערכה</h3>
                   </div>
                 </a>
               </div>
@@ -294,7 +294,7 @@ export default function MenopauseRoadmapPage() {
                 </div>
                 <a href="/belonging-sisterhood-emotional-connection" className="pyramid-level level-3">
                   <div className="level-content">
-                    <h3>שייכות, אחווה וחיבור רגשי</h3>
+                    <h3 style={{ textAlign: 'center' }}>שייכות, אחווה וחיבור רגשי</h3>
                   </div>
                 </a>
               </div>

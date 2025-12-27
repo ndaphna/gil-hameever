@@ -340,8 +340,6 @@ export default function TheBodyWhispersPage() {
           {/* Video Section */}
           <div className="content-card fade-in video-card">
             <h2>🎧 רוצה רגע לצחוק על זה ביחד?</h2>
-            <p>לחצי כאן לסרטון קצר של עליזה שנקין. <span className="coming-soon">**ניצור בהמשך סרטון - &quot;מה לעזאזל קורה לי בגוף??&quot;</span></p>
-            <p className="video-subtitle">🎥 מתוך סדרת &quot;המנופאוזית מדברת&quot; - ליווי נשי בגובה העיניים לכל שלב במפת הדרכים.</p>
             
             <div className="quote-box">
               <p className="quote-title">🎭 עליזה שנקין מספרת:</p>
