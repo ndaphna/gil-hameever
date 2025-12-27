@@ -215,7 +215,7 @@ export default function TheBodyWhispersPage() {
             <h2><span className="emoji-icon">🧰</span><span className="text-content">ארגז הכלים שלך</span></h2>
             <p>כלים שיכולים לחולל שינוי אמיתי - גם אם תתחילי ממש בקטן:</p>
             
-            <div className="tool-item">
+            <div className="tool-item tool-item-static">
               <div className="tool-icon">🧘</div>
               <div className="tool-content">
                 <h4>נשימת 4-4-8</h4>
@@ -223,7 +223,7 @@ export default function TheBodyWhispersPage() {
               </div>
             </div>
 
-            <div className="tool-item">
+            <div className="tool-item tool-item-static">
               <div className="tool-icon">🥗</div>
               <div className="tool-content">
                 <h4>חזרה על מנטרה תוך כדי אכילה</h4>
@@ -231,7 +231,7 @@ export default function TheBodyWhispersPage() {
               </div>
             </div>
 
-            <div className="tool-item">
+            <div className="tool-item tool-item-static">
               <div className="tool-icon">✍️</div>
               <div className="tool-content">
                 <h4>מיפוי תחושות הגוף</h4>
@@ -239,7 +239,7 @@ export default function TheBodyWhispersPage() {
               </div>
             </div>
 
-            <div className="tool-item">
+            <div className="tool-item tool-item-static">
               <div className="tool-icon">💤</div>
               <div className="tool-content">
                 <h4>הרגלי שינה מדויקים</h4>
