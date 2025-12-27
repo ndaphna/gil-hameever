@@ -232,7 +232,7 @@ export default function WeightGainPage() {
           </div>
 
           {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
+          <div className="content-card downloads-card fade-in" style={{ display: 'none' }}>
             <h2><span className="emoji-icon">📥</span><span className="text-content">רוצה להרגיש שליטה חדשה?</span></h2>
             <ul className="download-list">
               <li>📊 להורדת טבלת מעקב תזונה רגשית ונפח ארוחות</li>
