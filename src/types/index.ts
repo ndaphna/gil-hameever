@@ -16,6 +16,10 @@ export interface UserProfile {
   user_id?: string;
   email?: string;
   full_name?: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  phone_number?: string | null;
+  profile_image_url?: string | null;
   current_tokens?: number;
   tokens_remaining?: number;
   subscription_tier?: 'trial' | 'basic' | 'premium' | 'free' | 'pro';

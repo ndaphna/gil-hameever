@@ -349,11 +349,16 @@ export default function MenopauseRoadmapPage() {
             </div>
             
             <div className="pyramid-cta">
-              <button className="cta-button pulse-button">
-                <span className="button-text">בואי נתחיל במסע שלך</span>
-                <span className="button-subtext">לחצי על השלב שמתאים לך ברגע זה</span>
-        </button>
-      </div>
+              <div className="pyramid-guidance">
+                <div className="guidance-content">
+                  <span className="pointing-hand">👆</span>
+                  <div className="guidance-text">
+                    <p className="guidance-main">בואי נתחיל במסע שלך</p>
+                    <p className="guidance-sub">לחצי על השלב שמתאים לך ברגע זה</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           </div>
         </div>

@@ -131,3 +131,101 @@ export async function getSystemStats() {
   }
 }
 
+// Create new user (admin only)
+export async function createUser(userData: {
+  email: string;
+  password: string;
+  full_name?: string;
+  first_name?: string;
+  last_name?: string;
+  subscription_tier?: string;
+  subscription_status?: string;
+  tokens?: number;
+  newsletter_interval_days?: number;
+}) {
+  try {
+    const token = await getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('/api/admin/create-user', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify(userData)
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to create user');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
+  }
+}
+
+// Get user notification preferences (admin only)
+export async function getUserNotificationPreferences(userId: string) {
+  try {
+    const token = await getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`/api/admin/user-preferences?userId=${userId}`, {
+      headers
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to fetch preferences');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching preferences:', error);
+    throw error;
+  }
+}
+
+// Update user notification preferences (admin only)
+export async function updateUserNotificationPreferences(userId: string, preferences: any) {
+  try {
+    const token = await getAuthToken();
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch('/api/admin/update-user-preferences', {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({ userId, preferences })
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || 'Failed to update preferences');
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating preferences:', error);
+    throw error;
+  }
+}
+

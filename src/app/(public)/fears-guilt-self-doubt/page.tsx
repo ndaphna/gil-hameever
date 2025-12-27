@@ -69,7 +69,7 @@ export default function FearsGuiltSelfDoubtPage() {
           <div className="content-card fade-in">
             <h2><span className="emoji-icon">🤔</span><span className="text-content">למה הם כל כך חזקים דווקא עכשיו?</span></h2>
             <ul className="styled-list">
-              <li>כי את נוגעת לראשונה ברצון אישי – והוא עוד עדין.</li>
+              <li>כי את נוגעת לראשונה ברצון אישי – והוא עור עדין.</li>
               <li>כי אחרי שנים של תפקוד – כל מה שקשור ב&quot;עצמי&quot; מרגיש כמעט אנוכי.</li>
               <li>כי את לא בת 20. את יודעת כמה דברים יכולים להשתבש.</li>
               <li>כי גם הגוף משתנה – וזה משפיע על הביטחון.</li>

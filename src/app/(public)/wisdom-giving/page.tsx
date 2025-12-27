@@ -237,7 +237,14 @@ export default function WisdomGivingPage() {
             </div>
 
             <div className="button-group">
-              <a href="#" className="cta-button certificate">🎓 הורדת תעודת סיום</a>
+              <a 
+                href="https://drive.google.com/file/d/1Zde2y88MQ3U7LwNts-LTdVWBPNTA1boy/view?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="cta-button certificate"
+              >
+                🎓 הורדת תעודת סיום
+              </a>
               <a href="/menopause-roadmap" className="cta-button secondary">🗺️ חזרה למפת הדרכים</a>
             </div>
           </div>

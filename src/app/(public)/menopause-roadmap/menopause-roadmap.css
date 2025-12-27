@@ -219,6 +219,60 @@
 .menopause-roadmap-page .pyramid-cta {
   text-align: center;
   margin-top: 32px;
+  padding: 0 16px;
+}
+
+.menopause-roadmap-page .pyramid-guidance {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border-radius: 16px;
+  padding: 24px 32px;
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.2);
+}
+
+.menopause-roadmap-page .guidance-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-direction: row-reverse;
+}
+
+.menopause-roadmap-page .pointing-hand {
+  font-size: 32px;
+  animation: pointToPyramid 2s ease-in-out infinite;
+  transform-origin: center;
+}
+
+@keyframes pointToPyramid {
+  0%, 100% {
+    transform: translateX(0) scale(1);
+  }
+  50% {
+    transform: translateX(-8px) scale(1.1);
+  }
+}
+
+.menopause-roadmap-page .guidance-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  text-align: right;
+}
+
+.menopause-roadmap-page .guidance-main {
+  font-size: clamp(1.125rem, 2.5vw, 1.375rem);
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.menopause-roadmap-page .guidance-sub {
+  font-size: clamp(0.9375rem, 2vw, 1.0625rem);
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.95);
+  margin: 0;
+  line-height: 1.3;
 }
 
 .menopause-roadmap-page .pulse-button {
@@ -342,6 +396,31 @@
 /* ============================================
    TABLET RESPONSIVE
    ============================================ */
+
+/* Mobile styles for guidance */
+@media (max-width: 767px) {
+  .menopause-roadmap-page .pyramid-guidance {
+    padding: 20px 24px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .menopause-roadmap-page .guidance-content {
+    gap: 12px;
+  }
+
+  .menopause-roadmap-page .pointing-hand {
+    font-size: 24px;
+  }
+
+  .menopause-roadmap-page .guidance-main {
+    font-size: 1.125rem;
+  }
+
+  .menopause-roadmap-page .guidance-sub {
+    font-size: 0.9375rem;
+  }
+}
 
 @media (min-width: 768px) {
   .menopause-roadmap-page .hero-question {
@@ -547,6 +626,22 @@
   
   .menopause-roadmap-page .pyramid-cta {
     margin-top: 48px;
+  }
+
+  .menopause-roadmap-page .pyramid-guidance {
+    padding: 20px 28px;
+  }
+
+  .menopause-roadmap-page .pointing-hand {
+    font-size: 28px;
+  }
+
+  .menopause-roadmap-page .guidance-main {
+    font-size: 1.25rem;
+  }
+
+  .menopause-roadmap-page .guidance-sub {
+    font-size: 1rem;
   }
   
   .menopause-roadmap-page .button-text {

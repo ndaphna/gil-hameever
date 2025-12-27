@@ -16,8 +16,11 @@ interface SidebarProps {
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [userName, setUserName] = useState<string>('');
+  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [roadmapOpen, setRoadmapOpen] = useState(false);
+  const [showImageModal, setShowImageModal] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const { tokens, isLoading: tokensLoading } = useTokens();
   const { isAdmin } = useAuth();
   const [tokenAnimation, setTokenAnimation] = useState<'decrease' | null>(null);
@@ -179,7 +182,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       // Load user profile from database
         let { data: profile } = await supabase
           .from('user_profile')
-          .select('first_name, last_name, name, full_name, email')
+          .select('first_name, last_name, name, full_name, email, profile_image_url')
           .eq('id', user.id)
           .single();
 
@@ -198,7 +201,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           // Fetch the newly created profile
           const { data: newProfile } = await supabase
             .from('user_profile')
-            .select('first_name, last_name, name, full_name, email')
+            .select('first_name, last_name, name, full_name, email, profile_image_url')
             .eq('id', user.id)
             .single();
           
@@ -208,6 +211,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         if (profile) {
           // Use first_name only for display
           setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
+          setProfileImageUrl(profile.profile_image_url || null);
         }
     }
 
@@ -220,19 +224,20 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     
     // Listen for custom events (for profile updates)
     const handleProfileUpdate = async () => {
-      console.log('Sidebar: Profile updated, reloading user name');
+      console.log('Sidebar: Profile updated, reloading user name and image');
       const { data: { user } } = await supabase.auth.getUser();
       
       if (user) {
         const { data: profile } = await supabase
           .from('user_profile')
-          .select('full_name, email')
+          .select('first_name, last_name, name, full_name, email, profile_image_url')
           .eq('id', user.id)
           .single();
         
         if (profile) {
           // Use first_name only for display
           setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
+          setProfileImageUrl(profile.profile_image_url || null);
         }
       }
     };
@@ -243,6 +248,88 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       window.removeEventListener('profileUpdated', handleProfileUpdate);
     };
   }, [mounted]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+
+    try {
+      // Get session token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('לא מחוברת. אנא התחברי מחדש');
+      }
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/user/upload-profile-image', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        const errorMessage = data.error === 'Storage bucket not found' 
+          ? 'Storage bucket לא קיים. אנא צרי את ה-bucket "profile-images" ב-Supabase Storage. ראה guides/SETUP_PROFILE_IMAGES.md להוראות מפורטות.'
+          : data.error || 'Failed to upload image';
+        throw new Error(errorMessage);
+      }
+
+      setProfileImageUrl(data.imageUrl);
+      setShowImageModal(false);
+      
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('profileUpdated'));
+    } catch (error: any) {
+      alert('שגיאה בהעלאת תמונה: ' + (error.message || 'שגיאה לא ידועה'));
+      console.error(error);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleDeleteImage = async () => {
+    setUploadingImage(true);
+
+    try {
+      // Get session token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('לא מחוברת. אנא התחברי מחדש');
+      }
+
+      const response = await fetch('/api/user/upload-profile-image', {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete image');
+      }
+
+      setProfileImageUrl(null);
+      setShowImageModal(false);
+      
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('profileUpdated'));
+    } catch (error: any) {
+      alert('שגיאה במחיקת תמונה: ' + (error.message || 'שגיאה לא ידועה'));
+      console.error(error);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   if (!mounted) {
     return null;
@@ -264,8 +351,29 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
       <aside className={`sidebar ${isOpen ? 'open' : ''}`} style={{ display: isOpen ? 'flex' : 'none' }}>
         {/* User Info */}
         <div className="sidebar-header">
-          <div className="user-avatar">
-            {userName.charAt(0).toUpperCase()}
+          <div 
+            className="user-avatar" 
+            onClick={() => setShowImageModal(true)}
+            style={{ cursor: 'pointer', position: 'relative' }}
+            title="לחצי לערוך תמונת פרופיל"
+          >
+            {profileImageUrl ? (
+              <img 
+                src={profileImageUrl} 
+                alt="תמונת פרופיל" 
+                style={{ 
+                  width: '100%', 
+                  height: '100%', 
+                  borderRadius: '50%', 
+                  objectFit: 'cover' 
+                }}
+              />
+            ) : (
+              <span>{userName.charAt(0).toUpperCase()}</span>
+            )}
+            <div className="avatar-edit-overlay">
+              <span>✏️</span>
+            </div>
           </div>
           <div className="user-info">
             <h3 className="user-name">שלום, {userName}</h3>
@@ -356,6 +464,64 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
           </Link>
         </div>
       </aside>
+
+      {/* Profile Image Edit Modal */}
+      {showImageModal && (
+        <div className="sidebar-image-modal-overlay" onClick={() => setShowImageModal(false)}>
+          <div className="sidebar-image-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="sidebar-image-modal-header">
+              <h3>עריכת תמונת פרופיל</h3>
+              <button 
+                className="sidebar-image-modal-close"
+                onClick={() => setShowImageModal(false)}
+              >
+                ×
+              </button>
+            </div>
+            <div className="sidebar-image-modal-content">
+              <div className="sidebar-image-preview">
+                {profileImageUrl ? (
+                  <img src={profileImageUrl} alt="תמונת פרופיל" />
+                ) : (
+                  <div className="sidebar-image-placeholder">
+                    <span>👩</span>
+                  </div>
+                )}
+              </div>
+              <div className="sidebar-image-actions">
+                <label htmlFor="sidebar-image-upload" className="sidebar-upload-button">
+                  {uploadingImage ? 'מעלה...' : profileImageUrl ? 'שני תמונה' : 'העלי תמונה'}
+                  <input
+                    id="sidebar-image-upload"
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    onChange={handleImageUpload}
+                    disabled={uploadingImage}
+                    style={{ display: 'none' }}
+                  />
+                </label>
+                {profileImageUrl && (
+                  <button
+                    type="button"
+                    onClick={handleDeleteImage}
+                    className="sidebar-delete-button"
+                    disabled={uploadingImage}
+                  >
+                    מחק תמונה
+                  </button>
+                )}
+                <Link 
+                  href="/profile" 
+                  className="sidebar-profile-link"
+                  onClick={() => setShowImageModal(false)}
+                >
+                  לניהול פרופיל מלא →
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

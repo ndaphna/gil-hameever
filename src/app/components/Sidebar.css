@@ -42,6 +42,38 @@
   font-weight: 700;
   margin-bottom: 12px;
   color: white;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.user-avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.avatar-edit-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  border-radius: 50%;
+}
+
+.user-avatar:hover .avatar-edit-overlay {
+  opacity: 1;
+}
+
+.avatar-edit-overlay span {
+  font-size: 20px;
+  color: white;
 }
 
 .user-info {
@@ -411,6 +443,192 @@
   font-size: 14px;
   font-weight: 500;
   color: var(--black);
+}
+
+/* Profile Image Modal */
+.sidebar-image-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1004;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.sidebar-image-modal {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sidebar-image-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.sidebar-image-modal-header h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--black);
+  margin: 0;
+}
+
+.sidebar-image-modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+
+.sidebar-image-modal-close:hover {
+  background: #f3f4f6;
+  color: var(--black);
+}
+
+.sidebar-image-modal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.sidebar-image-preview {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 3px solid var(--magenta);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.2);
+}
+
+.sidebar-image-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.sidebar-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+}
+
+.sidebar-image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  align-items: center;
+}
+
+.sidebar-upload-button {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  display: inline-block;
+  text-align: center;
+}
+
+.sidebar-upload-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+}
+
+.sidebar-upload-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sidebar-delete-button {
+  padding: 12px 24px;
+  background: white;
+  color: #ef4444;
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-family: inherit;
+}
+
+.sidebar-delete-button:hover:not(:disabled) {
+  background: #fee2e2;
+  transform: translateY(-2px);
+}
+
+.sidebar-delete-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.sidebar-profile-link {
+  padding: 8px 16px;
+  color: var(--magenta);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  border-bottom: 2px solid transparent;
+}
+
+.sidebar-profile-link:hover {
+  border-bottom-color: var(--magenta);
 }
 
 

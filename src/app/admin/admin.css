@@ -176,6 +176,14 @@
 
 .admin-button-primary:hover {
   background: #5568d3;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.admin-button-primary:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .admin-button-secondary {
@@ -185,6 +193,13 @@
 
 .admin-button-secondary:hover {
   background: #d1d5db;
+  transform: translateY(-1px);
+}
+
+.admin-button-secondary:disabled {
+  background: #e5e7eb;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .admin-button-danger {
@@ -232,6 +247,19 @@
   width: 90%;
   max-height: 90vh;
   overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .admin-modal-header {
