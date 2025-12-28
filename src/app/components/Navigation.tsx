@@ -261,16 +261,16 @@ export default function Navigation() {
               </a>
             </div>
             {!isHydrated ? (
-              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary" aria-label="התחברות לאתר">
-                התחברות
+              <button onClick={() => handleLinkClick('/coming-soon')} className="btn btn-primary" aria-label="המרחב שלי">
+                המרחב שלי
               </button>
             ) : isLoggedIn ? (
               <button className="btn btn-secondary" onClick={handleLogout} aria-label="התנתקות מהאתר">
                 התנתקות
               </button>
             ) : (
-              <button onClick={() => handleLinkClick('/login')} className="btn btn-primary" aria-label="התחברות לאתר">
-                התחברות
+              <button onClick={() => handleLinkClick('/coming-soon')} className="btn btn-primary" aria-label="המרחב שלי">
+                המרחב שלי
               </button>
             )}
           </div>

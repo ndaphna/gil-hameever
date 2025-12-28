@@ -327,9 +327,9 @@
   flex-shrink: 0;
 }
 
-/* Hide login button temporarily - will be shown when subscription system is ready */
+/* Show the "המרחב שלי" button */
 .nav-auth .btn {
-  display: none;
+  display: block;
 }
 
 /* Social Icons Group */
