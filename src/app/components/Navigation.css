@@ -460,9 +460,13 @@
     padding: 0;
     transition: right 0.3s ease;
     box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+  }
+
+  .nav-links {
+    padding: 16px 0;
     height: calc(100vh - 60px);
     overflow-y: auto;
-    z-index: 1000;
   }
 
   .nav-links.active,
@@ -470,8 +474,13 @@
     right: 0;
   }
 
-  .nav-links {
-    padding: 16px 0;
+  /* nav-auth positioned at bottom of menu */
+  .nav-auth {
+    top: auto;
+    bottom: 0;
+    height: auto;
+    max-height: none;
+    overflow: visible;
   }
 
   .nav-links > a,
@@ -562,32 +571,54 @@
     display: flex;
     width: 100%;
     justify-content: center;
-    gap: 12px;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 16px;
-    padding-bottom: 16px;
+    padding: 12px 0;
     border-bottom: 1px solid var(--color-gray-100);
+  }
+
+  .nav-auth.active .nav-social-icons-mobile .social-icon-link {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid var(--color-gray-200);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.9);
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .nav-auth.active .nav-social-icons-mobile .social-icon-link:hover {
+    border-color: var(--color-pink);
+    background: var(--color-pink-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 0, 128, 0.2);
+  }
+
+  .nav-auth.active .nav-social-icons-mobile .social-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
   }
 
   /* Auth Buttons in Mobile */
   .nav-auth {
-    padding: 16px 24px;
+    padding: 20px 24px;
     border-top: 2px solid var(--color-gray-100);
     gap: 12px;
-    position: fixed;
-    top: auto;
-    bottom: 0;
-    height: auto;
     box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
     flex-direction: column;
+    align-items: stretch;
+    display: none;
   }
 
   .nav-auth.active {
     display: flex;
-  }
-
-  /* Hide login button in mobile - will be shown when subscription system is ready */
-  .nav-auth .btn {
-    display: none !important;
   }
 
   .nav-auth form {
@@ -595,10 +626,12 @@
   }
 
   .nav-auth .btn {
+    display: block !important;
     width: 100%;
     font-size: 15px;
     padding: 12px 20px;
     justify-content: center;
+    margin-top: 8px;
   }
 
   .nav-auth-group {
