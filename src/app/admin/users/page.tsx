@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getUsers, updateUser, createUser, getUserNotificationPreferences, updateUserNotificationPreferences } from '@/lib/admin-api';
 import { UserProfile } from '@/types';
+import { supabase } from '@/lib/supabase';
 import '../admin.css';
 
 interface NotificationPreferences {
@@ -40,9 +41,18 @@ export default function AdminUsersPage() {
   const [createLoading, setCreateLoading] = useState(false);
   const [updateLoading, setUpdateLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [onlineStatus, setOnlineStatus] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     loadUsers();
+    loadOnlineStatus();
+    
+    // Refresh online status every 30 seconds
+    const interval = setInterval(() => {
+      loadOnlineStatus();
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, [page, search]);
 
   const loadUsers = async () => {
@@ -56,6 +66,33 @@ export default function AdminUsersPage() {
       setError(err.message || 'שגיאה בטעינת המשתמשים');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadOnlineStatus = async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      
+      const headers: HeadersInit = {
+        'Content-Type': 'application/json',
+      };
+      
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const response = await fetch('/api/admin/users-online-status', {
+        headers
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setOnlineStatus(data.onlineStatus || {});
+      }
+    } catch (err) {
+      // Silently fail - online status is not critical
+      console.error('Error loading online status:', err);
     }
   };
 
@@ -220,6 +257,7 @@ export default function AdminUsersPage() {
             <table className="admin-table">
               <thead>
                 <tr>
+                  <th>סטטוס התחברות</th>
                   <th>אימייל</th>
                   <th>שם</th>
                   <th>מנוי</th>
@@ -231,40 +269,60 @@ export default function AdminUsersPage() {
                 </tr>
               </thead>
               <tbody>
-                {users.map((user) => (
-                  <tr key={user.id}>
-                    <td>{user.email || '-'}</td>
-                    <td>{user.full_name || '-'}</td>
-                    <td>
-                      <span className={getSubscriptionBadgeClass(user.subscription_tier)}>
-                        {user.subscription_tier || 'trial'}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={getStatusBadgeClass(user.subscription_status)}>
-                        {user.subscription_status || 'active'}
-                      </span>
-                    </td>
-                    <td>{user.tokens_remaining || user.current_tokens || 0}</td>
-                    <td>
-                      {user.is_admin ? (
-                        <span className="admin-badge admin-badge-success">כן</span>
-                      ) : (
-                        <span className="admin-badge admin-badge-warning">לא</span>
-                      )}
-                    </td>
-                    <td>{new Date(user.created_at).toLocaleDateString('he-IL')}</td>
-                    <td>
-                      <button
-                        onClick={() => handleEditUser(user)}
-                        className="admin-button admin-button-primary"
-                        style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
-                      >
-                        ערוך
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {users.map((user) => {
+                  const isOnline = onlineStatus[user.id] || false;
+                  return (
+                    <tr key={user.id}>
+                      <td>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                          <span
+                            style={{
+                              width: '10px',
+                              height: '10px',
+                              borderRadius: '50%',
+                              backgroundColor: isOnline ? '#10b981' : '#6b7280',
+                              display: 'inline-block',
+                              animation: isOnline ? 'pulse 2s infinite' : 'none',
+                            }}
+                          />
+                          <span style={{ fontSize: '0.875rem', color: isOnline ? '#10b981' : '#6b7280' }}>
+                            {isOnline ? 'מחובר' : 'מנותק'}
+                          </span>
+                        </div>
+                      </td>
+                      <td>{user.email || '-'}</td>
+                      <td>{user.full_name || '-'}</td>
+                      <td>
+                        <span className={getSubscriptionBadgeClass(user.subscription_tier)}>
+                          {user.subscription_tier || 'trial'}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={getStatusBadgeClass(user.subscription_status)}>
+                          {user.subscription_status || 'active'}
+                        </span>
+                      </td>
+                      <td>{user.tokens_remaining || user.current_tokens || 0}</td>
+                      <td>
+                        {user.is_admin ? (
+                          <span className="admin-badge admin-badge-success">כן</span>
+                        ) : (
+                          <span className="admin-badge admin-badge-warning">לא</span>
+                        )}
+                      </td>
+                      <td>{new Date(user.created_at).toLocaleDateString('he-IL')}</td>
+                      <td>
+                        <button
+                          onClick={() => handleEditUser(user)}
+                          className="admin-button admin-button-primary"
+                          style={{ fontSize: '0.75rem', padding: '0.25rem 0.5rem' }}
+                        >
+                          ערוך
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
 
