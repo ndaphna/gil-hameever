@@ -33,6 +33,11 @@ export default function ProfilePage() {
   const [saving, setSaving] = useState(false);
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState<'profile' | 'notifications'>('profile');
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     // Reset loading state when pathname changes (user navigates to this page)
@@ -234,6 +239,63 @@ export default function ProfilePage() {
     }
   };
 
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangingPassword(true);
+    setMessage('');
+
+    // Validate passwords match
+    if (newPassword !== confirmPassword) {
+      setMessage('הסיסמאות החדשות אינן תואמות');
+      setChangingPassword(false);
+      return;
+    }
+
+    // Validate password strength
+    if (newPassword.length < 6) {
+      setMessage('הסיסמה החדשה חייבת להכיל לפחות 6 תווים');
+      setChangingPassword(false);
+      return;
+    }
+
+    try {
+      // Get session token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        throw new Error('לא מחוברת. אנא התחברי מחדש');
+      }
+
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          currentPassword,
+          newPassword,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'שגיאה בעדכון הסיסמה');
+      }
+
+      setMessage('הסיסמה עודכנה בהצלחה');
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setShowChangePassword(false);
+    } catch (error: any) {
+      setMessage('שגיאה בעדכון הסיסמה: ' + (error.message || 'שגיאה לא ידועה'));
+      console.error(error);
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
   if (loading) {
     return (
       <DashboardLayout>
@@ -371,6 +433,96 @@ export default function ProfilePage() {
                 </button>
               </form>
             </div>
+
+          {/* Change Password Card */}
+          <div className="profile-card">
+            <h2>🔒 שינוי סיסמה</h2>
+            
+            {!showChangePassword ? (
+              <div className="password-section">
+                <p style={{ color: '#6b7280', marginBottom: '20px', textAlign: 'right' }}>
+                  שמרי על החשבון שלך בטוח עם סיסמה חזקה
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setShowChangePassword(true)}
+                  className="change-password-button"
+                >
+                  שנה סיסמה
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleChangePassword}>
+                <div className="form-group">
+                  <label htmlFor="currentPassword">סיסמה נוכחית</label>
+                  <input
+                    id="currentPassword"
+                    type="password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="הכניסי את הסיסמה הנוכחית"
+                    disabled={changingPassword}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="newPassword">סיסמה חדשה</label>
+                  <input
+                    id="newPassword"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="הכניסי סיסמה חדשה (לפחות 6 תווים)"
+                    disabled={changingPassword}
+                    required
+                    minLength={6}
+                  />
+                  <small style={{ display: 'block', color: '#6b7280', marginTop: '0.25rem', fontSize: '0.875rem' }}>
+                    הסיסמה חייבת להכיל לפחות 6 תווים
+                  </small>
+                </div>
+
+                <div className="form-group">
+                  <label htmlFor="confirmPassword">אימות סיסמה חדשה</label>
+                  <input
+                    id="confirmPassword"
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="הכניסי שוב את הסיסמה החדשה"
+                    disabled={changingPassword}
+                    required
+                    minLength={6}
+                  />
+                </div>
+
+                <div className="password-actions">
+                  <button
+                    type="submit"
+                    className="save-button"
+                    disabled={changingPassword}
+                  >
+                    {changingPassword ? 'מעדכן...' : 'שמור סיסמה חדשה'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowChangePassword(false);
+                      setCurrentPassword('');
+                      setNewPassword('');
+                      setConfirmPassword('');
+                      setMessage('');
+                    }}
+                    className="cancel-button"
+                    disabled={changingPassword}
+                  >
+                    ביטול
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
 
           {/* Subscription & Billing Card */}
           <div className="profile-card subscription-card">
@@ -861,6 +1013,62 @@ export default function ProfilePage() {
           margin-top: 0.25rem;
           font-size: 0.875rem;
           text-align: right;
+        }
+
+        .password-section {
+          text-align: right;
+        }
+
+        .change-password-button {
+          width: 100%;
+          padding: 14px 20px;
+          background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+          color: white;
+          border: none;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: inherit;
+        }
+
+        .change-password-button:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(255, 0, 128, 0.3);
+        }
+
+        .password-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 8px;
+        }
+
+        .password-actions .save-button {
+          flex: 1;
+        }
+
+        .cancel-button {
+          padding: 14px 20px;
+          background: white;
+          color: var(--gray);
+          border: 2px solid #e5e5e5;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          font-family: inherit;
+        }
+
+        .cancel-button:hover:not(:disabled) {
+          border-color: var(--gray);
+          color: var(--black);
+        }
+
+        .cancel-button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
         }
 
         @media (max-width: 768px) {
