@@ -89,6 +89,19 @@ export default function ThankYouPage() {
           </ul>
         </div>
 
+        {/* Articles Section */}
+        <div className="content-box" style={{ textAlign: 'center' }}>
+          <h3>📚 קראי מאמרים נוספים</h3>
+          <p style={{ marginBottom: 'clamp(24px, 5vw, 32px)' }}>
+            גלי לך במגוון מאמרים מעמיקים על גיל המעבר, בריאות, תזונה ואורח חיים בריא
+          </p>
+          <Link href="/articles" style={{ textDecoration: 'none' }}>
+            <button className="cta-button" style={{ minWidth: '280px' }}>
+              📖 גלי למאמרים שלנו
+            </button>
+          </Link>
+        </div>
+
         {/* CTA to Homepage */}
         <div className="cta-section">
           <p style={{ marginBottom: 'clamp(28px, 5vw, 36px)' }}>

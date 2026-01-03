@@ -1,8 +1,60 @@
 'use client';
 
+import { useState, FormEvent } from 'react';
+import { useRouter } from 'next/navigation';
 import './book-preview.css';
+import '@/styles/waitlist.css';
 
 export default function BookPreviewPage() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({ name: '', email: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [consent, setConsent] = useState(false);
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    
+    if (!consent) {
+      setError('יש לאשר את תנאי ההרשמה');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      const response = await fetch('/api/waitlist', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name.trim(),
+          email: formData.email.trim(),
+        }),
+      });
+
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        throw new Error('שגיאת תקשורת עם השרת. נסי שוב מאוחר יותר.');
+      }
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'שגיאה בשליחת הטופס');
+      }
+
+      // Redirect to thank you page
+      router.push('/thank-you');
+    } catch (err) {
+      console.error('Form submission error:', err);
+      setError(err instanceof Error ? err.message : 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.');
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="book-preview-container">
       {/* Hero Section */}
@@ -276,21 +328,85 @@ export default function BookPreviewPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* CTA Section with Form */}
       <section className="preview-cta-section">
         <div className="preview-cta-container">
           <div className="preview-cta-content">
             <h2 className="preview-cta-title">מוכנה להתחיל את המסע?</h2>
             <p className="preview-cta-description">
-              הרשמי לרשימת המתנה וקבלי עדכון כשהספר יהיה זמין
+              הרשמי לגלי ההשראה וקבלי עדכון כשהספר יהיה זמין
             </p>
-            <div className="preview-cta-buttons">
-              <a href="/waitlist" className="preview-cta-button primary-cta">
-                <span>הרשמי לרשימת המתנה</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                  <path d="M13 4L7 10L13 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </a>
+            
+            {/* Registration Form */}
+            <div className="waitlist-form-section" style={{ 
+              marginTop: 'clamp(32px, 6vw, 48px)',
+              width: '100%',
+              maxWidth: '600px',
+              marginLeft: 'auto',
+              marginRight: 'auto'
+            }}>
+              <div className="waitlist-form-container">
+                <div className="waitlist-form-wrapper">
+                  <form onSubmit={handleSubmit} className="waitlist-form-form">
+                    {error && (
+                      <div className="waitlist-form-error">
+                        {error}
+                      </div>
+                    )}
+
+                    <div className="waitlist-form-group">
+                      <input
+                        type="text"
+                        id="book-preview-name"
+                        name="name"
+                        placeholder="שם"
+                        value={formData.name}
+                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        required
+                        disabled={isSubmitting}
+                        autoComplete="name"
+                      />
+                    </div>
+
+                    <div className="waitlist-form-group">
+                      <input
+                        type="email"
+                        id="book-preview-email"
+                        name="email"
+                        placeholder="אימייל"
+                        value={formData.email}
+                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                        required
+                        disabled={isSubmitting}
+                        autoComplete="email"
+                      />
+                    </div>
+
+                    <div className="waitlist-form-consent">
+                      <label className="waitlist-consent-label">
+                        <input
+                          type="checkbox"
+                          checked={consent}
+                          onChange={(e) => setConsent(e.target.checked)}
+                          required
+                          disabled={isSubmitting}
+                        />
+                        <span className="waitlist-consent-text">
+                          אני מאשרת להצטרף לרשימת ההמתנה ולקבל עדכונים על הספר ומתנות בלעדיות.
+                        </span>
+                      </label>
+                    </div>
+
+                    <button 
+                      type="submit" 
+                      className="waitlist-form-submit-button"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? 'שולח...' : '🎁 הרשמי לגלי ההשראה'}
+                    </button>
+                  </form>
+                </div>
+              </div>
             </div>
           </div>
         </div>
