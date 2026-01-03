@@ -65,11 +65,15 @@ interface BrevoEmailPayload {
 
 async function createOrUpdateBrevoContact(
   email: string,
-  firstName: string,
-  lastName: string,
+  name: string,
   listId: number
 ): Promise<{ success: boolean; error?: string }> {
   try {
+    // Split name into first and last name for Brevo (if space exists)
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0] || name.trim();
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
     const payload: BrevoContactPayload = {
       email,
       attributes: {
@@ -82,6 +86,7 @@ async function createOrUpdateBrevoContact(
 
     console.log('📤 Creating/updating Brevo contact:', {
       email,
+      name,
       firstName,
       lastName,
       listId,
@@ -148,11 +153,10 @@ async function createOrUpdateBrevoContact(
 
 async function sendBrevoEmail(
   email: string,
-  firstName: string,
-  lastName: string
+  name: string
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const fullName = `${firstName} ${lastName}`.trim();
+    const fullName = name.trim();
 
     // Get the absolute URL for the gift page
     const giftUrl = getAbsoluteUrl('/emergency-map');
@@ -366,7 +370,7 @@ async function sendBrevoEmail(
   <div class="container">
     <div class="header">
       <span class="emoji">🎁</span>
-      <h1>היי ${firstName}! המתנה שלך כאן 🌸</h1>
+      <h1>היי ${fullName}! המתנה שלך כאן 🌸</h1>
     </div>
 
     <div class="content">
@@ -510,7 +514,7 @@ export async function POST(request: NextRequest) {
 
     // Parse request body
     const body = await request.json();
-    const { email, firstName, lastName, listId } = body;
+    const { email, name, listId } = body;
 
     // Validate input
     if (!email || typeof email !== 'string' || !email.includes('@')) {
@@ -523,21 +527,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!firstName || typeof firstName !== 'string' || firstName.trim().length === 0) {
+    if (!name || typeof name !== 'string' || name.trim().length === 0) {
       return NextResponse.json(
         {
           success: false,
-          message: 'שם פרטי חסר',
-        },
-        { status: 400 }
-      );
-    }
-
-    if (!lastName || typeof lastName !== 'string' || lastName.trim().length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: 'שם משפחה חסר',
+          message: 'שם חסר',
         },
         { status: 400 }
       );
@@ -555,16 +549,14 @@ export async function POST(request: NextRequest) {
 
     console.log('📥 Received lead gift signup:', {
       email,
-      firstName,
-      lastName,
+      name,
       listId,
     });
 
     // Step 1: Create or update contact in Brevo
     const contactResult = await createOrUpdateBrevoContact(
       email,
-      firstName.trim(),
-      lastName.trim(),
+      name.trim(),
       listId
     );
 
@@ -581,8 +573,7 @@ export async function POST(request: NextRequest) {
     // Step 2: Send welcome email with gift
     const emailResult = await sendBrevoEmail(
       email,
-      firstName.trim(),
-      lastName.trim()
+      name.trim()
     );
 
     if (!emailResult.success) {

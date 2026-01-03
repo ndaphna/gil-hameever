@@ -4,7 +4,7 @@ import { useState, FormEvent } from 'react';
 import './inspiration-waves.css';
 
 export default function InspirationWavesPage() {
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [formData, setFormData] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -28,8 +28,7 @@ export default function InspirationWavesPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
+          name: formData.name.trim(),
           email: formData.email.trim(),
         }),
       });
@@ -194,28 +193,14 @@ export default function InspirationWavesPage() {
                 <div className="form-group">
                   <input
                     type="text"
-                    id="firstName"
-                    name="firstName"
+                    id="name"
+                    name="name"
                     placeholder="שם"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                     disabled={isSubmitting}
-                    autoComplete="given-name"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    placeholder="שם משפחה"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    required
-                    disabled={isSubmitting}
-                    autoComplete="family-name"
+                    autoComplete="name"
                   />
                 </div>
 

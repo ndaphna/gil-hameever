@@ -179,21 +179,41 @@
 
 .waitlist-cta-gift {
   font-family: var(--font-assistant), sans-serif;
-  font-size: clamp(1.125rem, 2.8vw, 1.5rem);
-  font-weight: 600;
+  font-size: clamp(1.5rem, 4vw, 2rem);
+  font-weight: 700;
   color: var(--black);
   margin: 0 0 clamp(24px, 5vw, 32px);
-  line-height: 1.6;
+  line-height: 1.4;
   text-align: center;
   position: relative;
   z-index: 1;
-  padding: clamp(16px, 3vw, 24px) clamp(24px, 4vw, 32px);
-  background: #FFD700;
-  border-radius: 30px;
-  border: none;
+  display: block;
+  padding: clamp(8px, 2vw, 12px) 0;
+  letter-spacing: -0.02em;
+  cursor: default;
+}
+
+/* Highlight only on "בגיל המעבר" - matching highlight-word style */
+.highlight-gift-text {
+  color: var(--black);
+  font-weight: 700;
+  position: relative;
   display: inline-block;
-  width: 100%;
-  box-sizing: border-box;
+  white-space: nowrap;
+  padding: 0 2px;
+}
+
+.highlight-gift-text::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: #FFD700;
+  border-radius: 3px;
+  z-index: -1;
+  opacity: 0.85;
 }
 
 .waitlist-cta-disclaimer {

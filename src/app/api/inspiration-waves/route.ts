@@ -12,14 +12,14 @@ export async function POST(request: Request) {
   console.log('='.repeat(60));
 
   try {
-    const { firstName, lastName, email } = await request.json();
-    console.log('📥 Request data:', { firstName, lastName, email: email ? '***@' + email.split('@')[1] : 'missing' });
+    const { name, email } = await request.json();
+    console.log('📥 Request data:', { name, email: email ? '***@' + email.split('@')[1] : 'missing' });
 
     // Validate input
-    if (!firstName || !lastName || !email) {
-      console.error('❌ Validation failed: Missing firstName, lastName or email');
+    if (!name || !email) {
+      console.error('❌ Validation failed: Missing name or email');
       return NextResponse.json(
-        { success: false, error: 'שם פרטי, שם משפחה ואימייל הם שדות חובה' },
+        { success: false, error: 'שם ואימייל הם שדות חובה' },
         { status: 400 }
       );
     }
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
     // Add contact to Brevo list #12
     console.log('📧 Adding contact to Brevo list #12 (Inspiration Waves)...');
     try {
-      await addContactToBrevo(email, firstName.trim(), lastName.trim());
+      await addContactToBrevo(email, name.trim());
       console.log('✅ Contact added to Brevo successfully');
     } catch (brevoError: any) {
       console.error('⚠️ Brevo error:', brevoError.message);
@@ -52,14 +52,11 @@ export async function POST(request: Request) {
     console.log('✅ Inspiration waves signup complete!');
     console.log('='.repeat(60) + '\n');
 
-    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     return NextResponse.json({
       success: true,
       message: 'ההרשמה בוצעה בהצלחה!',
       data: {
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        name: fullName,
+        name: name.trim(),
         email: email,
       },
     });
@@ -77,7 +74,7 @@ export async function POST(request: Request) {
 /**
  * Add contact to Brevo list #12 (Inspiration Waves)
  */
-async function addContactToBrevo(email: string, firstName: string, lastName: string): Promise<void> {
+async function addContactToBrevo(email: string, name: string): Promise<void> {
   const BREVO_API_KEY = process.env.BREVO_API_KEY;
   
   console.log('🔑 Checking Brevo configuration...');
@@ -92,11 +89,16 @@ async function addContactToBrevo(email: string, firstName: string, lastName: str
     // List ID 12 for Inspiration Waves
     const listId = 12;
     
+    // Split name into first and last name for Brevo (if space exists)
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0] || name.trim();
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+    
     const contactPayload = {
       email: email.toLowerCase().trim(),
       attributes: {
-        FIRSTNAME: firstName.trim(),
-        LASTNAME: lastName.trim(),
+        FIRSTNAME: firstName,
+        LASTNAME: lastName,
       },
       updateEnabled: true,
       listIds: [listId],

@@ -12,14 +12,14 @@ export async function POST(request: Request) {
   console.log('='.repeat(60));
 
   try {
-    const { firstName, lastName, email } = await request.json();
-    console.log('📥 Request data:', { firstName, lastName, email: email ? '***@' + email.split('@')[1] : 'missing' });
+    const { name, email } = await request.json();
+    console.log('📥 Request data:', { name, email: email ? '***@' + email.split('@')[1] : 'missing' });
 
     // Validate input
-    if (!firstName || !lastName || !email) {
-      console.error('❌ Validation failed: Missing firstName, lastName or email');
+    if (!name || !email) {
+      console.error('❌ Validation failed: Missing name or email');
       return NextResponse.json(
-        { success: false, error: 'שם פרטי, שם משפחה ואימייל הם שדות חובה' },
+        { success: false, error: 'שם ואימייל הם שדות חובה' },
         { status: 400 }
       );
     }
@@ -69,12 +69,11 @@ export async function POST(request: Request) {
 
       // Insert new early adopter into database
       console.log('💾 Inserting into database...');
-      const fullName = `${firstName.trim()} ${lastName.trim()}`;
       const { data: newUser, error: insertError } = await supabaseAdmin
         .from('early_adopters')
         .insert([
           {
-            name: fullName,
+            name: name.trim(),
             email: email.toLowerCase().trim(),
           },
         ])
@@ -98,7 +97,7 @@ export async function POST(request: Request) {
     // Add contact to Brevo
     console.log('📧 Adding contact to Brevo...');
     try {
-      await addContactToBrevo(email, firstName.trim(), lastName.trim());
+      await addContactToBrevo(email, name.trim());
       console.log('✅ Contact added to Brevo successfully');
     } catch (brevoError: any) {
       console.error('⚠️ Brevo error (non-critical):', brevoError.message);
@@ -108,15 +107,12 @@ export async function POST(request: Request) {
     console.log('✅ Waitlist signup complete!');
     console.log('='.repeat(60) + '\n');
 
-    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     return NextResponse.json({
       success: true,
       message: 'ההרשמה בוצעה בהצלחה!',
       data: {
         id: userId,
-        firstName: firstName.trim(),
-        lastName: lastName.trim(),
-        name: fullName,
+        name: name.trim(),
         email: email,
       },
     });
@@ -134,7 +130,7 @@ export async function POST(request: Request) {
 /**
  * Add contact to Brevo and send welcome email
  */
-async function addContactToBrevo(email: string, firstName: string, lastName: string): Promise<void> {
+async function addContactToBrevo(email: string, name: string): Promise<void> {
   const BREVO_API_KEY = process.env.BREVO_API_KEY;
   
   console.log('🔑 Checking Brevo configuration...');
@@ -159,11 +155,16 @@ async function addContactToBrevo(email: string, firstName: string, lastName: str
     
     const listIds = [waitlistListId];
 
+    // Split name into first and last name for Brevo (if space exists)
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0] || name.trim();
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
+
     const contactPayload = {
       email: email.toLowerCase().trim(),
       attributes: {
-        FIRSTNAME: firstName.trim(),
-        LASTNAME: lastName.trim(),
+        FIRSTNAME: firstName,
+        LASTNAME: lastName,
       },
       updateEnabled: true,
       listIds,
@@ -241,16 +242,15 @@ async function addContactToBrevo(email: string, firstName: string, lastName: str
     const fromEmail = process.env.BREVO_FROM_EMAIL || 'inbal@gilhameever.com';
     const fromName = process.env.BREVO_FROM_NAME || 'מנופאוזית וטוב לה';
 
-    const fullName = `${firstName.trim()} ${lastName.trim()}`;
     const emailPayload = {
       sender: {
         name: fromName,
         email: fromEmail,
       },
-      to: [{ email: email, name: fullName }],
+      to: [{ email: email, name: name.trim() }],
       subject: '🌸 ברוכה הבאה לרשימת ההמתנה - המתנה שלך בדרך!',
-      htmlContent: createWelcomeEmailHTML(fullName),
-      textContent: createWelcomeEmailText(fullName),
+      htmlContent: createWelcomeEmailHTML(name.trim()),
+      textContent: createWelcomeEmailText(name.trim()),
     };
 
     console.log('📤 Sending email from:', `${fromName} <${fromEmail}>`);
@@ -287,9 +287,20 @@ async function addContactToBrevo(email: string, firstName: string, lastName: str
 }
 
 /**
+ * Get absolute URL for gift page
+ */
+function getGiftPageUrl(): string {
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 
+    process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 
+    'https://gilhameever.com';
+  return `${baseUrl}/waitlist/gift`;
+}
+
+/**
  * Create HTML template for welcome email
  */
 function createWelcomeEmailHTML(name: string): string {
+  const giftUrl = getGiftPageUrl();
   return `
 <!DOCTYPE html>
 <html dir="rtl" lang="he">
@@ -315,8 +326,16 @@ function createWelcomeEmailHTML(name: string): string {
       <p style="color: #6D3D47; font-size: 16px; line-height: 1.8; margin: 0 0 15px 0;">
         תודה שהצטרפת לרשימת ההמתנה! 🎁
       </p>
-      <p style="color: #6D3D47; font-size: 16px; line-height: 1.8; margin: 0;">
-        בקרוב תקבלי את המתנה המיוחדת שלי: <strong>7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר</strong>
+      <p style="color: #6D3D47; font-size: 16px; line-height: 1.8; margin: 0 0 20px 0;">
+        המתנה המיוחדת שלי מחכה לך:
+      </p>
+      <div style="text-align: center; margin: 20px 0;">
+        <a href="${giftUrl}" style="display: inline-block; background: linear-gradient(135deg, #FF0080 0%, #9D4EDD 100%); color: #ffffff; text-decoration: none; padding: 16px 32px; border-radius: 30px; font-size: 18px; font-weight: 700; box-shadow: 0 4px 16px rgba(255, 0, 128, 0.3); transition: all 0.3s ease;">
+          7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר
+        </a>
+      </div>
+      <p style="color: #6D3D47; font-size: 14px; line-height: 1.6; margin: 15px 0 0 0; text-align: center;">
+        לחצי על הכפתור כדי לקבל את המתנה מידית ✨
       </p>
     </div>
     
@@ -356,6 +375,7 @@ function createWelcomeEmailHTML(name: string): string {
  * Create plain text template for welcome email
  */
 function createWelcomeEmailText(name: string): string {
+  const giftUrl = getGiftPageUrl();
   return `
 ברוכה הבאה לרשימת ההמתנה! 🌸
 
@@ -363,7 +383,11 @@ function createWelcomeEmailText(name: string): string {
 
 תודה שהצטרפת לרשימת ההמתנה! 🎁
 
-בקרוב תקבלי את המתנה המיוחדת שלי: 7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר
+המתנה המיוחדת שלי מחכה לך:
+7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר
+
+לחצי כאן כדי לקבל את המתנה מידית:
+${giftUrl}
 
 מה את מקבלת ברשימה?
 ✔ מתנה בלעדי
