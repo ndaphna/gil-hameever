@@ -98,3 +98,8 @@ USING (bucket_id = 'profile-images');
 - ודאי שהקובץ קטן מ-5MB
 - או הגדל את ה-file size limit ב-bucket settings
 
+
+
+
+
+

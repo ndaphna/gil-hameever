@@ -7,6 +7,18 @@ export default function BookPreviewPage() {
     <div className="book-preview-container">
       {/* Hero Section */}
       <section className="book-preview-hero">
+        {/* Decorative Elements */}
+        <div className="hero-particles">
+          <div className="particle particle-1"></div>
+          <div className="particle particle-2"></div>
+          <div className="particle particle-3"></div>
+          <div className="particle particle-4"></div>
+          <div className="particle particle-5"></div>
+        </div>
+        <div className="hero-glow hero-glow-1"></div>
+        <div className="hero-glow hero-glow-2"></div>
+        <div className="hero-shine"></div>
+        
         <div className="hero-content-wrapper">
           <p className="hero-badge">קראי על הספר</p>
           <h1 className="hero-title">
@@ -17,9 +29,17 @@ export default function BookPreviewPage() {
           </h1>
           
           <div className="hero-quote">
+            <div className="quote-decoration quote-decoration-left">"</div>
             <p className="hero-quote-text">
-              "אוף. איפה זה היה כל השנים??"
+              אוף. איפה זה היה כל השנים??
             </p>
+            <div className="quote-decoration quote-decoration-right">"</div>
+          </div>
+          
+          <div className="hero-exclusive">
+            <span className="exclusive-line"></span>
+            <span className="exclusive-text">יצא לאור בקרוב</span>
+            <span className="exclusive-line"></span>
           </div>
         </div>
       </section>

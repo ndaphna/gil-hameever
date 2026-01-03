@@ -27,3 +27,8 @@ WHERE phone_number IS NOT NULL;
 COMMENT ON COLUMN public.user_profile.phone_number IS 'User mobile phone number';
 COMMENT ON COLUMN public.user_profile.profile_image_url IS 'URL to user profile image (stored in Supabase Storage)';
 
+
+
+
+
+
