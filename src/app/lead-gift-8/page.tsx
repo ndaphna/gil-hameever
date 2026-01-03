@@ -20,8 +20,7 @@ const LIST_ID = 8; // Brevo list ID for this specific landing page
 // FORM DATA INTERFACE
 // ========================================
 interface FormData {
-  firstName: string;
-  lastName: string;
+  name: string;
   email: string;
 }
 
@@ -33,8 +32,7 @@ export default function LeadGift8Page() {
 
   // State management
   const [formData, setFormData] = useState<FormData>({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
   });
 
@@ -70,8 +68,7 @@ export default function LeadGift8Page() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
+          name: formData.name.trim(),
           email: formData.email.trim(),
           listId: LIST_ID,
         }),
@@ -233,33 +230,18 @@ export default function LeadGift8Page() {
             {/* Error Message */}
             {error && <div className="error-message">{error}</div>}
 
-            {/* First Name */}
+            {/* Name */}
             <div className="form-group">
               <input
                 type="text"
-                id="firstName"
-                name="firstName"
-                placeholder="שם פרטי"
-                value={formData.firstName}
+                id="name"
+                name="name"
+                placeholder="שם"
+                value={formData.name}
                 onChange={handleInputChange}
                 required
                 disabled={isSubmitting}
-                autoComplete="given-name"
-              />
-            </div>
-
-            {/* Last Name */}
-            <div className="form-group">
-              <input
-                type="text"
-                id="lastName"
-                name="lastName"
-                placeholder="שם משפחה"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                required
-                disabled={isSubmitting}
-                autoComplete="family-name"
+                autoComplete="name"
               />
             </div>
 

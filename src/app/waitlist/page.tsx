@@ -6,7 +6,7 @@ import '../globals.css';
 import { landingCopy } from '@/content/landing-copy';
 
 export default function WaitlistPage() {
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [formData, setFormData] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -23,7 +23,7 @@ export default function WaitlistPage() {
     setIsSubmitting(true);
     setError('');
 
-    console.log('📤 Submitting waitlist form...', { firstName: formData.firstName, lastName: formData.lastName, email: formData.email });
+    console.log('📤 Submitting waitlist form...', { name: formData.name, email: formData.email });
 
     try {
       const response = await fetch('/api/waitlist', {
@@ -32,8 +32,7 @@ export default function WaitlistPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
+          name: formData.name.trim(),
           email: formData.email.trim(),
         }),
       });
@@ -113,7 +112,7 @@ export default function WaitlistPage() {
           <div className="hero-waitlist-cta-box">
             <h2 className="waitlist-cta-title">הצטרפי לרשימת ההמתנה</h2>
             <p className="waitlist-cta-subtitle">וקבלי ממני <span className="highlight-word">מתנה</span> מידית:</p>
-            <p className="waitlist-cta-gift">7 דברים שאף אחד לא הכין אותי אליהם בגיל המעבר</p>
+            <p className="waitlist-cta-gift">7 דברים שאף אחד לא הכין אותי אליהם <span className="highlight-gift-text">בגיל המעבר</span></p>
             <p className="waitlist-cta-disclaimer">
               הרשמה ללא התחייבות - רק <span className="highlight-word">הזדמנות</span>
             </p>
@@ -201,28 +200,14 @@ export default function WaitlistPage() {
                 <div className="waitlist-form-group">
                   <input
                     type="text"
-                    id="firstName"
-                    name="firstName"
-                    placeholder="שם פרטי"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    id="name"
+                    name="name"
+                    placeholder="שם"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                     disabled={isSubmitting}
-                    autoComplete="given-name"
-                  />
-                </div>
-
-                <div className="waitlist-form-group">
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    placeholder="שם משפחה"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    required
-                    disabled={isSubmitting}
-                    autoComplete="family-name"
+                    autoComplete="name"
                   />
                 </div>
 

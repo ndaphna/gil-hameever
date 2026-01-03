@@ -24,8 +24,7 @@ export default function ProfilePage() {
   const router = useRouter();
   const pathname = usePathname();
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -41,10 +40,9 @@ export default function ProfilePage() {
 
   useEffect(() => {
     // Reset loading state when pathname changes (user navigates to this page)
-    setLoading(true);
-    setProfile(null);
-    setFirstName('');
-    setLastName('');
+        setLoading(true);
+        setProfile(null);
+        setName('');
     
     async function loadProfile() {
       try {
@@ -90,8 +88,12 @@ export default function ProfilePage() {
 
         if (profileData) {
           setProfile(profileData);
-          setFirstName(profileData.first_name || '');
-          setLastName(profileData.last_name || '');
+          // Use name if available, otherwise combine first_name and last_name
+          const fullName = profileData.name || 
+            (profileData.first_name && profileData.last_name 
+              ? `${profileData.first_name} ${profileData.last_name}` 
+              : profileData.first_name || profileData.last_name || '');
+          setName(fullName);
           setPhoneNumber(profileData.phone_number || '');
           setProfileImageUrl(profileData.profile_image_url || null);
         } else {
@@ -117,10 +119,8 @@ export default function ProfilePage() {
       const { error } = await supabase
         .from('user_profile')
         .update({ 
-          first_name: firstName,
-          last_name: lastName,
+          name: name.trim(),
           phone_number: phoneNumber || null,
-          name: firstName + (lastName ? ' ' + lastName : '') // Keep for backward compatibility
         })
         .eq('id', profile?.id);
 
@@ -130,10 +130,8 @@ export default function ProfilePage() {
       if (profile) {
         setProfile({ 
           ...profile, 
-          first_name: firstName,
-          last_name: lastName,
+          name: name.trim(),
           phone_number: phoneNumber || null,
-          name: firstName + (lastName ? ' ' + lastName : '')
         });
       }
       
@@ -389,25 +387,13 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="form-group">
-                  <label htmlFor="firstName">שם פרטי</label>
+                  <label htmlFor="name">שם</label>
                   <input
-                    id="firstName"
+                    id="name"
                     type="text"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    placeholder="הכניסי את שמך הפרטי"
-                    disabled={saving}
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label htmlFor="lastName">שם משפחה</label>
-                  <input
-                    id="lastName"
-                    type="text"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    placeholder="הכניסי את שם המשפחה"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="הכניסי את שמך המלא"
                     disabled={saving}
                   />
                 </div>

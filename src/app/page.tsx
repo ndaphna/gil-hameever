@@ -13,7 +13,7 @@ export default function Home() {
   const hasActiveSubscription = user && profile && profile.subscription_status === 'active';
   
   // Form state for inspiration waves subscription
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '' });
+  const [formData, setFormData] = useState({ name: '', email: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
@@ -37,8 +37,7 @@ export default function Home() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          firstName: formData.firstName.trim(),
-          lastName: formData.lastName.trim(),
+          name: formData.name.trim(),
           email: formData.email.trim(),
         }),
       });
@@ -217,28 +216,14 @@ export default function Home() {
                 <div className="form-group">
                   <input
                     type="text"
-                    id="homepage-firstName"
-                    name="firstName"
+                    id="homepage-name"
+                    name="name"
                     placeholder="שם"
-                    value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     required
                     disabled={isSubmitting}
-                    autoComplete="given-name"
-                  />
-                </div>
-
-                <div className="form-group">
-                  <input
-                    type="text"
-                    id="homepage-lastName"
-                    name="lastName"
-                    placeholder="שם משפחה"
-                    value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    required
-                    disabled={isSubmitting}
-                    autoComplete="family-name"
+                    autoComplete="name"
                   />
                 </div>
 
