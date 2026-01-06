@@ -1,9 +1,39 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../../components/DashboardLayout';
 
 export default function SelfWorthPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check authentication status
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsLoggedIn(!!session);
+      } catch (error) {
+        console.warn('Auth check failed:', error);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    checkAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     // Intersection Observer for animations
     const observerOptions = {
@@ -28,8 +58,18 @@ export default function SelfWorthPage() {
     };
   }, []);
 
-  return (
-    <DashboardLayout>
+  // Show loading state briefly to prevent flash
+  if (isLoading) {
+    return (
+      <div className="self-worth-page">
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p>טוען...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const content = (
     <div className="self-worth-page">
       <section className="hero">
         <div className="decoration-circle"></div>
@@ -233,7 +273,14 @@ export default function SelfWorthPage() {
         </div>
       </section>
     </div>
-    </DashboardLayout>
   );
+
+  // If logged in, show with DashboardLayout (includes sidebar)
+  if (isLoggedIn) {
+    return <DashboardLayout>{content}</DashboardLayout>;
+  }
+
+  // If not logged in, show without DashboardLayout (no sidebar)
+  return content;
 }
 
