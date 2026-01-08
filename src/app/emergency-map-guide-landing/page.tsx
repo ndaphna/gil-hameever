@@ -66,7 +66,7 @@ export default function EmergencyMapGuideLanding() {
 
             <div className="cta-section">
               <p className="cta-text">
-                הפסיקי לסבול מחוסר הודאות ותתחילי להרגיש טוב יותר כבר היום.
+                הפסיקי לסבול מחוסר הוודאות ותתחילי להרגיש טוב יותר כבר היום.
               </p>
               
               <button 
