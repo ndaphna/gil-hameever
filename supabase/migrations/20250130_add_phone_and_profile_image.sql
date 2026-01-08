@@ -32,3 +32,8 @@ COMMENT ON COLUMN public.user_profile.profile_image_url IS 'URL to user profile 
 
 
 
+
+
+
+
+

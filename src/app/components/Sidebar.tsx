@@ -395,7 +395,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
 
         {/* Navigation Menu */}
         <nav className="sidebar-nav">
-          {menuItems.map((item) => (
+          {menuItems.slice(0, 4).map((item) => (
             <Link
               key={item.href}
               href={item.href}
@@ -440,6 +440,22 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
               </div>
             )}
           </div>
+
+          {/* Profile Menu Item - moved after roadmap */}
+          {menuItems.slice(4).map((item) => (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`sidebar-item ${pathname === item.href ? 'active' : ''}`}
+              onClick={onClose}
+            >
+              <span className="sidebar-icon">{item.icon}</span>
+              <div className="sidebar-content">
+                <span className="sidebar-label">{item.label}</span>
+                <span className="sidebar-description">{item.description}</span>
+              </div>
+            </Link>
+          ))}
 
           {/* Admin Panel Link (only for admins) */}
           {isAdmin && (

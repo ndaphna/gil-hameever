@@ -6,6 +6,79 @@
 }
 
 /* ============================================
+   DECORATIVE TEXT - Not a button!
+   ============================================ */
+
+.menopause-roadmap-page .decorative-text {
+  display: block;
+  text-align: center;
+  font-size: clamp(1.25rem, 3vw, 1.5rem);
+  font-weight: 700;
+  color: var(--magenta);
+  margin: 32px auto;
+  padding: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  cursor: default;
+  text-decoration: none;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  opacity: 0;
+  animation: fadeInUp 1s ease-out 0.5s forwards;
+}
+
+.menopause-roadmap-page .decorative-text:hover {
+  transform: none;
+  box-shadow: none;
+  color: var(--magenta);
+}
+
+/* ============================================
+   SCROLL INDICATOR - Arrow Animation
+   ============================================ */
+
+.menopause-roadmap-page .roadmap-scroll-indicator {
+  margin-top: 24px;
+  animation: fadeIn 0.8s ease-out 0.8s both, bounce 2s ease-in-out infinite;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  background: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.menopause-roadmap-page .roadmap-scroll-indicator:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.menopause-roadmap-page .roadmap-scroll-indicator:focus-visible {
+  outline: 2px solid var(--magenta);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.menopause-roadmap-page .roadmap-scroll-indicator svg {
+  display: inline-block;
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* ============================================
    PYRAMID SECTION - Unique to this page
    ============================================ */
 

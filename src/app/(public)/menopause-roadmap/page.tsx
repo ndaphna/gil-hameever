@@ -1,10 +1,40 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
 import DashboardLayout from '../../components/DashboardLayout';
 import './menopause-roadmap.css';
 
 export default function MenopauseRoadmapPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Check authentication status
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        setIsLoggedIn(!!session);
+      } catch (error) {
+        console.warn('Auth check failed:', error);
+        setIsLoggedIn(false);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    checkAuth();
+
+    // Subscribe to auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsLoggedIn(!!session);
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
   useEffect(() => {
     // Intersection Observer for animations
     const observerOptions = {
@@ -75,38 +105,6 @@ export default function MenopauseRoadmapPage() {
       });
     });
 
-    // CTA button ripple effect
-    document.querySelectorAll('.cta-button').forEach(button => {
-      button.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        const target = e.currentTarget as HTMLElement;
-        const ripple = document.createElement('span');
-        const rect = target.getBoundingClientRect();
-        const size = Math.max(rect.width, rect.height);
-        const clientX = (e as MouseEvent).clientX;
-        const clientY = (e as MouseEvent).clientY;
-        const x = clientX - rect.left - size / 2;
-        const y = clientY - rect.top - size / 2;
-        
-        ripple.style.width = ripple.style.height = size + 'px';
-        ripple.style.left = x + 'px';
-        ripple.style.top = y + 'px';
-        ripple.classList.add('ripple');
-        ripple.style.position = 'absolute';
-        ripple.style.borderRadius = '50%';
-        ripple.style.background = 'rgba(255, 255, 255, 0.7)';
-        ripple.style.transform = 'scale(0)';
-        ripple.style.animation = 'ripple-animation 0.6s ease-out';
-        ripple.style.pointerEvents = 'none';
-        
-        target.appendChild(ripple);
-        
-        setTimeout(() => {
-          ripple.remove();
-        }, 600);
-      });
-    });
 
     // Parallax effect for decoration circles
     const handleScroll = () => {
@@ -123,7 +121,7 @@ export default function MenopauseRoadmapPage() {
 
     // Enhance mobile interactions
     if ('ontouchstart' in window) {
-      document.querySelectorAll('.pyramid-level, .cta-button').forEach(element => {
+      document.querySelectorAll('.pyramid-level').forEach(element => {
         element.addEventListener('touchstart', (e) => {
           const target = e.currentTarget as HTMLElement;
           target.classList.add('touch-active');
@@ -158,8 +156,8 @@ export default function MenopauseRoadmapPage() {
     };
   }, []);
 
-  return (
-    <DashboardLayout>
+  // Render content with or without DashboardLayout based on login status
+  const content = (
     <div className="menopause-roadmap-page">
       <section className="hero" id="main-content">
         <div className="decoration-circle"></div>
@@ -174,7 +172,21 @@ export default function MenopauseRoadmapPage() {
             </div>
             <p className="subtitle">אם השאלות האלו רצות לך בראש, את לא לבד.<br />
             ברוכה הבאה לשלב בחיים שאף אחד לא הכין אותך אליו באמת: <span className="menopause-text">גיל המעבר</span>.</p>
-            <button className="cta-button">גלי את המפה שלך</button>
+            <p className="decorative-text">גלי את המפה שלך</p>
+            <button 
+              className="scroll-indicator roadmap-scroll-indicator" 
+              onClick={() => {
+                const contentSection = document.querySelector('.content-section');
+                if (contentSection) {
+                  contentSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              aria-label="גלול למטה לראות עוד"
+            >
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M20 10L20 30M20 30L12 22M20 30L28 22" stroke="var(--magenta)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
       </div>
       </section>
@@ -240,7 +252,21 @@ export default function MenopauseRoadmapPage() {
               המפה מראה לך איפה את עומדת, ולאן את עוד יכולה לעלות.<br />
           זו התחלה של טיפוס חדש במעלה הסולם האישי שלך.
         </p>
-            <button className="cta-button">אני רוצה את המפה שלי</button>
+            <p className="decorative-text">אני רוצה את המפה שלי</p>
+            <button 
+              className="scroll-indicator roadmap-scroll-indicator" 
+              onClick={() => {
+                const pyramidSection = document.querySelector('.pyramid-section');
+                if (pyramidSection) {
+                  pyramidSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
+              aria-label="גלול למטה לראות את הפירמידה"
+            >
+              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+                <path d="M20 10L20 30M20 30L12 22M20 30L28 22" stroke="var(--magenta)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
           </div>
         </div>
       </section>
@@ -364,6 +390,24 @@ export default function MenopauseRoadmapPage() {
         </div>
       </section>
     </div>
-  </DashboardLayout>
   );
+
+  // Show loading state briefly to prevent flash
+  if (isLoading) {
+    return (
+      <div className="menopause-roadmap-page">
+        <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <p>טוען...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If logged in, show with DashboardLayout (includes sidebar)
+  if (isLoggedIn) {
+    return <DashboardLayout>{content}</DashboardLayout>;
+  }
+
+  // If not logged in, show without DashboardLayout (no sidebar)
+  return content;
 }

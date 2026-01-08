@@ -1,0 +1,506 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+/* Root Variables */
+:root {
+  --magenta: #FF0080;
+  --purple: #9D4EDD;
+  --soft-pink: #FFB6D9;
+  --light-purple: #E4CCFF;
+  --white: #FFFFFF;
+  --black: #1A1A1A;
+  --font-assistant: 'Assistant', sans-serif;
+}
+
+/* Global Reset - Prevent Any Scrolling */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  height: 100%;
+  overflow: hidden;
+  overflow-x: hidden;
+  font-family: var(--font-assistant);
+}
+
+/* Main Container - Strict 100dvh with Flexbox Column */
+.page-container {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100dvh;
+  height: 100vh; /* Fallback for older browsers */
+  max-height: 100dvh;
+  max-height: 100vh;
+  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  background: linear-gradient(135deg, rgba(255, 182, 217, 0.15) 0%, rgba(228, 204, 255, 0.15) 100%);
+}
+
+/* Top Banner - Fixed Height */
+.top-banner {
+  width: 100%;
+  height: 48px;
+  min-height: 48px;
+  max-height: 48px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.2);
+  z-index: 10;
+  position: relative;
+}
+
+.banner-text {
+  color: var(--white);
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Hero Section - Takes Remaining Space (flex-1) */
+.hero-section {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  max-width: 100vw;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 2vh, 2rem) clamp(0.75rem, 2.5vw, 3rem);
+  overflow: hidden;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Hero Content - Desktop: Grid 2 Columns | Mobile: Flex Column Stack */
+.hero-content {
+  width: 100%;
+  max-width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 2vh, 1.5rem);
+  overflow: hidden;
+  overflow-x: hidden;
+}
+
+/* Headline Section */
+.headline-section {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+  text-align: center;
+  overflow-x: hidden;
+}
+
+.main-headline {
+  font-size: clamp(1.75rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--black);
+  line-height: 1.2;
+  margin: 0 0 clamp(0.25rem, 1vh, 0.5rem) 0;
+  letter-spacing: -0.02em;
+}
+
+.sub-headline {
+  font-size: clamp(0.9375rem, 2vw, 1.25rem);
+  font-weight: 500;
+  color: var(--black);
+  line-height: 1.4;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* Image Container - Natural Flow, Not Absolute */
+.image-container {
+  width: 100%;
+  max-width: 100%;
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.guide-image {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
+  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.guide-image:hover {
+  transform: scale(1.02) rotate(1deg);
+}
+
+/* Benefits & CTA Section */
+.benefits-cta-section {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem); /* Increased gap between benefits and CTA */
+  overflow: hidden;
+}
+
+/* Benefits List */
+.benefits-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.375rem, 1vh, 0.625rem);
+  overflow-x: hidden;
+}
+
+.benefit-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: clamp(0.875rem, 1.5vw, 1.0625rem);
+  line-height: 1.5;
+  color: var(--black);
+  font-weight: 500;
+  max-width: 100%;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+}
+
+.bullet-icon {
+  color: var(--magenta);
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.benefit-text {
+  flex: 1;
+}
+
+/* CTA Section */
+.cta-section {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.5rem, 1vh, 0.75rem);
+  align-items: center;
+  text-align: center;
+}
+
+.cta-text {
+  font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
+  font-weight: 600;
+  color: var(--black);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.cta-button {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  color: var(--white);
+  font-size: clamp(1rem, 2vw, 1.375rem);
+  font-weight: 700;
+  padding: clamp(0.75rem, 1.5vh, 1rem) clamp(1.5rem, 4vw, 2.5rem);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(255, 0, 128, 0.3);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-assistant);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.cta-button:hover::before {
+  left: 100%;
+}
+
+.cta-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(255, 0, 128, 0.45);
+}
+
+.cta-button:active {
+  transform: translateY(0);
+}
+
+/* Decorative Background Elements */
+.bg-decoration {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.bg-decoration-1 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(255, 182, 217, 0.4) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+  animation: pulse 8s ease-in-out infinite;
+}
+
+.bg-decoration-2 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(228, 204, 255, 0.4) 0%, transparent 70%);
+  bottom: -80px;
+  left: -80px;
+  animation: pulse 10s ease-in-out infinite;
+  animation-delay: 1s;
+}
+
+.bg-decoration-3 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.3) 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 12s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.7;
+  }
+}
+
+/* Desktop Layout - Two Columns Grid */
+@media (min-width: 769px) {
+  .hero-content {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr; /* Text section (right) is wider than image (left) - 40%:60% ratio */
+    grid-template-rows: auto 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: center; /* Center vertically */
+    max-width: 1400px;
+  }
+
+  .headline-section {
+    grid-column: 2 / 3;
+    grid-row: 1 / 2;
+    text-align: right;
+    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from right edge */
+    align-self: start; /* Align to top of row */
+  }
+
+  .image-container {
+    grid-column: 1 / 2;
+    grid-row: 1 / 3;
+    align-self: center; /* Perfect vertical centering */
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .guide-image {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 80%; /* Elegant size - 80% of container */
+    object-fit: contain; /* Maintain aspect ratio */
+  }
+
+  .benefits-cta-section {
+    grid-column: 2 / 3;
+    grid-row: 2 / 3;
+    align-self: start;
+    gap: clamp(0.75rem, 1.5vh, 1rem);
+    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from right edge */
+  }
+
+  .main-headline {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem); /* Larger now that text column is wider */
+  }
+
+  .sub-headline {
+    font-size: clamp(1.125rem, 2vw, 1.5rem);
+  }
+
+  .benefit-item {
+    font-size: clamp(1rem, 1.6vw, 1.25rem);
+  }
+
+  .cta-text {
+    font-size: clamp(1.0625rem, 1.8vw, 1.375rem);
+  }
+  
+  .cta-section {
+    margin-top: clamp(0.5rem, 1vh, 0.75rem);
+  }
+}
+
+/* Tablet Adjustments */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .hero-content {
+    grid-template-columns: 1fr 1.3fr; /* Slightly less aggressive split for tablets - still text wider */
+  }
+  
+  .headline-section {
+    padding-right: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+  
+  .benefits-cta-section {
+    padding-right: clamp(0.75rem, 1.5vw, 1.5rem);
+  }
+  
+  .guide-image {
+    max-height: 75%; /* Slightly lower for tablets */
+  }
+  
+  .main-headline {
+    font-size: clamp(2rem, 4.2vw, 3rem);
+  }
+}
+
+/* Mobile Medium (481-768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hero-section {
+    padding: clamp(0.75rem, 1.5vh, 1.25rem) clamp(0.75rem, 2vw, 1.25rem);
+  }
+
+  .benefits-cta-section {
+    gap: clamp(1rem, 2vh, 1.5rem);
+  }
+
+  .image-container {
+    max-height: 35vh;
+  }
+
+  .guide-image {
+    max-width: 300px;
+    max-height: 35vh;
+  }
+}
+
+/* Small Mobile - Aggressive Shrinking */
+@media (max-width: 480px) {
+  .top-banner {
+    height: 40px;
+    min-height: 40px;
+    max-height: 40px;
+    padding: 0 0.5rem;
+  }
+
+  .banner-text {
+    font-size: 0.8125rem;
+  }
+
+  .hero-section {
+    padding: clamp(0.5rem, 1.5vh, 1rem) clamp(0.5rem, 1.5vw, 0.75rem);
+  }
+
+  .hero-content {
+    gap: clamp(0.5rem, 1.5vh, 0.75rem);
+    max-width: 100%;
+  }
+
+  .headline-section {
+    max-width: 100%;
+  }
+
+  .main-headline {
+    font-size: clamp(1.5rem, 6vw, 1.875rem);
+    margin-bottom: 0.25rem;
+  }
+
+  .sub-headline {
+    font-size: clamp(0.8125rem, 3.5vw, 0.9375rem);
+  }
+
+  .image-container {
+    flex: 0 0 auto;
+    max-height: 30vh;
+    max-width: 100%;
+  }
+
+  .guide-image {
+    max-width: 220px;
+    max-height: 30vh;
+  }
+
+  .benefits-cta-section {
+    gap: clamp(0.75rem, 1.5vh, 1rem); /* Clear gap between benefits and CTA */
+  }
+
+  .benefits-list {
+    gap: 0.25rem;
+  }
+
+  .benefit-item {
+    font-size: 0.8125rem;
+    gap: 0.375rem;
+  }
+
+  .bullet-icon {
+    font-size: 1rem;
+  }
+
+  .cta-text {
+    font-size: 0.875rem;
+  }
+
+  .cta-section {
+    margin-top: 0; /* Reset, using parent gap instead */
+  }
+
+  .cta-button {
+    font-size: 0.9375rem;
+    padding: 0.625rem 1.25rem;
+  }
+
+  .bg-decoration {
+    opacity: 0.3;
+  }
+
+  .bg-decoration-1,
+  .bg-decoration-2,
+  .bg-decoration-3 {
+    width: 200px;
+    height: 200px;
+  }
+}
