@@ -15,6 +15,13 @@ interface Article {
 // Articles list - add new articles here
 const articles: Article[] = [
   {
+    id: 'sharp-memory-menopause',
+    title: 'המוח שלך לא נעלם, הוא פשוט ב"שיפוצים": הסוד לזיכרון חד (גם) בגיל המעבר 🧠✨',
+    url: '/sharp-memory-menopause',
+    teaser: 'נכנסת לחדר ושכחת למה? המילה עומדת לך על קצה הלשון ופשוט מסרבת לצאת? התחושה הזו שמישהו הניח "ערפל" בתוך הראש שלך היא לא דמיון – היא ביולוגיה. החדשות הטובות? זה לא חייב להיות ככה. את לא "מזדקנת", את פשוט צריכה לעדכן גרסה...',
+    imageUrl: 'https://i.imghippo.com/files/REs2664FMI.jpeg'
+  },
+  {
     id: 'muscle-mass-menopause',
     title: 'שרירים נעלמים? לא אצלנו! מדריך לשימור מסת השריר בגיל המעבר',
     url: '/muscle-mass-menopause',
