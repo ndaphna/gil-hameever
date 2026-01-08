@@ -48,51 +48,59 @@
   }
 }
 
-/* Top Banner - Fixed Height */
+/* Top Banner - Fixed Height - Enhanced for Visibility */
 .top-banner {
   width: 100%;
-  height: 48px;
-  min-height: 48px;
-  max-height: 48px;
+  height: clamp(70px, 10vh, 100px);
+  min-height: 70px;
+  max-height: 100px;
   flex-shrink: 0;
   background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 1rem;
-  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.2);
+  padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 3vw, 2rem);
+  box-shadow: 0 6px 24px rgba(255, 0, 128, 0.35);
   z-index: 10;
   position: relative;
 }
 
 .banner-text {
   color: var(--white);
-  font-size: clamp(0.875rem, 2vw, 1.125rem);
-  font-weight: 600;
+  font-size: clamp(1.25rem, 3.5vw, 2rem);
+  font-weight: 700;
   text-align: center;
-  line-height: 1.3;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Hero Section - Mobile: Auto height | Desktop: Takes Remaining Space (flex-1) */
+/* Hero Section - Mobile: Auto height with scroll | Desktop: Takes Remaining Space (flex-1) */
 .hero-section {
-  flex: 0 1 auto; /* Mobile: Allow natural growth */
-  min-height: 0;
+  /* Mobile Default: Natural height, scrollable */
+  height: auto;
+  min-height: auto;
   width: 100%;
   max-width: 100vw;
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Align to top for minimal design */
   justify-content: center;
-  padding: clamp(0.75rem, 2vh, 2rem) clamp(0.75rem, 2.5vw, 3rem);
+  padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 2vw, 1.5rem); /* Minimal padding */
   overflow-x: hidden; /* Always prevent horizontal scroll */
-  overflow-y: visible; /* Mobile: Allow content to flow */
+  overflow-y: visible; /* Mobile: Allow vertical scroll */
   position: relative;
 }
 
-/* Desktop: Hero section takes remaining space */
+/* Desktop: Hero section takes exact remaining viewport height with flex column */
 @media (min-width: 1024px) {
   .hero-section {
-    flex: 1; /* Desktop: Take remaining space */
-    overflow: hidden; /* Desktop: No scroll */
+    flex: 1; /* Desktop: Take remaining space (100dvh minus top banner) */
+    height: auto; /* Let flex handle the height */
+    min-height: 0; /* Allow flex shrinking */
+    display: flex;
+    flex-direction: column; /* CRITICAL: Column layout for proper constraint */
+    overflow: hidden; /* Desktop: No scroll - everything must fit */
+    overflow-y: hidden; /* Explicitly prevent vertical scroll */
   }
 }
 
@@ -101,28 +109,33 @@
   width: 100%;
   max-width: 100%;
   height: auto; /* Mobile: Allow natural height */
+  min-height: auto; /* Mobile: Allow natural growth */
   display: flex;
   flex-direction: column;
-  gap: clamp(0.75rem, 2vh, 1.5rem);
+  gap: clamp(0.5rem, 1vh, 1rem); /* Minimal gap for cleaner look */
   overflow-x: hidden; /* Always prevent horizontal scroll */
   overflow-y: visible; /* Mobile: Allow content to flow */
 }
 
-/* Desktop: Hero content fills available space */
+/* Desktop: Hero content constrained to fit exactly within hero-section */
 @media (min-width: 1024px) {
   .hero-content {
-    height: 100%; /* Desktop: Fill available space */
-    overflow: hidden; /* Desktop: No scroll */
+    flex: 1; /* CRITICAL: Take all available space in flex parent */
+    min-height: 0; /* CRITICAL: Prevent expansion based on content height */
+    height: auto; /* Let flex handle the height */
+    overflow: hidden; /* Desktop: No scroll - prevent any overflow */
+    overflow-y: hidden; /* Explicitly prevent vertical scroll */
   }
 }
 
-/* Headline Section */
+/* Headline Section - Minimal Design */
 .headline-section {
   width: 100%;
   max-width: 100%;
   flex-shrink: 0;
   text-align: center;
   overflow-x: hidden;
+  margin-bottom: clamp(0.25rem, 0.5vh, 0.5rem); /* Minimal margin */
 }
 
 .main-headline {
@@ -130,7 +143,7 @@
   font-weight: 800;
   color: var(--black);
   line-height: 1.2;
-  margin: 0 0 clamp(0.25rem, 1vh, 0.5rem) 0;
+  margin: 0 0 clamp(0.125rem, 0.5vh, 0.25rem) 0; /* Minimal margin */
   letter-spacing: -0.02em;
 }
 
@@ -141,34 +154,58 @@
   line-height: 1.4;
   margin: 0;
   opacity: 0.85;
+  text-align: center; /* Center aligned text */
 }
 
-/* Image Container - Natural Flow, Not Absolute */
+/* Image Container - Clean Invisible Wrapper - No Styling */
 .image-container {
   width: 100%;
   max-width: 100%;
   flex: 0 1 auto;
   min-height: 0;
+  height: auto; /* Prevent vertical stretching */
   display: flex;
-  align-items: center;
+  align-items: flex-start; /* Align to top to match text section */
   justify-content: center;
-  overflow-x: hidden; /* Always prevent horizontal scroll */
-  overflow-y: visible; /* Mobile: Allow content to flow */
+  padding: 0; /* NO padding */
+  margin: 0; /* NO margin */
+  background: none; /* NO background */
+  background-color: transparent; /* Explicitly transparent */
+  box-shadow: none; /* NO shadow */
+  border: none; /* NO border */
+  overflow-x: hidden;
+  overflow-y: visible;
+  /* Pure invisible wrapper - all styling on image itself */
 }
 
 .guide-image {
   width: 100%;
   max-width: 280px;
   height: auto;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.12));
-  transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 100%; /* Constrained to container height - no overflow */
+  object-fit: contain; /* Maintain aspect ratio, stay within bounds */
+  
+  /* Elegant Border & Rounded Corners - Applied directly to image */
+  border: 1px solid rgba(157, 78, 221, 0.15); /* Soft purple border */
+  border-radius: 16px; /* Rounded-xl equivalent */
+  
+  /* Subtle, Tight Shadow - Applied directly to image */
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 4px rgba(157, 78, 221, 0.1);
+  
+  /* Smooth Transitions */
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
+  
+  /* Prevent any container bleed */
+  display: block;
+  margin: 0;
+  padding: 0;
 }
 
 .guide-image:hover {
   transform: scale(1.02) rotate(1deg);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(157, 78, 221, 0.15);
 }
 
 /* Benefits & CTA Section */
@@ -240,10 +277,12 @@
 
 .cta-text {
   font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
-  font-weight: 600;
+  font-weight: 700; /* More emphasis - increased from 600 */
   color: var(--black);
   margin: 0;
   line-height: 1.4;
+  padding-top: 20px; /* Top padding */
+  padding-bottom: 20px; /* Bottom padding */
 }
 
 .cta-button {
@@ -286,13 +325,13 @@
   transform: translateY(0);
 }
 
-/* Decorative Background Elements */
+/* Decorative Background Elements - Minimal Design */
 .bg-decoration {
   position: absolute;
   border-radius: 50%;
   z-index: 0;
   pointer-events: none;
-  opacity: 0.5;
+  opacity: 0.2; /* Much more subtle for minimal design */
 }
 
 .bg-decoration-1 {
@@ -336,42 +375,51 @@
   }
 }
 
-/* Desktop Layout - Two Columns Grid */
+/* Desktop Layout - Two Columns Grid - Minimal Design */
 @media (min-width: 769px) {
   .hero-content {
     display: grid;
     grid-template-columns: 1fr 1.4fr; /* Text section (right) is wider than image (left) - 40%:60% ratio */
     grid-template-rows: auto 1fr;
-    gap: clamp(1.5rem, 3vw, 3rem);
-    align-items: center; /* Center vertically */
+    gap: clamp(1rem, 2vw, 2rem); /* Reduced gap for minimal design */
+    align-items: flex-start; /* Align to top for minimal design */
     max-width: 1400px;
   }
 
   .headline-section {
     grid-column: 2 / 3;
     grid-row: 1 / 2;
-    text-align: right;
-    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from right edge */
+    text-align: center; /* Center aligned text */
+    padding-left: clamp(1rem, 2vw, 2rem); /* Breathing room from edges */
+    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from edges */
     align-self: start; /* Align to top of row */
   }
 
   .image-container {
     grid-column: 1 / 2;
     grid-row: 1 / 3;
-    align-self: center; /* Perfect vertical centering */
-    height: 100%;
+    align-self: flex-start; /* Align to top to match text section */
+    height: auto; /* Auto height - prevent stretching */
+    max-height: 100%; /* Constrained to grid row */
     width: 100%;
     display: flex;
-    align-items: center;
+    align-items: flex-start; /* Align image to top */
     justify-content: center;
+    padding: 0; /* NO padding */
+    margin: 0; /* NO margin */
+    background: none; /* NO background */
+    background-color: transparent; /* Explicitly transparent */
+    box-shadow: none; /* NO shadow */
+    border: none; /* NO border */
   }
 
   .guide-image {
     width: 100%;
     max-width: 100%;
     height: auto;
-    max-height: 80%; /* Elegant size - 80% of container */
-    object-fit: contain; /* Maintain aspect ratio */
+    max-height: 100%; /* CRITICAL: Constrained to hero-content height, not viewport */
+    object-fit: contain; /* Maintain aspect ratio, stay within bounds */
+    /* Border, shadow, and rounded corners already applied in base styles */
   }
 
   .benefits-cta-section {
@@ -379,7 +427,9 @@
     grid-row: 2 / 3;
     align-self: start;
     gap: clamp(0.75rem, 1.5vh, 1rem);
-    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from right edge */
+    padding-left: clamp(1rem, 2vw, 2rem); /* Breathing room from edges */
+    padding-right: clamp(1rem, 2vw, 2rem); /* Breathing room from edges */
+    text-align: center; /* Center aligned content */
   }
 
   .main-headline {
@@ -388,10 +438,12 @@
 
   .sub-headline {
     font-size: clamp(1.125rem, 2vw, 1.5rem);
+    text-align: center; /* Center aligned text on desktop */
   }
 
   .benefit-item {
     font-size: clamp(1rem, 1.6vw, 1.25rem);
+    justify-content: center; /* Center align flex items */
   }
 
   .cta-text {
@@ -410,15 +462,19 @@
   }
   
   .headline-section {
-    padding-right: clamp(0.75rem, 1.5vw, 1.5rem);
+    padding-left: clamp(0.75rem, 1.5vw, 1.5rem); /* Breathing room from edges */
+    padding-right: clamp(0.75rem, 1.5vw, 1.5rem); /* Breathing room from edges */
+    text-align: center; /* Center aligned text */
   }
   
   .benefits-cta-section {
-    padding-right: clamp(0.75rem, 1.5vw, 1.5rem);
+    padding-left: clamp(0.75rem, 1.5vw, 1.5rem); /* Breathing room from edges */
+    padding-right: clamp(0.75rem, 1.5vw, 1.5rem); /* Breathing room from edges */
+    text-align: center; /* Center aligned content */
   }
   
   .guide-image {
-    max-height: 75%; /* Slightly lower for tablets */
+    max-height: 70vh; /* Strict constraint for tablets - prevent overflow */
   }
   
   .main-headline {
@@ -429,7 +485,7 @@
 /* Mobile Medium (481-768px) */
 @media (min-width: 481px) and (max-width: 768px) {
   .hero-section {
-    padding: clamp(0.75rem, 1.5vh, 1.25rem) clamp(0.75rem, 2vw, 1.25rem);
+    padding: clamp(0.25rem, 0.5vh, 0.75rem) clamp(0.75rem, 2vw, 1.25rem); /* Minimal padding */
   }
 
   .benefits-cta-section {
@@ -438,6 +494,8 @@
 
   .image-container {
     max-height: 35vh;
+    margin-top: 0; /* No top margin - image at top */
+    padding: 0;
   }
 
   .guide-image {
@@ -449,23 +507,29 @@
 /* Small Mobile - Aggressive Shrinking */
 @media (max-width: 480px) {
   .top-banner {
-    height: 40px;
-    min-height: 40px;
-    max-height: 40px;
-    padding: 0 0.5rem;
+    height: clamp(60px, 8vh, 80px);
+    min-height: 60px;
+    max-height: 80px;
+    padding: clamp(0.75rem, 1.5vh, 1rem) clamp(0.75rem, 2vw, 1rem);
   }
 
   .banner-text {
-    font-size: 0.8125rem;
+    font-size: clamp(1rem, 4vw, 1.375rem);
+    font-weight: 700;
   }
 
   .hero-section {
-    padding: clamp(0.5rem, 1.5vh, 1rem) clamp(0.5rem, 1.5vw, 0.75rem);
+    padding: clamp(0.25rem, 0.5vh, 0.5rem) clamp(0.5rem, 1.5vw, 0.75rem); /* Minimal padding - image closer to top */
   }
 
   .hero-content {
-    gap: clamp(0.5rem, 1.5vh, 0.75rem);
+    gap: clamp(0.25rem, 0.75vh, 0.5rem); /* Minimal gap - tighter spacing */
     max-width: 100%;
+  }
+  
+  .image-container {
+    margin-top: 0; /* No top margin - image at top */
+    padding: 0;
   }
 
   .headline-section {
@@ -479,6 +543,7 @@
 
   .sub-headline {
     font-size: clamp(0.8125rem, 3.5vw, 0.9375rem);
+    text-align: center; /* Center aligned text on mobile */
   }
 
   .image-container {

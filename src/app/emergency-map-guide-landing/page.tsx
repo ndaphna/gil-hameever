@@ -1,6 +1,12 @@
+'use client';
+
+import { useState } from 'react';
 import './emergency-map-guide.css';
+import OptInModal from './OptInModal';
 
 export default function EmergencyMapGuideLanding() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <div className="page-container" dir="rtl">
       {/* Top Banner - Fixed Height */}
@@ -60,10 +66,13 @@ export default function EmergencyMapGuideLanding() {
 
             <div className="cta-section">
               <p className="cta-text">
-                תפסיקי לסבול מחוסר הודאות ותתחילי להרגיש טוב יותר כבר היום.
+                הפסיקי לסבול מחוסר הודאות ותתחילי להרגיש טוב יותר כבר היום.
               </p>
               
-              <button className="cta-button">
+              <button 
+                className="cta-button"
+                onClick={() => setIsModalOpen(true)}
+              >
                 שלחי לי את מפת החירום!
               </button>
             </div>
@@ -76,6 +85,12 @@ export default function EmergencyMapGuideLanding() {
       <div className="bg-decoration bg-decoration-1"></div>
       <div className="bg-decoration bg-decoration-2"></div>
       <div className="bg-decoration bg-decoration-3"></div>
+
+      {/* Opt-In Modal */}
+      <OptInModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+      />
     </div>
   );
 }
