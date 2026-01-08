@@ -18,21 +18,8 @@
   box-sizing: border-box;
 }
 
-html, body {
-  width: 100%;
-  max-width: 100vw;
-  height: 100%;
-  overflow-x: hidden; /* Always prevent horizontal scroll */
-  overflow-y: auto; /* Allow vertical scroll on mobile by default */
-  font-family: var(--font-assistant);
-}
-
-/* Desktop: Disable vertical scroll */
-@media (min-width: 1024px) {
-  html, body {
-    overflow: hidden; /* No scroll on desktop */
-  }
-}
+/* NOTE: We do NOT modify html/body globally to avoid affecting other pages */
+/* All overflow and height constraints are scoped to .page-container only */
 
 /* Main Container - Mobile: Auto height with scroll | Desktop: 100dvh no scroll */
 .page-container {
