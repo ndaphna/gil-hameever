@@ -53,7 +53,7 @@ export default function EmergencyMapGuideLanding() {
               <li className="benefit-item">
                 <span className="bullet-icon">•</span>
                 <span className="benefit-text">
-                  מקלח מיידי: כלים פרקטיים להתמודדות עם התסמינים הראשונים.
+                  הקלה מיידי: כלים פרקטיים להתמודדות עם התסמינים הראשונים.
                 </span>
               </li>
               <li className="benefit-item">
