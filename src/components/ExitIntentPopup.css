@@ -28,7 +28,7 @@
   }
 }
 
-/* Modal Container */
+/* Modal Container - Mobile First */
 .exit-intent-modal {
   background: linear-gradient(
     135deg,
@@ -38,14 +38,23 @@
   border-radius: 24px;
   box-shadow: 0 20px 60px rgba(255, 0, 128, 0.2),
     0 0 0 1px rgba(255, 0, 128, 0.1);
-  max-width: 600px;
-  width: 100%;
+  max-width: 90%;
+  width: 90%;
+  margin: 0.5rem;
   position: relative;
   overflow: hidden;
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   max-height: 90vh;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-modal {
+    max-width: 600px;
+    width: 100%;
+    margin: 0;
+  }
 }
 
 @keyframes slideUp {
@@ -59,13 +68,15 @@
   }
 }
 
-/* Close Button */
+/* Close Button - Mobile First */
 .exit-intent-close {
   position: absolute;
-  top: 1rem;
-  left: 1rem;
-  width: 36px;
-  height: 36px;
+  top: 0.75rem;
+  left: 0.75rem;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   border: none;
   background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
@@ -82,6 +93,18 @@
   box-shadow: 0 2px 8px rgba(255, 0, 128, 0.15);
 }
 
+@media (min-width: 769px) {
+  .exit-intent-close {
+    top: 1rem;
+    left: 1rem;
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    min-height: 36px;
+    font-size: 28px;
+  }
+}
+
 .exit-intent-close:hover {
   background: var(--white);
   color: var(--magenta-dark);
@@ -89,9 +112,15 @@
   box-shadow: 0 4px 12px rgba(255, 0, 128, 0.25);
 }
 
-/* Main Content */
+/* Main Content - Mobile First */
 .exit-intent-content {
-  padding: clamp(2rem, 4vh, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+  padding: 1.5rem 1.25rem;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-content {
+    padding: clamp(2rem, 4vh, 3rem) clamp(1.5rem, 3vw, 2.5rem);
+  }
 }
 
 /* Headline - Using website's h2 style */
@@ -147,16 +176,23 @@
 
 .exit-intent-bonus {
   font-family: var(--font-assistant), sans-serif;
-  font-size: var(--text-base-mobile);
+  font-size: 0.9rem;
   font-weight: 400;
   color: var(--black);
   margin: 0 0 1.5rem 0;
   line-height: 1.85;
   text-align: center;
   background: var(--soft-pink);
-  padding: 1rem 1.25rem;
+  padding: 0.875rem 1rem;
   border-radius: 16px;
   border-right: 4px solid var(--magenta);
+}
+
+@media (min-width: 769px) {
+  .exit-intent-bonus {
+    font-size: var(--text-base-mobile);
+    padding: 1rem 1.25rem;
+  }
 }
 
 .exit-intent-bonus strong {
@@ -186,11 +222,12 @@
   margin: 1.5rem 0;
 }
 
-/* Email Input - Matching website input style */
+/* Email Input - Mobile First */
 .exit-intent-input {
   font-family: var(--font-assistant), sans-serif;
-  font-size: var(--text-base-mobile);
-  padding: 1rem 1.25rem;
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 48px;
+  padding: 14px 1.25rem;
   border: 2px solid var(--light-pink);
   border-radius: 12px;
   background: var(--white);
@@ -200,6 +237,14 @@
   box-sizing: border-box;
   direction: rtl;
   text-align: right;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-input {
+    font-size: var(--text-base-mobile);
+    min-height: auto;
+    padding: 1rem 1.25rem;
+  }
 }
 
 .exit-intent-input:focus {
@@ -219,27 +264,36 @@
   background: var(--gray-light);
 }
 
-/* Submit Button - Using website's cta-button style */
+/* Submit Button - Mobile First */
 .exit-intent-button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  padding: 16px 32px;
+  min-height: 48px;
+  padding: 14px 24px;
   background: var(--gradient-main);
   color: var(--white);
   text-decoration: none;
   border-radius: 30px;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 16px rgba(255, 0, 128, 0.3);
-  min-width: 280px;
   text-align: center;
   border: none;
   cursor: pointer;
   font-family: var(--font-assistant), sans-serif;
   width: 100%;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-button {
+    min-height: auto;
+    padding: 16px 32px;
+    font-size: 1.1rem;
+    min-width: 280px;
+  }
 }
 
 .exit-intent-button:hover:not(:disabled) {
@@ -281,18 +335,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 1rem;
-  flex-direction: row; /* RTL: image on right (start), text on left */
+  gap: 0.75rem;
+  flex-direction: column; /* Mobile: stacked vertically */
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-aliza-content {
+    flex-direction: row; /* Desktop: RTL: image on right (start), text on left */
+    gap: 1rem;
+  }
 }
 
 .exit-intent-aliza-image {
-  width: 50px;
-  height: 50px;
+  width: 45px;
+  height: 45px;
   border-radius: 100px;
   object-fit: cover;
   border: 2px solid #4DB6AC;
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(77, 182, 172, 0.2);
+}
+
+@media (min-width: 769px) {
+  .exit-intent-aliza-image {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 .exit-intent-aliza-text {
@@ -302,9 +371,15 @@
   color: var(--gray);
   margin: 0;
   line-height: 1.85;
-  text-align: right;
+  text-align: center;
   font-style: italic;
   flex: 1;
+}
+
+@media (min-width: 769px) {
+  .exit-intent-aliza-text {
+    text-align: right;
+  }
 }
 
 .exit-intent-aliza-name {
@@ -319,68 +394,7 @@
   padding: 1rem 0;
 }
 
-/* Responsive Design - Mobile */
-@media (max-width: 768px) {
-  .exit-intent-modal {
-    max-width: 90%;
-    width: 90%;
-    margin: 0.5rem;
-  }
-
-  .exit-intent-content {
-    padding: 1.5rem 1.25rem;
-  }
-
-  /* Larger close button for easy tapping on mobile */
-  .exit-intent-close {
-    top: 0.75rem;
-    left: 0.75rem;
-    width: 44px;
-    height: 44px;
-    font-size: 28px;
-    min-width: 44px;
-    min-height: 44px;
-  }
-
-  /* Ensure input is at least 48px height for easy tapping */
-  .exit-intent-input {
-    min-height: 48px;
-    padding: 14px 1.25rem;
-    font-size: 16px; /* Prevents zoom on iOS */
-  }
-
-  /* Ensure button is at least 48px height for easy tapping */
-  .exit-intent-button {
-    min-height: 48px;
-    padding: 14px 24px;
-    font-size: 1rem;
-  }
-
-  /* Stack Aliza content vertically on mobile */
-  .exit-intent-aliza-content {
-    flex-direction: column;
-    align-items: center;
-    gap: 0.75rem;
-    text-align: center;
-  }
-
-  .exit-intent-aliza-text {
-    text-align: center;
-  }
-
-  .exit-intent-aliza-image {
-    width: 45px;
-    height: 45px;
-  }
-
-  /* Simplify text on mobile if needed - reduce padding */
-  .exit-intent-bonus {
-    padding: 0.875rem 1rem;
-    font-size: 0.9rem;
-  }
-}
-
-/* Extra small screens */
+/* Extra small screens - Mobile First */
 @media (max-width: 480px) {
   .exit-intent-modal {
     max-width: 85%;

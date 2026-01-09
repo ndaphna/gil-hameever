@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import './ExitIntentPopup.css';
 
 interface ExitIntentPopupProps {
@@ -14,6 +14,21 @@ export default function ExitIntentPopup({ isOpen, onClose, onSignupSuccess }: Ex
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Detect mobile device
+    const checkMobile = () => {
+      const mobile = 
+        /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+        (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 768);
+      setIsMobile(mobile);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   if (!isOpen) return null;
 
@@ -96,7 +111,7 @@ export default function ExitIntentPopup({ isOpen, onClose, onSignupSuccess }: Ex
             <>
               {/* Headline */}
               <h2 className="exit-intent-headline">
-                רגע לפני שאת עוזבת...
+                {isMobile ? 'הזמנה אישית עבורך' : 'רגע לפני שאת עוזבת...'}
               </h2>
 
               {/* Main Text */}
