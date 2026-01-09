@@ -201,7 +201,7 @@ export default function SecretReportPage() {
                 וזה מה שקורה בפנים, מאחורי הקלעים:
               </p>
               
-              <h3 className="subsection-title">🌿 1. אסטרוגן - המנצחת של התזמורת</h3>
+              <h3 className="subsection-title">🌿 1. אסטרוגן - המנצח של התזמורת</h3>
               <p className="book-paragraph">
                 זה ההורמון שדואג ל־
               </p>
@@ -684,24 +684,127 @@ export default function SecretReportPage() {
               <p className="book-paragraph">
                 מה כן עובד?
               </p>
+              
               <div className="tip-box">
-                <p className="book-paragraph">✔️ טיפ ערב 1 - "ירידה הדרגתית לאדמה"</p>
-                <p className="book-paragraph-indent">מתי להפסיק מסכים?</p>
-                <p className="book-paragraph-indent">מה לשתות?</p>
-                <p className="book-paragraph-indent">איך לנשום?</p>
-                <p className="book-paragraph-indent">(נוסיף את ההדרכה המדויקת בהמשך)</p>
+                <p className="book-paragraph">🌙 טיפ ערב 1 - "ירידה הדרגתית לאדמה" (20 דקות שמשדרגות את הלילה)</p>
+                <p className="book-paragraph-indent">רוב הנשים בגיל המעבר לא מצליחות להירדם לא בגלל שהן "לחוצות", אלא בגלל שהגוף לא קיבל איתות ברור לבלום.</p>
+                <p className="book-paragraph-indent">השיטה הזו יוצרת מסלול נחיתה שמרגיע את המוח ההישרדותי ונותן לגוף אישור לישון.</p>
+                <p className="book-paragraph-indent">איך עושים את זה בפועל (שלב־אחר־שלב, פשוט):</p>
+                <p className="book-paragraph-indent">✔️ 1. מכבות מסכים 40 דקות לפני השינה</p>
+                <p className="book-paragraph-indent">זה לא "עוד טיפ רגיל" - זו פיזיולוגיה.</p>
+                <p className="book-paragraph-indent">אור מסכים מעכב מלטונין בדיוק בשעה שבה נשים בגיל המעבר זקוקות לו הכי הרבה.</p>
+                <p className="book-paragraph-indent">אפשר:</p>
+                <p className="book-paragraph-indent">להעביר את הטלפון ל"מצב חושך"</p>
+                <p className="book-paragraph-indent">להניח אותו בחדר אחר</p>
+                <p className="book-paragraph-indent">לקרוא במקום</p>
+                <p className="book-paragraph-indent">או פשוט לשים פודקאסט שקט</p>
+                <p className="book-paragraph-indent">✔️ 2. שתיית "משקה נחיתה"</p>
+                <p className="book-paragraph-indent">משהו חמים, לא מתוק, לא מעורר, למשל חליטת קמומיל/ ורבנה/ מליסה (מעולות להרגעה).</p>
+                <p className="book-paragraph-indent">החום מרגיע את מערכת העצבים ומאותת לקיבה, ללב ולמוח שהיום נגמר.</p>
+                <p className="book-paragraph-indent">✔️ 3. רגולציית חום - סוד של נשים בגיל המעבר</p>
+                <p className="book-paragraph-indent">גוף חם מדי = קושי להירדם.</p>
+                <p className="book-paragraph-indent">גוף קר מדי = הגוף נכנס לדריכות.</p>
+                <p className="book-paragraph-indent">אז מה הפתרון?</p>
+                <p className="book-paragraph-indent">מקלחת פושרת–חמימה של 2–3 דקות בלבד</p>
+                <p className="book-paragraph-indent">לא חמה!</p>
+                <p className="book-paragraph-indent">חום עדין מרחיב כלי דם → הגוף מקרר את עצמו → הירדמות קלה יותר.</p>
+                <p className="book-paragraph-indent">כרית קירור/קרח רך על החלק האחורי של הצוואר ל־30 שניות.</p>
+                <p className="book-paragraph-indent">זה מכבה עומס עצבי.</p>
+                <p className="book-paragraph-indent">✔️ 4. אמירה מרגיעה שמסיימת את היום</p>
+                <p className="book-paragraph-indent">כן - משפט.</p>
+                <p className="book-paragraph-indent">מוכח מחקרית שמוריד עומס קוגניטיבי.</p>
+                <p className="book-paragraph-indent">אמרי לעצמך משפט אחד כמו:</p>
+                <p className="book-paragraph-indent">"היום הזה הסתיים. אני משחררת אותו."</p>
+                <p className="book-paragraph-indent">או:</p>
+                <p className="book-paragraph-indent">"הגוף שלי יודע לישון. אני רק עוזרת לו."</p>
+                <p className="book-paragraph-indent">✔️ 5. טקס של דקה: "הנחת המחשבות"</p>
+                <p className="book-paragraph-indent">כתבי על דף קטן:</p>
+                <p className="book-paragraph-indent">דבר אחד שמפריע לך</p>
+                <p className="book-paragraph-indent">דבר אחד שתטפלי בו מחר</p>
+                <p className="book-paragraph-indent">דבר אחד שעשית היום טוב</p>
+                <p className="book-paragraph-indent">זה מפנה את הראש מעומס.</p>
               </div>
+              
               <div className="tip-box">
-                <p className="book-paragraph">✔️ טיפ ערב 2 - הורדת קורטיזול לפני השינה</p>
-                <p className="book-paragraph-indent">תרגיל נשימה 4–6–8 (אתן אותו בעמוד 15).</p>
+                <p className="book-paragraph">🌙 טיפ ערב 2 - הורדת קורטיזול לפני השינה (התרגיל שעובד תוך 90 שניות)</p>
+                <p className="book-paragraph-indent">הבעיה של נשים בגיל המעבר היא לא "רק" הורמונים,</p>
+                <p className="book-paragraph-indent">זו העובדה שקורטיזול (הורמון סטרס) גבוה מדי בערב.</p>
+                <p className="book-paragraph-indent">התרגיל הזה מפחית אותו בצורה מדידה.</p>
+                <p className="book-paragraph-indent">✔️ 1. נשימת 4–6–8 (הפעלת מערכת הרגיעה הטבעית של הגוף)</p>
+                <p className="book-paragraph-indent">זו נשימה שמשדרת למוח: "אין סכנה".</p>
+                <p className="book-paragraph-indent">וזה מה שגורם לקורטיזול לרדת.</p>
+                <p className="book-paragraph-indent">עושים כך:</p>
+                <p className="book-paragraph-indent">1️⃣ שאיפה ל־4 שניות</p>
+                <p className="book-paragraph-indent">2️⃣ החזקת אוויר ל־6 שניות</p>
+                <p className="book-paragraph-indent">3️⃣ נשיפה ל־8 שניות (8 שניות זה המפתח!)</p>
+                <p className="book-paragraph-indent">עושים 4–6 חזרות.</p>
+                <p className="book-paragraph-indent">לרוב הנשים זה יוצר:</p>
+                <p className="book-paragraph-indent">הורדת דופק</p>
+                <p className="book-paragraph-indent">הורדת מתח שרירי</p>
+                <p className="book-paragraph-indent">שקט פנימי</p>
+                <p className="book-paragraph-indent">הכנה טבעית לשינה</p>
+                <p className="book-paragraph-indent">✔️ 2. "שחרור כתפיים איטי" - הרגיעה הפיזית הכי אפקטיבית</p>
+                <p className="book-paragraph-indent">הכתפיים הן מקום שאליו הגוף שולח סטרס.</p>
+                <p className="book-paragraph-indent">שחרור עדין שלהן מוריד עומס מהמוח.</p>
+                <p className="book-paragraph-indent">איך עושים:</p>
+                <p className="book-paragraph-indent">שאיפה</p>
+                <p className="book-paragraph-indent">הרמת כתפיים</p>
+                <p className="book-paragraph-indent">נשיפה</p>
+                <p className="book-paragraph-indent">ירידה איטית של הכתפיים (5 פעמים)</p>
+                <p className="book-paragraph-indent">✔️ 3. "שחרור לסת" - הרבה נשים לא יודעות כמה זה חשוב</p>
+                <p className="book-paragraph-indent">כשאנחנו במתח - הלסת קפוצה → היא משדרת למוח: "יש סכנה".</p>
+                <p className="book-paragraph-indent">כשהלסת משתחררת → המוח מקבל: "אפשר להירגע".</p>
+                <p className="book-paragraph-indent">איך:</p>
+                <p className="book-paragraph-indent">לפתוח פה קלות</p>
+                <p className="book-paragraph-indent">לתת ללסת "ליפול"</p>
+                <p className="book-paragraph-indent">להזיז מצד לצד בעדינות 20 שניות בלבד.</p>
+                <p className="book-paragraph-indent">✔️ 4. לסיום - טמפרטורה יציבה בחדר</p>
+                <p className="book-paragraph-indent">נשים בגיל המעבר זקוקות לחדר קריר:</p>
+                <p className="book-paragraph-indent">18–21 מעלות</p>
+                <p className="book-paragraph-indent">(זה מונע התעוררויות פתאומיות.)</p>
               </div>
+              
               <div className="tip-box">
                 <p className="book-paragraph">✔️ טיפ הבוקר - חשיפה לאור</p>
                 <p className="book-paragraph-indent">10 דקות אור בוקר = שיפור של 20% ביכולת להירדם.</p>
               </div>
+              
               <div className="tip-box">
                 <p className="book-paragraph">✔️ בדיקות שכדאי לעשות</p>
                 <p className="book-paragraph-indent">ברזל, B12, ויטמין D, תפקוד בלוטת התריס, סוכר.</p>
+              </div>
+              
+              <div className="tip-box">
+                <p className="book-paragraph">🌙 מה כן / מה לא לפני שינה</p>
+                <p className="book-paragraph-indent">כדי לעזור לגוף להירגע, לווסת חום, ולהוריד עומס מהמערכת ההורמונלית</p>
+                <div className="sleep-tips-grid">
+                  <div className="sleep-tips-column">
+                    <p className="book-paragraph" style={{ fontWeight: '600', marginBottom: '12px' }}>מה כן לעשות לפני שינה</p>
+                    <p className="book-paragraph-indent">🍵 משקה חם ועדין – קמומיל, מליסה</p>
+                    <p className="book-paragraph-indent">🛁 מקלחת פושרת קצרה – לא חמה מדי</p>
+                    <p className="book-paragraph-indent">💛 נשימת 4–6–8 – מפעילה את מערכת הרגיעה</p>
+                    <p className="book-paragraph-indent">🌬️ אוורור החדר ל־2–3 דקות</p>
+                    <p className="book-paragraph-indent">📓 כתיבת דקה לפריקת מחשבות</p>
+                    <p className="book-paragraph-indent">🌙 אור עמום / תאורה חמה</p>
+                    <p className="book-paragraph-indent">🤍 טקס קצר שמסמן סוף יום</p>
+                    <p className="book-paragraph-indent">❄️ טמפרטורת חדר 18–21°</p>
+                    <p className="book-paragraph-indent">🧴 טיפול יובש עדין (אם רלוונטי)</p>
+                    <p className="book-paragraph-indent">💆 שחרור כתפיים או עיסוי צוואר</p>
+                  </div>
+                  <div className="sleep-tips-column">
+                    <p className="book-paragraph" style={{ fontWeight: '600', marginBottom: '12px' }}>מה לא לעשות לפני שינה</p>
+                    <p className="book-paragraph-indent">📱 מסכים: טלפון, טאבלט, טלוויזיה - מעכבים מלטונין</p>
+                    <p className="book-paragraph-indent">🚿 מקלחת חמה מדי שמעלה חום גוף ומפריעה להירדמות</p>
+                    <p className="book-paragraph-indent">⚡ שיחות מלחיצות / פתרון קונפליקטים לקראת השינה</p>
+                    <p className="book-paragraph-indent">🍔 אוכל כבד או ארוחות מאוחרות</p>
+                    <p className="book-paragraph-indent">🍫 סוכר לפני השינה - גורם ליקיצות ליליות</p>
+                    <p className="book-paragraph-indent">💡 אור לבן חזק שמבלבל את המוח</p>
+                    <p className="book-paragraph-indent">⏰ גלילה באינסטגרם/מיילים - מעורר עומס</p>
+                    <p className="book-paragraph-indent">🔥 חדר חם מדי – מחמיר גלי חום והתעוררויות</p>
+                    <p className="book-paragraph-indent">🍷 אלכוהול – נראה שמרגיע, בפועל הורס שינה</p>
+                    <p className="book-paragraph-indent">☕ קפאין אחרי 16:00 (גם שוקולד)</p>
+                  </div>
+                </div>
               </div>
               <div className="aliza-with-illustration">
                 <div className="aliza-quote">
@@ -1176,24 +1279,48 @@ export default function SecretReportPage() {
           </section>
 
           {/* לסיכום */}
-          <section className="book-section">
+          <section className="book-section summary-section">
             <h2 className="section-title">📘 לסיכום</h2>
-            <div className="content-block">
-              <p className="book-paragraph">
-                אם הדו״ח הזה נתן לך בהירות, רוגע ושקט,
-              </p>
-              <p className="book-paragraph">
-                הספר שכתבתי ייקח אותך למסע עמוק, רגשי ומצחיק שיפתח לך את הלב ויחזיר לך את האישה שאת.
-              </p>
-              <p className="book-paragraph">
-                אני כאן איתך,
-              </p>
-              <p className="book-paragraph">
-                בכל שלב.
-              </p>
-              <p className="book-paragraph">
-                ענבל 💛
-              </p>
+            <div className="summary-elegant-box">
+              <div className="summary-content">
+                <p className="book-paragraph summary-opening">
+                  אם הדו״ח הזה נתן לך רגע של בהירות, נשימה עמוקה ושקט פנימי,
+                </p>
+                <p className="book-paragraph">
+                  דעי שזה רק חלק קטן מהדרך שמחכה לך.
+                </p>
+                <p className="book-paragraph">
+                  הספר שלי לוקח את הכול כמה צעדים קדימה: מסע כנה, מצחיק ומרגש אל תוך מה שנשים בגיל המעֵבֶר באמת חוות.
+                </p>
+                <p className="book-paragraph">
+                  מסע שיעזור לך להבין את עצמך, לקבל את עצמך, ולהיזכר בכוח שלך.
+                </p>
+                <div className="newsletter-invitation">
+                  <p className="book-paragraph">
+                    ואם את רוצה להיות הראשונה לקבל ממני תובנות, כלים, מחשבות, מחקרים ועדכונים חשובים,
+                  </p>
+                  <p className="book-paragraph newsletter-highlight">
+                    אני מזמינה אותך להצטרף לרשימת התפוצה "גלי השראה" שלי.
+                  </p>
+                  <p className="book-paragraph">
+                    זה המקום שבו אני משתפת דברים שלא מגיעים לאינסטגרם:
+                  </p>
+                  <p className="book-paragraph">
+                    תובנות עמוקות, תמיכה, וטיפים שיכולים להפוך ימים מאתגרים לימים טובים יותר.
+                  </p>
+                </div>
+                <div className="summary-signature">
+                  <p className="book-paragraph signature-line">
+                    אני כאן איתך,
+                  </p>
+                  <p className="book-paragraph signature-line">
+                    בדרך, בשינוי, ובהתגלות החדשה שלך.
+                  </p>
+                  <p className="book-paragraph signature-name">
+                    ענבל 💛
+                  </p>
+                </div>
+              </div>
             </div>
           </section>
 

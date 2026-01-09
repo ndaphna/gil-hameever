@@ -7,9 +7,9 @@ export default function ExitIntentHandler() {
   const [showPopup, setShowPopup] = useState(false);
   const hasShownRef = useRef(false);
   const timeOnPageRef = useRef(Date.now());
+  const scrollTriggeredRef = useRef(false);
 
   useEffect(() => {
-    // Don't show on mobile devices
     if (typeof window === 'undefined') return;
     
     // Auto-clear storage in development mode for easier testing
@@ -24,10 +24,10 @@ export default function ExitIntentHandler() {
       }
     }
     
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    if (isMobile) {
-      return;
-    }
+    // Improved mobile detection: check for touch support and screen size
+    const isMobile = 
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ||
+      (('ontouchstart' in window || navigator.maxTouchPoints > 0) && window.innerWidth <= 768);
 
     // Check if user has already signed up (hasSubscribed flag - never show again)
     const hasSubscribed = localStorage.getItem('exitIntentSignedUp');
@@ -63,31 +63,66 @@ export default function ExitIntentHandler() {
       }
     };
 
-    // Main exit-intent detection: when mouse leaves the document
-    // Only trigger if clientY <= 0 (mouse leaving from top of viewport)
-    const handleMouseLeave = (e: MouseEvent) => {
-      // Safety delay: only activate after 10 seconds on page
-      const timeOnPage = Date.now() - timeOnPageRef.current;
-      if (timeOnPage < 10000) {
-        return;
-      }
+    if (isMobile) {
+      // Mobile logic: trigger after 20 seconds OR after scrolling 50% of the page
+      
+      // Trigger after 20 seconds
+      const timeTriggerRef = { current: setTimeout(() => {
+        if (!hasShownRef.current) {
+          triggerPopup();
+        }
+      }, 20000) };
 
-      // Only trigger if mouse is leaving from top (clientY <= 0)
-      if (e.clientY <= 0) {
-        triggerPopup();
-      }
-    };
+      // Trigger after scrolling 50% of the page
+      const handleScroll = () => {
+        if (scrollTriggeredRef.current || hasShownRef.current) return;
+        
+        const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const scrollPercentage = scrollHeight > 0 ? (scrollTop / scrollHeight) * 100 : 0;
 
-    // Add event listener only after 10 seconds
-    const timeoutId = setTimeout(() => {
-      document.addEventListener('mouseleave', handleMouseLeave);
-    }, 10000);
+        if (scrollPercentage >= 50) {
+          scrollTriggeredRef.current = true;
+          clearTimeout(timeTriggerRef.current); // Cancel time trigger if scroll triggers first
+          triggerPopup();
+        }
+      };
 
-    // Cleanup
-    return () => {
-      clearTimeout(timeoutId);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-    };
+      window.addEventListener('scroll', handleScroll, { passive: true });
+
+      // Cleanup
+      return () => {
+        clearTimeout(timeTriggerRef.current);
+        window.removeEventListener('scroll', handleScroll);
+      };
+    } else {
+      // Desktop logic: exit-intent detection (mouseleave)
+      // Main exit-intent detection: when mouse leaves the document
+      // Only trigger if clientY <= 0 (mouse leaving from top of viewport)
+      const handleMouseLeave = (e: MouseEvent) => {
+        // Safety delay: only activate after 10 seconds on page
+        const timeOnPage = Date.now() - timeOnPageRef.current;
+        if (timeOnPage < 10000) {
+          return;
+        }
+
+        // Only trigger if mouse is leaving from top (clientY <= 0)
+        if (e.clientY <= 0) {
+          triggerPopup();
+        }
+      };
+
+      // Add event listener only after 10 seconds
+      const timeoutId = setTimeout(() => {
+        document.addEventListener('mouseleave', handleMouseLeave);
+      }, 10000);
+
+      // Cleanup
+      return () => {
+        clearTimeout(timeoutId);
+        document.removeEventListener('mouseleave', handleMouseLeave);
+      };
+    }
   }, []);
 
   const handleClose = () => {

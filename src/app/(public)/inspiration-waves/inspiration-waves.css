@@ -93,16 +93,61 @@
 
 .hero-badge {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.25);
+  background: none;
   color: white;
-  padding: clamp(10px, 2.5vw, 12px) clamp(20px, 5vw, 28px);
-  border-radius: 50px;
-  font-size: clamp(0.75rem, 3vw, 0.875rem);
-  font-weight: 600;
-  margin-bottom: clamp(20px, 4vw, 30px);
-  backdrop-filter: blur(10px);
+  padding: 0;
+  border-radius: 0;
+  font-size: clamp(1.125rem, 4.5vw, 1.5rem);
+  font-weight: 400;
+  margin-bottom: clamp(28px, 6vw, 40px);
+  backdrop-filter: none;
   animation: fadeIn 0.8s ease-out 0.1s both;
   white-space: nowrap;
+  cursor: default;
+  user-select: none;
+  transition: none;
+  pointer-events: none;
+  letter-spacing: 0.08em;
+  text-transform: none;
+  position: relative;
+  padding-bottom: clamp(12px, 3vw, 16px);
+  font-family: var(--font-assistant), sans-serif;
+  text-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.2),
+    0 1px 3px rgba(0, 0, 0, 0.15);
+  opacity: 0.95;
+}
+
+.hero-badge::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 50%;
+  transform: translateX(50%);
+  width: clamp(80px, 20vw, 140px);
+  height: 1.5px;
+  background: linear-gradient(
+    90deg, 
+    transparent 0%, 
+    rgba(255, 255, 255, 0.6) 20%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0.6) 80%,
+    transparent 100%
+  );
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+}
+
+.hero-badge::before {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  right: 50%;
+  transform: translateX(50%);
+  width: clamp(50px, 12vw, 80px);
+  height: 1px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 1px;
 }
 
 .hero-quote {

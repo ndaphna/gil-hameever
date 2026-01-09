@@ -15,6 +15,8 @@
   z-index: 9999;
   padding: 1rem;
   animation: fadeIn 0.3s ease-out;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes fadeIn {
@@ -41,6 +43,9 @@
   position: relative;
   overflow: hidden;
   animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  max-height: 90vh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 @keyframes slideUp {
@@ -314,10 +319,11 @@
   padding: 1rem 0;
 }
 
-/* Responsive Design */
-@media (max-width: 640px) {
+/* Responsive Design - Mobile */
+@media (max-width: 768px) {
   .exit-intent-modal {
-    max-width: 100%;
+    max-width: 90%;
+    width: 90%;
     margin: 0.5rem;
   }
 
@@ -325,12 +331,41 @@
     padding: 1.5rem 1.25rem;
   }
 
+  /* Larger close button for easy tapping on mobile */
   .exit-intent-close {
     top: 0.75rem;
     left: 0.75rem;
-    width: 32px;
-    height: 32px;
-    font-size: 24px;
+    width: 44px;
+    height: 44px;
+    font-size: 28px;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Ensure input is at least 48px height for easy tapping */
+  .exit-intent-input {
+    min-height: 48px;
+    padding: 14px 1.25rem;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Ensure button is at least 48px height for easy tapping */
+  .exit-intent-button {
+    min-height: 48px;
+    padding: 14px 24px;
+    font-size: 1rem;
+  }
+
+  /* Stack Aliza content vertically on mobile */
+  .exit-intent-aliza-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    text-align: center;
+  }
+
+  .exit-intent-aliza-text {
+    text-align: center;
   }
 
   .exit-intent-aliza-image {
@@ -338,7 +373,42 @@
     height: 45px;
   }
 
-  .exit-intent-aliza-content {
-    gap: 0.75rem;
+  /* Simplify text on mobile if needed - reduce padding */
+  .exit-intent-bonus {
+    padding: 0.875rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .exit-intent-modal {
+    max-width: 85%;
+    width: 85%;
+    max-height: 85vh;
+  }
+
+  .exit-intent-content {
+    padding: 1.25rem 1rem;
+  }
+
+  .exit-intent-headline {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .exit-intent-text {
+    font-size: 0.95rem;
+    margin-bottom: 0.875rem;
+  }
+
+  .exit-intent-bonus {
+    font-size: 0.85rem;
+    padding: 0.75rem 0.875rem;
+  }
+
+  /* Ensure Aliza text is readable on very small screens */
+  .exit-intent-aliza-text {
+    font-size: 0.85rem;
   }
 }

@@ -72,7 +72,6 @@ export default function BookPreviewPage() {
         <div className="hero-shine"></div>
         
         <div className="hero-content-wrapper">
-          <p className="hero-badge">קראי על הספר</p>
           <h1 className="hero-title">
             <span className="title-text">
               <span className="title-line">הספר שכל אישה בגיל המעבר</span>

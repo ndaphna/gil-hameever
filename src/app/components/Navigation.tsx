@@ -15,6 +15,7 @@ export default function Navigation() {
   const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Check if user is on internal pages
   const isInternalPage = pathname?.startsWith('/dashboard') || 
@@ -113,14 +114,89 @@ export default function Navigation() {
   }, [sidebarOpen, isMenuOpen]);
 
   const handleLogout = async () => {
-    // Logout from Supabase
-    await supabase.auth.signOut();
-    // Update local state immediately
-    setIsLoggedIn(false);
-    setUserEmail(null);
-    // Force page refresh to ensure clean state
-    window.location.href = '/';
-    closeMenu();
+    // Prevent double-click or multiple simultaneous logout attempts
+    if (isLoggingOut) {
+      console.log('⚠️ Logout already in progress, ignoring...');
+      return;
+    }
+    
+    setIsLoggingOut(true);
+    
+    try {
+      console.log('🚪 Starting logout process...');
+      
+      // Close menu first
+      closeMenu();
+      
+      // Sign out from Supabase
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) {
+        console.error('❌ Error signing out:', error);
+        // Even if there's an error, try to clear local state
+      } else {
+        console.log('✅ Successfully signed out from Supabase');
+      }
+      
+      // Verify session is actually cleared
+      const { data: { session: verifySession } } = await supabase.auth.getSession();
+      if (verifySession) {
+        console.warn('⚠️ Session still exists after signOut, forcing clear...');
+        // Force clear by removing all auth data
+        try {
+          await supabase.auth.signOut({ scope: 'global' });
+        } catch (forceError) {
+          console.warn('⚠️ Force signOut failed:', forceError);
+        }
+      } else {
+        console.log('✅ Session verified as cleared');
+      }
+      
+      // Clear any Supabase-related data from localStorage
+      try {
+        const supabaseKeys = Object.keys(localStorage).filter(key => 
+          key.includes('supabase') || key.startsWith('sb-') || key.includes('auth')
+        );
+        supabaseKeys.forEach(key => {
+          localStorage.removeItem(key);
+        });
+        console.log(`🧹 Cleared ${supabaseKeys.length} Supabase keys from localStorage`);
+      } catch (storageError) {
+        console.warn('⚠️ Error clearing localStorage:', storageError);
+      }
+      
+      // Update local state immediately
+      setIsLoggedIn(false);
+      setUserEmail(null);
+      
+      // Wait a moment to ensure state is cleared and UI updates
+      await new Promise(resolve => setTimeout(resolve, 200));
+      
+      // Force page refresh to ensure clean state
+      // Use window.location.replace to prevent back button issues
+      window.location.replace('/');
+      
+    } catch (error) {
+      console.error('❌ Unexpected error during logout:', error);
+      // Even on error, try to redirect and clear state
+      setIsLoggedIn(false);
+      setUserEmail(null);
+      
+      // Clear localStorage on error too
+      try {
+        const supabaseKeys = Object.keys(localStorage).filter(key => 
+          key.includes('supabase') || key.startsWith('sb-') || key.includes('auth')
+        );
+        supabaseKeys.forEach(key => localStorage.removeItem(key));
+      } catch (e) {
+        // Ignore
+      }
+      
+      window.location.replace('/');
+    } finally {
+      // Reset flag after a delay (in case redirect doesn't happen)
+      setTimeout(() => setIsLoggingOut(false), 1000);
+    }
   };
 
   return (
@@ -265,8 +341,13 @@ export default function Navigation() {
                 המרחב שלי
               </button>
             ) : isLoggedIn ? (
-              <button className="btn btn-secondary" onClick={handleLogout} aria-label="התנתקות מהאתר">
-                התנתקות
+              <button 
+                className="btn btn-secondary" 
+                onClick={handleLogout} 
+                disabled={isLoggingOut}
+                aria-label="התנתקות מהאתר"
+              >
+                {isLoggingOut ? 'מתנתקת...' : 'התנתקות'}
               </button>
             ) : (
               <button onClick={() => handleLinkClick('/coming-soon')} className="btn btn-primary" aria-label="המרחב שלי">

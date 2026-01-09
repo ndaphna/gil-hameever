@@ -46,16 +46,25 @@ export default function LoginPage() {
 
       if (error) throw error;
 
-      if (data.user) {
+      if (data.user && data.session) {
         console.log('Login successful with Supabase:', data.user);
         setMessage('התחברת בהצלחה! מעביר אותך...');
-        setTimeout(() => {
-          router.push('/dashboard');
-        }, 1000);
+        
+        // The session is already available in data.session, so we can redirect immediately
+        // But wait a tiny bit to ensure the UI updates with the success message
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Use window.location.replace for more reliable redirect (doesn't add to history)
+        // This ensures the page fully reloads and the session is properly recognized
+        console.log('✅ Redirecting to dashboard...');
+        window.location.replace('/dashboard');
+      } else {
+        throw new Error('Login succeeded but no session received');
       }
     } catch (error: unknown) {
-      console.log('Login failed. Error:', error.message);
-      setMessage('שגיאה בהתחברות: ' + error.message);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      console.log('Login failed. Error:', errorMessage);
+      setMessage('שגיאה בהתחברות: ' + errorMessage);
     } finally {
       setLoading(false);
       setIsLoggingIn(false);

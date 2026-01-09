@@ -108,40 +108,31 @@
   white-space: nowrap;
 }
 
-/* Hero Badge */
+/* Hero Badge - Elegant text style matching exclusive-text */
 .hero-badge {
   display: inline-block;
-  background: rgba(255, 255, 255, 0.25);
-  color: white;
-  padding: clamp(10px, 2vw, 12px) clamp(20px, 4vw, 28px);
-  border-radius: 50px;
-  font-size: clamp(13px, 2.5vw, 14px);
+  background: none;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0;
+  border-radius: 0;
+  font-size: clamp(12px, 2.5vw, 14px);
   font-weight: 600;
   margin-bottom: clamp(20px, 4vw, 30px);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  box-shadow: 
-    0 4px 20px rgba(255, 255, 255, 0.2),
-    0 0 40px rgba(255, 255, 255, 0.1);
-  animation: fadeIn 0.8s ease-out 0.1s both, badgeGlow 4s ease-in-out infinite;
+  backdrop-filter: none;
+  border: none;
+  box-shadow: none;
+  animation: fadeIn 0.8s ease-out 0.1s both;
   position: relative;
-  overflow: hidden;
-}
-
-.hero-badge::before {
-  content: '';
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    45deg,
-    transparent 30%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 70%
-  );
-  animation: shine 4s ease-in-out infinite;
+  overflow: visible;
+  cursor: default;
+  user-select: none;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
+  /* Elegant text style - no button appearance */
+  transition: none;
+  pointer-events: none;
 }
 
 /* Hero Quote */

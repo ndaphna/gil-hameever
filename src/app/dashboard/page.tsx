@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useRouter, usePathname } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
@@ -53,118 +53,455 @@ export default function DashboardPage() {
   const [cycleEntries, setCycleEntry] = useState<CycleEntry[]>([]);
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
 
   useEffect(() => {
+    // Prevent race conditions: use a ref to track if initialization is in progress
+    let isInitializing = false;
+    let authSubscription: ReturnType<typeof supabase.auth.onAuthStateChange>['data']['subscription'] | null = null;
+    
     // Reset loading state when pathname changes (user navigates to this page)
+    isMountedRef.current = true;
     setLoading(true);
     setProfile(null);
     setDailyEntries([]);
     setCycleEntry([]);
     setDashboardData(null);
     setUserId(null);
-    loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
-
-  const loadProfile = async () => {
+    
+    const initializeDashboard = async () => {
+      // Prevent multiple simultaneous initializations
+      if (isInitializing) {
+        console.log('⚠️ Dashboard initialization already in progress, skipping...');
+        return;
+      }
+      
+      isInitializing = true;
+      const startTime = Date.now();
+      
       try {
-        // Wait for session to be ready with retry mechanism
-        const sessionResult = await waitForSession();
+        console.log('🚀 Starting dashboard load...');
         
-        if (!sessionResult || !sessionResult.user) {
-          console.log('Dashboard: No authenticated user found after retries, redirecting to login');
-          router.push('/login');
+        // Strategy: Use getUser() as primary method (validates token against server)
+        // Combined with onAuthStateChange listener to catch INITIAL_SESSION event
+        // This follows Supabase best practices for Next.js 15
+        
+        let userResolved = false;
+        let resolvedUser: any = null;
+        let resolveError: Error | null = null;
+        
+        // Step 1: Set up auth state listener FIRST to catch INITIAL_SESSION event
+        // This must be set up before any async operations to avoid missing the event
+        const authStatePromise = new Promise<{ user: any }>((resolve, reject) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+            if (!isMountedRef.current) return;
+            
+            console.log(`🔔 Auth state changed: ${event}`, session ? `User: ${session.user?.id}` : 'No session');
+            
+            // INITIAL_SESSION fires when Supabase initializes and finds an existing session
+            // This is the most reliable event for detecting an existing session
+            if (event === 'INITIAL_SESSION' && session?.user) {
+              if (!userResolved) {
+                userResolved = true;
+                resolvedUser = session.user;
+                resolve({ user: session.user });
+              }
+            } else if (event === 'SIGNED_IN' && session?.user) {
+              if (!userResolved) {
+                userResolved = true;
+                resolvedUser = session.user;
+                resolve({ user: session.user });
+              }
+            } else if (event === 'SIGNED_OUT') {
+              if (!userResolved) {
+                userResolved = true;
+                resolveError = new Error('User signed out');
+                reject(resolveError);
+              }
+            } else if (event === 'TOKEN_REFRESHED' && session?.user && !userResolved) {
+              // Only use TOKEN_REFRESHED if we haven't resolved yet
+              userResolved = true;
+              resolvedUser = session.user;
+              resolve({ user: session.user });
+            }
+          });
+          
+          authSubscription = subscription;
+          
+          // Check if INITIAL_SESSION already fired by checking session immediately
+          // This handles the case where the event fired before we set up the listener
+          setTimeout(async () => {
+            if (!userResolved) {
+              const { data: { session: checkSession } } = await supabase.auth.getSession();
+              if (checkSession?.user) {
+                console.log('✅ Found session after listener setup (INITIAL_SESSION may have already fired)');
+                if (!userResolved) {
+                  userResolved = true;
+                  resolvedUser = checkSession.user;
+                  resolve({ user: checkSession.user });
+                }
+              }
+            }
+          }, 100);
+        });
+        
+        // Step 2: Try getUser() immediately (validates token against server)
+        // This is the recommended approach per Supabase best practices
+        const getUserPromise = (async () => {
+          try {
+            if (!isMountedRef.current) return null;
+            
+            console.log('📋 Checking authentication with getUser()...');
+            const { data: { user }, error: userError } = await supabase.auth.getUser();
+            
+            if (!isMountedRef.current) return null;
+            
+            // Handle different error types with descriptive messages
+            if (userError) {
+              const errorType = classifyAuthError(userError);
+              console.error(`❌ getUser error (${errorType}):`, userError.message);
+              
+              // Don't throw here - let auth state listener handle it
+              // But log the specific error type for debugging
+              if (errorType === 'Token Expired') {
+                console.warn('⚠️ Token expired, waiting for refresh or redirect...');
+              } else if (errorType === 'Network Error') {
+                console.warn('⚠️ Network error, will retry...');
+              }
+              
+              return null;
+            }
+            
+            if (user) {
+              console.log(`✅ Found authenticated user: ${user.id}`);
+              return { user };
+            }
+            
+            return null;
+          } catch (error) {
+            if (!isMountedRef.current) return null;
+            
+            const errorType = error instanceof Error && error.message.includes('network') 
+              ? 'Network Error' 
+              : 'Unknown Error';
+            console.warn(`⚠️ getUser failed (${errorType}):`, error);
+            return null;
+          }
+        })();
+        
+        // Step 3: Check session immediately first (in case INITIAL_SESSION already fired)
+        const { data: { session: immediateSession } } = await supabase.auth.getSession();
+        if (immediateSession?.user) {
+          console.log('✅ Found session immediately, skipping Promise.race');
+          await loadProfileData(immediateSession.user);
           return;
         }
-
-        const user = sessionResult.user;
-        console.log('Dashboard: User found:', user.id);
-
-        // Try to load profile with retry
-        let profileData = await loadUserProfileWithRetry(user.id);
-
-        // Create profile if it doesn't exist
-        if (!profileData) {
-          console.log('Dashboard: Profile not found, creating new profile...');
-          try {
-            const createResponse = await fetch('/api/create-profile', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: user.id,
-                email: user.email || '',
-                name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
-              }),
-            });
-
-            if (!createResponse.ok) {
-              throw new Error('Failed to create profile');
-            }
-
-            // Retry loading profile after creation
-            profileData = await loadUserProfileWithRetry(user.id);
-          } catch (createError) {
-            console.error('Error creating profile:', createError);
-          }
+        
+        // Step 4: Wait for either auth state change or getUser to resolve
+        // Add timeout to prevent infinite waiting
+        const timeoutPromise = new Promise<null>((resolve) => {
+          setTimeout(() => {
+            console.warn('⚠️ Auth check timeout after 5 seconds');
+            resolve(null);
+          }, 5000);
+        });
+        
+        const userResult = await Promise.race([
+          authStatePromise.catch((error) => {
+            // If auth state rejects (e.g., SIGNED_OUT), return null to trigger redirect
+            console.log('Auth state listener rejected:', error.message);
+            return null;
+          }),
+          getUserPromise,
+          timeoutPromise
+        ]);
+        
+        if (!isMountedRef.current) {
+          console.log('⚠️ Component unmounted during initialization');
+          return;
         }
-
-        if (profileData) {
-          setProfile(profileData);
-          setUserId(user.id);
-          await loadUserData(user.id);
+        
+        if (userResult?.user) {
+          await loadProfileData(userResult.user);
         } else {
-          console.error('Dashboard: Failed to load profile after all retries');
+          // No user found - determine error type and redirect appropriately
+          const errorMessage = resolveError?.message || 'No authenticated user found';
+          console.log(`❌ ${errorMessage}, redirecting to login`);
+          if (isMountedRef.current) {
+            setLoading(false);
+          }
+          router.push('/login');
         }
+        
       } catch (error) {
-        console.error('Error loading profile:', error);
-      } finally {
+        if (!isMountedRef.current) return;
+        
+        const elapsed = Date.now() - startTime;
+        const errorType = classifyError(error);
+        console.error(`❌ Error initializing dashboard after ${elapsed}ms (${errorType}):`, error);
+        
+        // Initialize empty dashboard data on error
+        setDailyEntries([]);
+        setCycleEntry([]);
+        try {
+          calculateDashboard([], []);
+        } catch (calcError) {
+          console.error('Error in calculateDashboard (error fallback):', calcError);
+          setDashboardData({
+            needsAttention: [],
+            last7Days: [],
+            alizaRecommendations: []
+          });
+        }
         setLoading(false);
+      } finally {
+        isInitializing = false;
+        if (authSubscription) {
+          authSubscription.unsubscribe();
+        }
       }
+    };
+
+    initializeDashboard();
+
+    return () => {
+      isMountedRef.current = false;
+      isInitializing = false;
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
+  
+  /**
+   * Classify authentication errors for better error handling
+   */
+  const classifyAuthError = (error: any): string => {
+    if (!error) return 'Unknown Error';
+    
+    const message = error.message?.toLowerCase() || '';
+    const code = error.code || '';
+    
+    // Network-related errors
+    if (message.includes('network') || message.includes('fetch') || message.includes('connection')) {
+      return 'Network Error';
+    }
+    
+    // Token expiration errors
+    if (message.includes('expired') || message.includes('token') && message.includes('invalid')) {
+      return 'Token Expired';
+    }
+    
+    // JWT errors
+    if (code === 'invalid_token' || message.includes('jwt')) {
+      return 'Token Expired';
+    }
+    
+    // Session not found
+    if (message.includes('session') || code === 'session_not_found') {
+      return 'No Session Found';
+    }
+    
+    return 'Authentication Error';
   };
+  
+  /**
+   * Classify general errors
+   */
+  const classifyError = (error: unknown): string => {
+    if (error instanceof Error) {
+      const message = error.message.toLowerCase();
+      if (message.includes('network') || message.includes('fetch')) {
+        return 'Network Error';
+      }
+      if (message.includes('timeout')) {
+        return 'Timeout Error';
+      }
+    }
+    return 'Unknown Error';
+  };
+  
+  const loadProfileData = async (user: any) => {
+    const stepStartTime = Date.now();
+    try {
+      console.log(`📋 Step 2: Loading profile for user: ${user.id}`);
+      
+      // Try to load profile with retry
+      let profileData = await loadUserProfileWithRetry(user.id);
+      const profileTime = Date.now() - stepStartTime;
+      console.log(`⏱️ Profile load took ${profileTime}ms`);
+
+      if (!isMountedRef.current) {
+        console.log('⚠️ Component unmounted during profile load');
+        return;
+      }
+
+      // Create profile if it doesn't exist
+      if (!profileData) {
+        console.log('📋 Step 2.1: Profile not found, creating new profile...');
+        const createStartTime = Date.now();
+        try {
+          const createResponse = await fetch('/api/create-profile', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId: user.id,
+              email: user.email || '',
+              name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
+            }),
+          });
+
+          if (!createResponse.ok) {
+            const errorText = await createResponse.text();
+            throw new Error(`Failed to create profile: ${createResponse.status} - ${errorText}`);
+          }
+
+          // Retry loading profile after creation
+          profileData = await loadUserProfileWithRetry(user.id);
+          const createTime = Date.now() - createStartTime;
+          console.log(`⏱️ Profile creation and reload took ${createTime}ms`);
+        } catch (createError) {
+          console.error('❌ Error creating profile:', createError);
+        }
+      }
+
+      if (!isMountedRef.current) {
+        console.log('⚠️ Component unmounted during profile creation');
+        return;
+      }
+
+      if (profileData) {
+        setProfile(profileData);
+        setUserId(user.id);
+        console.log('📋 Step 3: Loading user data...');
+        const dataStartTime = Date.now();
+        // Load user data and wait for it to complete before setting loading to false
+        await loadUserData(user.id);
+        const dataTime = Date.now() - dataStartTime;
+        console.log(`⏱️ User data load took ${dataTime}ms`);
+      } else {
+        console.error('❌ Dashboard: Failed to load profile after all retries');
+        // Even if profile loading fails, initialize dashboard with empty data
+        setDailyEntries([]);
+        setCycleEntry([]);
+        try {
+          calculateDashboard([], []);
+        } catch (calcError) {
+          console.error('Error in calculateDashboard (profile fallback):', calcError);
+          setDashboardData({
+            needsAttention: [],
+            last7Days: [],
+            alizaRecommendations: []
+          });
+        }
+      }
+    } catch (error) {
+      console.error('❌ Error loading profile data:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message, error.stack);
+      }
+      // On error, initialize dashboard with empty data
+      setDailyEntries([]);
+      setCycleEntry([]);
+      try {
+        calculateDashboard([], []);
+      } catch (calcError) {
+        console.error('Error in calculateDashboard (error fallback):', calcError);
+        setDashboardData({
+          needsAttention: [],
+          last7Days: [],
+          alizaRecommendations: []
+        });
+      }
+    } finally {
+      if (isMountedRef.current) {
+        setLoading(false);
+        const totalTime = Date.now() - stepStartTime;
+        console.log(`✅ Dashboard loading complete in ${totalTime}ms`);
+      }
+    }
+  };
+
 
   const loadUserData = async (uid: string) => {
     try {
       // Load real data from database only
-      console.log('Loading real data for user:', uid);
+      console.log('📊 Loading real data for user:', uid);
+      const dataLoadStart = Date.now();
       
+      console.log('📋 Loading daily entries...');
+      const dailyStart = Date.now();
       const { data: dailyData, error: dailyError } = await supabase
         .from('daily_entries')
         .select('*')
         .eq('user_id', uid)
         .order('created_at', { ascending: false })
         .limit(30);
+      const dailyTime = Date.now() - dailyStart;
+      console.log(`⏱️ Daily entries query took ${dailyTime}ms`);
 
       if (dailyError) {
-        console.error('Error loading daily entries:', dailyError);
+        console.error('❌ Error loading daily entries:', dailyError);
       }
 
+      console.log('📋 Loading cycle entries...');
+      const cycleStart = Date.now();
       const { data: cycleData, error: cycleError } = await supabase
         .from('cycle_entries')
         .select('*')
         .eq('user_id', uid)
         .order('date', { ascending: false })
         .limit(12);
+      const cycleTime = Date.now() - cycleStart;
+      console.log(`⏱️ Cycle entries query took ${cycleTime}ms`);
 
       if (cycleError) {
-        console.error('Error loading cycle entries:', cycleError);
+        console.error('❌ Error loading cycle entries:', cycleError);
       }
 
       const realDailyData = dailyData || [];
       const realCycleData = cycleData || [];
+      const totalDataTime = Date.now() - dataLoadStart;
       
-      console.log(`✅ Loaded ${realDailyData.length} daily entries and ${realCycleData.length} cycle entries from database`);
+      console.log(`✅ Loaded ${realDailyData.length} daily entries and ${realCycleData.length} cycle entries from database in ${totalDataTime}ms`);
       console.log('📊 Daily entries sample:', realDailyData.slice(0, 3));
       console.log('📅 Entry dates:', realDailyData.map(e => e.date).slice(0, 7));
       
       setDailyEntries(realDailyData);
       setCycleEntry(realCycleData);
-      calculateDashboard(realDailyData, realCycleData);
+      
+      console.log('📋 Calculating dashboard data...');
+      const calcStart = Date.now();
+      // Wrap calculateDashboard in try-catch to ensure it always completes
+      try {
+        calculateDashboard(realDailyData, realCycleData);
+        const calcTime = Date.now() - calcStart;
+        console.log(`⏱️ Dashboard calculation took ${calcTime}ms`);
+      } catch (calcError) {
+        console.error('❌ Error in calculateDashboard:', calcError);
+        // Initialize with empty data if calculation fails
+        calculateDashboard([], []);
+      }
     } catch (error) {
-      console.error('Error loading user data:', error);
+      console.error('❌ Error loading user data:', error);
+      if (error instanceof Error) {
+        console.error('Error details:', error.message, error.stack);
+      }
       // Even on error, show empty dashboard with real data structure
       setDailyEntries([]);
       setCycleEntry([]);
-      calculateDashboard([], []);
+      try {
+        calculateDashboard([], []);
+      } catch (calcError) {
+        console.error('❌ Error in calculateDashboard (fallback):', calcError);
+        // Last resort: set minimal dashboard data
+        setDashboardData({
+          needsAttention: [],
+          last7Days: [],
+          alizaRecommendations: []
+        });
+      }
     }
   };
 
