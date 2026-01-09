@@ -15,6 +15,20 @@ interface Article {
 // Articles list - add new articles here
 const articles: Article[] = [
   {
+    id: 'dr-sims-supplements-menopause',
+    title: 'התוספים שד"ר סימס ממליצה (רמז: קריאטין זה לא רק לבריוני חדר כושר)',
+    url: '/dr-sims-supplements-menopause',
+    teaser: 'אחרי שסיכמנו שאת הולכת להרים דברים כבדים ולהפסיק לפחד מחלבון, הגיע הזמן לדבר על ה"עזרים הטקטיים". ד"ר סטייסי סימס עושה לנו סדר: בגיל 50+, תוספים הם לא פינוק - הם פשוט הדרך שלנו לתת לגוף את חומרי הגלם שהוא כבר לא מייצר בעצמו. בואי נגלה מה באמת עובד...',
+    imageUrl: 'https://i.imghippo.com/files/tsx6749psc.png'
+  },
+  {
+    id: 'belly-fat-hormones-menopause',
+    title: 'הכרס הזאת היא לא ממך, היא מההורמונים (והמשקולות הוורודות שלך)',
+    url: '/belly-fat-hormones-menopause',
+    teaser: 'תשמעי, תניחי רגע את הקפה. אנחנו צריכות לדבר על הכרס הקטנה הזאת שהחליטה לעבור לגור אצלך בערך ביום הולדת 50. את עושה הליכות, את אוכלת פחות, את אפילו מרימה את המשקולות של ה-3 קילו – וכלום. המשקל תקוע, העייפות חוגגת, והג\'ינס? בואי נגיד שהוא ואת בנתק זמני. אבל יש פתרון...',
+    imageUrl: 'https://i.imghippo.com/files/cSdm8044lE.png'
+  },
+  {
     id: 'sharp-memory-menopause',
     title: 'המוח שלך לא נעלם, הוא פשוט ב"שיפוצים": הסוד לזיכרון חד (גם) בגיל המעבר 🧠✨',
     url: '/sharp-memory-menopause',
