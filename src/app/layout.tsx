@@ -6,6 +6,7 @@ import "./globals.css";
 import Navigation from "./components/Navigation";
 import CookieBanner from "../components/CookieBanner";
 import AccessibilityBubble from "../components/AccessibilityBubble";
+import ExitIntentHandler from "../components/ExitIntentHandler";
 
 const assistant = Assistant({
   variable: "--font-assistant",
@@ -91,6 +92,7 @@ export default function RootLayout({
           </main>
           <CookieBanner />
           <AccessibilityBubble />
+          <ExitIntentHandler />
         </div>
         <SpeedInsights />
       </body>

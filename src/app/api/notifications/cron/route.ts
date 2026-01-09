@@ -640,4 +640,3 @@ async function sendEmail(
     return false;
   }
 }
-

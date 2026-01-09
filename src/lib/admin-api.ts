@@ -228,4 +228,3 @@ export async function updateUserNotificationPreferences(userId: string, preferen
     throw error;
   }
 }
-
