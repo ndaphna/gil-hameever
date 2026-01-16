@@ -70,6 +70,44 @@ export default function EmergencyMapPage() {
             <br />
             מה לעזאזל קורה לי?
           </h1>
+          <h2
+            style={{
+              marginTop: 'clamp(20px, 3.5vw, 32px)',
+              fontSize: 'clamp(1.75rem, 4.5vw, 2.75rem)',
+              fontWeight: '600',
+              textAlign: 'center',
+              letterSpacing: '0.015em',
+              lineHeight: '1.4',
+              padding: '0 clamp(16px, 3vw, 24px)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 'clamp(12px, 2vw, 16px)',
+            }}
+          >
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #FF0080 0%, #E91E8C 50%, #B565D8 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+            >
+              מפת הדרכים לגיבורה בגיל המעבר
+            </span>
+            <img
+              src="https://i.postimg.cc/gkfTfxnV/swpr-wwmn.webp"
+              alt="Wonder Woman"
+              style={{
+                width: 'clamp(2rem, 3.5vw, 2.75rem)',
+                height: 'clamp(2rem, 3.5vw, 2.75rem)',
+                borderRadius: '50%',
+                objectFit: 'cover',
+                flexShrink: 0,
+                border: '2px solid rgba(255, 0, 128, 0.2)',
+              }}
+            />
+          </h2>
         </div>
       </section>
 
