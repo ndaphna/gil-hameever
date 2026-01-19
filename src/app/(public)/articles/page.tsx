@@ -15,6 +15,13 @@ interface Article {
 // Articles list - add new articles here
 const articles: Article[] = [
   {
+    id: 'walking-medicine-menopause',
+    title: 'למה הליכה היא ה"תרופה" שהגוף שלך צורח שהוא צריך (וזה לא קשור לקלוריות)',
+    url: '/walking-medicine-menopause',
+    teaser: 'אני יודעת שהדבר האחרון שמתחשק לך לעשות כרגע זה לנעול נעלי ספורט ולצאת החוצה. את עייפה, הגוף מרגיש כבד, ואולי גם הברכיים קצת מאותתות. אבל אני רוצה לספר לך משהו שאולי לא ידעת על הגוף שלנו בגיל הזה. הסיפור הוא איזון. והליכה היא הכלי הכי חזק שיש לנו...',
+    imageUrl: 'https://i.imghippo.com/files/lk9177Jk.jpg'
+  },
+  {
     id: 'dr-sims-supplements-menopause',
     title: 'התוספים שד"ר סימס ממליצה (רמז: קריאטין זה לא רק לבריוני חדר כושר)',
     url: '/dr-sims-supplements-menopause',
