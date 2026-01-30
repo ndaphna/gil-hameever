@@ -12,6 +12,7 @@ export default function ConditionalNavigation() {
     '/secret-report-access',
     '/gift-access',
     '/walking-medicine-access',
+    '/good-sleep-access',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
