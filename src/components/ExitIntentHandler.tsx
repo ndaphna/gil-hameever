@@ -22,6 +22,7 @@ export default function ExitIntentHandler() {
       '/walking-medicine-access',
       '/good-sleep-access',
       '/brain-fog-access',
+      '/sharp-memory-access',
     ];
     
     if (hidePopupPaths.includes(currentPath)) {

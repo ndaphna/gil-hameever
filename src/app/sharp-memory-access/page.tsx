@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
-import './brain-fog-access.css';
+import './sharp-memory-access.css';
 
-export default function BrainFogAccessPage() {
-  const router = useRouter();
+export default function SharpMemoryAccessPage() {
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,11 +26,9 @@ export default function BrainFogAccessPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/brain-fog-access', {
+      const response = await fetch('/api/sharp-memory-access', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
           email: formData.email.trim(),
@@ -51,33 +47,28 @@ export default function BrainFogAccessPage() {
         throw new Error(data.error || 'שגיאה בשליחת הטופס');
       }
 
-      // Redirect to brain fog guide page after successful signup
-      window.location.href = 'https://gilhameever.com/brain-fog-menopause';
-    } catch (err: any) {
-      console.error('Form submission error:', err);
-      setError(err.message || 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.');
+      window.location.href = 'https://www.gilhameever.com/sharp-memory-menopause';
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="brain-fog-access-page" dir="rtl">
-      <div className="brain-fog-access-container">
-        {/* Hero Section */}
-        <div className="brain-fog-access-hero">
-          <h1 className="brain-fog-access-title">
-            הנה הצעד הראשון שלך להחזרת השליטה: המדריך לערפל מוחי בגיל המעבר מחכה לך
+    <div className="sharp-memory-access-page" dir="rtl">
+      <div className="sharp-memory-access-container">
+        <div className="sharp-memory-access-hero">
+          <h1 className="sharp-memory-access-title">
+            הנה הצעד הראשון שלך להחזרת השליטה: הסוד לזיכרון חד בגיל המעבר מחכה לך
           </h1>
-          
-          <p className="brain-fog-access-subtitle">
-            הזיני פרטים וקבלי גישה מיידית למדריך שיסביר לך למה את לא 'מאבדת את זה' (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
+          <p className="sharp-memory-access-subtitle">
+            הזיני פרטים וגלי מיד איך המוח שלך לא &apos;בשיפוצים&apos; אלא בהשתדרגות (וגם עותק למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
-        {/* Form Section */}
-        <form onSubmit={handleSubmit} className="brain-fog-access-form">
-          {/* Name Field */}
+        <form onSubmit={handleSubmit} className="sharp-memory-access-form">
           <div className="form-field">
             <label htmlFor="name" className="form-label">
               שם פרטי
@@ -93,7 +84,6 @@ export default function BrainFogAccessPage() {
             />
           </div>
 
-          {/* Email Field */}
           <div className="form-field">
             <label htmlFor="email" className="form-label">
               אימייל <span className="required">*</span>
@@ -110,7 +100,6 @@ export default function BrainFogAccessPage() {
             />
           </div>
 
-          {/* Consent Checkbox */}
           <div className="form-checkbox-wrapper">
             <input
               type="checkbox"
@@ -125,33 +114,26 @@ export default function BrainFogAccessPage() {
             </label>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="form-error">
-              {error}
-            </div>
-          )}
+          {error && <div className="form-error">{error}</div>}
 
-          {/* Submit Button */}
           <button
             type="submit"
             className="form-submit-button"
             disabled={isSubmitting}
           >
-            {isSubmitting ? 'שולח...' : 'תני לי גישה למדריך עכשיו'}
+            {isSubmitting ? 'שולח...' : 'גלי לי את הסוד לזיכרון'}
           </button>
         </form>
 
-        {/* Aliza Section */}
-        <div className="brain-fog-access-aliza">
+        <div className="sharp-memory-access-aliza">
           <div className="aliza-content">
-            <img 
-              src="https://i.imghippo.com/files/PBO6077Nec.jpg" 
+            <img
+              src="https://i.imghippo.com/files/PBO6077Nec.jpg"
               alt="עליזה"
               className="aliza-image"
             />
             <p className="aliza-text">
-              <span className="aliza-name">עליזה מוסיפה:</span> "מאמי, קהילה זה כמו מאוורר בלילה של אוגוסט - פשוט אי אפשר בלי זה."
+              <span className="aliza-name">עליזה מוסיפה:</span> &quot;מאמי, קהילה זה כמו מאוורר בלילה של אוגוסט - פשוט אי אפשר בלי זה.&quot;
             </p>
           </div>
           <p className="aliza-consent-text">

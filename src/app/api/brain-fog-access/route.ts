@@ -9,8 +9,28 @@ export async function POST(request: NextRequest) {
   console.log('📥 API: /api/brain-fog-access called');
   console.log('='.repeat(60));
 
+  // Early check: Brevo must be configured (required for signup)
+  const BREVO_API_KEY = process.env.BREVO_API_KEY;
+  if (!BREVO_API_KEY || !BREVO_API_KEY.trim()) {
+    console.error('❌ BREVO_API_KEY is not set. Set it in Vercel Environment Variables.');
+    return NextResponse.json(
+      { success: false, error: 'השירות לא זמין כרגע. נסי שוב מאוחר יותר.' },
+      { status: 503 }
+    );
+  }
+
   try {
-    const { name, email } = await request.json();
+    let body: { name?: string; email?: string };
+    try {
+      body = await request.json();
+    } catch {
+      console.error('❌ Invalid request body (not JSON)');
+      return NextResponse.json(
+        { success: false, error: 'נתונים לא תקינים. נסי שוב.' },
+        { status: 400 }
+      );
+    }
+    const { name, email } = body;
     console.log('📥 Request data:', { 
       name: name ? name.substring(0, 10) + '...' : 'missing', 
       email: email ? '***@' + email.split('@')[1] : 'missing' 
@@ -43,20 +63,10 @@ export async function POST(request: NextRequest) {
       await addContactToBrevo(email, name?.trim() || '');
       console.log('✅ Contact added to Brevo successfully');
     } catch (brevoError: any) {
-      // If contact already exists or any duplicate-related error, treat it as success
-      const errorMessage = brevoError.message || '';
-      if (errorMessage.includes('duplicate') || 
-          errorMessage.includes('already') ||
-          errorMessage.includes('BREVO_API_KEY not configured')) {
-        if (errorMessage.includes('BREVO_API_KEY not configured')) {
-          console.error('⚠️ Brevo API key not configured');
-          return NextResponse.json(
-            { success: false, error: 'שגיאה בהרשמה. נסי שוב מאוחר יותר.' },
-            { status: 500 }
-          );
-        }
-        console.log('ℹ️ Contact already exists - treating as success');
-        // Continue to return success response
+      const errorMessage = (brevoError.message || '').toLowerCase();
+      if (isAlreadyInListError(errorMessage)) {
+        console.log('ℹ️ Contact already in list / exists - treating as success, allowing access');
+        // Fall through to success response below
       } else {
         console.error('⚠️ Brevo error:', brevoError.message);
         return NextResponse.json(
@@ -86,6 +96,19 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/** Returns true if Brevo error means "email already in list" – we allow access anyway */
+function isAlreadyInListError(errorText: string): boolean {
+  const t = errorText.toLowerCase();
+  return (
+    t.includes('duplicate') ||
+    t.includes('already') ||
+    t.includes('exists') ||
+    t.includes('in list') ||
+    t.includes('רשימה') ||
+    t.includes('קיים')
+  );
 }
 
 /**
@@ -152,10 +175,11 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
       console.error('   Status:', contactResponse.status);
       console.error('   Response:', JSON.stringify(errorJson, null, 2));
       
-      // If contact already exists, try to add to list separately
-      // If that also fails (contact already in list), treat as success
-      if (errorJson.code === 'duplicate_parameter') {
-        console.log('ℹ️ Contact already exists in Brevo - attempting to add to list');
+      // If contact already exists or "email already in list" – treat as success and allow access
+      const isAlreadyInList =
+        errorJson.code === 'duplicate_parameter' || isAlreadyInListError(errorText);
+      if (isAlreadyInList) {
+        console.log('ℹ️ Contact already exists / in list in Brevo - allowing access');
         
         const addToListResponse = await fetch(
           `https://api.brevo.com/v3/contacts/lists/${listId}/contacts/add`,
@@ -172,33 +196,14 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
         );
 
         if (!addToListResponse.ok) {
-          // Contact might already be in the list - that's fine, treat as success
           const addToListErrorText = await addToListResponse.text();
-          let addToListErrorJson;
-          try {
-            addToListErrorJson = JSON.parse(addToListErrorText);
-          } catch {
-            addToListErrorJson = { rawError: addToListErrorText };
-          }
-          
-          // If contact is already in list or any other "already exists" error, treat as success
-          if (addToListErrorJson.code === 'duplicate_parameter' || 
-              addToListResponse.status === 400 ||
-              addToListErrorText.includes('already') ||
-              addToListErrorText.includes('duplicate')) {
-            console.log('ℹ️ Contact already in list - treating as success');
-          } else {
-            console.log('ℹ️ Contact may already be in list - treating as success');
-          }
-          // Don't throw error - treat as success anyway
+          console.log('ℹ️ Add-to-list returned error - still allowing access (already in list)');
         } else {
           console.log('✅ Existing contact added to list successfully');
         }
-        // Don't throw error for duplicate - treat as success
-        return; // Exit function successfully
-      } else {
-        throw new Error(`Brevo contact error (${contactResponse.status}): ${errorText}`);
+        return; // Always allow access
       }
+      throw new Error(`Brevo contact error (${contactResponse.status}): ${errorText}`);
     } else {
       const contactResult = await contactResponse.json();
       console.log('✅ Brevo contact created/updated successfully');
