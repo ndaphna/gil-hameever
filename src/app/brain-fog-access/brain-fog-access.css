@@ -1,0 +1,312 @@
+/* Brain Fog Access Landing Page - Mobile First Design */
+
+:root {
+  --magenta: #FF0080;
+  --purple: #9D4EDD;
+  --soft-pink: #FFB6D9;
+  --light-pink: #FFE4F1;
+  --bright-pink: #FFB6C1;
+  --white: #FFFFFF;
+  --black: #1A1A1A;
+  --gray: #4A4A4A;
+  --gray-light: #F5F5F5;
+  --font-assistant: 'Assistant', sans-serif;
+}
+
+.brain-fog-access-page {
+  min-height: 100vh;
+  width: 100%;
+  /* רקע ורדרד בהיר מאוד */
+  background: linear-gradient(135deg, rgba(255, 182, 193, 0.6) 0%, rgba(255, 182, 217, 0.6) 50%, rgba(255, 192, 203, 0.6) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 3vw, 2rem);
+}
+
+.brain-fog-access-container {
+  width: 100%;
+  max-width: 510px;
+  background: var(--white);
+  border-radius: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: clamp(1.19rem, 2.975vw, 1.785rem) clamp(1.275rem, 3.4vw, 2.125rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.19rem, 2.38vw, 1.4875rem);
+}
+
+/* Hero Section */
+.brain-fog-access-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.7rem, 1.4vw, 1.05rem);
+}
+
+.brain-fog-access-title {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(1.4875rem, 4.25vw, 2.125rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1.3;
+  margin: 0 auto;
+  text-align: center;
+  letter-spacing: -0.02em;
+  position: relative;
+  width: 100%;
+  display: block;
+}
+
+.brain-fog-access-subtitle {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.85rem, 2.125vw, 1.0625rem);
+  font-weight: 400;
+  color: var(--gray);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Form Section */
+.brain-fog-access-form {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.74375rem, 1.785vw, 0.8925rem);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-label {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.85rem, 1.7vw, 0.95625rem);
+  font-weight: 700;
+  color: var(--black);
+}
+
+.form-label .required {
+  color: var(--magenta);
+}
+
+.form-input {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 42px;
+  padding: 10px 1.25rem;
+  border: 2px solid var(--light-pink);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--black);
+  transition: all 0.3s ease;
+  width: 100%;
+  box-sizing: border-box;
+  direction: rtl;
+  text-align: right;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--magenta);
+  box-shadow: 0 0 0 3px rgba(255, 0, 128, 0.1);
+}
+
+.form-input::placeholder {
+  color: var(--gray);
+  opacity: 0.6;
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--gray-light);
+}
+
+.form-checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: -0.35rem;
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--magenta);
+}
+
+.form-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-checkbox-label {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.9375rem, 2vw, 1rem);
+  font-weight: 400;
+  color: var(--black);
+  cursor: pointer;
+  line-height: 1.3;
+  user-select: none;
+}
+
+.form-error {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.875rem, 2vw, 0.9375rem);
+  color: #EF4444;
+  background: rgba(239, 68, 68, 0.1);
+  padding: 0.525rem 0.875rem;
+  border-radius: 12px;
+  text-align: center;
+  border-right: 3px solid #EF4444;
+}
+
+.form-submit-button {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.85rem, 2.125vw, 0.95625rem);
+  font-weight: 700;
+  color: var(--white);
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  border: none;
+  border-radius: 30px;
+  padding: clamp(0.595rem, 1.36vw, 0.68rem) clamp(1.275rem, 3.4vw, 1.7rem);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 16px rgba(255, 0, 128, 0.3);
+  min-height: 35.7px;
+  position: relative;
+  overflow: hidden;
+}
+
+.form-submit-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.form-submit-button:hover::before {
+  left: 100%;
+}
+
+.form-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(255, 0, 128, 0.45);
+}
+
+.form-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.form-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Aliza Section */
+.brain-fog-access-aliza {
+  margin-top: auto;
+  padding-top: clamp(0.8925rem, 1.785vw, 1.19rem);
+  border-top: 1px solid var(--light-pink);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.44625rem, 1.19vw, 0.595rem);
+}
+
+.aliza-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-direction: column;
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .aliza-content {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.aliza-image {
+  width: 45px;
+  height: 45px;
+  border-radius: 100px;
+  object-fit: cover;
+  border: 2px solid #4DB6AC;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(77, 182, 172, 0.2);
+}
+
+@media (min-width: 769px) {
+  .aliza-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.aliza-text {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.875rem, 2vw, 1rem);
+  font-weight: 400;
+  color: var(--gray);
+  margin: 0;
+  line-height: 1.4;
+  text-align: center;
+  font-style: italic;
+  flex: 1;
+}
+
+@media (min-width: 769px) {
+  .aliza-text {
+    text-align: right;
+  }
+}
+
+.aliza-name {
+  font-weight: 700;
+  color: var(--magenta);
+  font-style: normal;
+}
+
+.aliza-consent-text {
+  font-family: var(--font-assistant), sans-serif;
+  font-size: clamp(0.75rem, 1.8vw, 0.875rem);
+  font-weight: 400;
+  color: var(--gray);
+  text-align: center;
+  margin: 0;
+  line-height: 1.3;
+  opacity: 0.8;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 480px) {
+  .brain-fog-access-container {
+    padding: clamp(0.8925rem, 2.38vw, 1.19rem) clamp(1.0625rem, 2.55vw, 1.275rem);
+    gap: clamp(0.8925rem, 1.785vw, 1.19rem);
+  }
+
+  .brain-fog-access-title {
+    font-size: clamp(1.275rem, 5.1vw, 1.59375rem);
+  }
+
+  .brain-fog-access-subtitle {
+    font-size: clamp(0.796875rem, 2.55vw, 0.95625rem);
+  }
+}

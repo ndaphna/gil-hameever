@@ -21,6 +21,7 @@ export default function ExitIntentHandler() {
       '/gift-access',
       '/walking-medicine-access',
       '/good-sleep-access',
+      '/brain-fog-access',
     ];
     
     if (hidePopupPaths.includes(currentPath)) {
