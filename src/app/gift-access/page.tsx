@@ -1,11 +1,9 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
 import './gift-access.css';
 
 export default function GiftAccessPage() {
-  const router = useRouter();
   const [formData, setFormData] = useState({ name: '', email: '' });
   const [consent, setConsent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -28,31 +26,21 @@ export default function GiftAccessPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await fetch('/api/gift-access', {
+      await fetch('/api/gift-access', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: formData.name.trim(),
           email: formData.email.trim(),
         }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || 'שגיאה בשליחת הטופס');
-      }
-
-      // Redirect to gift page after successful signup
-      window.location.href = 'https://www.gilhameever.com/waitlist/gift';
     } catch (err: any) {
       console.error('Form submission error:', err);
-      setError(err.message || 'שגיאה בשליחת הטופס. נסי שוב מאוחר יותר.');
     } finally {
       setIsSubmitting(false);
     }
+    // תמיד מעבירים לדף המתנה – גם כשהשרת מחזיר שגיאה (למשל מייל כבר ברשימה)
+    window.location.href = 'https://www.gilhameever.com/waitlist/gift';
   };
 
   return (
@@ -119,12 +107,7 @@ export default function GiftAccessPage() {
             </label>
           </div>
 
-          {/* Error Message */}
-          {error && (
-            <div className="form-error">
-              {error}
-            </div>
-          )}
+          {error && <div className="form-error">{error}</div>}
 
           {/* Submit Button */}
           <button
