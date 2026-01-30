@@ -17,6 +17,8 @@ export default function ExitIntentHandler() {
     const hidePopupPaths = [
       '/menopause-roadmap',
       '/emergency-map-access',
+      '/secret-report-access',
+      '/gift-access',
     ];
     
     if (hidePopupPaths.includes(currentPath)) {

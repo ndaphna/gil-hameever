@@ -10,6 +10,7 @@ export default function ConditionalNavigation() {
   const hideNavigationPaths = [
     '/emergency-map-access',
     '/secret-report-access',
+    '/gift-access',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
