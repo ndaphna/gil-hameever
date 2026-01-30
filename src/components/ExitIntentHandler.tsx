@@ -12,6 +12,17 @@ export default function ExitIntentHandler() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
+    // Don't show popup on roadmap page or landing pages
+    const currentPath = window.location.pathname;
+    const hidePopupPaths = [
+      '/menopause-roadmap',
+      '/emergency-map-access',
+    ];
+    
+    if (hidePopupPaths.includes(currentPath)) {
+      return;
+    }
+    
     // Auto-clear storage in development mode for easier testing
     if (process.env.NODE_ENV === 'development') {
       const shouldClear = sessionStorage.getItem('exitIntentClearStorage');

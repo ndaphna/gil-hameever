@@ -3,7 +3,7 @@ import { Assistant, Geist_Mono, Satisfy, Dancing_Script, Caveat, Kalam } from "n
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
-import Navigation from "./components/Navigation";
+import ConditionalNavigation from "./components/ConditionalNavigation";
 import CookieBanner from "../components/CookieBanner";
 import AccessibilityBubble from "../components/AccessibilityBubble";
 import ExitIntentHandler from "../components/ExitIntentHandler";
@@ -83,7 +83,7 @@ export default function RootLayout({
           `}
         </Script>
         <div className="app-wrapper">
-          <Navigation />
+          <ConditionalNavigation />
           <main id="main-content">
             {children}
           </main>
