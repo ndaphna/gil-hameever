@@ -43,11 +43,17 @@ export async function POST(request: NextRequest) {
       await addContactToBrevo(email, name?.trim() || '');
       console.log('✅ Contact added to Brevo successfully');
     } catch (brevoError: any) {
-      console.error('⚠️ Brevo error:', brevoError.message);
-      return NextResponse.json(
-        { success: false, error: 'שגיאה בהרשמה. נסי שוב מאוחר יותר.' },
-        { status: 500 }
-      );
+      // If contact already exists, treat it as success and redirect
+      if (brevoError.message && brevoError.message.includes('duplicate')) {
+        console.log('ℹ️ Contact already exists - treating as success');
+        // Continue to return success response
+      } else {
+        console.error('⚠️ Brevo error:', brevoError.message);
+        return NextResponse.json(
+          { success: false, error: 'שגיאה בהרשמה. נסי שוב מאוחר יותר.' },
+          { status: 500 }
+        );
+      }
     }
 
     console.log('✅ Secret report access signup complete!');
@@ -136,9 +142,10 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
       console.error('   Status:', contactResponse.status);
       console.error('   Response:', JSON.stringify(errorJson, null, 2));
       
-      // If contact already exists, add to list separately
+      // If contact already exists, try to add to list separately
+      // If that also fails (contact already in list), treat as success
       if (errorJson.code === 'duplicate_parameter') {
-        console.log('ℹ️ Contact already exists in Brevo - adding to list separately');
+        console.log('ℹ️ Contact already exists in Brevo - attempting to add to list');
         
         const addToListResponse = await fetch(
           `https://api.brevo.com/v3/contacts/lists/${listId}/contacts/add`,
@@ -155,12 +162,14 @@ async function addContactToBrevo(email: string, name: string): Promise<void> {
         );
 
         if (!addToListResponse.ok) {
-          const addToListError = await addToListResponse.text();
-          console.error('⚠️ Failed to add existing contact to list:', addToListError);
-          throw new Error(`Failed to add contact to list: ${addToListError}`);
+          // Contact might already be in the list - that's fine, treat as success
+          const addToListErrorText = await addToListResponse.text();
+          console.log('ℹ️ Contact may already be in list - treating as success');
+          // Don't throw error - treat as success
         } else {
           console.log('✅ Existing contact added to list successfully');
         }
+        // Don't throw error for duplicate - treat as success
       } else {
         throw new Error(`Brevo contact error (${contactResponse.status}): ${errorText}`);
       }
