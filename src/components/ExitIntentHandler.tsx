@@ -19,6 +19,7 @@ export default function ExitIntentHandler() {
       '/emergency-map-access',
       '/secret-report-access',
       '/gift-access',
+      '/walking-medicine-access',
     ];
     
     if (hidePopupPaths.includes(currentPath)) {
