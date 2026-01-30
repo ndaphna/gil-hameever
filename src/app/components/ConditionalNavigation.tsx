@@ -9,6 +9,7 @@ export default function ConditionalNavigation() {
   // Don't show navigation on landing pages
   const hideNavigationPaths = [
     '/emergency-map-access',
+    '/secret-report-access',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
