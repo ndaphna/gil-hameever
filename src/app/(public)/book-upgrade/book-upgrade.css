@@ -1,0 +1,84 @@
+/* דף נחיתה חדש – ערכת השדרוג לגיבורה */
+@import '../menopause-book/menopause-book.css';
+
+/* תמונה אחת רחבה לרוחב המסך (בלי לחרוג – בתוך container) */
+.book-upgrade-landing .premium-image-wide {
+    width: 100%;
+    max-width: 100%;
+    margin: 40px 0;
+    display: block;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    border: 6px solid white;
+    object-fit: cover;
+}
+
+/* טבלת השוואה – גרסת הגיבורה (פרימיום) vs גרסת השורדת */
+.comparison-table-wrap {
+    margin: 40px 0;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+}
+
+.comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.05rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+    padding: 20px 24px;
+    text-align: center;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.comparison-table thead th {
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.comparison-table thead th:first-child {
+    background: linear-gradient(135deg, #E91E8C 0%, #B565D8 100%);
+    color: white;
+    border: none;
+}
+
+.comparison-table thead th:last-child {
+    background: #4a5568;
+    color: white;
+    border: none;
+}
+
+.comparison-table tbody tr td:first-child {
+    background: linear-gradient(135deg, rgba(233, 30, 140, 0.08) 0%, rgba(181, 101, 216, 0.08) 100%);
+    color: #1a202c;
+    font-weight: 500;
+}
+
+.comparison-table tbody tr td:last-child {
+    background: #f7fafc;
+    color: #4a5568;
+}
+
+.comparison-table tbody tr:last-child td:first-child {
+    color: #E91E8C;
+    font-weight: 700;
+}
+
+.comparison-table tbody tr:last-child td:last-child {
+    color: #718096;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .comparison-table th,
+    .comparison-table td {
+        padding: 14px 12px;
+        font-size: 0.95rem;
+    }
+    .comparison-table thead th {
+        font-size: 1rem;
+    }
+}
