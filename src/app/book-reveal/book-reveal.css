@@ -30,8 +30,8 @@
 
 .book-reveal-page .pre-headline-label {
   font-size: clamp(1rem, 2.2vw, 1.2rem);
-  font-weight: 700;
-  color: var(--accent);
+  font-weight: 800;
+  color: var(--text);
   text-align: center;
   line-height: 1.4;
   margin: 0 0 0.5rem 0;
@@ -39,8 +39,8 @@
 
 .book-reveal-page .pre-headline {
   font-size: clamp(1rem, 2.2vw, 1.2rem);
-  font-weight: 700;
-  color: var(--accent);
+  font-weight: 800;
+  color: var(--text);
   text-align: center;
   line-height: 1.5;
   margin: 0 0 1rem 0;
@@ -83,25 +83,52 @@
   margin-bottom: 0;
 }
 
-/* משפטים "מפילים אסימון" – פונט שחור מודגש בלבד, מרקר צהוב רק ברקע */
+/* מרקר צהוב אחיד – כמו "שווי" (חצי גובה, אותן ערכים) */
 .book-reveal-page .highlight,
 .book-reveal-page .body-text.highlight,
 .book-reveal-page span.highlight {
   font-weight: 800;
   color: #1a1a1a !important;
   -webkit-text-fill-color: #1a1a1a;
-  background-image: linear-gradient(180deg, transparent 50%, rgba(255, 235, 59, 0.55) 50%);
-  background-size: 100% 1.85em;
+  background-image: linear-gradient(180deg, transparent 50%, rgba(255, 235, 59, 0.6) 50%);
+  background-size: 100% 1.5em;
   background-repeat: repeat;
-  background-position: 0 0.02em;
-  padding: 0 0.08em;
+  background-position: 0 0.15em;
+  padding: 0 0.12em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+}
+
+/* צמצום רווח בין שני טקסטים מודגשים ברצף */
+.book-reveal-page .body-text.highlight {
+  margin-bottom: 0.4rem;
+}
+
+.book-reveal-page .body-text.highlight + .body-text.highlight {
+  margin-top: 0;
 }
 
 .book-reveal-page .quote-inline {
   font-style: italic;
   color: var(--text-soft);
+}
+
+/* רשימת בולטים – למה את יכולה לסמוך */
+.book-reveal-page .trust-list {
+  list-style: disc;
+  padding-right: 1.5rem;
+  margin: 0 0 1.25rem 0;
+}
+
+.book-reveal-page .trust-list li {
+  font-size: 1.0625rem;
+  line-height: 1.85;
+  color: var(--text);
+  margin-bottom: 0.75rem;
+}
+
+.book-reveal-page .trust-list li:last-child {
+  margin-bottom: 0;
 }
 
 /* תמונות – מקסימום חצי גובה המסך */
@@ -238,6 +265,20 @@
 .book-reveal-page .bonus-item ul {
   padding-right: 1.25rem;
   margin-top: 0.5rem;
+}
+
+/* שווי – אותו עיצוב מרקר כמו .highlight */
+.book-reveal-page .bonus-item .bonus-value {
+  margin-top: 0.5rem;
+  margin-bottom: 0;
+  font-weight: 700;
+  color: var(--text);
+  background-image: linear-gradient(180deg, transparent 50%, rgba(255, 235, 59, 0.6) 50%);
+  background-size: 100% 1.5em;
+  background-repeat: no-repeat;
+  background-position: 0 0.15em;
+  padding: 0 0.12em;
+  display: inline-block;
 }
 
 /* עדות */
