@@ -8,6 +8,7 @@ export default function ConditionalNavigation() {
   
   // Don't show navigation on landing pages
   const hideNavigationPaths = [
+    '/book-reveal',
     '/emergency-map-access',
     '/secret-report-access',
     '/gift-access',
