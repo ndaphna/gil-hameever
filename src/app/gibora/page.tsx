@@ -23,7 +23,7 @@ export default function BookRevealPage() {
             </p>
           </div>
           <h1 className="main-headline">
-            תני לי 48 שעות, ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של גיל המעבר ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.
+            תני לי 48 שעות, ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של <span className="headline-emphasis">גיל המעבר</span> ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.
           </h1>
           <p className="headline-secondary">
             פרוטוקול השדרוג החדש:
@@ -32,7 +32,7 @@ export default function BookRevealPage() {
           </p>
           <p className="sub-headline">
             בלי להרגיש שאיבדת את השפיות או &quot;השתגעת&quot;, בלי לוותר על עצמך, ובלי להשלים עם ה&quot;גזירה&quot;.
-            הכירי את הספר החדש שחושף את הסוד מאחורי &quot;פרוטוקול הגיבורה&quot;: מפת הדרכים השיטתית (והקורעת מצחוק) להחזרת התקווה, השקט הנפשי והחיוך תוך פחות מ-48 שעות.
+            הכירי את הספר החדש שחושף את הסוד מאחורי <span className="headline-emphasis">&quot;פרוטוקול הגיבורה&quot;</span>: מפת הדרכים השיטתית (והקורעת מצחוק) להחזרת התקווה, השקט הנפשי והחיוך תוך פחות מ-48 שעות.
           </p>
           <img src="https://i.imghippo.com/files/Zfq4509hG.png" alt="" className="landing-img" />
           <CTA>כן! אני רוצה עדכון גרסה עכשיו</CTA>

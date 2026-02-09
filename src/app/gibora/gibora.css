@@ -18,9 +18,9 @@
   -webkit-text-size-adjust: 100%;
 }
 
-/* מובייל: ריווח נוח, טקסט קריא */
+/* מובייל: ריווח נוח, טקסט קריא – רוחב מוגדל ב-20% (864px) */
 .book-reveal-page .wrap {
-  max-width: 720px;
+  max-width: 864px;
   margin: 0 auto;
   padding: 0 1rem;
 }
@@ -37,7 +37,7 @@
 }
 
 .book-reveal-page .pre-headline-label {
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-size: clamp(1.2rem, 2.6vw, 1.45rem);
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -46,7 +46,7 @@
 }
 
 .book-reveal-page .pre-headline {
-  font-size: clamp(1rem, 2.2vw, 1.2rem);
+  font-size: clamp(1.2rem, 2.6vw, 1.45rem);
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -54,9 +54,9 @@
   margin: 0 0 1rem 0;
 }
 
-/* כותרת ראשית – גודל קריא במובייל (min 1.5rem) */
+/* כותרת ראשית – גודל מוגדל */
 .book-reveal-page .main-headline {
-  font-size: clamp(1.5rem, 5vw, 2.75rem);
+  font-size: clamp(1.8rem, 6vw, 3.3rem);
   font-weight: 800;
   color: var(--accent);
   text-align: center;
@@ -64,8 +64,26 @@
   margin-bottom: 0.75rem;
 }
 
+/* הדגשה יוקרתית – כותרת ראשית ו-sub-headline (בולט ומודגש) */
+.book-reveal-page .main-headline .headline-emphasis,
+.book-reveal-page .sub-headline .headline-emphasis {
+  display: inline-block;
+  background: linear-gradient(135deg, #8b6914 0%, #c9a227 30%, #e8d48a 60%, #c41e6e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 0.15em 0.25em;
+  font-size: 1.12em;
+  line-height: 1.2;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.12)) drop-shadow(0 0 20px rgba(196, 30, 110, 0.25));
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
 .book-reveal-page .headline-secondary {
-  font-size: clamp(1.1rem, 3.2vw, 1.55rem);
+  font-size: clamp(1.35rem, 3.8vw, 1.85rem);
   font-weight: 800;
   color: var(--text);
   text-align: center;
@@ -74,7 +92,7 @@
 }
 
 .book-reveal-page .sub-headline {
-  font-size: clamp(1rem, 2vw, 1.2rem);
+  font-size: clamp(1.2rem, 2.4vw, 1.45rem);
   color: var(--text-soft);
   text-align: center;
   line-height: 1.6;
@@ -82,7 +100,7 @@
 }
 
 .book-reveal-page .section-title {
-  font-size: clamp(1.25rem, 3.5vw, 1.85rem);
+  font-size: clamp(1.5rem, 4.2vw, 2.2rem);
   font-weight: 700;
   color: var(--accent);
   margin: 1.5rem 0 1rem;
@@ -224,7 +242,7 @@
 .book-reveal-page .cta-link {
   display: block;
   width: 100%;
-  max-width: 520px;
+  max-width: 624px;
   margin: 1.5rem auto;
   padding: 1rem 1.25rem;
   min-height: 48px;
@@ -354,7 +372,7 @@
 }
 
 .book-reveal-page .bonus-item h4 {
-  font-size: 1.1rem;
+  font-size: 1.35rem;
   font-weight: 700;
   color: var(--text);
   margin-bottom: 0.5rem;
@@ -436,7 +454,7 @@
   font-weight: 700;
   color: var(--text);
   margin-bottom: 0.5rem;
-  font-size: 1rem;
+  font-size: 1.2rem;
 }
 
 .book-reveal-page .faq-a {
@@ -447,7 +465,7 @@
 
 /* מחיר בולט */
 .book-reveal-page .price-big {
-  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-size: clamp(2.4rem, 6vw, 3.3rem);
   font-weight: 800;
   color: var(--accent);
   text-align: center;
