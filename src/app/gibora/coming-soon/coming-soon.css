@@ -1,0 +1,185 @@
+/* דף השקה בקרוב – יוקרתי, נקי, שעון חול */
+
+.launch-soon-page {
+  --accent: #C41E6E;
+  --accent-deep: #9D1850;
+  --gold: #c9a962;
+  --gold-light: #e8d9a8;
+  --bg-dark: #0f0f12;
+  --bg-soft: #1a1a1f;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(165deg, #0f0f12 0%, #1a1520 40%, #15101a 100%);
+  color: #f5f0eb;
+  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  direction: rtl;
+  padding: 2rem 1.5rem;
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
+
+.launch-soon-title {
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  font-weight: 800;
+  text-align: center;
+  margin: 0 0 3rem;
+  letter-spacing: 0.02em;
+  line-height: 1.15;
+  background: linear-gradient(135deg, #f5f0eb 0%, var(--gold-light) 50%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 0 60px rgba(201, 169, 98, 0.15);
+}
+
+/* שעון חול */
+.hourglass-wrap {
+  width: clamp(100px, 28vw, 160px);
+  height: clamp(140px, 38vw, 220px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hourglass-frame {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: stretch;
+}
+
+/* מסגרת שעון חול – שני משולשים (בועות) ומחבר */
+.hourglass-frame::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-right: clamp(45px, 12vw, 70px) solid transparent;
+  border-left: clamp(45px, 12vw, 70px) solid transparent;
+  border-top: clamp(70px, 18vw, 110px) solid rgba(201, 169, 98, 0.2);
+  border-bottom: none;
+  box-sizing: border-box;
+}
+
+.hourglass-frame::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-right: clamp(45px, 12vw, 70px) solid transparent;
+  border-left: clamp(45px, 12vw, 70px) solid transparent;
+  border-bottom: clamp(70px, 18vw, 110px) solid rgba(201, 169, 98, 0.2);
+  border-top: none;
+  box-sizing: border-box;
+}
+
+/* צינור האמצע */
+.hourglass-neck {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(8px, 2.5vw, 14px);
+  height: clamp(12px, 4vw, 20px);
+  background: rgba(201, 169, 98, 0.35);
+  z-index: 2;
+}
+
+/* חול עליון – אוזל */
+.sand-top {
+  position: absolute;
+  top: clamp(4px, 1.2vw, 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-right: clamp(38px, 10vw, 58px) solid transparent;
+  border-left: clamp(38px, 10vw, 58px) solid transparent;
+  border-top: clamp(58px, 15vw, 88px) solid var(--gold);
+  border-bottom: none;
+  box-sizing: border-box;
+  z-index: 1;
+  animation: sand-top-drain 8s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+/* חול תחתון – מתמלא */
+.sand-bottom {
+  position: absolute;
+  bottom: clamp(4px, 1.2vw, 8px);
+  left: 50%;
+  transform: translateX(-50%) scaleY(0);
+  width: 0;
+  height: 0;
+  border-right: clamp(38px, 10vw, 58px) solid transparent;
+  border-left: clamp(38px, 10vw, 58px) solid transparent;
+  border-bottom: clamp(58px, 15vw, 88px) solid var(--gold);
+  border-top: none;
+  box-sizing: border-box;
+  z-index: 1;
+  animation: sand-bottom-fill 8s ease-in-out infinite;
+  transform-origin: 50% 0%;
+}
+
+@keyframes sand-top-drain {
+  0% {
+    border-top-width: clamp(58px, 15vw, 88px);
+    opacity: 1;
+  }
+  90% {
+    border-top-width: 0;
+    opacity: 0.95;
+  }
+  100% {
+    border-top-width: clamp(58px, 15vw, 88px);
+    opacity: 1;
+  }
+}
+
+@keyframes sand-bottom-fill {
+  0% {
+    transform: translateX(-50%) scaleY(0);
+  }
+  90% {
+    transform: translateX(-50%) scaleY(1);
+  }
+  100% {
+    transform: translateX(-50%) scaleY(0);
+  }
+}
+
+/* זרם חול באמצע (אופציונלי – ניצור אפקט דק) */
+.sand-stream {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: clamp(4px, 1.2vw, 8px);
+  height: clamp(16px, 5vw, 28px);
+  background: linear-gradient(to bottom, var(--gold) 0%, transparent 100%);
+  z-index: 3;
+  animation: stream-pulse 8s ease-in-out infinite;
+  opacity: 0.85;
+}
+
+@keyframes stream-pulse {
+  0%, 5% { opacity: 0.9; height: clamp(16px, 5vw, 28px); }
+  45% { opacity: 0.85; height: clamp(16px, 5vw, 28px); }
+  50% { opacity: 0.2; height: clamp(4px, 1.5vw, 8px); }
+  55% { opacity: 0.9; height: clamp(16px, 5vw, 28px); }
+  100% { opacity: 0.9; height: clamp(16px, 5vw, 28px); }
+}

@@ -4,7 +4,7 @@ import './gibora.css';
 
 function CTA({ children }: { children: React.ReactNode }) {
   return (
-    <a href="#offer" className="cta-link">
+    <a href="/gibora/coming-soon" className="cta-link">
       <span className="arrow">←←</span> {children}
     </a>
   );
@@ -470,7 +470,7 @@ export default function BookRevealPage() {
             💬 &quot;זו לא רק מפת דרכים. זו יד מושטת מאישה שכבר הייתה שם, ועברה לצד השני.&quot;
           </p>
           <img src="https://i.imghippo.com/files/udw7736pdc.png" alt="" className="landing-img" />
-          <a href="#offer" className="cta-link cta-primary">
+          <a href="/gibora/coming-soon" className="cta-link cta-primary">
             <span className="arrow">←←</span> כן ענבל! שלחי לי את הספר ופתחי לי גישה למפת הדרכים עכשיו
           </a>
         </section>
