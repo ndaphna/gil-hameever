@@ -1,4 +1,4 @@
-/* דף נחיתה – לא גיברת, גיבורה! */
+/* דף נחיתה – לא גיברת, גיבורה! – מותאם בראש ובראשונה למובייל (Mobile First) */
 @import url('https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&display=swap');
 
 .book-reveal-page {
@@ -15,12 +15,20 @@
   background: var(--bg);
   color: var(--text);
   overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
 }
 
+/* מובייל: ריווח נוח, טקסט קריא */
 .book-reveal-page .wrap {
   max-width: 720px;
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 1rem;
+}
+
+@media (min-width: 480px) {
+  .book-reveal-page .wrap {
+    padding: 0 1.25rem;
+  }
 }
 
 /* כותרות – צבע עז ובולט */
@@ -46,13 +54,23 @@
   margin: 0 0 1rem 0;
 }
 
+/* כותרת ראשית – גודל קריא במובייל (min 1.5rem) */
 .book-reveal-page .main-headline {
-  font-size: clamp(1.75rem, 5vw, 2.75rem);
+  font-size: clamp(1.5rem, 5vw, 2.75rem);
   font-weight: 800;
   color: var(--accent);
   text-align: center;
-  line-height: 1.25;
-  margin-bottom: 1.25rem;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+}
+
+.book-reveal-page .headline-secondary {
+  font-size: clamp(1.1rem, 3.2vw, 1.55rem);
+  font-weight: 800;
+  color: var(--text);
+  text-align: center;
+  line-height: 1.3;
+  margin: 0 0 1.25rem 0;
 }
 
 .book-reveal-page .sub-headline {
@@ -64,14 +82,20 @@
 }
 
 .book-reveal-page .section-title {
-  font-size: clamp(1.35rem, 3.5vw, 1.85rem);
+  font-size: clamp(1.25rem, 3.5vw, 1.85rem);
   font-weight: 700;
   color: var(--accent);
-  margin: 2rem 0 1.25rem;
-  line-height: 1.3;
+  margin: 1.5rem 0 1rem;
+  line-height: 1.35;
 }
 
-/* גוף – כהה על לבן, קריא */
+@media (min-width: 768px) {
+  .book-reveal-page .section-title {
+    margin: 2rem 0 1.25rem;
+  }
+}
+
+/* גוף – 17px במובייל (מונע זום אוטומטי ב-iOS) */
 .book-reveal-page .body-text {
   font-size: 1.0625rem;
   line-height: 1.85;
@@ -83,6 +107,41 @@
   margin-bottom: 0;
 }
 
+/* שני סוגי הנשים – הפרדה ויזואלית (ריווח מובייל) */
+.book-reveal-page .type-block {
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+  border: 1px solid transparent;
+}
+
+@media (min-width: 480px) {
+  .book-reveal-page .type-block {
+    padding: 1.25rem 1.5rem;
+  }
+}
+
+.book-reveal-page .type-block .body-text {
+  margin-bottom: 0;
+}
+
+.book-reveal-page .type-block .body-text:last-child {
+  margin-bottom: 0;
+}
+
+.book-reveal-page .type-failure {
+  background: #ebe8e6;
+  border-color: #d1cdc9;
+  color: #2d2d2d;
+}
+
+.book-reveal-page .type-upgrade {
+  background: linear-gradient(135deg, #fef5f9 0%, #fdf2f7 100%);
+  border-color: rgba(196, 30, 110, 0.25);
+  color: var(--text);
+  box-shadow: 0 2px 12px rgba(196, 30, 110, 0.06);
+}
+
 /* מרקר צהוב אחיד – כמו "שווי" (חצי גובה, אותן ערכים) */
 .book-reveal-page .highlight,
 .book-reveal-page .body-text.highlight,
@@ -90,11 +149,8 @@
   font-weight: 800;
   color: #1a1a1a !important;
   -webkit-text-fill-color: #1a1a1a;
-  background-image: linear-gradient(180deg, transparent 50%, rgba(255, 235, 59, 0.6) 50%);
-  background-size: 100% 1.5em;
-  background-repeat: repeat;
-  background-position: 0 0.15em;
-  padding: 0 0.12em;
+  background-color: rgba(255, 235, 59, 0.55);
+  padding: 0 0.15em;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
@@ -131,7 +187,7 @@
   margin-bottom: 0;
 }
 
-/* תמונות – מקסימום חצי גובה המסך */
+/* תמונות – מותאם מובייל (מקס חצי גובה viewport) */
 .book-reveal-page .landing-img {
   width: 100%;
   max-width: 100%;
@@ -139,8 +195,8 @@
   height: auto;
   object-fit: contain;
   display: block;
-  margin: 1.5rem auto;
-  border-radius: 12px;
+  margin: 1.25rem auto;
+  border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
@@ -151,17 +207,28 @@
   height: auto;
   object-fit: contain;
   display: block;
-  margin: 1.5rem auto;
-  border-radius: 12px;
+  margin: 1.25rem auto;
+  border-radius: 10px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
-/* כפתורי CTA – בולטים ומזמינים, לא מצועצעים */
+@media (min-width: 768px) {
+  .book-reveal-page .landing-img,
+  .book-reveal-page .landing-img-wide {
+    margin: 1.5rem auto;
+    border-radius: 12px;
+  }
+}
+
+/* כפתורי CTA – אזור לחיצה מינימלי 48px (מובייל), בולט */
 .book-reveal-page .cta-link {
   display: block;
+  width: 100%;
   max-width: 520px;
-  margin: 2rem auto;
-  padding: 1rem 1.5rem;
+  margin: 1.5rem auto;
+  padding: 1rem 1.25rem;
+  min-height: 48px;
+  box-sizing: border-box;
   background: linear-gradient(135deg, var(--accent) 0%, var(--accent-deep) 100%);
   color: var(--bg);
   font-size: clamp(1rem, 2vw, 1.2rem);
@@ -172,6 +239,14 @@
   border: none;
   box-shadow: 0 6px 20px rgba(196, 30, 110, 0.35);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+@media (min-width: 480px) {
+  .book-reveal-page .cta-link {
+    padding: 1rem 1.5rem;
+    margin: 2rem auto;
+  }
 }
 
 .book-reveal-page .cta-link:hover {
@@ -184,25 +259,44 @@
   color: inherit;
 }
 
-/* טבלה – גרסת הגיבורה פרימיום */
+/* טבלה – גלילה אופקית במובייל, קריאה נוחה */
 .book-reveal-page .comparison-wrap {
-  margin: 2rem 0;
-  overflow: hidden;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  margin: 1.5rem 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 }
 
 .book-reveal-page .comparison-table {
   width: 100%;
+  min-width: 320px;
   border-collapse: collapse;
-  font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  font-size: 0.9rem;
 }
 
 .book-reveal-page .comparison-table th,
 .book-reveal-page .comparison-table td {
-  padding: 1rem 1.25rem;
+  padding: 0.75rem 0.75rem;
   text-align: center;
   border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+@media (min-width: 768px) {
+  .book-reveal-page .comparison-wrap {
+    margin: 2rem 0;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  }
+
+  .book-reveal-page .comparison-table {
+    font-size: clamp(0.9rem, 1.8vw, 1.05rem);
+  }
+
+  .book-reveal-page .comparison-table th,
+  .book-reveal-page .comparison-table td {
+    padding: 1rem 1.25rem;
+  }
 }
 
 .book-reveal-page .comparison-table thead th:first-child {
@@ -228,14 +322,26 @@
   color: var(--text-soft);
 }
 
-/* סקשן רקע עדין */
+/* סקשן רקע עדין – מובייל פחות ריווח */
 .book-reveal-page .section-alt {
   background: var(--bg-alt);
-  padding: 2.5rem 0;
+  padding: 1.5rem 0;
 }
 
 .book-reveal-page .section-alt .wrap {
-  padding: 0 1.25rem;
+  padding: 0 1rem;
+}
+
+@media (min-width: 480px) {
+  .book-reveal-page .section-alt .wrap {
+    padding: 0 1.25rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .book-reveal-page .section-alt {
+    padding: 2.5rem 0;
+  }
 }
 
 /* בונוסים / רשימות */
@@ -267,7 +373,7 @@
   margin-top: 0.5rem;
 }
 
-/* שווי – אותו עיצוב מרקר כמו .highlight */
+/* שווי – מרקר צהוב עד חצי גובה הפונט */
 .book-reveal-page .bonus-item .bonus-value {
   margin-top: 0.5rem;
   margin-bottom: 0;
@@ -279,6 +385,19 @@
   background-position: 0 0.15em;
   padding: 0 0.12em;
   display: inline-block;
+}
+
+/* כותרות שלבי הפרוטוקול – אותו עיצוב מרקר כמו שווי */
+.book-reveal-page .step-title {
+  font-weight: 700;
+  color: var(--text);
+  background-image: linear-gradient(180deg, transparent 50%, rgba(255, 235, 59, 0.6) 50%);
+  background-size: 100% 1.5em;
+  background-repeat: no-repeat;
+  background-position: 0 0.15em;
+  padding: 0 0.12em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 /* עדות */
@@ -335,26 +454,35 @@
   margin: 1.5rem 0;
 }
 
-/* CTA בולט במיוחד */
+/* CTA בולט במיוחד – מובייל: אזור לחיצה נוח */
 .book-reveal-page .cta-link.cta-primary {
-  padding: 1.15rem 1.75rem;
-  font-size: clamp(1.1rem, 2.2vw, 1.3rem);
+  padding: 1rem 1.25rem;
+  min-height: 52px;
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
   box-shadow: 0 8px 28px rgba(196, 30, 110, 0.4);
 }
 
-/* רווחים בין סקשנים */
+@media (min-width: 480px) {
+  .book-reveal-page .cta-link.cta-primary {
+    padding: 1.15rem 1.75rem;
+  }
+}
+
+/* רווחים בין סקשנים – מובייל קומפקטי */
 .book-reveal-page section {
-  padding: 2rem 0;
+  padding: 1.5rem 0;
 }
 
 .book-reveal-page section:first-of-type {
-  padding-top: 2.5rem;
+  padding-top: 1.5rem;
 }
 
-@media (max-width: 768px) {
-  .book-reveal-page .comparison-table th,
-  .book-reveal-page .comparison-table td {
-    padding: 0.75rem 0.5rem;
-    font-size: 0.9rem;
+@media (min-width: 768px) {
+  .book-reveal-page section {
+    padding: 2rem 0;
+  }
+
+  .book-reveal-page section:first-of-type {
+    padding-top: 2.5rem;
   }
 }

@@ -1,0 +1,10 @@
+---
+alwaysApply: true
+---
+When adding a yellow highlighter/marker to text in this project (e.g. book-reveal landing page), use only this style:
+
+- **CSS class:** `step-title`
+- **Effect:** Yellow marker up to half the line height (linear-gradient: transparent 50%, rgba(255, 235, 59, 0.6) 50%), font-weight 700, same padding and box-decoration-break as in `.book-reveal-page .step-title` in `src/app/book-reveal/book-reveal.css`
+- **Usage:** Wrap the text in `<span className="step-title">...</span>` (or the equivalent in the relevant framework)
+
+Do not use the full-background `.highlight` style or any other marker style when the user asks for a "מרקר צהוב" (yellow marker) or yellow highlighter. The `.step-title` style is the preferred and only style for yellow text highlighting in this project.
