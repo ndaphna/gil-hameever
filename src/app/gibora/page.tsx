@@ -23,7 +23,7 @@ export default function BookRevealPage() {
             </p>
           </div>
           <h1 className="main-headline">
-            תני לי 48 שעות (ו-89 ש&quot;ח), ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של גיל המעבר ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.
+            תני לי 48 שעות, ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של גיל המעבר ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.
           </h1>
           <p className="headline-secondary">
             פרוטוקול השדרוג החדש:
@@ -67,7 +67,7 @@ export default function BookRevealPage() {
               זו קריאת השכמה. והיא בדיוק מה שהיית צריכה (גם אם זה ממש לא מרגיש ככה עכשיו).
             </p>
             <img src="https://i.imghippo.com/files/lWrs8973ieU.png" alt="" className="landing-img" />
-            <CTA>כן ענבל! אני רוצה פרוטוקול עדכון</CTA>
+            <CTA>כן! אני רוצה פרוטוקול עדכון</CTA>
           </div>
         </section>
 
@@ -149,7 +149,7 @@ export default function BookRevealPage() {
             <p className="body-text">
               בלי דיאטות, בלי משטרי ברזל ובלי להעמיד פנים. בדף הזה תראי איך הדברים באמת עובדים.
             </p>
-            <CTA>כן ענבל! אני רוצה להפסיק לסבול, ולהתחיל להתרגש</CTA>
+            <CTA>כן! אני רוצה להפסיק לסבול, ולהתחיל להתרגש</CTA>
           </div>
         </section>
 
