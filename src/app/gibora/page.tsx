@@ -1,6 +1,6 @@
 'use client';
 
-import './book-reveal.css';
+import './gibora.css';
 
 function CTA({ children }: { children: React.ReactNode }) {
   return (
