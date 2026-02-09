@@ -757,6 +757,7 @@ export default function BookRevealPage() {
           </p>
           <p className="body-text highlight">✨ לחצי עכשיו והתחילי את המסע שלך מהישרדות להתחדשות!</p>
           <CTA>ענבל, שלחי לי את הספר עכשיו!</CTA>
+          <img src="https://i.imghippo.com/files/YiEg6299AHM.png" alt="" className="landing-img" />
         </section>
       </div>
     </div>
