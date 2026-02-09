@@ -17,13 +17,13 @@ export default function BookRevealPage() {
         {/* Hero */}
         <section>
           <div className="pre-headline-block">
-            <p className="pre-headline-label">הגישה שמשנה את כל מה שחשבנו על גיל המעבר ב-2026</p>
+            <p className="pre-headline-label">הגישה שמשנה את כל מה שחשבנו על גיל המעבר ב-2026:</p>
             <p className="pre-headline">
               מוקדש לכל אישה בגילאים 45-60 שמרגישה שהגוף יצא משליטה, שפתאום היא לא מזהה את עצמה במראה, שהשמחה שלה נעלמה, וש&quot;הספירה לאחור&quot; התחילה:
             </p>
           </div>
           <h1 className="main-headline">
-            תני לי 48 שעות, ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של <span className="headline-emphasis">גיל המעבר</span> ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.
+            &quot;תני לי 48 שעות, ואני אראה לך איך לעצור את &apos;קריסת המערכות&apos; של <span className="headline-emphasis">גיל המעבר</span> ולהתקין את &apos;גרסת הגיבורה&apos; – בלי כדורים ובלי להילחם בגוף שלך.&quot;
           </h1>
           <p className="headline-secondary">
             פרוטוקול השדרוג החדש:
