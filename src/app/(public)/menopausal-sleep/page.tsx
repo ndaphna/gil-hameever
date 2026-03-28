@@ -319,7 +319,7 @@ export default function MenopausalSleepPage() {
             <ul className="download-list">
               <li>📊 &quot;יומן שינה שבועי&quot; להורדה</li>
               <li>🎧 מדיטציית שינה מוקלטת להאזנה לפני השינה (בקרוב...)</li>
-              <li>📄 <a href="https://gilhameever.com/%d7%9c%d7%99%d7%9c%d7%94-%d7%98%d7%95%d7%91-%d7%91%d7%90%d7%9e%d7%aa-%d7%9e%d7%93%d7%a8%d7%99%d7%9a-%d7%94%d7%a9%d7%95%d7%a8%d7%93%d7%aa-%d7%9c%d7%a9%d7%99%d7%a0%d7%94-%d7%98%d7%95%d7%91%d7%94-%d7%91/" target="_blank" rel="noopener noreferrer">לילה טוב (באמת!): מדריך השורדת לשינה טובה בגיל המעבר</a></li>
+              <li>📄 <a href="https://www.gilhameever.com/good-sleep-menopause" target="_blank" rel="noopener noreferrer">לילה טוב (באמת!): מדריך השורדת לשינה בגיל המעבר</a></li>
               <li>🛍️ מוצרים ומאמרים - מניפה, מאוורר נייד, סדינים מקררים, קרחוניות צבעוניות למצב רוח, ספרים רלוונטיים</li>
             </ul>
           </div>
