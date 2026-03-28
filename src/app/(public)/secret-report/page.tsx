@@ -1300,7 +1300,12 @@ export default function SecretReportPage() {
                     ואם את רוצה להיות הראשונה לקבל ממני תובנות, כלים, מחשבות, מחקרים ועדכונים חשובים,
                   </p>
                   <p className="book-paragraph newsletter-highlight">
-                    אני מזמינה אותך להצטרף לרשימת התפוצה "גלי השראה" שלי.
+                    <a
+                      href="https://www.gilhameever.com/inspiration-waves"
+                      className="newsletter-highlight-link"
+                    >
+                      אני מזמינה אותך להצטרף לרשימת התפוצה &quot;גלי השראה&quot; שלי.
+                    </a>
                   </p>
                   <p className="book-paragraph">
                     זה המקום שבו אני משתפת דברים שלא מגיעים לאינסטגרם:
