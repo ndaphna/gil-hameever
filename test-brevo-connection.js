@@ -16,7 +16,7 @@
  */
 
 require('dotenv').config({ path: '.env.local' });
-const brevo = require('@getbrevo/brevo');
+const { BrevoClient } = require('@getbrevo/brevo');
 
 async function testBrevoConnection() {
   console.log('\n🔍 בודק חיבור ל-Brevo...\n');
@@ -47,11 +47,10 @@ async function testBrevoConnection() {
   console.log('\n🔌 מנסה להתחבר ל-Brevo...');
   
   try {
-    const apiInstance = new brevo.ContactsApi();
-    apiInstance.setApiKey(brevo.ContactsApiApiKeys.apiKey, apiKey);
+    const client = new BrevoClient({ apiKey });
 
     // מנסה לקבל את כמות ה-Contacts
-    const result = await apiInstance.getContacts({ limit: 1 });
+    const result = await client.contacts.getContacts({ limit: 1 });
     
     console.log('✅ החיבור ל-Brevo הצליח!');
     console.log(`\n📊 סטטיסטיקות:`);
@@ -63,9 +62,9 @@ async function testBrevoConnection() {
       console.log(`\n📋 List ID מוגדר: ${listId}`);
       
       try {
-        const listsApi = new brevo.ContactsApi();
-        listsApi.setApiKey(brevo.ContactsApiApiKeys.apiKey, apiKey);
-        const listInfo = await listsApi.getList(parseInt(listId));
+        const listInfo = await client.contacts.getList({
+          listId: parseInt(listId, 10),
+        });
         console.log(`   שם הרשימה: "${listInfo.name}"`);
         console.log(`   Contacts ברשימה: ${listInfo.totalSubscribers || 0}`);
       } catch (err) {
@@ -83,7 +82,11 @@ async function testBrevoConnection() {
   } catch (error) {
     console.log('\n❌ שגיאה בחיבור ל-Brevo:');
     
-    if (error.response?.statusCode === 401) {
+    const statusCode =
+      error.statusCode ??
+      error.response?.statusCode ??
+      error.response?.status;
+    if (statusCode === 401) {
       console.log('   ה-API Key לא תקין!');
       console.log('\n📝 בדקי:');
       console.log('   1. שהעתקת את כל המפתח (כולל xkeysib-)');
