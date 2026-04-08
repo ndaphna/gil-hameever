@@ -115,7 +115,10 @@ export default function LoginPage() {
             </div>
 
             <div className="form-group">
-              <label htmlFor="password">סיסמה</label>
+              <div className="password-header">
+                <label htmlFor="password">סיסמה</label>
+                <a href="/forgot-password" className="forgot-password">שכחת סיסמה?</a>
+              </div>
               <input
                 id="password"
                 type="password"
@@ -211,6 +214,27 @@ export default function LoginPage() {
           color: var(--black);
           font-size: 14px;
           text-align: right;
+        }
+
+        .password-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 8px;
+        }
+
+        .password-header label {
+          margin-bottom: 0;
+        }
+
+        .forgot-password {
+          font-size: 13px;
+          color: var(--magenta);
+          text-decoration: none;
+        }
+
+        .forgot-password:hover {
+          text-decoration: underline;
         }
 
         .form-group input {
