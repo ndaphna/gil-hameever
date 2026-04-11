@@ -33,7 +33,7 @@ export function useAuth() {
         }
 
         if (session?.user) {
-          await loadUserData(session.user.id);
+          await loadUserData(session.user, session.access_token);
         } else {
           setState(prev => ({ ...prev, loading: false, isAdmin: false }));
         }
@@ -52,7 +52,7 @@ export function useAuth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         if (event === 'SIGNED_IN' && session?.user) {
-          await loadUserData(session.user.id);
+          await loadUserData(session.user, session.access_token);
         } else if (event === 'SIGNED_OUT') {
           setState({
             user: null,
@@ -68,25 +68,18 @@ export function useAuth() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const loadUserData = async (userId: string) => {
+  const loadUserData = async (authUser: any, accessToken?: string) => {
     try {
       setState(prev => ({ ...prev, loading: true, error: null }));
 
-      // Get user from auth
-      const { data: { user: authUser }, error: authError } = await supabase.auth.getUser();
-
-      if (authError || !authUser) {
+      if (!authUser) {
         setState(prev => ({ 
           ...prev, 
-          error: authError?.message || 'User not found', 
+          error: 'User not found', 
           loading: false 
         }));
         return;
       }
-
-      // Get access token from Supabase session
-      const { data: { session } } = await supabase.auth.getSession();
-      const accessToken = session?.access_token;
 
       // Load user profile via API route (bypasses RLS issues)
       const headers: HeadersInit = {
@@ -307,7 +300,10 @@ export function useAuth() {
       }
 
       // Reload user data
-      await loadUserData(state.user.id);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await loadUserData(session.user, session.access_token);
+      }
       return true;
     } catch (error) {
       setState(prev => ({ 
