@@ -2,20 +2,23 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { supabase } from '@/lib/supabase';
 import { useRouter, usePathname } from 'next/navigation';
 import Sidebar from './Sidebar';
+import { useAuthContext } from '@/contexts/AuthContext';
 import './Navigation.css';
 
 export default function Navigation() {
   const router = useRouter();
   const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [, setUserEmail] = useState<string | null>(null);
   const [isHydrated, setIsHydrated] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  // Derive login state from shared AuthContext (loaded once at app level)
+  const { user, signOut: authSignOut, loading } = useAuthContext();
+  // While loading, keep prior apparent login state to prevent flickering
+  const isLoggedIn = loading ? isHydrated && !!user : !!user;
 
   // Check if user is on internal pages
   const isInternalPage = pathname?.startsWith('/dashboard') || 
@@ -48,41 +51,9 @@ export default function Navigation() {
     }
   };
 
-  // Mark as hydrated
+  // Mark as hydrated (wait for client-side render to avoid SSR mismatch)
   useEffect(() => {
     setIsHydrated(true);
-  }, []);
-
-  // Check authentication status
-  useEffect(() => {
-    async function checkAuth() {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        setIsLoggedIn(!!session);
-        setUserEmail(session?.user?.email || null);
-      } catch (error) {
-        console.warn('Auth check failed:', error);
-        setIsLoggedIn(false);
-        setUserEmail(null);
-      }
-    }
-    
-    checkAuth();
-
-    // Subscribe to auth changes
-    try {
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-        setIsLoggedIn(!!session);
-        setUserEmail(session?.user?.email || null);
-      });
-
-      return () => {
-        subscription.unsubscribe();
-      };
-    } catch (error) {
-      console.warn('Auth subscription failed:', error);
-    }
   }, []);
 
   // Prevent body scroll when mobile menu is open
@@ -114,87 +85,26 @@ export default function Navigation() {
   }, [sidebarOpen, isMenuOpen]);
 
   const handleLogout = async () => {
-    // Prevent double-click or multiple simultaneous logout attempts
-    if (isLoggingOut) {
-      console.log('⚠️ Logout already in progress, ignoring...');
-      return;
-    }
-    
+    if (isLoggingOut) return;
     setIsLoggingOut(true);
-    
+
     try {
-      console.log('🚪 Starting logout process...');
-      
-      // Close menu first
       closeMenu();
-      
-      // Sign out from Supabase
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) {
-        console.error('❌ Error signing out:', error);
-        // Even if there's an error, try to clear local state
-      } else {
-        console.log('✅ Successfully signed out from Supabase');
-      }
-      
-      // Verify session is actually cleared
-      const { data: { session: verifySession } } = await supabase.auth.getSession();
-      if (verifySession) {
-        console.warn('⚠️ Session still exists after signOut, forcing clear...');
-        // Force clear by removing all auth data
-        try {
-          await supabase.auth.signOut({ scope: 'global' });
-        } catch (forceError) {
-          console.warn('⚠️ Force signOut failed:', forceError);
-        }
-      } else {
-        console.log('✅ Session verified as cleared');
-      }
-      
-      // Clear any Supabase-related data from localStorage
+      await authSignOut();
+
+      // Clear any remaining Supabase keys from localStorage
       try {
-        const supabaseKeys = Object.keys(localStorage).filter(key => 
-          key.includes('supabase') || key.startsWith('sb-') || key.includes('auth')
-        );
-        supabaseKeys.forEach(key => {
-          localStorage.removeItem(key);
-        });
-        console.log(`🧹 Cleared ${supabaseKeys.length} Supabase keys from localStorage`);
-      } catch (storageError) {
-        console.warn('⚠️ Error clearing localStorage:', storageError);
-      }
-      
-      // Update local state immediately
-      setIsLoggedIn(false);
-      setUserEmail(null);
-      
-      // Wait a moment to ensure state is cleared and UI updates
-      await new Promise(resolve => setTimeout(resolve, 200));
-      
-      // Force page refresh to ensure clean state
-      // Use window.location.replace to prevent back button issues
-      window.location.replace('/');
-      
-    } catch (error) {
-      console.error('❌ Unexpected error during logout:', error);
-      // Even on error, try to redirect and clear state
-      setIsLoggedIn(false);
-      setUserEmail(null);
-      
-      // Clear localStorage on error too
-      try {
-        const supabaseKeys = Object.keys(localStorage).filter(key => 
+        const supabaseKeys = Object.keys(localStorage).filter(key =>
           key.includes('supabase') || key.startsWith('sb-') || key.includes('auth')
         );
         supabaseKeys.forEach(key => localStorage.removeItem(key));
-      } catch (e) {
-        // Ignore
-      }
-      
+      } catch (e) { /* ignore */ }
+
+      window.location.replace('/');
+    } catch (error) {
+      console.error('❌ Unexpected error during logout:', error);
       window.location.replace('/');
     } finally {
-      // Reset flag after a delay (in case redirect doesn't happen)
       setTimeout(() => setIsLoggingOut(false), 1000);
     }
   };

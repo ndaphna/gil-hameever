@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import NotificationSettings from '@/components/notifications/NotificationSettings';
-import { waitForSession, loadUserProfileWithRetry } from '@/lib/auth-helpers';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 interface UserProfile {
   id: string;
@@ -22,7 +22,7 @@ interface UserProfile {
 
 export default function ProfilePage() {
   const router = useRouter();
-  const pathname = usePathname();
+  const { user, profile: contextProfile, loading: authLoading, updateProfile } = useAuthContext();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [name, setName] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -38,77 +38,28 @@ export default function ProfilePage() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [changingPassword, setChangingPassword] = useState(false);
 
+  // Sync and initialize form state from AuthContext
   useEffect(() => {
-    // Reset loading state when pathname changes (user navigates to this page)
-        setLoading(true);
-        setProfile(null);
-        setName('');
-    
-    async function loadProfile() {
-      try {
-        // Wait for session to be ready with retry mechanism
-        const sessionResult = await waitForSession();
-        
-        if (!sessionResult || !sessionResult.user) {
-          console.log('Profile: No authenticated user found after retries, redirecting to login');
-          router.push('/login');
-          return;
-        }
-
-        const user = sessionResult.user;
-        console.log('Profile: User found:', user.id);
-
-        // Try to load profile with retry
-        let profileData = await loadUserProfileWithRetry(user.id);
-
-        // Create profile if it doesn't exist - use API to bypass RLS
-        if (!profileData) {
-          console.log('Profile: Profile not found, creating new profile...');
-          try {
-            const createResponse = await fetch('/api/create-profile', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                userId: user.id,
-                email: user.email || '',
-                name: user.user_metadata?.name || user.email?.split('@')[0] || 'משתמשת',
-              }),
-            });
-
-            if (!createResponse.ok) {
-              throw new Error('Failed to create profile');
-            }
-
-            // Retry loading profile after creation
-            profileData = await loadUserProfileWithRetry(user.id);
-          } catch (createError) {
-            console.error('Error creating profile:', createError);
-          }
-        }
-
-        if (profileData) {
-          setProfile(profileData);
-          // Use name if available, otherwise combine first_name and last_name
-          const fullName = profileData.name || 
-            (profileData.first_name && profileData.last_name 
-              ? `${profileData.first_name} ${profileData.last_name}` 
-              : profileData.first_name || profileData.last_name || '');
-          setName(fullName);
-          setPhoneNumber(profileData.phone_number || '');
-          setProfileImageUrl(profileData.profile_image_url || null);
-        } else {
-          console.error('Profile: Failed to load profile after all retries');
-        }
-      } catch (error) {
-        console.error('Error loading profile:', error);
-      } finally {
-        setLoading(false);
-      }
+    if (!authLoading && !user) {
+      console.log('Profile: No authenticated user found, redirecting to login');
+      router.push('/login');
+      return;
     }
 
-    loadProfile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pathname]);
+    if (!authLoading && contextProfile) {
+      setProfile(contextProfile as any);
+      
+      const fullName = contextProfile.name || 
+        (contextProfile.first_name && contextProfile.last_name 
+          ? `${contextProfile.first_name} ${contextProfile.last_name}` 
+          : contextProfile.first_name || contextProfile.last_name || '');
+          
+      // Only set initial values if we haven't touched the form yet or if they change externally
+      setName(fullName);
+      setPhoneNumber((contextProfile as any).phone_number || '');
+      setProfileImageUrl((contextProfile as any).profile_image_url || null);
+    }
+  }, [user, authLoading, contextProfile, router]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -134,8 +85,12 @@ export default function ProfilePage() {
           phone_number: phoneNumber || null,
         });
       }
-      
-      // Dispatch custom event to notify other components
+      // Update the global context state as well
+      await updateProfile({ 
+        name: name.trim(),
+        phone_number: phoneNumber || null,
+      } as any);
+
       window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (error: unknown) {
       setMessage('שגיאה בעדכון הפרופיל');
@@ -183,7 +138,8 @@ export default function ProfilePage() {
       if (profile) {
         setProfile({ ...profile, profile_image_url: data.imageUrl });
       }
-      setMessage('תמונת הפרופיל עודכנה בהצלחה');
+      // Update context state
+      await updateProfile({ profile_image_url: data.imageUrl } as any);
       
       // Dispatch custom event
       window.dispatchEvent(new CustomEvent('profileUpdated'));
@@ -225,8 +181,9 @@ export default function ProfilePage() {
       if (profile) {
         setProfile({ ...profile, profile_image_url: null });
       }
-      setMessage('תמונת הפרופיל נמחקה בהצלחה');
-      
+      // Update context state
+      await updateProfile({ profile_image_url: null } as any);
+
       // Dispatch custom event
       window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (error: any) {
@@ -294,7 +251,7 @@ export default function ProfilePage() {
     }
   };
 
-  if (loading) {
+  if (authLoading || (!profile && user)) {
     return (
       <DashboardLayout>
         <div className="loading-container">
@@ -303,6 +260,8 @@ export default function ProfilePage() {
       </DashboardLayout>
     );
   }
+
+  if (!user) return null;
 
   return (
     <DashboardLayout>

@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
+import { useEffect, Suspense } from 'react';
+import { useRouter } from 'next/navigation';
 import DashboardLayout from '../components/DashboardLayout';
 import MenopauseJournal from '@/components/journal/MenopauseJournal';
-import { supabase } from '@/lib/supabase';
+import { useAuthContext } from '@/contexts/AuthContext';
 // CSS imported in MenopauseJournal component
 
 function JournalContent({ userId }: { userId: string }) {
@@ -12,40 +12,16 @@ function JournalContent({ userId }: { userId: string }) {
 }
 
 export default function JournalPage() {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const pathname = usePathname();
+  const { user, loading } = useAuthContext();
 
   useEffect(() => {
-    // Reset loading state when pathname changes (user navigates to this page)
-    setLoading(true);
-    setUserId(null);
-    
-    const checkUser = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        
-        console.log('Journal: User check result:', user);
-        
-        // Redirect to login if no authenticated user
-        if (!user) {
-          console.log('Journal: No authenticated user found, redirecting to login');
-          router.push('/login');
-          return;
-        }
-
-        setUserId(user.id);
-      } catch (error) {
-        console.error('Error checking user:', error);
-        router.push('/login');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    checkUser();
-  }, [pathname, router]);
+    // Only redirect if we finished loading and there is NO user
+    if (!loading && !user) {
+      console.log('Journal: No authenticated user found, redirecting to login');
+      router.push('/login');
+    }
+  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -57,7 +33,7 @@ export default function JournalPage() {
     );
   }
 
-  if (!userId) {
+  if (!user) {
     return null;
   }
 
@@ -68,7 +44,7 @@ export default function JournalPage() {
           <div className="loading">טוען...</div>
         </div>
       }>
-        {userId && <JournalContent userId={userId} />}
+        <JournalContent userId={user.id} />
       </Suspense>
     </DashboardLayout>
   );

@@ -4,8 +4,7 @@ import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
-import { useTokens } from '@/hooks/useTokens';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import './Sidebar.css';
 
 interface SidebarProps {
@@ -15,16 +14,29 @@ interface SidebarProps {
 
 export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const pathname = usePathname();
-  const [userName, setUserName] = useState<string>('');
-  const [profileImageUrl, setProfileImageUrl] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [roadmapOpen, setRoadmapOpen] = useState(false);
   const [showImageModal, setShowImageModal] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
-  const { tokens, isLoading: tokensLoading } = useTokens();
-  const { isAdmin } = useAuth();
+  const { user, profile, isAdmin, updateProfile } = useAuthContext();
   const [tokenAnimation, setTokenAnimation] = useState<'decrease' | null>(null);
+  
+  // Use profile values first but fall back to auth user metadata and email
+  const tokens = profile?.current_tokens ?? (profile as any)?.tokens_remaining ?? 0;
+  const tokensLoading = !profile;
   const [prevTokens, setPrevTokens] = useState<number | null>(null);
+
+  // Derive display name and image from shared context profile OR user
+  const userName = profile?.first_name
+    || (profile as any)?.name?.split(' ')[0]
+    || profile?.full_name?.split(' ')[0]
+    || user?.user_metadata?.first_name
+    || user?.user_metadata?.full_name?.split(' ')[0]
+    || user?.user_metadata?.name?.split(' ')[0]
+    || user?.email?.split('@')[0]
+    || profile?.email?.split('@')[0]
+    || '';
+  const profileImageUrl = (profile as any)?.profile_image_url ?? null;
 
   // Initialize prevTokens after tokens are loaded
   useEffect(() => {
@@ -166,88 +178,7 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
     return () => clearTimeout(timer);
   }, [pathname, mounted, roadmapOpen]);
 
-  useEffect(() => {
-    if (!mounted) return;
-    
-    async function loadUserName() {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      // If no authenticated user, show default name
-      if (!user) {
-        console.log('Sidebar: No authenticated user found');
-        setUserName('משתמשת');
-        return;
-      }
-      
-      // Load user profile from database
-        let { data: profile } = await supabase
-          .from('user_profile')
-          .select('first_name, last_name, name, full_name, email, profile_image_url')
-          .eq('id', user.id)
-          .single();
-
-        // Create profile if it doesn't exist - use API to bypass RLS
-        if (!profile) {
-          await fetch('/api/create-profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              userId: user.id,
-              email: user.email || '',
-              name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'משתמשת',
-            }),
-          });
-
-          // Fetch the newly created profile
-          const { data: newProfile } = await supabase
-            .from('user_profile')
-            .select('first_name, last_name, name, full_name, email, profile_image_url')
-            .eq('id', user.id)
-            .single();
-          
-          profile = newProfile;
-        }
-
-        if (profile) {
-          // Use first_name only for display
-          setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
-          setProfileImageUrl(profile.profile_image_url || null);
-        }
-    }
-
-    loadUserName();
-  }, [mounted]);
-
-  // Listen for profile updates
-  useEffect(() => {
-    if (!mounted) return;
-    
-    // Listen for custom events (for profile updates)
-    const handleProfileUpdate = async () => {
-      console.log('Sidebar: Profile updated, reloading user name and image');
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profile')
-          .select('first_name, last_name, name, full_name, email, profile_image_url')
-          .eq('id', user.id)
-          .single();
-        
-        if (profile) {
-          // Use first_name only for display
-          setUserName(profile.first_name || profile.name?.split(' ')[0] || profile.full_name?.split(' ')[0] || profile.email?.split('@')[0] || 'משתמשת');
-          setProfileImageUrl(profile.profile_image_url || null);
-        }
-      }
-    };
-
-    window.addEventListener('profileUpdated', handleProfileUpdate);
-    
-    return () => {
-      window.removeEventListener('profileUpdated', handleProfileUpdate);
-    };
-  }, [mounted]);
+  // No need for loadUserName – profile comes from AuthContext above
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -282,10 +213,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         throw new Error(errorMessage);
       }
 
-      setProfileImageUrl(data.imageUrl);
+      // Trigger profile re-fetch via context so image updates everywhere
+      await updateProfile({ profile_image_url: data.imageUrl } as any);
       setShowImageModal(false);
-      
-      // Dispatch custom event
       window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (error: any) {
       alert('שגיאה בהעלאת תמונה: ' + (error.message || 'שגיאה לא ידועה'));
@@ -318,10 +248,9 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
         throw new Error(data.error || 'Failed to delete image');
       }
 
-      setProfileImageUrl(null);
+      // Trigger profile re-fetch via context
+      await updateProfile({ profile_image_url: null } as any);
       setShowImageModal(false);
-      
-      // Dispatch custom event
       window.dispatchEvent(new CustomEvent('profileUpdated'));
     } catch (error: any) {
       alert('שגיאה במחיקת תמונה: ' + (error.message || 'שגיאה לא ידועה'));

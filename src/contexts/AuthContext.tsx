@@ -9,10 +9,12 @@ interface AuthContextType {
   profile: UserProfile | null;
   loading: boolean;
   error: string | null;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<boolean>;
   signUp: (email: string, password: string, fullName: string) => Promise<boolean>;
   signOut: () => Promise<boolean>;
   updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
+  refreshAdminStatus: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);

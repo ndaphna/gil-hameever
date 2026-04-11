@@ -77,8 +77,8 @@ export const useKeyboardNavigation = () => {
       // If we're in a dropdown menu, handle arrow navigation
       if (activeElement?.closest('.nav-dropdown-menu')) {
         event.preventDefault();
-        const menuItems = Array.from(activeElement.closest('.nav-dropdown-menu')?.querySelectorAll('button') || []);
-        const currentIndex = menuItems.indexOf(activeElement);
+        const menuItems = Array.from(activeElement.closest('.nav-dropdown-menu')?.querySelectorAll('button') || []) as HTMLElement[];
+        const currentIndex = menuItems.indexOf(activeElement as HTMLElement);
         
         if (event.key === 'ArrowDown') {
           const nextIndex = (currentIndex + 1) % menuItems.length;

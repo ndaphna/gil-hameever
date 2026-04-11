@@ -7,6 +7,7 @@ import ConditionalNavigation from "./components/ConditionalNavigation";
 import CookieBanner from "../components/CookieBanner";
 import AccessibilityBubble from "../components/AccessibilityBubble";
 import ExitIntentHandler from "../components/ExitIntentHandler";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const assistant = Assistant({
   variable: "--font-assistant",
@@ -83,13 +84,15 @@ export default function RootLayout({
           `}
         </Script>
         <div className="app-wrapper">
-          <ConditionalNavigation />
-          <main id="main-content">
-            {children}
-          </main>
-          <CookieBanner />
-          <AccessibilityBubble />
-          <ExitIntentHandler />
+          <AuthProvider>
+            <ConditionalNavigation />
+            <main id="main-content">
+              {children}
+            </main>
+            <CookieBanner />
+            <AccessibilityBubble />
+            <ExitIntentHandler />
+          </AuthProvider>
         </div>
         <SpeedInsights />
       </body>

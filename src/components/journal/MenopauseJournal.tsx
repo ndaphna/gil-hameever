@@ -38,6 +38,9 @@ export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
 
   const loadDailyEntries = async () => {
     try {
+      // Ensure the client has the most up-to-date session from storage before requesting data
+      await supabase.auth.getSession();
+      
       // Load real data from database only
       console.log('MenopauseJournal: Loading real data from database for user:', userId);
       
@@ -47,7 +50,10 @@ export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
         .eq('user_id', userId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database query error in loadDailyEntries:', error);
+        throw error;
+      }
       setDailyEntries(data || []);
     } catch (error) {
       console.error('Error loading daily entries:', error);
@@ -56,6 +62,9 @@ export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
 
   const loadCycleEntries = async () => {
     try {
+      // Ensure session is synchronized
+      await supabase.auth.getSession();
+      
       // Load real data from database only
       console.log('MenopauseJournal: Loading real cycle data from database for user:', userId);
       
@@ -65,7 +74,10 @@ export default function MenopauseJournal({ userId }: MenopauseJournalProps) {
         .eq('user_id', userId)
         .order('date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Database query error in loadCycleEntries:', error);
+        throw error;
+      }
       setCycleEntries(data || []);
     } catch (error) {
       console.error('Error loading cycle entries:', error);
