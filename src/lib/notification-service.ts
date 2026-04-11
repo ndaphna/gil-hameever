@@ -284,7 +284,7 @@ export class NotificationService {
           return null;
         }
         // 406 = Not Acceptable - יכול להיות בעיית RLS, headers, או בעיה עם .single()
-        if (error.status === 406 || error.code === 'PGRST406' || error.message?.includes('406')) {
+        if ((error as any).status === 406 || error.code === 'PGRST406' || error.message?.includes('406')) {
           console.warn('⚠️ 406 Not Acceptable error. This might be due to RLS policies, missing Accept header, or no rows exist.');
           // אם אין שורה למשתמש, זה בסדר - נחזיר null
           return null;

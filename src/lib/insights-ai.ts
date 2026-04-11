@@ -141,7 +141,7 @@ export class InsightsAI {
         data: this.generateSleepVisualData(dailyEntries)
       };
     } else if (insight.category === 'symptoms' && !insight.visualData) {
-      const symptomName = insight.relatedData?.symptom || 'hot_flashes';
+      const symptomName = (insight.relatedData?.symptom as string) || 'hot_flashes';
       insight.visualData = {
         chartType: 'line',
         data: this.generateSymptomVisualData(dailyEntries, symptomName)
@@ -249,7 +249,7 @@ export class InsightsAI {
       }),
       datasets: [{
         label: 'איכות שינה',
-        data: sleepEntries.map(e => qualityScores[e.sleep_quality] || 2),
+        data: sleepEntries.map(e => qualityScores[(e.sleep_quality as string) || ''] || 2),
         backgroundColor: 'rgba(69, 183, 209, 0.2)',
         borderColor: '#45b7d1',
         tension: 0.4
@@ -267,7 +267,7 @@ export class InsightsAI {
       }),
       datasets: [{
         label: this.getSymptomName(symptom),
-        data: recentEntries.map(e => e[symptom] ? 1 : 0),
+        data: recentEntries.map(e => (e as any)[symptom] ? 1 : 0),
         backgroundColor: 'rgba(255, 107, 107, 0.2)',
         borderColor: '#ff6b6b',
         tension: 0.4
@@ -296,7 +296,7 @@ export class InsightsAI {
       }),
       datasets: [{
         label: 'מצב רוח',
-        data: moodEntries.map(e => moodScores[e.mood] || 3),
+        data: moodEntries.map(e => moodScores[(e.mood as string) || ''] || 3),
         backgroundColor: 'rgba(78, 205, 196, 0.2)',
         borderColor: '#4ecdc4',
         tension: 0.4
