@@ -17,6 +17,8 @@ export default function ConditionalNavigation() {
     '/good-sleep-access',
     '/brain-fog-access',
     '/sharp-memory-access',
+    '/heroine-checklist-landing',
+    '/heroine-checklist-thank-you',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);

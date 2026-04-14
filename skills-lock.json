@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "video-editing": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "4c0a0e2a3d3a3d2c8265e62ef83c0f93d02f36bffe44ddd9ce40645f114d1676"
+    }
+  }
+}

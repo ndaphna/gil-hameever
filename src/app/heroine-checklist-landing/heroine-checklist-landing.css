@@ -1,0 +1,479 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+/* Root Variables */
+:root {
+  --magenta: #FF0080;
+  --purple: #9D4EDD;
+  --soft-pink: #FFB6D9;
+  --light-purple: #E4CCFF;
+  --white: #FFFFFF;
+  --black: #1A1A1A;
+  --font-assistant: 'Assistant', sans-serif;
+}
+
+/* Global Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   PAGE CONTAINER
+   ============================================================ */
+.hc-page-container {
+  width: 100vw;
+  max-width: 100vw;
+  min-height: 100dvh;
+  min-height: 100vh;
+  height: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: var(--font-assistant);
+  background: linear-gradient(145deg, rgba(255, 182, 217, 0.12) 0%, rgba(228, 204, 255, 0.12) 60%, rgba(255, 255, 255, 0.95) 100%);
+}
+
+@media (min-width: 1024px) {
+  .hc-page-container {
+    height: 100dvh;
+    height: 100vh;
+    max-height: 100dvh;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+}
+
+/* ============================================================
+   TOP BANNER
+   ============================================================ */
+.hc-top-banner {
+  width: 100%;
+  min-height: 70px;
+  height: clamp(70px, 10vh, 100px);
+  max-height: 100px;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(0.75rem, 1.5vh, 1.25rem) clamp(1rem, 3vw, 2rem);
+  box-shadow: 0 6px 28px rgba(255, 0, 128, 0.4);
+  z-index: 10;
+  position: relative;
+}
+
+.hc-banner-logo {
+  color: var(--white);
+  font-size: clamp(1.1rem, 3.5vw, 2rem);
+  font-weight: 700;
+  text-align: center;
+  line-height: 1.4;
+  letter-spacing: 0.01em;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================================
+   HERO SECTION
+   ============================================================ */
+.hc-hero-section {
+  height: auto;
+  min-height: auto;
+  width: 100%;
+  max-width: 100vw;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 3vw, 1.5rem);
+  overflow-x: hidden;
+  overflow-y: visible;
+  position: relative;
+  z-index: 1;
+}
+
+@media (min-width: 1024px) {
+  .hc-hero-section {
+    flex: 1;
+    height: auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: hidden;
+    padding: clamp(0.75rem, 1.5vh, 1.25rem) clamp(2rem, 4vw, 4rem);
+  }
+}
+
+/* ============================================================
+   HERO CONTENT
+   ============================================================ */
+.hc-hero-content {
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2vh, 1.5rem);
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (min-width: 769px) {
+  .hc-hero-content {
+    display: grid;
+    /* RTL Grid: col 1 = visual RIGHT (text/content) | col 2 = visual LEFT (image) */
+    grid-template-columns: 1.5fr 1fr;
+    grid-template-rows: auto 1fr;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    align-items: flex-start;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hc-hero-content {
+    flex: 1;
+    min-height: 0;
+    height: auto;
+    overflow: hidden;
+  }
+}
+
+/* ============================================================
+   HEADLINE SECTION
+   ============================================================ */
+.hc-headline-section {
+  width: 100%;
+  flex-shrink: 0;
+  text-align: right;
+  overflow-x: hidden;
+}
+
+@media (min-width: 769px) {
+  .hc-headline-section {
+    /* In CSS Grid with dir=rtl: col 1 = visual RIGHT, col 2 = visual LEFT */
+    /* Text must be on visual RIGHT → col 1 */
+    grid-column: 1 / 2;
+    grid-row: 1 / 2;
+    text-align: right;
+    padding-right: clamp(0.5rem, 1vw, 1rem);
+    padding-left: clamp(0.5rem, 1vw, 1rem);
+    align-self: start;
+  }
+}
+
+.hc-main-headline {
+  font-size: clamp(1.65rem, 5.5vw, 3.5rem);
+  font-weight: 800;
+  color: var(--black);
+  line-height: 1.25;
+  margin: 0 0 clamp(0.5rem, 1vh, 0.75rem) 0;
+  letter-spacing: -0.02em;
+  direction: rtl;
+  unicode-bidi: isolate;
+  text-align: right;
+}
+
+.hc-sub-headline {
+  font-size: clamp(0.9375rem, 2vw, 1.3rem);
+  font-weight: 600;
+  color: var(--purple);
+  line-height: 1.55;
+  margin: 0 0 clamp(0.5rem, 1vh, 0.75rem) 0;
+  direction: rtl;
+  unicode-bidi: isolate;
+  text-align: right;
+}
+
+@media (min-width: 769px) {
+  .hc-main-headline {
+    font-size: clamp(2.25rem, 4.5vw, 3.75rem);
+  }
+
+  .hc-sub-headline {
+    font-size: clamp(1.1rem, 2vw, 1.5rem);
+  }
+}
+
+/* ============================================================
+   IMAGE CONTAINER
+   ============================================================ */
+.hc-image-container {
+  width: 100%;
+  max-width: 100%;
+  flex: 0 1 auto;
+  min-height: 0;
+  height: auto;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: none;
+  border: none;
+  box-shadow: none;
+  overflow: visible;
+}
+
+@media (min-width: 769px) {
+  .hc-image-container {
+    /* In CSS Grid with dir=rtl: col 2 = visual LEFT → image on left */
+    grid-column: 2 / 3;
+    grid-row: 1 / 3;
+    align-self: flex-start;
+    justify-content: center;
+    height: auto;
+    max-height: 100%;
+    width: 100%;
+  }
+}
+
+.hc-guide-image {
+  width: 100%;
+  max-width: 280px;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  border: 1px solid rgba(157, 78, 221, 0.15);
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 12px rgba(157, 78, 221, 0.15);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: block;
+  margin: 0 auto;
+}
+
+.hc-guide-image:hover {
+  transform: scale(1.02) rotate(-0.5deg);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.14), 0 4px 16px rgba(157, 78, 221, 0.2);
+}
+
+@media (min-width: 769px) {
+  .hc-guide-image {
+    max-width: 100%;
+    max-height: 100%;
+  }
+}
+
+/* ============================================================
+   BODY & CTA SECTION
+   ============================================================ */
+.hc-body-cta-section {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(0.75rem, 1.5vh, 1.25rem);
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+
+@media (min-width: 769px) {
+  .hc-body-cta-section {
+    /* In CSS Grid with dir=rtl: col 1 = visual RIGHT → body/CTA on right */
+    grid-column: 1 / 2;
+    grid-row: 2 / 3;
+    align-self: start;
+    gap: clamp(0.75rem, 1.5vh, 1.25rem);
+    padding-right: clamp(0.5rem, 1vw, 1rem);
+    padding-left: clamp(0.5rem, 1vw, 1rem);
+    overflow: hidden;
+    text-align: right;
+  }
+}
+
+.hc-body-text {
+  font-size: clamp(0.9rem, 1.8vw, 1.125rem);
+  font-weight: 500;
+  color: rgba(26, 26, 26, 0.85);
+  line-height: 1.75;
+  text-align: right;
+  direction: rtl;
+  unicode-bidi: isolate;
+  padding: clamp(0.75rem, 1.5vh, 1rem) 0;
+  border-right: 3px solid var(--soft-pink);
+  padding-right: clamp(0.75rem, 1.5vw, 1rem);
+  background: rgba(255, 182, 217, 0.05);
+  border-radius: 0 8px 8px 0;
+}
+
+/* ============================================================
+   CTA BUTTON AREA
+   ============================================================ */
+.hc-cta-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.5rem, 1vh, 0.75rem);
+}
+
+.hc-cta-button {
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  color: var(--white);
+  font-size: clamp(1.0625rem, 2.2vw, 1.4rem);
+  font-weight: 800;
+  padding: clamp(0.875rem, 1.75vh, 1.125rem) clamp(1.75rem, 4.5vw, 3rem);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(255, 0, 128, 0.35);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: var(--font-assistant);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+  width: 100%;
+  max-width: 420px;
+  direction: rtl;
+  unicode-bidi: isolate;
+  /* Pulse animation to draw attention */
+  animation: ctaPulse 3s ease-in-out infinite;
+}
+
+@keyframes ctaPulse {
+  0%, 100% {
+    box-shadow: 0 8px 28px rgba(255, 0, 128, 0.35);
+  }
+  50% {
+    box-shadow: 0 10px 36px rgba(255, 0, 128, 0.55), 0 0 0 6px rgba(255, 0, 128, 0.1);
+  }
+}
+
+.hc-cta-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.hc-cta-button:hover::before {
+  left: 100%;
+}
+
+.hc-cta-button:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow: 0 14px 36px rgba(255, 0, 128, 0.5);
+  animation: none;
+}
+
+.hc-cta-button:active {
+  transform: translateY(-1px);
+}
+
+/* ============================================================
+   DECORATIVE BACKGROUNDS
+   ============================================================ */
+.hc-bg-decoration {
+  position: absolute;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.hc-bg-decoration-1 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 182, 217, 0.35) 0%, transparent 70%);
+  top: -120px;
+  right: -100px;
+  animation: hcPulse 8s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+.hc-bg-decoration-2 {
+  width: 350px;
+  height: 350px;
+  background: radial-gradient(circle, rgba(228, 204, 255, 0.35) 0%, transparent 70%);
+  bottom: -100px;
+  left: -80px;
+  animation: hcPulse 10s ease-in-out infinite;
+  animation-delay: 1s;
+  opacity: 0.6;
+}
+
+.hc-bg-decoration-3 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(157, 78, 221, 0.2) 0%, transparent 70%);
+  top: 45%;
+  left: 45%;
+  animation: hcPulse 12s ease-in-out infinite;
+  animation-delay: 2s;
+  opacity: 0.5;
+}
+
+@keyframes hcPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.75;
+  }
+}
+
+/* ============================================================
+   MOBILE ADJUSTMENTS
+   ============================================================ */
+@media (max-width: 480px) {
+  .hc-top-banner {
+    height: clamp(60px, 9vh, 80px);
+    min-height: 60px;
+  }
+
+  .hc-banner-logo {
+    font-size: clamp(0.95rem, 4vw, 1.25rem);
+  }
+
+  .hc-hero-section {
+    padding: clamp(0.75rem, 1.5vh, 1rem) clamp(0.75rem, 2vw, 1rem);
+  }
+
+  .hc-hero-content {
+    gap: clamp(0.75rem, 1.5vh, 1rem);
+  }
+
+  .hc-main-headline {
+    font-size: clamp(1.45rem, 6.5vw, 1.9rem);
+  }
+
+  .hc-sub-headline {
+    font-size: clamp(0.875rem, 4vw, 1rem);
+  }
+
+  .hc-guide-image {
+    max-width: 240px;
+  }
+
+  .hc-cta-button {
+    font-size: clamp(1rem, 4.5vw, 1.125rem);
+    padding: clamp(0.75rem, 1.5vh, 0.875rem) clamp(1.25rem, 4vw, 1.75rem);
+  }
+
+  .hc-bg-decoration-1,
+  .hc-bg-decoration-2,
+  .hc-bg-decoration-3 {
+    width: 200px;
+    height: 200px;
+  }
+}
+
+/* ============================================================
+   MEDIUM MOBILE (481-768px)
+   ============================================================ */
+@media (min-width: 481px) and (max-width: 768px) {
+  .hc-guide-image {
+    max-width: 320px;
+  }
+}

@@ -1,0 +1,294 @@
+/* Heroine Checklist - Opt-In Modal Styles */
+
+/* Overlay */
+.hc-opt-in-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: hcFadeIn 0.3s ease-out;
+}
+
+@keyframes hcFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Modal Container */
+.hc-opt-in-modal {
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, 0.28),
+              0 0 0 1px rgba(255, 0, 128, 0.12);
+  max-width: 520px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  animation: hcSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: 'Assistant', sans-serif;
+}
+
+@keyframes hcSlideUp {
+  from {
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Close Button - TOP-LEFT (RTL: left side) */
+.hc-opt-in-close {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;  /* RTL: close on LEFT */
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 50%;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+  color: #777;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.hc-opt-in-close:hover {
+  background: rgba(0, 0, 0, 0.12);
+  color: #111;
+  transform: rotate(90deg);
+}
+
+/* Progress Banner */
+.hc-opt-in-banner {
+  background: linear-gradient(135deg, rgba(255, 182, 217, 0.25) 0%, rgba(228, 204, 255, 0.25) 100%);
+  padding: 0.875rem 1.75rem;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 0, 128, 0.12);
+}
+
+.hc-opt-in-banner-text {
+  font-size: clamp(0.875rem, 1.8vw, 1rem);
+  font-weight: 700;
+  color: #FF0080;
+  letter-spacing: 0.02em;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Main Content */
+.hc-opt-in-content {
+  padding: clamp(1.5rem, 3vh, 2.25rem) clamp(1.5rem, 4vw, 2.25rem);
+}
+
+/* Main Heading */
+.hc-opt-in-heading {
+  font-size: clamp(1.5rem, 4.5vw, 2.1rem);
+  font-weight: 800;
+  color: #1A1A1A;
+  text-align: center;
+  margin: 0 0 clamp(0.5rem, 1.2vh, 0.875rem) 0;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Sub Heading / Instructions */
+.hc-opt-in-subheading {
+  font-size: clamp(0.9375rem, 2vw, 1.1rem);
+  font-weight: 500;
+  color: #1A1A1A;
+  text-align: right;
+  margin: 0 0 clamp(1.25rem, 2.5vh, 1.75rem) 0;
+  line-height: 1.7;
+  opacity: 0.88;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Form */
+.hc-opt-in-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 0.875rem;
+}
+
+/* Email Input */
+.hc-opt-in-input {
+  width: 100%;
+  padding: clamp(0.875rem, 1.5vh, 1.125rem) clamp(1rem, 2vw, 1.5rem);
+  font-size: clamp(1rem, 1.8vw, 1.125rem);
+  font-weight: 500;
+  color: #1A1A1A;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid rgba(157, 78, 221, 0.25);
+  border-radius: 14px;
+  outline: none;
+  transition: all 0.3s ease;
+  font-family: 'Assistant', sans-serif;
+  text-align: right;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.hc-opt-in-input::placeholder {
+  color: rgba(0, 0, 0, 0.38);
+  text-align: right;
+  direction: rtl;
+}
+
+.hc-opt-in-input:focus {
+  border-color: #FF0080;
+  box-shadow: 0 0 0 4px rgba(255, 0, 128, 0.1);
+  background: #fff;
+}
+
+.hc-opt-in-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Error Message */
+.hc-opt-in-error {
+  background: rgba(255, 0, 0, 0.08);
+  border: 1px solid rgba(255, 0, 0, 0.25);
+  color: #c62828;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  text-align: center;
+  font-weight: 500;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Submit Button */
+.hc-opt-in-button {
+  background: linear-gradient(135deg, #FF0080 0%, #9D4EDD 100%);
+  color: #ffffff;
+  font-size: clamp(1.125rem, 2.2vw, 1.375rem);
+  font-weight: 800;
+  padding: clamp(1rem, 2vh, 1.25rem) clamp(1.5rem, 3vw, 2.5rem);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 8px 28px rgba(255, 0, 128, 0.38);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  font-family: 'Assistant', sans-serif;
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.hc-opt-in-button::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s;
+}
+
+.hc-opt-in-button:hover::before {
+  left: 100%;
+}
+
+.hc-opt-in-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 36px rgba(255, 0, 128, 0.52);
+}
+
+.hc-opt-in-button:active {
+  transform: translateY(0);
+}
+
+.hc-opt-in-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Privacy Notice */
+.hc-opt-in-privacy {
+  font-size: clamp(0.75rem, 1.4vw, 0.875rem);
+  color: rgba(0, 0, 0, 0.55);
+  text-align: center;
+  margin: 0.875rem 0 0 0;
+  line-height: 1.6;
+  font-weight: 400;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Success State */
+.hc-opt-in-success {
+  text-align: center;
+  padding: 1.25rem 0;
+}
+
+.hc-opt-in-success-title {
+  font-size: clamp(1.5rem, 3.5vw, 2rem);
+  font-weight: 800;
+  color: #FF0080;
+  margin: 0 0 1rem 0;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+.hc-opt-in-success-text {
+  font-size: clamp(1rem, 1.8vw, 1.125rem);
+  color: #1A1A1A;
+  font-weight: 500;
+  line-height: 1.65;
+  direction: rtl;
+  unicode-bidi: isolate;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .hc-opt-in-modal {
+    max-width: 92%;
+    border-radius: 20px;
+  }
+
+  .hc-opt-in-content {
+    padding: clamp(1.25rem, 2.5vh, 1.75rem) clamp(1.25rem, 4vw, 1.5rem);
+  }
+
+  .hc-opt-in-heading {
+    font-size: clamp(1.25rem, 5.5vw, 1.75rem);
+  }
+
+  .hc-opt-in-subheading {
+    font-size: clamp(0.875rem, 3.5vw, 1rem);
+  }
+
+  .hc-opt-in-button {
+    font-size: clamp(1rem, 4.5vw, 1.125rem);
+    padding: clamp(0.875rem, 1.5vh, 1rem) clamp(1.25rem, 4vw, 2rem);
+  }
+}
