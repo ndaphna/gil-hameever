@@ -51,7 +51,8 @@ export default function HeroineChecklistValueableContentPage() {
         {/* Header */}
         <header className="hcvc-header">
           <h1 className="hcvc-title">
-            🦸‍♀️ צ&#39;ק-ליסט הגיבורות: איך לא לקרוס ב-20:00 ולהחזיר לעצמך את הערב
+            <span className="hcvc-title-line1">צ&#39;ק-ליסט הגיבורות:</span>
+            <span className="hcvc-title-line2">איך לא לקרוס ב-20:00 ולהחזיר לעצמך את הערב</span>
           </h1>
           <div className="hcvc-intro">
             <p>

@@ -70,17 +70,37 @@
   border-bottom: 2px solid var(--light-purple);
 }
 
+/* Title: two-line layout */
 .hcvc-title {
-  font-size: clamp(1.6rem, 5vw, 2.6rem);
-  font-weight: 800;
-  line-height: 1.25;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
   margin-bottom: 1.25rem;
+  direction: rtl;
+  text-align: right;
+}
+
+/* Line 1: "צ'ק-ליסט הגיבורות:" — large, bold, gradient */
+.hcvc-title-line1 {
+  font-size: clamp(1.9rem, 6vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
   background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  direction: rtl;
-  text-align: right;
+  display: block;
+}
+
+/* Line 2: subtitle — smaller, dark, not gradient */
+.hcvc-title-line2 {
+  font-size: clamp(1.15rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--black);
+  opacity: 0.82;
+  display: block;
 }
 
 .hcvc-intro {
