@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "skill-creator": {
+      "source": "bobmatnyc/claude-mpm-skills",
+      "sourceType": "github",
+      "computedHash": "aa514b1daf5f2a638bc1f3e0df3a4c6bd90e01131e17fee0c21f7fad4385ba73"
+    },
     "video-editing": {
       "source": "affaan-m/everything-claude-code",
       "sourceType": "github",
