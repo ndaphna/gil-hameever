@@ -1,25 +1,46 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { createServerClient, type CookieOptions } from '@supabase/ssr';
+import { NextResponse, type NextRequest } from 'next/server';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({ request });
+
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+          response = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
+
+  // Refreshes the auth session on every request — keeps cookies valid for SSR.
+  await supabase.auth.getUser();
+
+  // Legacy members-area cookie guard (kept for backward compatibility).
   const { pathname } = request.nextUrl;
-  
-  // Old member-based auth check (kept for backward compatibility)
-  if (pathname.startsWith("/members")) {
-    const isMember = request.cookies.get("member")?.value === "true";
+  if (pathname.startsWith('/members')) {
+    const isMember = request.cookies.get('member')?.value === 'true';
     if (!isMember) {
-      const loginUrl = new URL("/login", request.url);
-      return NextResponse.redirect(loginUrl);
+      return NextResponse.redirect(new URL('/login', request.url));
     }
   }
-  
-  // Note: Supabase auth is handled client-side for better performance
-  // The client-side code in dashboard/page.tsx handles authentication checks
-  // This avoids blocking requests and allows for better user experience
-  
-  return NextResponse.next();
+
+  return response;
 }
 
 export const config = {
-  matcher: ["/members/:path*"],
+  matcher: [
+    // Match everything except static assets and image files.
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
+  ],
 };
