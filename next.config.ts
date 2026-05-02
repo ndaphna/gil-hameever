@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  turbopack: {
+    root: __dirname,
+  },
+
   webpack: (config, { isServer }) => {
     if (!isServer) {
       config.resolve.fallback = {
