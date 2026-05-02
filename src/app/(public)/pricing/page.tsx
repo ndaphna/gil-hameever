@@ -1,11 +1,11 @@
-import type { Metadata } from 'next'
+﻿import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'מחירים ומנויים — מנופאוזית וטוב לה',
-  description: 'בחרי את התכנית המתאימה לך — גישה לכלים, מאמרים ו-AI אישי לגיל המעבר. מחירים שקופים, ללא הפתעות.',
+  title: 'מחירים ומנויים, מנופאוזית וטוב לה',
+  description: 'בחרי את התכנית המתאימה לך, גישה לכלים, מאמרים ו-AI אישי לגיל המעבר. מחירים שקופים, ללא הפתעות.',
   openGraph: {
-    title: 'מחירים ומנויים — מנופאוזית וטוב לה',
-    description: 'בחרי את התכנית המתאימה לך — גישה לכלים, מאמרים ו-AI אישי לגיל המעבר. מחירים שקופים, ללא הפתעות.',
+    title: 'מחירים ומנויים, מנופאוזית וטוב לה',
+    description: 'בחרי את התכנית המתאימה לך, גישה לכלים, מאמרים ו-AI אישי לגיל המעבר. מחירים שקופים, ללא הפתעות.',
   },
 }
 
@@ -18,10 +18,10 @@ export default function PricingPage() {
       </p>
       <ul className="space-y-2">
         <li className="rounded border border-neutral-200 dark:border-neutral-800 p-4">
-          <strong>חינמי</strong> — גישה לתכנים ציבוריים
+          <strong>חינמי</strong>, גישה לתכנים ציבוריים
         </li>
         <li className="rounded border border-neutral-200 dark:border-neutral-800 p-4">
-          <strong>פרימיום</strong> — תכנים וכלים לנשות המועדון בלבד
+          <strong>פרימיום</strong>, תכנים וכלים לנשות המועדון בלבד
         </li>
       </ul>
     </main>

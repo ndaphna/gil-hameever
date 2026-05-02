@@ -38,7 +38,7 @@ export default function HotFlashZoomLanding() {
             <li className="hfz-bullet-item">
               <span className="hfz-bullet-check">✓</span>
               <span>
-                <strong>הראש שלך:</strong> איך להפוך את הרגע הכי מביך לרגע שמראה בדיוק מי את — מנהלת שיודעת לנהל גם את עצמה
+                <strong>הראש שלך:</strong> איך להפוך את הרגע הכי מביך לרגע שמראה בדיוק מי את, מנהלת שיודעת לנהל גם את עצמה
               </span>
             </li>
             <li className="hfz-bullet-item">

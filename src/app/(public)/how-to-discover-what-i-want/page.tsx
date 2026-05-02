@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 
@@ -199,9 +199,9 @@ export default function HowToDiscoverWhatIWantPage() {
               </p>
             </blockquote>
             <div className="image-container">
-              <img src="https://i.imghippo.com/files/WijL2944vA.jpg" alt="מחפשת את מה שבא לי — ומוצאת את עצמי בדרך" />
+              <img src="https://i.imghippo.com/files/WijL2944vA.jpg" alt="מחפשת את מה שבא לי, ומוצאת את עצמי בדרך" />
               <p className="image-caption" style={{ textAlign: 'center', marginTop: '16px', fontStyle: 'italic' }}>
-                &quot;מחפשת את מה שבא לי — ומוצאת את עצמי בדרך.&quot; 💗🔍🎶<br />
+                &quot;מחפשת את מה שבא לי, ומוצאת את עצמי בדרך.&quot; 💗🔍🎶<br />
                 - עליזה שנקין
               </p>
             </div>

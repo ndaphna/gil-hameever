@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import './secret-report.css';
 
@@ -1181,9 +1181,9 @@ export default function SecretReportPage() {
                 <p className="book-paragraph">אני אישה בגיל המעבר וחווה תסמינים. עזור לי לנסח פנייה ברורה לרופא/ה</p>
                 <p className="book-paragraph">כדי לקבל אבחון נכון:</p>
                 <ul className="book-list">
-                  <li>— רשימת תסמינים</li>
-                  <li>— מה חשוב לבדוק</li>
-                  <li>— אילו שאלות עליי לשאול</li>
+                  <li>, רשימת תסמינים</li>
+                  <li>, מה חשוב לבדוק</li>
+                  <li>, אילו שאלות עליי לשאול</li>
                 </ul>
               </div>
 

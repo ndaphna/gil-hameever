@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 
@@ -165,7 +165,7 @@ export default function CommunityNewConnectionsPage() {
               <img src="https://i.imghippo.com/files/zbUS5527lIg.jpg" alt="קבוצה, קהילה, חיבורים חדשים" />
             </div>
             <p className="highlight-text" style={{ textAlign: 'center', marginTop: '24px', fontStyle: 'italic' }}>
-              &quot;לא נולדות עם שבט — לפעמים פשוט יוצאות מהקונכייה ומוצאות אותו.&quot; 🐚💞<br />
+              &quot;לא נולדות עם שבט, לפעמים פשוט יוצאות מהקונכייה ומוצאות אותו.&quot; 🐚💞<br />
               - עליזה שנקין
             </p>
           </div>
