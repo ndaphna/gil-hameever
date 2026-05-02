@@ -42,7 +42,7 @@ Create `src/app/sitemap.ts` using `MetadataRoute.Sitemap`. Include all routes un
 
 ### 1.4 Root Layout — `metadataBase` + OpenGraph defaults
 Update `src/app/layout.tsx`:
-- Add `metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gil-hameever.co.il')` — set `NEXT_PUBLIC_SITE_URL` in Vercel env vars to the confirmed production domain
+- Add `metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gilhameever.com')` — set `NEXT_PUBLIC_SITE_URL` in Vercel env vars to the confirmed production domain
 - Add default `openGraph` block: `title`, `description`, `locale: 'he_IL'`, `type: 'website'`, `siteName`, default OG image
 - Add default `twitter` card block: `card: 'summary_large_image'`
 - Keep existing GA4 script
@@ -79,7 +79,7 @@ Expand the seed list using Google Search (autocomplete + People Also Ask) and fr
 - Symptom + context: "גלי חום בלילה", "ערפל מוחי איך להתמודד", "חרדות גיל המעבר"
 - Information-seeking: "תסמיני פרי מנופאוזה", "כמה זמן נמשך גיל המעבר"
 - Solution-seeking: "עזרה בגיל המעבר", "תמיכה נשים גיל המעבר ישראל"
-- Brand-adjacent: "גיבורה ספר גיל המעבר", "אינבל גיל המעבר"
+- Brand-adjacent: "גיבורה ספר גיל המעבר", "ענבל גיל המעבר"
 
 ### 2.2 Keyword → Page Mapping
 Each page gets one primary keyword and 2–3 secondary keywords. No keyword cannibalization — one primary per page.
@@ -118,7 +118,7 @@ Each page gets one primary keyword and 2–3 secondary keywords. No keyword cann
 
 ### 2.3 Metadata Standards
 - **Title format:** `[מילת מפתח ראשית] | מנופאוזית וטוב לה` — max 60 chars
-- **Description:** 120–160 chars, Hebrew, includes primary keyword, in Inbal's voice — conversational, empowering, not clinical
+- **Description:** 120–160 chars, Hebrew, includes primary keyword, in ענבל's voice — conversational, empowering, not clinical
 - **`generateMetadata`** for any page with dynamic content (e.g., articles)
 
 ---
@@ -134,7 +134,7 @@ Implemented as React server components rendering `<script type="application/ld+j
 {
   "@type": "Organization",
   "name": "מנופאוזית וטוב לה",
-  "url": "https://gil-hameever.co.il",
+  "url": "https://gilhameever.com",
   "description": "...",
   "inLanguage": "he"
 }
@@ -142,7 +142,7 @@ Implemented as React server components rendering `<script type="application/ld+j
 + `WebSite` with `SearchAction` (sitelinks search box potential)
 
 **Symptom pages:**
-- `Article` schema: headline, description, author (Inbal), datePublished, inLanguage
+- `Article` schema: headline, description, author (ענבל), datePublished, inLanguage
 - `FAQPage` schema: if page contains Q&A sections — high value for featured snippets
 
 **Book landing page (`/gibora`):**
@@ -193,7 +193,7 @@ Runs after Search Console has 4–8 weeks of data.
 A new page is justified if:
 - Keyword has measurable search volume in Israel
 - No existing page covers it as primary topic
-- Fits the site's brand and Inbal's voice
+- Fits the site's brand and ענבל's voice
 
 ---
 
