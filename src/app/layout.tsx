@@ -50,12 +50,46 @@ const kalam = Kalam({
   display: "swap",
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gilhameever.com'
+const defaultTitle = 'מנופאוזית וטוב לה'
+const defaultDescription = 'המקום של נשים בגיל המעבר — מידע, כלים ותמיכה לחיות טוב יותר בגיל 50 ומעלה'
+
 export const metadata: Metadata = {
-  title: "מנופאוזית וטוב לה",
-  description: "🌺 לפרוח באמצע החיים ומעבר",
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: defaultTitle,
+    template: `%s | מנופאוזית וטוב לה`,
+  },
+  description: defaultDescription,
   icons: {
     icon: '/favicon.ico',
     apple: '/favicon.png',
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'he_IL',
+    url: siteUrl,
+    siteName: 'מנופאוזית וטוב לה',
+    title: defaultTitle,
+    description: defaultDescription,
+    images: [
+      {
+        url: '/logo.png',
+        width: 800,
+        height: 800,
+        alt: 'מנופאוזית וטוב לה',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: defaultTitle,
+    description: defaultDescription,
+    images: ['/logo.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
