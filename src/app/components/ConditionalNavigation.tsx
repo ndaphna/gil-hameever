@@ -19,6 +19,9 @@ export default function ConditionalNavigation() {
     '/sharp-memory-access',
     '/heroine-checklist-landing',
     '/heroine-checklist-thank-you',
+    '/hot-flash-zoom-landing',
+    '/sleep-guide-landing',
+    '/emergency-map-guide-landing',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
