@@ -22,6 +22,7 @@ export default function ConditionalNavigation() {
     '/hot-flash-zoom-landing',
     '/sleep-guide-landing',
     '/emergency-map-guide-landing',
+    '/strength-home-landing',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
