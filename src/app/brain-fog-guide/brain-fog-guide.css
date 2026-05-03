@@ -1,0 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+  --magenta: #FF0080;
+  --purple: #9D4EDD;
+  --soft-pink: #FFB6D9;
+  --light-purple: #E4CCFF;
+  --white: #FFFFFF;
+  --black: #1A1A1A;
+  --gray-text: #4A4A4A;
+  --card-bg: #FAFAFA;
+  --font-assistant: 'Assistant', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+.bfgvc-page {
+  width: 100%;
+  min-height: 100vh;
+  background: #ffffff;
+  direction: rtl;
+  unicode-bidi: isolate;
+  font-family: var(--font-assistant);
+  color: var(--black);
+  position: relative;
+  overflow-x: hidden;
+}
+
+.bfgvc-banner {
+  width: 100%;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(255, 0, 128, 0.35);
+  position: relative;
+  z-index: 2;
+}
+
+.bfgvc-banner-text {
+  color: var(--white);
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.bfgvc-wrapper {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: clamp(2rem, 5vw, 3.5rem) clamp(1.25rem, 4vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 3vw, 1.75rem);
+  position: relative;
+  z-index: 1;
+}
+
+.bfgvc-header {
+  text-align: right;
+  padding-bottom: clamp(1.5rem, 3vw, 2rem);
+  border-bottom: 2px solid var(--light-purple);
+}
+
+.bfgvc-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  margin-bottom: 1.25rem;
+  direction: rtl;
+  text-align: right;
+}
+
+.bfgvc-title-line1 {
+  font-size: clamp(1.9rem, 6vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: block;
+}
+
+.bfgvc-title-line2 {
+  font-size: clamp(1.15rem, 3.5vw, 1.75rem);
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--black);
+  opacity: 0.82;
+  display: block;
+}
+
+.bfgvc-intro {
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  line-height: 1.85;
+  color: var(--gray-text);
+  text-align: right;
+  direction: rtl;
+}
+
+.bfgvc-intro p + p { margin-top: 0.9rem; }
+
+.bfgvc-intro strong {
+  color: var(--black);
+  font-weight: 700;
+}
+
+.bfgvc-hacks-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 2.5vw, 1.5rem);
+}
+
+.bfgvc-card {
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1.5px solid rgba(157, 78, 221, 0.15);
+  padding: clamp(1.25rem, 3vw, 1.75rem);
+  text-align: right;
+  direction: rtl;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.bfgvc-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 4px; height: 100%;
+  background: linear-gradient(180deg, var(--magenta) 0%, var(--purple) 100%);
+  border-radius: 0 0 0 4px;
+}
+
+.bfgvc-card:hover {
+  box-shadow: 0 6px 28px rgba(157, 78, 221, 0.12);
+  transform: translateY(-2px);
+}
+
+.bfgvc-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  direction: rtl;
+}
+
+.bfgvc-card-icon {
+  font-size: clamp(1.5rem, 4vw, 1.85rem);
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 6px rgba(255, 0, 128, 0.3));
+}
+
+.bfgvc-card-title {
+  font-size: clamp(1.15rem, 3vw, 1.4rem);
+  font-weight: 800;
+  color: var(--black);
+  direction: rtl;
+  text-align: right;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.bfgvc-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  line-height: 1.8;
+  color: var(--gray-text);
+  direction: rtl;
+  text-align: right;
+}
+
+.bfgvc-card-body strong {
+  color: var(--magenta);
+  font-weight: 800;
+}
+
+.bfgvc-closing {
+  background: linear-gradient(135deg, rgba(255, 182, 217, 0.18) 0%, rgba(228, 204, 255, 0.2) 100%);
+  border-radius: 20px;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  text-align: right;
+  direction: rtl;
+  border: 1.5px solid rgba(157, 78, 221, 0.15);
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.bfgvc-closing-text {
+  font-size: clamp(1rem, 2.2vw, 1.15rem);
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.75;
+  direction: rtl;
+}
+
+.bfgvc-signoff {
+  font-size: clamp(0.95rem, 2vw, 1.05rem);
+  color: var(--purple);
+  font-weight: 700;
+  margin-top: 0.5rem;
+  direction: rtl;
+}
+
+.bfgvc-blob {
+  position: fixed;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.35;
+}
+
+.bfgvc-blob-1 {
+  width: 420px; height: 420px;
+  background: radial-gradient(circle, rgba(255, 182, 217, 0.5) 0%, transparent 70%);
+  top: -140px; right: -120px;
+  animation: bfgvcPulse 9s ease-in-out infinite;
+}
+
+.bfgvc-blob-2 {
+  width: 360px; height: 360px;
+  background: radial-gradient(circle, rgba(228, 204, 255, 0.5) 0%, transparent 70%);
+  bottom: -100px; left: -100px;
+  animation: bfgvcPulse 11s ease-in-out infinite;
+  animation-delay: 1.5s;
+}
+
+@keyframes bfgvcPulse {
+  0%, 100% { transform: scale(1); opacity: 0.3; }
+  50%       { transform: scale(1.12); opacity: 0.5; }
+}
+
+@media (max-width: 480px) {
+  .bfgvc-card::before { width: 3px; }
+  .bfgvc-card-header { gap: 0.5rem; }
+}
