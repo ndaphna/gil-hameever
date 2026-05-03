@@ -23,6 +23,7 @@ export default function ConditionalNavigation() {
     '/sleep-guide-landing',
     '/emergency-map-guide-landing',
     '/strength-home-landing',
+    '/protein-guide-landing',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
