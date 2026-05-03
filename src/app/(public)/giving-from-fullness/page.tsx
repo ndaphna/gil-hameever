@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 
@@ -210,9 +210,9 @@ export default function GivingFromFullnessPage() {
               </p>
             </blockquote>
             <div className="image-container">
-              <img src="https://i.imghippo.com/files/IXgZ1236Nqs.jpg" alt="קודם ממלאה את הכוס שלי — ואז מוזגת לאחרים" />
+              <img src="https://i.imghippo.com/files/IXgZ1236Nqs.jpg" alt="קודם ממלאה את הכוס שלי, ואז מוזגת לאחרים" />
               <p className="image-caption" style={{ textAlign: 'center', marginTop: '16px', fontStyle: 'italic' }}>
-                &quot;קודם ממלאה את הכוס שלי — ואז מוזגת לאחרים.&quot; 💞<br />
+                &quot;קודם ממלאה את הכוס שלי, ואז מוזגת לאחרים.&quot; 💞<br />
                 - עליזה שנקין
               </p>
             </div>

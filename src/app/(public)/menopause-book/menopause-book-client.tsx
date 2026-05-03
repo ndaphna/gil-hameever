@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import './menopause-book.css';
 
@@ -877,7 +877,7 @@ export default function MenopauseBookPage() {
             
             {/* כותרת גדולה */}
             <h2 style={{ fontSize: '2.5rem', fontWeight: '700', textAlign: 'center', color: '#E91E8C', margin: '30px 0' }}>
-              "זה לא משבר — זו הֲתחלה."
+              "זה לא משבר, זו הֲתחלה."
             </h2>
           </div>
 

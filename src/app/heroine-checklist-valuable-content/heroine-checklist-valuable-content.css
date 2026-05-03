@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
 
 :root {
   --magenta: #FF0080;
@@ -80,7 +80,7 @@
   text-align: right;
 }
 
-/* Line 1: "צ'ק-ליסט הגיבורות:" — large, bold, gradient */
+/* Line 1: "צ'ק-ליסט הגיבורות:", large, bold, gradient */
 .hcvc-title-line1 {
   font-size: clamp(1.9rem, 6vw, 3.2rem);
   font-weight: 800;
@@ -93,7 +93,7 @@
   display: block;
 }
 
-/* Line 2: subtitle — smaller, dark, not gradient */
+/* Line 2: subtitle, smaller, dark, not gradient */
 .hcvc-title-line2 {
   font-size: clamp(1.15rem, 3.5vw, 1.75rem);
   font-weight: 700;

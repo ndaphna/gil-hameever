@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect } from 'react';
 
@@ -144,7 +144,7 @@ export default function WhatIsBelongingPage() {
               </p>
               <p>
                 שייכות בגיל הזה זה כבר לא &apos;להיות חלק&apos;.<br />
-                זה להרגיש בבית — גם אם את לבד על הספה עם שוקולד וסדרה טורקית.
+                זה להרגיש בבית, גם אם את לבד על הספה עם שוקולד וסדרה טורקית.
               </p>
               <p>
                 פעם רציתי שיאשרו אותי.<br />
@@ -161,7 +161,7 @@ export default function WhatIsBelongingPage() {
               <img src="https://i.imghippo.com/files/ItvB8487NLs.jpg" alt="שייכות בגיל הזה" />
             </div>
             <p className="highlight-text" style={{ textAlign: 'center', marginTop: '24px', fontStyle: 'italic' }}>
-              &quot;שייכות זה לא להסכים על הכול — זה לדעת שאת לא לבד.&quot;<br />
+              &quot;שייכות זה לא להסכים על הכול, זה לדעת שאת לא לבד.&quot;<br />
               - עליזה שנקין
             </p>
           </div>
