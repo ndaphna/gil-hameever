@@ -24,6 +24,18 @@ export default function ConditionalNavigation() {
     '/emergency-map-guide-landing',
     '/strength-home-landing',
     '/protein-guide-landing',
+    '/brain-fog-guide-landing',
+    '/walking-guide-landing',
+    '/morning-reset-landing',
+    '/mood-guide-landing',
+    '/identity-guide-landing',
+    '/energy-guide-landing',
+    '/doctor-guide-landing',
+    '/confidence-guide-landing',
+    '/who-am-i-guide-landing',
+    '/second-half-guide-landing',
+    '/relationship-guide-landing',
+    '/courage-guide-landing',
   ];
   
   const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
