@@ -21,7 +21,7 @@ export default function WalkingGuideLanding() {
             <ul className="wg-bullets">
               <li className="wg-bullet-item">
                 <span className="wg-bullet-check">✓</span>
-                <span>פרוטוקול "10 דקות, וזה מספיק", למה לא צריך שעה כדי שזה יספור</span>
+                <span>פרוטוקול "10 דקות, וזה מספיק", למה לא צריך שעה כדי להרגיש את ההשפעה</span>
               </li>
               <li className="wg-bullet-item">
                 <span className="wg-bullet-check">✓</span>
