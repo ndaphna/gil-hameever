@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "security:audit": "npm audit --audit-level=high",
+    "security:snyk": "snyk test --severity-threshold=high",
+    "security:snyk:monitor": "snyk monitor",
+    "security": "npm run security:audit && npm run security:snyk"
   },
   "dependencies": {
     "@getbrevo/brevo": "^4.0.1",
@@ -29,6 +33,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.1.7",
+    "snyk": "^1.1304.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
