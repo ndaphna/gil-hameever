@@ -28,6 +28,22 @@ BREVO_FROM_NAME=מנופאוזית וטוב לה
 # If set, contacts will be automatically added to this list
 BREVO_LIST_ID_WAITLIST=123
 
+# ==============================================================================
+# Newsletter Dashboard (Phase 1)
+# ==============================================================================
+
+# Secret token appended as ?token=... to the Brevo webhook URL.
+# Generate: openssl rand -hex 32
+BREVO_WEBHOOK_TOKEN=replace_with_long_random_string
+
+# Master list ID that all lead-magnet lists funnel into.
+# Used by the scheduler + sync job to know which contacts belong to the sequence.
+BREVO_MASTER_LIST_ID=
+
+# Token for protected admin import endpoints (corpus loader, etc.)
+# Generate: openssl rand -hex 32
+ADMIN_IMPORT_TOKEN=replace_with_long_random_string
+
 
 
 
