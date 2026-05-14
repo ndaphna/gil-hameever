@@ -27,13 +27,19 @@ interface Insight {
   data?: SleepPatterns | MoodTrends;
 }
 
-console.log('🔑 OpenAI API Key loaded:', process.env.OPENAI_API_KEY ? 'YES' : 'NO');
-console.log('🔑 Supabase URL loaded:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'YES' : 'NO');
-console.log('🔑 Supabase Service Key loaded:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'YES' : 'NO');
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+// Lazy-init OpenAI client. Instantiating at module scope crashes the Next.js
+// build when OPENAI_API_KEY is missing, because the build collects page data
+// by importing this module — see Vercel build error from commit d23df4f.
+let _openai: OpenAI | null = null;
+function getOpenAI(): OpenAI {
+  if (_openai) return _openai;
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) {
+    throw new Error('OPENAI_API_KEY is not set');
+  }
+  _openai = new OpenAI({ apiKey });
+  return _openai;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -253,11 +259,7 @@ async function generateSleepInsight(sleepPatterns: SleepPatterns, userName: stri
 צרי תובנה קצרה (2-3 משפטים) עם הצעה מעשית. השתמשי בנתונים הספציפיים.`;
 
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not available');
-    }
-    
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
@@ -301,11 +303,7 @@ async function generateMoodInsight(moodTrends: MoodTrends, userName: string): Pr
 צרי תובנה קצרה (2-3 משפטים) עם הצעה מעשית. השתמשי בנתונים הספציפיים.`;
 
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not available');
-    }
-    
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
@@ -347,11 +345,7 @@ async function generateEncouragementInsight(consecutiveDays: number, userName: s
 צרי הודעה קצרה (2-3 משפטים) מעודדת וחמה. השתמשי בנתונים הספציפיים.`;
 
   try {
-    if (!openai) {
-      throw new Error('OpenAI client not available');
-    }
-    
-    const completion = await openai.chat.completions.create({
+    const completion = await getOpenAI().chat.completions.create({
       model: "gpt-4",
       messages: [
         { role: "system", content: systemPrompt },
