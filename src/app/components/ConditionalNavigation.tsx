@@ -38,11 +38,13 @@ export default function ConditionalNavigation() {
     '/courage-guide-landing',
   ];
   
-  const shouldHideNavigation = hideNavigationPaths.some(path => pathname === path);
-  
+  const shouldHideNavigation =
+    hideNavigationPaths.some(path => pathname === path) ||
+    pathname?.startsWith('/admin') === true;
+
   if (shouldHideNavigation) {
     return null;
   }
-  
+
   return <Navigation />;
 }

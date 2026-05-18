@@ -24,10 +24,30 @@ export async function middleware(request: NextRequest) {
   );
 
   // Refreshes the auth session on every request — keeps cookies valid for SSR.
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const { pathname } = request.nextUrl;
+
+  // Newsletter admin area: any of admin / campaign_manager / content_creator.
+  if (pathname.startsWith('/admin/newsletter')) {
+    if (!user) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('next', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const { data: allowed, error } = await supabase
+      .schema('newsletter')
+      .rpc('has_role', { required: 'content_creator' });
+
+    if (error || allowed !== true) {
+      return NextResponse.redirect(new URL('/dashboard', request.url));
+    }
+  }
 
   // Legacy members-area cookie guard (kept for backward compatibility).
-  const { pathname } = request.nextUrl;
   if (pathname.startsWith('/members')) {
     const isMember = request.cookies.get('member')?.value === 'true';
     if (!isMember) {

@@ -1,0 +1,115 @@
+/*
+ * Admin design tokens.
+ *
+ * Scope: applied via class `.nlShell` on the root of every page under
+ * /admin/*. Loaded once by AdminShell. The `--nl-*` prefix dates from when
+ * these were newsletter-only; kept for stability across CSS Modules.
+ */
+
+.nlShell {
+  /* ---------- Color: brand ---------- */
+  --nl-primary-50:  #eef2ff;
+  --nl-primary-100: #e0e7ff;
+  --nl-primary-200: #c7d2fe;
+  --nl-primary-500: #6366f1;
+  --nl-primary-600: #4f46e5;
+  --nl-primary-700: #4338ca;
+  --nl-primary-grad: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+  /* ---------- Color: accent (warm, feminine) ---------- */
+  --nl-accent-50:   #fff1f2;
+  --nl-accent-100:  #ffe4e6;
+  --nl-accent-500:  #f43f5e;
+  --nl-accent-600:  #e11d48;
+
+  /* ---------- Color: neutral ---------- */
+  --nl-gray-50:  #f9fafb;
+  --nl-gray-100: #f3f4f6;
+  --nl-gray-200: #e5e7eb;
+  --nl-gray-300: #d1d5db;
+  --nl-gray-400: #9ca3af;
+  --nl-gray-500: #6b7280;
+  --nl-gray-600: #4b5563;
+  --nl-gray-700: #374151;
+  --nl-gray-800: #1f2937;
+  --nl-gray-900: #111827;
+
+  /* ---------- Color: surface ---------- */
+  --nl-bg:         #f8fafc;
+  --nl-surface:    #ffffff;
+  --nl-surface-2:  #f9fafb;
+
+  /* ---------- Color: semantic ---------- */
+  --nl-success-bg: #ecfdf5;
+  --nl-success-fg: #047857;
+  --nl-success-dot: #10b981;
+
+  --nl-warning-bg: #fffbeb;
+  --nl-warning-fg: #b45309;
+  --nl-warning-dot: #f59e0b;
+
+  --nl-danger-bg:  #fef2f2;
+  --nl-danger-fg:  #b91c1c;
+  --nl-danger-dot: #ef4444;
+
+  --nl-info-bg:    #eff6ff;
+  --nl-info-fg:    #1d4ed8;
+  --nl-info-dot:   #3b82f6;
+
+  --nl-muted-bg:   #f3f4f6;
+  --nl-muted-fg:   #4b5563;
+  --nl-muted-dot:  #9ca3af;
+
+  /* ---------- Typography ---------- */
+  /* Reuses the Assistant font already loaded by the root layout via
+     next/font/google as the CSS variable --font-assistant. */
+  --nl-font: var(--font-assistant), system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --nl-text-xs:   0.75rem;   /* 12px */
+  --nl-text-sm:   0.875rem;  /* 14px */
+  --nl-text-base: 1rem;      /* 16px */
+  --nl-text-lg:   1.125rem;  /* 18px */
+  --nl-text-xl:   1.25rem;   /* 20px */
+  --nl-text-2xl:  1.5rem;    /* 24px */
+  --nl-text-3xl:  1.875rem;  /* 30px */
+  --nl-leading-tight:  1.25;
+  --nl-leading-normal: 1.5;
+  --nl-leading-relaxed: 1.7;
+  --nl-weight-normal: 400;
+  --nl-weight-medium: 500;
+  --nl-weight-semibold: 600;
+  --nl-weight-bold: 700;
+
+  /* ---------- Spacing ---------- */
+  --nl-space-1: 0.25rem;  /* 4 */
+  --nl-space-2: 0.5rem;   /* 8 */
+  --nl-space-3: 0.75rem;  /* 12 */
+  --nl-space-4: 1rem;     /* 16 */
+  --nl-space-5: 1.25rem;  /* 20 */
+  --nl-space-6: 1.5rem;   /* 24 */
+  --nl-space-8: 2rem;     /* 32 */
+  --nl-space-10: 2.5rem;  /* 40 */
+  --nl-space-12: 3rem;    /* 48 */
+
+  /* ---------- Radius ---------- */
+  --nl-radius-sm: 0.375rem; /* 6 */
+  --nl-radius:    0.5rem;   /* 8 */
+  --nl-radius-md: 0.75rem;  /* 12 */
+  --nl-radius-lg: 1rem;     /* 16 */
+  --nl-radius-pill: 9999px;
+
+  /* ---------- Shadow (soft, modern) ---------- */
+  --nl-shadow-xs: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --nl-shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --nl-shadow:    0 4px 12px rgba(15, 23, 42, 0.06), 0 2px 4px rgba(15, 23, 42, 0.04);
+  --nl-shadow-md: 0 10px 20px rgba(15, 23, 42, 0.08), 0 4px 8px rgba(15, 23, 42, 0.04);
+  --nl-shadow-focus: 0 0 0 3px rgba(99, 102, 241, 0.18);
+
+  /* ---------- Transitions ---------- */
+  --nl-transition-fast: 120ms ease;
+  --nl-transition:      180ms ease;
+
+  /* ---------- Layout ---------- */
+  --nl-sidebar-w: 240px;
+  --nl-content-max: 1200px;
+  --nl-header-h: 64px;
+}

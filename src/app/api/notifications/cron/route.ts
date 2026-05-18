@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { SmartNotificationService } from '@/lib/smart-notification-service';
 import { createInsightEmail, calculateUserStatistics } from '@/lib/email-templates';
+import { processQueue as processNewsletterAutomation } from '@/lib/newsletter/automation-engine';
+import { syncBrevoContactsAndEnqueue } from '@/lib/newsletter/sync-contacts';
 
 // שינוי ל-nodejs runtime כדי לתמוך ב-fetch פנימי
 export const runtime = 'nodejs';
@@ -65,10 +67,38 @@ export async function GET(request: Request) {
     // זה בודק את ההעדפות של כל משתמשת ושולח ניוזלטרים לפי התדירות והשעה שבחרה
     const result = await processNewsletterScheduler();
 
+    // 1. Sync Brevo contacts → subscribers, and seed automation_sends for new ones.
+    //    This is how lead-magnet signups (15+ routes that push directly to Brevo)
+    //    propagate into our DB without each route needing inline sync.
+    //    Isolated try/catch so a failure never blocks the rest of the run.
+    let contactsSyncResult: Awaited<ReturnType<typeof syncBrevoContactsAndEnqueue>> | { error: string };
+    try {
+      const listId = Number(process.env.BREVO_MASTER_LIST_ID ?? 12);
+      contactsSyncResult = await syncBrevoContactsAndEnqueue(supabaseAdmin, listId);
+    } catch (syncErr: any) {
+      console.error('Brevo contacts sync failed:', syncErr);
+      contactsSyncResult = { error: syncErr?.message ?? String(syncErr) };
+    }
+
+    // 2. Process the newsletter evergreen automation queue (send due transactional emails).
+    let automationResult: { attempted: number; sent: number; failed: number } | { error: string } = {
+      attempted: 0,
+      sent: 0,
+      failed: 0,
+    };
+    try {
+      automationResult = await processNewsletterAutomation(supabaseAdmin, 100);
+    } catch (autoErr: any) {
+      console.error('Automation queue tick failed:', autoErr);
+      automationResult = { error: autoErr?.message ?? String(autoErr) };
+    }
+
     return NextResponse.json({
       success: true,
       timestamp: new Date().toISOString(),
-      ...result
+      ...result,
+      newsletter_contacts_sync: contactsSyncResult,
+      newsletter_automation: automationResult,
     });
   } catch (error: any) {
     console.error('Cron error:', error);
