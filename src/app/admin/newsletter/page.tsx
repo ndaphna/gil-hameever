@@ -17,6 +17,8 @@ type EmailDraftRow = {
   updated_at: string;
   intended_for_automation: boolean;
   automation_config_id: string | null;
+  header_image_url: string | null;
+  body_text: string | null;
 };
 
 const STATUS_LABEL: Record<DraftStatus, string> = {
@@ -72,7 +74,7 @@ export default async function NewsletterIndexPage({
     .schema('newsletter')
     .from('email_drafts')
     .select(
-      'id, subject, status, tags, locale, is_ai_generated, brevo_template_id, created_at, updated_at, intended_for_automation, automation_config_id',
+      'id, subject, status, tags, locale, is_ai_generated, brevo_template_id, created_at, updated_at, intended_for_automation, automation_config_id, header_image_url, body_text',
     )
     .order('updated_at', { ascending: false })
     .limit(200);
@@ -196,77 +198,83 @@ export default async function NewsletterIndexPage({
           )}
         </div>
       ) : !error ? (
-        <div className={styles.tableWrap}>
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>נושא</th>
-                <th>תגיות</th>
-                <th>עודכן</th>
-                <th>נוצר</th>
-              </tr>
-            </thead>
-            <tbody>
-              {drafts.map((d) => (
-                <tr key={d.id}>
-                  <td className={styles.subjectCell}>
-                    <Link href={`/admin/newsletter/${d.id}`} className={styles.subjectLink}>
-                      {d.subject || '(ללא נושא)'}
-                      <div className={styles.metaRow}>
-                        <span className={`${styles.badge} ${STATUS_BADGE_CLASS[d.status]}`}>
-                          {STATUS_LABEL[d.status]}
-                        </span>
-                        {d.intended_for_automation && !d.automation_config_id && (
-                          <span
-                            className={`${styles.badge}`}
-                            style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
-                          >
-                            🔔 ממתינה לאישור
-                          </span>
-                        )}
-                        {d.automation_config_id && (
-                          <span
-                            className={`${styles.badge}`}
-                            style={{ background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd' }}
-                          >
-                            באוטומציה
-                          </span>
-                        )}
-                        {d.is_ai_generated && (
-                          <span className={`${styles.badge} ${styles.badgeAi}`}>AI</span>
-                        )}
-                        {d.brevo_template_id !== null && (
-                          <span className={`${styles.badge} ${styles.badgeSynced}`}>
-                            סונכרן ל-Brevo
-                          </span>
-                        )}
-                        {d.locale !== 'he-IL' && (
-                          <span className={`${styles.badge} ${styles.badgeLocale}`}>
-                            {d.locale}
-                          </span>
-                        )}
-                      </div>
-                    </Link>
-                  </td>
-                  <td>
-                    {d.tags && d.tags.length > 0 ? (
-                      d.tags.map((t) => (
+        <div className={styles.cardGrid}>
+          {drafts.map((d) => {
+            const excerpt = (d.body_text ?? '')
+              .replace(/\s+/g, ' ')
+              .trim()
+              .slice(0, 140);
+            return (
+              <Link
+                key={d.id}
+                href={`/admin/newsletter/${d.id}`}
+                className={styles.draftCard}
+              >
+                <div
+                  className={`${styles.draftCardThumb} ${d.header_image_url ? '' : styles.draftCardThumbEmpty}`}
+                  style={
+                    d.header_image_url
+                      ? { backgroundImage: `url(${d.header_image_url})` }
+                      : undefined
+                  }
+                  aria-hidden="true"
+                >
+                  {!d.header_image_url && (
+                    <Mail size={28} strokeWidth={1.5} />
+                  )}
+                </div>
+                <div className={styles.draftCardBody}>
+                  <h3 className={styles.draftCardSubject}>
+                    {d.subject || '(ללא נושא)'}
+                  </h3>
+                  {excerpt && (
+                    <p className={styles.draftCardExcerpt}>{excerpt}…</p>
+                  )}
+                  <div className={styles.draftCardBadges}>
+                    <span className={`${styles.badge} ${STATUS_BADGE_CLASS[d.status]}`}>
+                      {STATUS_LABEL[d.status]}
+                    </span>
+                    {d.intended_for_automation && !d.automation_config_id && (
+                      <span
+                        className={styles.badge}
+                        style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}
+                      >
+                        🔔 ממתינה
+                      </span>
+                    )}
+                    {d.automation_config_id && (
+                      <span
+                        className={styles.badge}
+                        style={{ background: '#dbeafe', color: '#1e40af', border: '1px solid #93c5fd' }}
+                      >
+                        באוטומציה
+                      </span>
+                    )}
+                    {d.is_ai_generated && (
+                      <span className={`${styles.badge} ${styles.badgeAi}`}>AI</span>
+                    )}
+                    {d.brevo_template_id !== null && (
+                      <span className={`${styles.badge} ${styles.badgeSynced}`}>
+                        Brevo
+                      </span>
+                    )}
+                  </div>
+                  {d.tags && d.tags.length > 0 && (
+                    <div className={styles.draftCardTags}>
+                      {d.tags.slice(0, 4).map((t) => (
                         <span key={t} className={styles.tagChip}>
                           {t}
                         </span>
-                      ))
-                    ) : (
-                      <span style={{ color: 'var(--nl-gray-400)', fontSize: 'var(--nl-text-xs)' }}>
-                        —
-                      </span>
-                    )}
-                  </td>
-                  <td className={styles.dateCell}>{formatDate(d.updated_at)}</td>
-                  <td className={styles.dateCell}>{formatDate(d.created_at)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                      ))}
+                    </div>
+                  )}
+                  <div className={styles.draftCardFooter}>
+                    <span>עודכן {formatDate(d.updated_at)}</span>
+                  </div>
+                </div>
+              </Link>
+            );
+          })}
         </div>
       ) : null}
     </div>

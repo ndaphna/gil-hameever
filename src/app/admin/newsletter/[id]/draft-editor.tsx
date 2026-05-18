@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Archive, Check, Pencil, Send, Download, Calendar, Zap, X, Clock, Repeat, ListPlus, ImagePlus, RefreshCw, Trash2, Mail, Eye } from 'lucide-react';
+import { Save, Archive, Check, Pencil, Send, Download, Calendar, Zap, X, Clock, Repeat, ListPlus, ImagePlus, RefreshCw, Trash2, Mail, Eye, Lightbulb } from 'lucide-react';
 import { renderPreviewHtml } from '@/lib/newsletter/render-preview';
 import styles from './edit.module.css';
 
@@ -123,6 +123,11 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
   const [isImageBusy, setIsImageBusy] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const [imageSuccess, setImageSuccess] = useState<string | null>(null);
+
+  type PromptSuggestion = { angle: string; prompt: string };
+  const [promptSuggestions, setPromptSuggestions] = useState<PromptSuggestion[] | null>(null);
+  const [isSuggesting, setIsSuggesting] = useState(false);
+  const [suggestError, setSuggestError] = useState<string | null>(null);
 
   const [testRecipientsRaw, setTestRecipientsRaw] = useState<string>(
     'nitzandaphna@gmail.com, inbal@gilhameever.com',
@@ -531,6 +536,38 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
     }
   }
 
+  async function suggestPrompts() {
+    setIsSuggesting(true);
+    setSuggestError(null);
+    setPromptSuggestions(null);
+    try {
+      const res = await fetch(
+        `/api/admin/newsletter/${initial.id}/suggest-image-prompts`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ style: headerImageStyle }),
+        },
+      );
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setSuggestError(json.detail ? `${json.error}: ${json.detail}` : json.error);
+        return;
+      }
+      setPromptSuggestions(json.suggestions as PromptSuggestion[]);
+    } catch (err) {
+      setSuggestError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsSuggesting(false);
+    }
+  }
+
+  function applySuggestion(s: { angle: string; prompt: string }) {
+    setHeaderImagePrompt(s.prompt);
+    setPromptSuggestions(null);
+    setSuggestError(null);
+  }
+
   async function generateHeaderImage() {
     setIsImageBusy(true);
     setImageError(null);
@@ -825,6 +862,42 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
           spellCheck={false}
           disabled={isImageBusy}
         />
+        <div className={styles.suggestRow}>
+          <button
+            type="button"
+            className={styles.suggestBtn}
+            onClick={suggestPrompts}
+            disabled={isSuggesting || isImageBusy || !subject.trim() || !body.trim()}
+            title="3 ניסוחים שונים בקולה של עליזה — אופטימי, שנון, לא מלנכולי"
+          >
+            {isSuggesting ? (
+              <><span className={styles.spinner} aria-hidden="true" />מציעה ניסוחים</>
+            ) : (
+              <><Lightbulb size={14} strokeWidth={2.25} />הציעי 3 ניסוחים בקולה של עליזה</>
+            )}
+          </button>
+        </div>
+
+        {suggestError && <div className={styles.statusError}>{suggestError}</div>}
+
+        {promptSuggestions && promptSuggestions.length > 0 && (
+          <div className={styles.suggestionList}>
+            {promptSuggestions.map((s, i) => (
+              <div key={i} className={styles.suggestionCard}>
+                <div className={styles.suggestionAngle}>{s.angle}</div>
+                <p className={styles.suggestionPrompt}>{s.prompt}</p>
+                <button
+                  type="button"
+                  className={styles.suggestionApply}
+                  onClick={() => applySuggestion(s)}
+                  disabled={isImageBusy}
+                >
+                  בחרי ניסוח זה
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className={styles.fieldsRow}>

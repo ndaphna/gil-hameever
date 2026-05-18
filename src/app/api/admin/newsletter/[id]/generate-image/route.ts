@@ -5,28 +5,31 @@
  *
  * POST /api/admin/newsletter/:id/generate-image
  * Body (optional): {
- *   prompt?: string,   // English image prompt — when omitted, Haiku 4.5 writes one from subject + body
+ *   prompt?: string,   // English image prompt — when omitted, Sonnet writes one
  *   style?: 'realistic' | 'illustration' | 'landscape' | 'infographic'
  * }
  *
  * Pipeline:
  *   1. Load draft (subject, body_text).
- *   2. If no prompt, ask Claude Sonnet 4.6 to draft a short English image prompt
- *      grounded in the subject + first 400 chars of the body. No human faces.
+ *   2. If no prompt, ask Claude Sonnet 4.6 via the Aliza-voiced helper in
+ *      `@/lib/newsletter/image-prompt` to draft an English prompt grounded
+ *      in the subject + arc excerpt (first 200 + last 200 of body).
  *   3. Call OpenAI gpt-image-1 (1536x1024 landscape, medium quality, ~$0.04).
  *   4. Upload PNG to public Supabase Storage bucket `newsletter-images`.
  *   5. Persist `header_image_url`, `header_image_prompt`, `header_image_provider`
  *      on the draft row.
  *   6. Return { ok, url, prompt }.
- *
- * Returns 502 if either OpenAI or Anthropic call fails.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
 import OpenAI from 'openai';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import {
+  draftSingleImagePrompt,
+  IMAGE_STYLE_HINTS,
+  type ImageStyleKey,
+} from '@/lib/newsletter/image-prompt';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -35,15 +38,6 @@ export const maxDuration = 60;
 const BUCKET = 'newsletter-images';
 const PROVIDER = 'openai';
 
-type StyleKey = 'realistic' | 'illustration' | 'landscape' | 'infographic';
-
-const STYLE_HINTS: Record<StyleKey, string> = {
-  realistic: 'photorealistic editorial photography, soft natural window light, shallow depth of field, warm muted palette',
-  illustration: 'modern editorial illustration, soft gouache textures, warm pastel palette, gentle shapes, hand-drawn feel',
-  landscape: 'serene wide landscape photography, golden hour, hopeful atmosphere, no people',
-  infographic: 'clean editorial infographic, flat vector style, soft gradients, warm pastel palette, abstract symbolic shapes, no text labels',
-};
-
 let _openai: OpenAI | null = null;
 function getOpenAI(): OpenAI {
   if (_openai) return _openai;
@@ -51,53 +45,6 @@ function getOpenAI(): OpenAI {
   if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
   _openai = new OpenAI({ apiKey });
   return _openai;
-}
-
-let _anthropic: Anthropic | null = null;
-function getAnthropic(): Anthropic {
-  if (_anthropic) return _anthropic;
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set');
-  _anthropic = new Anthropic({ apiKey });
-  return _anthropic;
-}
-
-async function draftPromptFromContent(
-  subject: string,
-  bodyExcerpt: string,
-  style: StyleKey,
-): Promise<string> {
-  const client = getAnthropic();
-  const styleHint = STYLE_HINTS[style];
-
-  const res = await client.messages.create({
-    model: 'claude-sonnet-4-6',
-    max_tokens: 300,
-    system:
-      "You write concise English image prompts (40-70 words) for editorial header images on a Hebrew newsletter for women age 50+ about midlife, perimenopause, and personal growth. Hard rules: warm hopeful tone, soft natural light, feminine without cliche. NEVER include human faces or recognizable people. Prefer abstract metaphor, still life, landscape, or symbolic objects. NO text, NO words, NO logos, NO watermarks. Landscape orientation. Return ONLY the prompt — no preface, no quotes, no explanation.",
-    messages: [
-      {
-        role: 'user',
-        content: `Newsletter subject (Hebrew): "${subject}"
-
-Body excerpt (Hebrew, first 400 chars):
-${bodyExcerpt}
-
-Style direction: ${styleHint}
-
-Write the English image prompt now.`,
-      },
-    ],
-  });
-
-  const text = res.content
-    .filter((b) => b.type === 'text')
-    .map((b) => (b as { type: 'text'; text: string }).text)
-    .join(' ')
-    .trim();
-
-  if (!text) throw new Error('sonnet returned empty prompt');
-  return text;
 }
 
 export async function POST(
@@ -127,7 +74,7 @@ export async function POST(
   }
   const rawPrompt =
     typeof bodyJson.prompt === 'string' ? bodyJson.prompt.trim() : '';
-  const style: StyleKey = (() => {
+  const style: ImageStyleKey = (() => {
     const s = typeof bodyJson.style === 'string' ? bodyJson.style : '';
     return s === 'realistic' || s === 'illustration' || s === 'landscape' || s === 'infographic'
       ? s
@@ -150,9 +97,9 @@ export async function POST(
   let finalPrompt = rawPrompt;
   if (!finalPrompt) {
     try {
-      finalPrompt = await draftPromptFromContent(
+      finalPrompt = await draftSingleImagePrompt(
         draft.subject,
-        (draft.body_text ?? '').slice(0, 400),
+        draft.body_text ?? '',
         style,
       );
     } catch (err) {
@@ -167,7 +114,7 @@ export async function POST(
   } else {
     // User supplied a prompt. Append style hint so all four buttons behave
     // consistently regardless of who wrote the words.
-    finalPrompt = `${finalPrompt}. ${STYLE_HINTS[style]}. Landscape orientation, no text, no people's faces.`;
+    finalPrompt = `${finalPrompt}. ${IMAGE_STYLE_HINTS[style]}. Landscape orientation, no text, no people's faces.`;
   }
 
   let b64: string;

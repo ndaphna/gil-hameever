@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
+import { useMemo } from 'react';
 import {
   LayoutDashboard,
   Users,
   Mail,
   LogOut,
   Sparkles,
+  Bell,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import './tokens.css';
@@ -49,24 +51,77 @@ function matches(pathname: string, href: string, exact?: boolean): boolean {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
+function firstName(fullName: string | null | undefined, email: string | null | undefined): string {
+  if (fullName && fullName.trim()) return fullName.trim().split(/\s+/)[0];
+  if (email) return email.split('@')[0];
+  return '';
+}
+
+function todayInHebrew(): string {
+  // Mon-Sun in Hebrew, then "DD בחודש YYYY"
+  return new Date().toLocaleDateString('he-IL', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+}
+
+function initials(name: string): string {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((s) => s[0])
+    .join('')
+    .toUpperCase();
+}
+
 export default function AdminShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname() ?? '';
-  const { signOut } = useAuth();
+  const { signOut, profile, user } = useAuth();
+  const displayName = useMemo(
+    () => firstName(profile?.full_name, user?.email ?? null),
+    [profile?.full_name, user?.email],
+  );
+  const dateLabel = useMemo(() => todayInHebrew(), []);
 
   return (
     <div className={`nlShell ${styles.shell}`}>
-      <aside className={styles.sidebar}>
-        <div className={styles.sidebarHeader}>
-          <div className={styles.sidebarLogo}>
-            <Sparkles size={18} strokeWidth={2.25} />
+      <header className={styles.topBar} aria-label="סרגל עליון">
+        <div className={styles.topBarBrand}>
+          <div className={styles.topBarMark}>
+            <Sparkles size={16} strokeWidth={2.25} />
           </div>
-          <div>
-            <h2 className={styles.sidebarTitle}>פאנל ניהול</h2>
-            <p className={styles.sidebarSubtitle}>gilhameever.com</p>
+          <div className={styles.topBarBrandText}>
+            <span className={styles.topBarTitle}>מנופאוזית וטוב לה</span>
+            <span className={styles.topBarSubtitle}>פאנל ניהול · gilhameever.com</span>
           </div>
         </div>
 
+        <div className={styles.topBarDate}>{dateLabel}</div>
+
+        <div className={styles.topBarUser}>
+          <button
+            type="button"
+            className={styles.topBarIconBtn}
+            aria-label="התראות"
+            title="התראות"
+          >
+            <Bell size={16} strokeWidth={2} />
+          </button>
+          <div className={styles.topBarGreeting}>
+            <span className={styles.topBarHello}>שלום</span>
+            <span className={styles.topBarName}>{displayName || 'משתמשת'}</span>
+          </div>
+          <div className={styles.topBarAvatar} aria-hidden="true">
+            {initials(displayName) || '·'}
+          </div>
+        </div>
+      </header>
+
+      <aside className={styles.sidebar}>
         <nav className={styles.navList} aria-label="ניווט ראשי">
           <div className={styles.navSection}>תפריט</div>
           {NAV.map((item) => {
