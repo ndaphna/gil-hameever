@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import './good-sleep-access.css';
 
 export default function GoodSleepAccessPage() {
   const router = useRouter();
@@ -56,21 +55,21 @@ export default function GoodSleepAccessPage() {
   };
 
   return (
-    <div className="good-sleep-access-page" dir="rtl">
-      <div className="good-sleep-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="good-sleep-access-hero">
-          <h1 className="good-sleep-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: המדריך לשינה טובה בגיל המעבר מחכה לך
           </h1>
           
-          <p className="good-sleep-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית למדריך (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="good-sleep-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -137,7 +136,7 @@ export default function GoodSleepAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="good-sleep-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

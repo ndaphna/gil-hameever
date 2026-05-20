@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import './walking-medicine-access.css';
 
 export default function WalkingMedicineAccessPage() {
   const router = useRouter();
@@ -56,21 +55,21 @@ export default function WalkingMedicineAccessPage() {
   };
 
   return (
-    <div className="walking-medicine-access-page" dir="rtl">
-      <div className="walking-medicine-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="walking-medicine-access-hero">
-          <h1 className="walking-medicine-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: המאמר "הליכה כתרופה לגיל המעבר" מחכה לך
           </h1>
           
-          <p className="walking-medicine-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית למאמר (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="walking-medicine-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -137,7 +136,7 @@ export default function WalkingMedicineAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="walking-medicine-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

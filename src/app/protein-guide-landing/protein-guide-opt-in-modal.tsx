@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './protein-guide-opt-in-modal.css';
 
 interface Props {
   isOpen: boolean;
@@ -53,50 +52,50 @@ export default function ProteinGuideOptInModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="pg-modal-overlay" onClick={handleBackdropClick}>
-      <div className="pg-modal" dir="rtl">
-        <button className="pg-modal-close" onClick={onClose} aria-label="סגור">×</button>
+    <div className="lm-modal-overlay" onClick={handleBackdropClick}>
+      <div className="lm-modal" dir="rtl">
+        <button className="lm-modal-close" onClick={onClose} aria-label="סגור">×</button>
 
-        <div className="pg-modal-banner">
-          <span className="pg-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
+        <div className="lm-modal-banner">
+          <span className="lm-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
         </div>
 
-        <div className="pg-modal-content">
+        <div className="lm-modal-content">
           {success ? (
-            <div className="pg-modal-success">
-              <h2 className="pg-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
-              <p className="pg-modal-success-text">מעבירה אותך עכשיו...</p>
+            <div className="lm-modal-success">
+              <h2 className="lm-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
+              <p className="lm-modal-success-text">מעבירה אותך עכשיו...</p>
             </div>
           ) : (
             <>
-              <h2 className="pg-modal-heading">מוכנה לקבל את הרשימה?</h2>
-              <p className="pg-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
+              <h2 className="lm-modal-heading">מוכנה לקבל את הרשימה?</h2>
+              <p className="lm-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
 
-              <form onSubmit={handleSubmit} className="pg-modal-form" noValidate>
+              <form onSubmit={handleSubmit} className="lm-modal-form" noValidate>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="המייל שלך כאן..."
-                  className="pg-modal-input"
+                  className="lm-modal-input"
                   required
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="email"
                 />
 
-                {error && <div className="pg-modal-error" role="alert">{error}</div>}
+                {error && <div className="lm-modal-error" role="alert">{error}</div>}
 
                 <button
                   type="submit"
-                  className="pg-modal-button"
+                  className="lm-modal-button"
                   disabled={isLoading}
                 >
                   {isLoading ? 'שולחת...' : 'שלחי לי את הרשימה!'}
                 </button>
               </form>
 
-              <p className="pg-modal-privacy">
+              <p className="lm-modal-privacy">
                 אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:
               </p>
             </>

@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './morning-reset-opt-in-modal.css';
 
 interface Props {
   isOpen: boolean;
@@ -57,29 +56,29 @@ export default function MorningResetOptInModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="mr-modal-overlay" onClick={handleBackdropClick}>
-      <div className="mr-modal" dir="rtl">
-        <button className="mr-modal-close" onClick={onClose} aria-label="סגור">×</button>
-        <div className="mr-modal-banner">
-          <span className="mr-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
+    <div className="lm-modal-overlay" onClick={handleBackdropClick}>
+      <div className="lm-modal" dir="rtl">
+        <button className="lm-modal-close" onClick={onClose} aria-label="סגור">×</button>
+        <div className="lm-modal-banner">
+          <span className="lm-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
         </div>
-        <div className="mr-modal-content">
+        <div className="lm-modal-content">
           {success ? (
-            <div className="mr-modal-success">
-              <h2 className="mr-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
-              <p className="mr-modal-success-text">מעבירה אותך עכשיו...</p>
+            <div className="lm-modal-success">
+              <h2 className="lm-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
+              <p className="lm-modal-success-text">מעבירה אותך עכשיו...</p>
             </div>
           ) : (
             <>
-              <h2 className="mr-modal-heading">מוכנה לאיפוס הבוקר?</h2>
-              <p className="mr-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
-              <form onSubmit={handleSubmit} className="mr-modal-form" noValidate>
+              <h2 className="lm-modal-heading">מוכנה לאיפוס הבוקר?</h2>
+              <p className="lm-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
+              <form onSubmit={handleSubmit} className="lm-modal-form" noValidate>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="השם שלך..."
-                  className="mr-modal-input"
+                  className="lm-modal-input"
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="given-name"
@@ -89,20 +88,20 @@ export default function MorningResetOptInModal({ isOpen, onClose }: Props) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="המייל שלך כאן..."
-                  className="mr-modal-input"
+                  className="lm-modal-input"
                   required
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="email"
                 />
                 {error && (
-                  <div className="mr-modal-error" role="alert">{error}</div>
+                  <div className="lm-modal-error" role="alert">{error}</div>
                 )}
-                <button type="submit" className="mr-modal-button" disabled={isLoading}>
+                <button type="submit" className="lm-modal-button" disabled={isLoading}>
                   {isLoading ? 'שולחת...' : 'שלחי לי את הפרוטוקול'}
                 </button>
               </form>
-              <p className="mr-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
+              <p className="lm-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
             </>
           )}
         </div>

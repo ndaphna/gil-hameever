@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import './secret-report-access.css';
 
 export default function SecretReportAccessPage() {
   const router = useRouter();
@@ -56,21 +55,21 @@ export default function SecretReportAccessPage() {
   };
 
   return (
-    <div className="secret-report-access-page" dir="rtl">
-      <div className="secret-report-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="secret-report-access-hero">
-          <h1 className="secret-report-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: הדו"ח הסודי לגיל המעבר מחכה לך
           </h1>
           
-          <p className="secret-report-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית לדו"ח (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="secret-report-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -137,7 +136,7 @@ export default function SecretReportAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="secret-report-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

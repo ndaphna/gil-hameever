@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import './gift-access.css';
 
 export default function GiftAccessPage() {
   const [formData, setFormData] = useState({ name: '', email: '' });
@@ -44,21 +43,21 @@ export default function GiftAccessPage() {
   };
 
   return (
-    <div className="gift-access-page" dir="rtl">
-      <div className="gift-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="gift-access-hero">
-          <h1 className="gift-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: המדריך "7 דברים שאף אחד לא הכין אותי אליהם" מחכה לך
           </h1>
           
-          <p className="gift-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית למדריך (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="gift-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -120,7 +119,7 @@ export default function GiftAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="gift-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import './brain-fog-access.css';
 
 export default function BrainFogAccessPage() {
   const router = useRouter();
@@ -62,21 +61,21 @@ export default function BrainFogAccessPage() {
   };
 
   return (
-    <div className="brain-fog-access-page" dir="rtl">
-      <div className="brain-fog-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="brain-fog-access-hero">
-          <h1 className="brain-fog-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: המדריך לערפל מוחי בגיל המעבר מחכה לך
           </h1>
           
-          <p className="brain-fog-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית למדריך שיסביר לך למה את לא 'מאבדת את זה' (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="brain-fog-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -143,7 +142,7 @@ export default function BrainFogAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="brain-fog-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

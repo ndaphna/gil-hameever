@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './brain-fog-guide-opt-in-modal.css';
 
 interface Props {
   isOpen: boolean;
@@ -56,42 +55,42 @@ export default function BrainFogGuideOptInModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="bfg-modal-overlay" onClick={handleBackdropClick}>
-      <div className="bfg-modal" dir="rtl">
-        <button className="bfg-modal-close" onClick={onClose} aria-label="סגור">×</button>
-        <div className="bfg-modal-banner">
-          <span className="bfg-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
+    <div className="lm-modal-overlay" onClick={handleBackdropClick}>
+      <div className="lm-modal" dir="rtl">
+        <button className="lm-modal-close" onClick={onClose} aria-label="סגור">×</button>
+        <div className="lm-modal-banner">
+          <span className="lm-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
         </div>
-        <div className="bfg-modal-content">
+        <div className="lm-modal-content">
           {success ? (
-            <div className="bfg-modal-success">
-              <h2 className="bfg-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
-              <p className="bfg-modal-success-text">מעבירה אותך עכשיו...</p>
+            <div className="lm-modal-success">
+              <h2 className="lm-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
+              <p className="lm-modal-success-text">מעבירה אותך עכשיו...</p>
             </div>
           ) : (
             <>
-              <h2 className="bfg-modal-heading">מוכנה לקבל את הכלים?</h2>
-              <p className="bfg-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
-              <form onSubmit={handleSubmit} className="bfg-modal-form" noValidate>
+              <h2 className="lm-modal-heading">מוכנה לקבל את הכלים?</h2>
+              <p className="lm-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
+              <form onSubmit={handleSubmit} className="lm-modal-form" noValidate>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="המייל שלך כאן..."
-                  className="bfg-modal-input"
+                  className="lm-modal-input"
                   required
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="email"
                 />
                 {error && (
-                  <div className="bfg-modal-error" role="alert">{error}</div>
+                  <div className="lm-modal-error" role="alert">{error}</div>
                 )}
-                <button type="submit" className="bfg-modal-button" disabled={isLoading}>
+                <button type="submit" className="lm-modal-button" disabled={isLoading}>
                   {isLoading ? 'שולחת...' : 'שלחי לי את המדריך!'}
                 </button>
               </form>
-              <p className="bfg-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
+              <p className="lm-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
             </>
           )}
         </div>

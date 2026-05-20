@@ -147,7 +147,7 @@
   border-radius: 12px;
   outline: none;
   transition: all 0.3s ease;
-  font-family: var(--font-assistant, 'Assistant', sans-serif);
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
 }
 
 .opt-in-input::placeholder {
@@ -185,11 +185,12 @@
   font-weight: 700;
   padding: clamp(1rem, 2vh, 1.25rem) clamp(1.5rem, 3vw, 2.5rem);
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-2xl);
+  min-height: 52px;
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(255, 0, 128, 0.35);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: var(--font-assistant, 'Assistant', sans-serif);
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
   position: relative;
   overflow: hidden;
 }

@@ -34,7 +34,7 @@
   animation: hfzSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: 'Assistant', sans-serif;
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
 }
 
 @keyframes hfzSlideUp {
@@ -130,7 +130,7 @@
   border-radius: 14px;
   outline: none;
   transition: all 0.3s ease;
-  font-family: 'Assistant', sans-serif;
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
   text-align: right;
   direction: rtl;
   unicode-bidi: isolate;
@@ -173,11 +173,12 @@
   font-weight: 800;
   padding: clamp(1rem, 2vh, 1.25rem) clamp(1.5rem, 3vw, 2.5rem);
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-2xl);
+  min-height: 52px;
   cursor: pointer;
   box-shadow: 0 8px 28px rgba(255, 0, 128, 0.38);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: 'Assistant', sans-serif;
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.01em;

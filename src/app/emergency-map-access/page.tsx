@@ -2,7 +2,6 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import './emergency-map-access.css';
 
 export default function EmergencyMapAccessPage() {
   const router = useRouter();
@@ -56,21 +55,21 @@ export default function EmergencyMapAccessPage() {
   };
 
   return (
-    <div className="emergency-map-access-page" dir="rtl">
-      <div className="emergency-map-access-container">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
         {/* Hero Section */}
-        <div className="emergency-map-access-hero">
-          <h1 className="emergency-map-access-title">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: מפת החירום לגיל המעבר מחכה לך
           </h1>
           
-          <p className="emergency-map-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וקבלי גישה מיידית למפה (וגם עותק ישירות למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
         {/* Form Section */}
-        <form onSubmit={handleSubmit} className="emergency-map-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           {/* Name Field */}
           <div className="form-field">
             <label htmlFor="name" className="form-label">
@@ -137,7 +136,7 @@ export default function EmergencyMapAccessPage() {
         </form>
 
         {/* Aliza Section */}
-        <div className="emergency-map-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img 
               src="https://i.imghippo.com/files/PBO6077Nec.jpg" 

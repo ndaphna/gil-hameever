@@ -1,0 +1,322 @@
+/* ============================================
+   LEAD MAGNET — ACCESS GATE
+   ============================================
+   Shared by all post-opt-in access gate pages:
+   brain-fog-access, emergency-map-access,
+   gift-access, good-sleep-access,
+   secret-report-access, sharp-memory-access,
+   walking-medicine-access.
+
+   Centered card layout, name+email+consent form,
+   Aliza witness footer. Mobile-first, RTL.
+   Class prefix: lma-
+   ============================================ */
+
+.lma-page {
+  min-height: 100vh;
+  width: 100%;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 182, 193, 0.6) 0%,
+    rgba(255, 182, 217, 0.6) 50%,
+    rgba(255, 192, 203, 0.6) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  direction: rtl;
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  color: var(--color-text-primary);
+}
+
+.lma-container {
+  width: 100%;
+  max-width: 510px;
+  background: var(--color-white);
+  border-radius: var(--radius-3xl);
+  box-shadow: var(--shadow-elevation-2);
+  padding: clamp(1.25rem, 3vw, 1.75rem) clamp(1.25rem, 3.4vw, 2.125rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.25rem, 2.4vw, 1.5rem);
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+
+.lma-hero {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.lma-title {
+  font-size: var(--text-h2);
+  font-weight: var(--font-weight-bold);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  line-height: var(--line-height-snug);
+  margin: 0;
+  text-align: center;
+  letter-spacing: -0.02em;
+  width: 100%;
+}
+
+.lma-subtitle {
+  font-size: var(--text-body);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  line-height: var(--line-height-snug);
+  margin: 0;
+}
+
+/* ============================================
+   FORM
+   ============================================ */
+
+.lma-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.form-label {
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.form-label .required {
+  color: var(--color-primary);
+}
+
+.form-input {
+  font-family: inherit;
+  font-size: 16px; /* Prevents zoom on iOS */
+  min-height: 52px;
+  padding: var(--space-3) var(--space-4);
+  border: 2px solid var(--color-primary-light);
+  border-radius: var(--radius-xl);
+  background: var(--color-white);
+  color: var(--color-text-primary);
+  transition: border-color var(--transition-base), box-shadow var(--transition-base);
+  width: 100%;
+  box-sizing: border-box;
+  direction: rtl;
+  text-align: right;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(255, 0, 128, 0.10);
+}
+
+.form-input::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.6;
+}
+
+.form-input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  background: var(--color-gray-100);
+}
+
+.form-checkbox-wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  margin-top: -0.35rem;
+}
+
+.form-checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  min-height: 20px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--color-primary);
+}
+
+.form-checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.form-checkbox-label {
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  line-height: var(--line-height-snug);
+  user-select: none;
+}
+
+.form-error {
+  font-size: var(--text-small);
+  color: var(--color-error);
+  background: rgba(239, 68, 68, 0.10);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-lg);
+  text-align: center;
+  border-inline-end: 3px solid var(--color-error);
+}
+
+/* ============================================
+   SUBMIT — primary filled gradient, ≥52px touch
+   ============================================ */
+
+.form-submit-button {
+  font-family: inherit;
+  font-size: var(--text-body-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-white);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border: none;
+  border-radius: var(--radius-2xl);
+  padding: var(--space-4) var(--space-8);
+  min-height: 52px;
+  cursor: pointer;
+  transition: transform 0.4s var(--ease-out-quint), box-shadow 0.4s var(--ease-out-quint);
+  box-shadow: var(--shadow-brand-soft);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.01em;
+}
+
+.form-submit-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  inset-inline-start: -100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: inset-inline-start 0.5s var(--ease-out-quint);
+}
+
+.form-submit-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-brand-strong);
+}
+
+.form-submit-button:hover:not(:disabled)::before {
+  inset-inline-start: 100%;
+}
+
+.form-submit-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.form-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-submit-button:focus-visible {
+  outline: 3px solid var(--color-secondary-light);
+  outline-offset: 3px;
+}
+
+/* ============================================
+   ALIZA WITNESS FOOTER
+   ============================================ */
+
+.lma-aliza {
+  margin-top: auto;
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-primary-light);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.aliza-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  flex-direction: column;
+  text-align: center;
+}
+
+@media (min-width: 769px) {
+  .aliza-content {
+    flex-direction: row;
+    gap: var(--space-4);
+  }
+}
+
+.aliza-image {
+  width: 45px;
+  height: 45px;
+  border-radius: var(--radius-full);
+  object-fit: cover;
+  border: 2px solid #4DB6AC;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(77, 182, 172, 0.20);
+}
+
+@media (min-width: 769px) {
+  .aliza-image {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+.aliza-text {
+  font-size: var(--text-small);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-snug);
+  text-align: center;
+  font-style: italic;
+  flex: 1;
+}
+
+@media (min-width: 769px) {
+  .aliza-text {
+    text-align: right;
+  }
+}
+
+.aliza-name {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  font-style: normal;
+}
+
+.aliza-consent-text {
+  font-size: var(--text-xs, 0.75rem);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+  line-height: var(--line-height-snug);
+  opacity: 0.8;
+}
+
+/* ============================================
+   MOBILE TIGHTENING
+   ============================================ */
+
+@media (max-width: 480px) {
+  .lma-container {
+    padding: var(--space-4);
+    gap: var(--space-4);
+  }
+}

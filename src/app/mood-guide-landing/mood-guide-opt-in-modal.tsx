@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './mood-guide-opt-in-modal.css';
 
 interface Props {
   isOpen: boolean;
@@ -57,31 +56,31 @@ export default function MoodGuideOptInModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="mg-modal-overlay" onClick={handleBackdropClick}>
-      <div className="mg-modal" dir="rtl">
-        <button className="mg-modal-close" onClick={onClose} aria-label="סגור">
+    <div className="lm-modal-overlay" onClick={handleBackdropClick}>
+      <div className="lm-modal" dir="rtl">
+        <button className="lm-modal-close" onClick={onClose} aria-label="סגור">
           ×
         </button>
-        <div className="mg-modal-banner">
-          <span className="mg-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
+        <div className="lm-modal-banner">
+          <span className="lm-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
         </div>
-        <div className="mg-modal-content">
+        <div className="lm-modal-content">
           {success ? (
-            <div className="mg-modal-success">
-              <h2 className="mg-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
-              <p className="mg-modal-success-text">מעבירה אותך עכשיו...</p>
+            <div className="lm-modal-success">
+              <h2 className="lm-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
+              <p className="lm-modal-success-text">מעבירה אותך עכשיו...</p>
             </div>
           ) : (
             <>
-              <h2 className="mg-modal-heading">מוכנה לקבל את הכלים?</h2>
-              <p className="mg-modal-subheading">הכניסי את הפרטים שלך וזה בדרך אלייך:</p>
-              <form onSubmit={handleSubmit} className="mg-modal-form" noValidate>
+              <h2 className="lm-modal-heading">מוכנה לקבל את הכלים?</h2>
+              <p className="lm-modal-subheading">הכניסי את הפרטים שלך וזה בדרך אלייך:</p>
+              <form onSubmit={handleSubmit} className="lm-modal-form" noValidate>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="השם שלך..."
-                  className="mg-modal-input"
+                  className="lm-modal-input"
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="given-name"
@@ -91,22 +90,22 @@ export default function MoodGuideOptInModal({ isOpen, onClose }: Props) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="המייל שלך כאן..."
-                  className="mg-modal-input"
+                  className="lm-modal-input"
                   required
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="email"
                 />
                 {error && (
-                  <div className="mg-modal-error" role="alert">
+                  <div className="lm-modal-error" role="alert">
                     {error}
                   </div>
                 )}
-                <button type="submit" className="mg-modal-button" disabled={isLoading}>
+                <button type="submit" className="lm-modal-button" disabled={isLoading}>
                   {isLoading ? 'שולחת...' : 'כן, שלחי לי את המדריך'}
                 </button>
               </form>
-              <p className="mg-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
+              <p className="lm-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
             </>
           )}
         </div>

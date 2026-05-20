@@ -1,7 +1,6 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import './walking-guide-opt-in-modal.css';
 
 interface Props {
   isOpen: boolean;
@@ -57,29 +56,29 @@ export default function WalkingGuideOptInModal({ isOpen, onClose }: Props) {
   };
 
   return (
-    <div className="wg-modal-overlay" onClick={handleBackdropClick}>
-      <div className="wg-modal" dir="rtl">
-        <button className="wg-modal-close" onClick={onClose} aria-label="סגור">×</button>
-        <div className="wg-modal-banner">
-          <span className="wg-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
+    <div className="lm-modal-overlay" onClick={handleBackdropClick}>
+      <div className="lm-modal" dir="rtl">
+        <button className="lm-modal-close" onClick={onClose} aria-label="סגור">×</button>
+        <div className="lm-modal-banner">
+          <span className="lm-modal-banner-text">שלב אחד אחרון וזה אצלך.</span>
         </div>
-        <div className="wg-modal-content">
+        <div className="lm-modal-content">
           {success ? (
-            <div className="wg-modal-success">
-              <h2 className="wg-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
-              <p className="wg-modal-success-text">מעבירה אותך עכשיו...</p>
+            <div className="lm-modal-success">
+              <h2 className="lm-modal-success-title">✅ ההרשמה בוצעה בהצלחה!</h2>
+              <p className="lm-modal-success-text">מעבירה אותך עכשיו...</p>
             </div>
           ) : (
             <>
-              <h2 className="wg-modal-heading">מוכנה להתחיל ללכת?</h2>
-              <p className="wg-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
-              <form onSubmit={handleSubmit} className="wg-modal-form" noValidate>
+              <h2 className="lm-modal-heading">מוכנה להתחיל ללכת?</h2>
+              <p className="lm-modal-subheading">הכניסי את המייל שלך וזה בדרך אלייך:</p>
+              <form onSubmit={handleSubmit} className="lm-modal-form" noValidate>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="השם שלך..."
-                  className="wg-modal-input"
+                  className="lm-modal-input"
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="given-name"
@@ -89,20 +88,20 @@ export default function WalkingGuideOptInModal({ isOpen, onClose }: Props) {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="המייל שלך כאן..."
-                  className="wg-modal-input"
+                  className="lm-modal-input"
                   required
                   disabled={isLoading}
                   dir="rtl"
                   autoComplete="email"
                 />
                 {error && (
-                  <div className="wg-modal-error" role="alert">{error}</div>
+                  <div className="lm-modal-error" role="alert">{error}</div>
                 )}
-                <button type="submit" className="wg-modal-button" disabled={isLoading}>
+                <button type="submit" className="lm-modal-button" disabled={isLoading}>
                   {isLoading ? 'שולחת...' : 'שלחי לי את הפרוטוקול'}
                 </button>
               </form>
-              <p className="wg-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
+              <p className="lm-modal-privacy">אני שונאת ספאם בדיוק כמוך. המייל שלך בטוח אצלי (:</p>
             </>
           )}
         </div>

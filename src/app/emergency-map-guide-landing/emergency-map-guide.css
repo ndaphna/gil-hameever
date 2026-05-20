@@ -1,15 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&display=swap');
-
-/* Root Variables */
-:root {
-  --magenta: #FF0080;
-  --purple: #9D4EDD;
-  --soft-pink: #FFB6D9;
-  --light-purple: #E4CCFF;
-  --white: #FFFFFF;
-  --black: #1A1A1A;
-  --font-assistant: 'Assistant', sans-serif;
-}
 
 /* Global Reset - Prevent Any Scrolling */
 * {
@@ -55,7 +43,7 @@
   min-height: 70px;
   max-height: 100px;
   flex-shrink: 0;
-  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -66,7 +54,7 @@
 }
 
 .banner-text {
-  color: var(--white);
+  color: var(--color-white);
   font-size: clamp(1.25rem, 3.5vw, 2rem);
   font-weight: 700;
   text-align: center;
@@ -141,7 +129,7 @@
 .main-headline {
   font-size: clamp(1.75rem, 5vw, 3.5rem);
   font-weight: 800;
-  color: var(--black);
+  color: var(--color-text-primary);
   line-height: 1.2;
   margin: 0 0 clamp(0.125rem, 0.5vh, 0.25rem) 0; /* Minimal margin */
   letter-spacing: -0.02em;
@@ -150,7 +138,7 @@
 .sub-headline {
   font-size: clamp(0.9375rem, 2vw, 1.25rem);
   font-weight: 500;
-  color: var(--black);
+  color: var(--color-text-primary);
   line-height: 1.4;
   margin: 0;
   opacity: 0.85;
@@ -247,7 +235,7 @@
   gap: 0.5rem;
   font-size: clamp(0.875rem, 1.5vw, 1.0625rem);
   line-height: 1.5;
-  color: var(--black);
+  color: var(--color-text-primary);
   font-weight: 500;
   max-width: 100%;
   overflow-wrap: break-word;
@@ -255,7 +243,7 @@
 }
 
 .bullet-icon {
-  color: var(--magenta);
+  color: var(--color-primary);
   font-size: clamp(1.125rem, 2vw, 1.5rem);
   font-weight: 700;
   flex-shrink: 0;
@@ -278,7 +266,7 @@
 .cta-text {
   font-size: clamp(0.9375rem, 1.8vw, 1.125rem);
   font-weight: 700; /* More emphasis - increased from 600 */
-  color: var(--black);
+  color: var(--color-text-primary);
   margin: 0;
   line-height: 1.4;
   padding-top: 20px; /* Top padding */
@@ -286,13 +274,14 @@
 }
 
 .cta-button {
-  background: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
-  color: var(--white);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  color: var(--color-white);
   font-size: clamp(1rem, 2vw, 1.375rem);
   font-weight: 700;
   padding: clamp(0.75rem, 1.5vh, 1rem) clamp(1.5rem, 4vw, 2.5rem);
   border: none;
-  border-radius: 50px;
+  border-radius: var(--radius-2xl);
+  min-height: 52px;
   cursor: pointer;
   box-shadow: 0 6px 20px rgba(255, 0, 128, 0.3);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);

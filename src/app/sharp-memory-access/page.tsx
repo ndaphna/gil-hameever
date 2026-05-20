@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, FormEvent } from 'react';
-import './sharp-memory-access.css';
 
 export default function SharpMemoryAccessPage() {
   const [formData, setFormData] = useState({ name: '', email: '' });
@@ -57,18 +56,18 @@ export default function SharpMemoryAccessPage() {
   };
 
   return (
-    <div className="sharp-memory-access-page" dir="rtl">
-      <div className="sharp-memory-access-container">
-        <div className="sharp-memory-access-hero">
-          <h1 className="sharp-memory-access-title">
+    <div className="lma-page" dir="rtl">
+      <div className="lma-container">
+        <div className="lma-hero">
+          <h1 className="lma-title">
             הנה הצעד הראשון שלך להחזרת השליטה: הסוד לזיכרון חד בגיל המעבר מחכה לך
           </h1>
-          <p className="sharp-memory-access-subtitle">
+          <p className="lma-subtitle">
             הזיני פרטים וגלי מיד איך המוח שלך לא &apos;בשיפוצים&apos; אלא בהשתדרגות (וגם עותק למייל שיהיה לך זמין תמיד)
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="sharp-memory-access-form">
+        <form onSubmit={handleSubmit} className="lma-form">
           <div className="form-field">
             <label htmlFor="name" className="form-label">
               שם פרטי
@@ -125,7 +124,7 @@ export default function SharpMemoryAccessPage() {
           </button>
         </form>
 
-        <div className="sharp-memory-access-aliza">
+        <div className="lma-aliza">
           <div className="aliza-content">
             <img
               src="https://i.imghippo.com/files/PBO6077Nec.jpg"
