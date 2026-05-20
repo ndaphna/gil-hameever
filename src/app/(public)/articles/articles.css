@@ -34,10 +34,11 @@
 }
 
 .articles-title {
-  font-size: var(--text-h1);
+  font-size: var(--text-display);
   font-weight: 800;
-  line-height: 1.2;
+  line-height: 1.15;
   letter-spacing: 0;
+  text-align: center;
   color: var(--color-text-primary);
   margin: 0 0 var(--space-6);
 }

@@ -48,6 +48,7 @@
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: 0;
+  text-align: center;
   color: var(--color-text-primary);
   margin: 0;
   position: relative;
