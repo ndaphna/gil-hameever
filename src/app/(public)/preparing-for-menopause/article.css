@@ -158,7 +158,7 @@
   content: '';
   position: absolute;
   bottom: 0;
-  inset-inline-end: 0;
+  inset-inline-start: 0;
   width: 72px;
   height: 3px;
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
@@ -172,8 +172,8 @@
   letter-spacing: 0;
   color: var(--color-secondary);
   margin: var(--space-10) 0 var(--space-5);
-  padding-inline-end: var(--space-4);
-  border-inline-end: 3px solid;
+  padding-inline-start: var(--space-4);
+  border-inline-start: 3px solid;
   border-image: linear-gradient(180deg, var(--color-primary) 0%, var(--color-secondary) 100%) 1;
   text-align: right;
 }
@@ -192,7 +192,7 @@
 
 .article-full-content ul {
   margin: var(--space-6) 0;
-  padding-inline-end: var(--space-8);
+  padding-inline-start: var(--space-8);
   list-style: none;
 }
 
@@ -201,7 +201,7 @@
   line-height: 2;
   color: var(--color-text-primary);
   margin-bottom: var(--space-4);
-  padding-inline-end: var(--space-8);
+  padding-inline-start: var(--space-8);
   position: relative;
   text-align: right;
 }
@@ -209,7 +209,7 @@
 .article-full-content ul li::before {
   content: '•';
   position: absolute;
-  inset-inline-end: 0;
+  inset-inline-start: 0;
   color: var(--color-primary);
   font-size: 1.5rem;
   font-weight: 700;
@@ -242,7 +242,7 @@
     float: right;
     width: 420px;
     max-width: 42%;
-    margin-inline-start: var(--space-10);
+    margin-inline-end: var(--space-10);
     margin-block-end: var(--space-6);
     shape-outside: margin-box;
   }
