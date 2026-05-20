@@ -7,6 +7,13 @@
   background: var(--color-white);
   border-bottom: 1px solid var(--color-gray-100);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  /* Lock Assistant for the entire header tree — defensive against any
+     upstream CSS that might leak a Segoe UI / system fallback. */
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+.main-header * {
+  font-family: inherit;
 }
 
 .main-nav {

@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import { Assistant, Geist_Mono, Satisfy, Dancing_Script, Caveat, Kalam } from "next/font/google";
+import { Assistant } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
@@ -9,44 +9,13 @@ import AccessibilityBubble from "../components/AccessibilityBubble";
 import ExitIntentHandler from "../components/ExitIntentHandler";
 import { AuthProvider } from "@/contexts/AuthContext";
 
+// Sole site font. Hebrew + Latin, weights 400/500/600/700 cover body,
+// emphasis, semibold UI, and bold headings. All historical "handwritten"
+// CSS variables alias to this font via globals.css.
 const assistant = Assistant({
   variable: "--font-assistant",
   subsets: ["latin", "hebrew"],
   weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// Handwritten fonts collection
-const satisfy = Satisfy({
-  variable: "--font-handwritten",
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
-
-const dancingScript = Dancing_Script({
-  variable: "--font-handwritten-luxury",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const caveat = Caveat({
-  variable: "--font-handwritten-elegant",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const kalam = Kalam({
-  variable: "--font-handwritten-casual",
-  subsets: ["latin"],
-  weight: ["300", "400", "700"],
   display: "swap",
 });
 
@@ -101,7 +70,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
-        className={`${assistant.variable} ${geistMono.variable} ${satisfy.variable} ${dancingScript.variable} ${caveat.variable} ${kalam.variable} antialiased`}
+        className={assistant.variable}
         suppressHydrationWarning
       >
         {/* Google Analytics */}

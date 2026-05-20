@@ -12,20 +12,39 @@ export default function ExitIntentHandler() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     
-    // Don't show popup on roadmap page or landing pages
+    // Only show on public marketing pages. Suppress on auth-gated, admin,
+    // member, and lead-magnet "thank you / access" pages where the popup
+    // would be intrusive or off-context.
     const currentPath = window.location.pathname;
-    const hidePopupPaths = [
+
+    const exactSkip = new Set([
       '/menopause-roadmap',
-      '/emergency-map-access',
-      '/secret-report-access',
-      '/gift-access',
-      '/walking-medicine-access',
-      '/good-sleep-access',
-      '/brain-fog-access',
-      '/sharp-memory-access',
-    ];
-    
-    if (hidePopupPaths.includes(currentPath)) {
+      '/admin-setup',
+      '/login',
+      '/signup',
+      '/forgot-password',
+      '/reset-password',
+      '/dashboard',
+      '/profile',
+      '/chat',
+      '/journal',
+      '/insights',
+      '/members',
+      '/token-history',
+      '/test-newsletter',
+      '/test-lead-gift',
+      '/heroine-checklist-thank-you',
+      '/heroine-checklist-valuable-content',
+      '/thank-you',
+    ]);
+
+    const prefixSkip = ['/admin', '/api'];
+
+    if (
+      exactSkip.has(currentPath) ||
+      prefixSkip.some((p) => currentPath === p || currentPath.startsWith(`${p}/`)) ||
+      /-access$/.test(currentPath)
+    ) {
       return;
     }
     

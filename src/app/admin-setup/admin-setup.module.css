@@ -1,0 +1,139 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(135deg, #FFF0F7 0%, #F3E8FF 100%);
+}
+
+.card {
+  width: 100%;
+  max-width: 480px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  text-align: center;
+  margin: 0 0 24px;
+  color: var(--color-gray-900, #171717);
+}
+
+.userBox {
+  padding: 16px;
+  background: var(--color-gray-50, #F5F5F5);
+  border-radius: 10px;
+  margin-bottom: 24px;
+}
+
+.userBox p {
+  margin: 0 0 4px;
+}
+
+.userLabel {
+  font-size: 13px;
+  color: var(--gray, #4A4A4A);
+}
+
+.userEmail {
+  font-weight: 600;
+  color: var(--color-gray-900, #171717);
+}
+
+.userStatus {
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.statusYes {
+  color: #16a34a;
+  font-weight: 700;
+}
+
+.statusNo {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.alert {
+  padding: 14px 16px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.alertSuccess {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #166534;
+}
+
+.alertError {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #991b1b;
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn {
+  width: 100%;
+  padding: 14px 16px;
+  border: none;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnSecondary {
+  background: #2563eb;
+}
+
+.btnSecondary:hover:not(:disabled) {
+  background: #1d4ed8;
+}
+
+.btnPrimary {
+  background: var(--magenta, #FF0080);
+}
+
+.btnPrimary:hover:not(:disabled) {
+  background: var(--magenta-dark, #E0006E);
+}
+
+.footer {
+  margin-top: 24px;
+  padding-top: 24px;
+  border-top: 1px solid #e5e7eb;
+  text-align: center;
+}
+
+.footer p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: var(--gray, #4A4A4A);
+}
+
+.footer code {
+  background: #f3f4f6;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 13px;
+}

@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 /* ============================================
    IMPORT REFACTORED STYLES
    ============================================ */
@@ -142,8 +140,9 @@ body {
   --background: var(--color-white);
   --foreground: var(--color-gray-900);
 
-  /* Typography */
-  --font-family-base: var(--font-assistant), sans-serif;
+  /* Typography — explicit fallback chain ensures Assistant wins on every
+     OS/browser even if next/font is still loading or cached badly. */
+  --font-family-base: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
 
   /* Buttons */
   --btn-font-size: 18px;
@@ -151,13 +150,14 @@ body {
   --btn-padding-y: 14px;
   --btn-padding-x: 28px;
   --btn-radius: 4px;
-}
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-assistant);
-  --font-mono: var(--font-geist-mono);
+  /* Single-font policy: Assistant is the only typeface site-wide.
+     All historical "handwritten" aliases collapse to Assistant so any
+     legacy CSS rule referencing them keeps working without edits. */
+  --font-handwritten: var(--font-assistant);
+  --font-handwritten-luxury: var(--font-assistant);
+  --font-handwritten-elegant: var(--font-assistant);
+  --font-handwritten-casual: var(--font-assistant);
 }
 
 /* Force light theme */
