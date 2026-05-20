@@ -28,8 +28,8 @@
    ============================================ */
 
 .about-hero {
-  padding: var(--section-py) var(--section-px) calc(var(--section-py) * 0.6);
-  text-align: center;
+  padding-block: var(--section-py) calc(var(--section-py) * 0.6);
+  padding-inline: 0;
   background: linear-gradient(
     135deg,
     rgba(255, 0, 128, 0.10) 0%,
@@ -48,9 +48,11 @@
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: 0;
-  text-align: center;
+  text-align: right;
   color: var(--color-text-primary);
-  margin: 0;
+  max-width: var(--container-lg);
+  margin: 0 auto;
+  padding-inline: var(--section-px);
   position: relative;
   z-index: 1;
   animation: aboutFadeInUp 0.9s var(--ease-out-quint) both;

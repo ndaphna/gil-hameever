@@ -29,7 +29,7 @@
    ============================================ */
 
 .articles-header {
-  text-align: center;
+  text-align: right;
   margin-bottom: var(--space-12);
 }
 
@@ -38,18 +38,18 @@
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: 0;
-  text-align: center;
+  text-align: right;
   color: var(--color-text-primary);
-  margin: 0 0 var(--space-6);
+  margin: 0 0 var(--space-5);
 }
 
 .articles-subtitle {
   font-size: var(--text-body-lg);
   line-height: 1.8;
   color: var(--color-text-secondary);
-  text-align: center;
-  margin: 0 auto;
-  max-width: 60ch;
+  text-align: right;
+  margin: 0;
+  max-width: 65ch;
 }
 
 /* ============================================
