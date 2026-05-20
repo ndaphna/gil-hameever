@@ -62,30 +62,48 @@ export default function Home() {
     }
   };
 
+  const scrollToInspirationForm = () => {
+    const section = document.querySelector('.inspiration-form-section');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
+
   return (
     <div className="home-container">
       {/* Hero Section */}
       <section className="home-hero">
         <div className="hero-content-wrapper">
           <h1 className="hero-title">
-            <span className="title-text">
-              <span className="title-line">ברוכה הבאה</span>
-              <span className="title-line">לגיל הַמֵעֵבֶר</span>
-            </span>
-            <span className="flower-icon">🌺</span>
+            <span className="title-line">ברוכה הבאה</span>
+            <span className="title-line">לגיל הַמֵעֵבֶר</span>
           </h1>
+
+          <span className="hero-accent" aria-hidden="true">🌺</span>
 
           <p className="hero-subtitle">
             המקום שמראה לך איך לפרוח באמצע החיים ומֵעֵבֶר.
           </p>
 
           <button
+            type="button"
+            className="hero-cta"
+            onClick={scrollToInspirationForm}
+          >
+            הצטרפי לגלי ההשראה
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M14 6L8 12L14 18" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+
+          <button
+            type="button"
             className="scroll-indicator"
             onClick={scrollToFeatures}
             aria-label="גלול למטה לראות עוד"
           >
-            <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-              <path d="M20 10L20 30M20 30L12 22M20 30L28 22" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+              <path d="M20 10L20 30M20 30L12 22M20 30L28 22" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
         </div>
