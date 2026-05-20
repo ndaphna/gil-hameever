@@ -93,6 +93,7 @@
   font-weight: 500;
   line-height: 1.7;
   letter-spacing: 0;
+  text-align: center;
   color: rgba(255, 255, 255, 0.96);
   max-width: 52ch;
   margin: 0 auto var(--space-10);

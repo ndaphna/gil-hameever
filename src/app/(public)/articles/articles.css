@@ -46,6 +46,7 @@
   font-size: var(--text-body-lg);
   line-height: 1.8;
   color: var(--color-text-secondary);
+  text-align: center;
   margin: 0 auto;
   max-width: 60ch;
 }
