@@ -1,8 +1,16 @@
 # DESIGN.md — Gil HaMeever Brand Design System
 
-**Source of truth** for visual language. Brand reference HTML: [design/brand-design-system.html](design/brand-design-system.html).
+**Source of truth** for visual language.
 
-This system replaces the legacy magenta/purple-gradient + Assistant-only design with a **dark editorial luxe** language: deep wine-black backgrounds, fuchsia primary, gold accents, three-font hierarchy.
+**Related:**
+- Strategic brief (Rock/Stones/Pebbles applied to this site, page blueprint, tone shift): [design/strategic-brief.md](design/strategic-brief.md)
+- Brand reference HTML (palette + typography + component examples): [design/brand-design-system.html](design/brand-design-system.html) *(may not yet exist — colors and fonts are in this file)*
+
+This system replaces the legacy magenta/purple-gradient + Assistant-only design with a **smart women's magazine** language: fuchsia + cream + dark, three-font hierarchy, emotional editorial composition with humor (Aliza) as a structural micro-element.
+
+> The site doesn't need another "visual upgrade." It needs to become a **branded emotional experience** instead of a pretty information booklet.
+
+See `design/strategic-brief.md` for the Rock (`את לא משתגעת. את בגיל המֵעֵבֶר.`), the four brand stones (book / map / Aliza / blog), and the approved 10-section home-page structure.
 
 ---
 
@@ -144,17 +152,39 @@ Same brand language, lower contrast. Sidebar uses dark `#2C1420` with gold-light
 
 ## Implementation Notes
 
-- All tokens land in `src/styles/variables.css` (replace existing `--color-primary`/`--color-secondary` aliases).
-- Page-level CSS continues to use the `lock font + descendants inherit` pattern from `about.css`.
+### Font architecture — single source of truth (2026-05-21)
+
+The site has ONE place that declares font-family for the whole tree:
+
+```css
+/* src/app/globals.css */
+body {
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+*, *::before, *::after {
+  font-family: inherit;
+}
+```
+
+Every other CSS file uses `font-family: inherit` (or no declaration at all). To change the font for the entire site (header, sidebar, footer, members area, all pages), edit ONE line.
+
+Secular One and Frank Ruhl Libre are loaded via `next/font/google` and exposed as `--font-secular` / `--font-frank-ruhl`. They are **not in use yet** — to apply them, add an explicit `font-family: var(--font-secular), 'Secular One', sans-serif` on the specific element (display hero headlines / literary quote blocks).
+
+### Token system
+
+- All tokens land in `src/styles/variables.css` (`--brand-*` family).
+- Legacy `--color-primary`, `--magenta`, `--gradient-main` etc. alias to brand tokens so unrefactored pages stay coherent.
 - Admin area (`src/app/admin/_design/`) keeps its separate token system — out of scope.
 - Aliza chat / journal / insights inside member area get the same brand application but with lower-contrast variants.
 
 ---
 
-## Workflow
+## Workflow for any redesign
 
-For every new design/redesign:
-1. Read this file + brand reference HTML.
-2. Read `design-triggers` skill (router → format-specific file).
-3. Apply 6 triggers checklist before declaring done.
-4. Verify in browser at mobile + desktop.
+1. Read this file + `design/strategic-brief.md` + brand reference HTML.
+2. Load skills: `design-triggers` (router → format-specific file in `~/.claude/skills/design-triggers/`) + `frontend-design`.
+3. Apply Rock/Stones/Pebbles to the section: explicitly name the rock before building.
+4. Apply 6 triggers checklist from `design-triggers/SKILL.md` before declaring done.
+5. **Never rewrite copy without asking Nitzan first.** Visual changes only unless explicit copy approval.
+6. Verify in browser at mobile + desktop, hard refresh.
