@@ -3,6 +3,12 @@
 
 .menopause-roadmap-page {
   overflow-x: hidden;
+  /* Lock Assistant on the entire roadmap tree */
+  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+.menopause-roadmap-page * {
+  font-family: inherit;
 }
 
 /* ============================================
