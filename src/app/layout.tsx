@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import { Heebo, Secular_One, Frank_Ruhl_Libre } from "next/font/google";
+import { Rubik, Secular_One, Frank_Ruhl_Libre } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
@@ -10,13 +10,13 @@ import ExitIntentHandler from "../components/ExitIntentHandler";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 // Brand typography (see DESIGN.md):
-// - Heebo: workhorse for body, H1/H2, CTA, captions (95% of text)
+// - Rubik: workhorse for body, H1/H2, CTA, captions (95% of text)
 // - Secular One: oversized display headlines (one per page, max)
 // - Frank Ruhl Libre: literary moments — quotes, signatures, FAQ stems
-const heebo = Heebo({
-  variable: "--font-heebo",
+const rubik = Rubik({
+  variable: "--font-rubik",
   subsets: ["latin", "hebrew"],
-  weight: ["300", "400", "500", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
-        className={`${heebo.variable} ${secularOne.variable} ${frankRuhl.variable}`}
+        className={`${rubik.variable} ${secularOne.variable} ${frankRuhl.variable}`}
         suppressHydrationWarning
       >
         {/* Google Analytics */}

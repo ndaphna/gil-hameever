@@ -195,13 +195,13 @@
 
   /* ============================================
      BRAND TYPOGRAPHY (see DESIGN.md)
-     - Heebo: body, H1/H2, CTA, captions (the workhorse)
+     - Rubik: body, H1/H2, CTA, captions (the workhorse)
      - Secular One: oversized display headlines (one per page)
      - Frank Ruhl Libre: literary moments — quotes, signatures, FAQ
      Latin fallbacks via 'Segoe UI', Tahoma; Hebrew fallback is system.
      ============================================ */
   --font-display:   var(--font-secular), 'Segoe UI', Tahoma, Arial, sans-serif;
-  --font-body:      var(--font-heebo), 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-body:      var(--font-rubik), 'Segoe UI', Tahoma, Arial, sans-serif;
   --font-literary:  var(--font-frank-ruhl), 'Georgia', 'Frank Ruhl CLM', serif;
 
   /* Fluid Hebrew type scale (readable for 50+, generous on desktop) */

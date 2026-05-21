@@ -143,24 +143,24 @@ body {
   --background: var(--color-white);
   --foreground: var(--color-gray-900);
 
-  /* Typography — Heebo is the workhorse (see DESIGN.md).
+  /* Typography — Rubik is the workhorse (see DESIGN.md).
      Legacy --font-assistant alias keeps unrefactored pages working. */
   --font-family-base: var(--font-body);
-  --font-assistant: var(--font-heebo);
+  --font-assistant: var(--font-rubik);
 
-  /* Buttons — pill radius, Heebo extrabold (per brand spec) */
+  /* Buttons — pill radius, Rubik extrabold (per brand spec) */
   --btn-font-size: 15px;
   --btn-font-weight: 800;
   --btn-padding-y: 14px;
   --btn-padding-x: 28px;
   --btn-radius: 32px;
 
-  /* All historical "handwritten" aliases collapse to Heebo so legacy
+  /* All historical "handwritten" aliases collapse to Rubik so legacy
      CSS keeps working without edits. */
-  --font-handwritten: var(--font-heebo);
-  --font-handwritten-luxury: var(--font-heebo);
-  --font-handwritten-elegant: var(--font-heebo);
-  --font-handwritten-casual: var(--font-heebo);
+  --font-handwritten: var(--font-rubik);
+  --font-handwritten-luxury: var(--font-rubik);
+  --font-handwritten-elegant: var(--font-rubik);
+  --font-handwritten-casual: var(--font-rubik);
 }
 
 /* Force light theme */
