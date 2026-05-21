@@ -22,7 +22,7 @@
   overflow: hidden;
   visibility: hidden;
   opacity: 0;
-  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
 }
 
 .sidebar * {
@@ -105,7 +105,7 @@
 }
 
 .user-name {
-  font-family: var(--font-body);
+  font-family: inherit;
   font-size: 18px;
   font-weight: 800;
   margin: 0 0 8px 0;
@@ -270,7 +270,7 @@
 }
 
 .sidebar-label {
-  font-family: var(--font-body);
+  font-family: inherit;
   font-size: 15px;
   font-weight: 600;
   color: var(--brand-cream);
@@ -525,7 +525,7 @@
 }
 
 .sidebar-image-modal-header h3 {
-  font-family: var(--font-body);
+  font-family: inherit;
   font-size: 20px;
   font-weight: 900;
   color: var(--brand-black);

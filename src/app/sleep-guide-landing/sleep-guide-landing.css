@@ -21,7 +21,7 @@
   position: relative;
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: var(--font-assistant);
+  font-family: inherit;
   background: linear-gradient(145deg, rgba(255, 182, 217, 0.12) 0%, rgba(228, 204, 255, 0.12) 60%, rgba(255, 255, 255, 0.95) 100%);
 }
 
@@ -222,7 +222,7 @@
   cursor: pointer;
   box-shadow: 0 8px 28px rgba(255, 0, 128, 0.35);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: var(--font-assistant);
+  font-family: inherit;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.01em;

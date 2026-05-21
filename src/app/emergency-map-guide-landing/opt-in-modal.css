@@ -147,7 +147,7 @@
   border-radius: 12px;
   outline: none;
   transition: all 0.3s ease;
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
 }
 
 .opt-in-input::placeholder {
@@ -190,7 +190,7 @@
   cursor: pointer;
   box-shadow: 0 8px 24px rgba(255, 0, 128, 0.35);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   position: relative;
   overflow: hidden;
 }

@@ -15,7 +15,7 @@
   justify-content: center;
   background: linear-gradient(165deg, #0f0f12 0%, #1a1520 40%, #15101a 100%);
   color: #f5f0eb;
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   direction: rtl;
   padding: 2rem 1.5rem;
   box-sizing: border-box;

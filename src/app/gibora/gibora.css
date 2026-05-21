@@ -8,7 +8,7 @@
   --text-soft: #2d3748;
   --bg: #ffffff;
   --bg-alt: #faf9f8;
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   direction: rtl;
   width: 100%;
   min-height: 100vh;

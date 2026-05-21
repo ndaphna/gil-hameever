@@ -15,7 +15,7 @@
   width: 100%;
   min-height: 100vh;
   /* Lock Assistant explicitly on the home tree, immune to upstream cascade. */
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   background: linear-gradient(
     180deg,
     rgba(255, 240, 250, 0.3) 0%,
@@ -331,7 +331,7 @@
 
 .quote-mark {
   font-size: 3.5rem;
-  font-family: Georgia, serif;
+  font-family: inherit;
   color: rgba(255, 0, 128, 0.18);
   line-height: 1;
   margin: 0 0 var(--space-2);

@@ -34,7 +34,7 @@
   animation: shSlideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
 }
 
 @keyframes shSlideUp {
@@ -127,7 +127,7 @@
   border-radius: 14px;
   outline: none;
   transition: all 0.3s ease;
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   text-align: right;
   direction: rtl;
 }
@@ -173,7 +173,7 @@
   cursor: pointer;
   box-shadow: 0 8px 28px rgba(255, 0, 128, 0.38);
   transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   position: relative;
   overflow: hidden;
   letter-spacing: 0.01em;

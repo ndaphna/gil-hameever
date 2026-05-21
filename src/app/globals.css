@@ -195,9 +195,26 @@ html, body, #__next {
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-family-base);
+  /* SINGLE SOURCE OF TRUTH for site-wide font.
+     To change the entire site's typography, edit ONLY this line
+     (and the matching declaration in src/styles/base.css). */
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   FORCED INHERITANCE — site-wide
+   ============================================
+   Every element inherits font-family from body unless
+   explicitly overridden. This includes form elements
+   (button/input/select/textarea) which browsers reset
+   by default. Change the font in `body` above and the
+   entire site updates. */
+*,
+*::before,
+*::after {
+  font-family: inherit;
 }
 
 /* ============================================
@@ -1199,7 +1216,7 @@ h1, h2, h3, h4, h5, h6 {
   top: -10px;
   right: 20px;
   font-size: 80px;
-  font-family: Georgia, serif;
+  font-family: inherit;
   color: var(--purple-light);
   opacity: 0.3;
   line-height: 1;
@@ -1252,7 +1269,7 @@ blockquote.quote-box::before {
   top: -10px;
   right: 20px;
   font-size: 80px;
-  font-family: Georgia, serif;
+  font-family: inherit;
   color: var(--purple-light);
   opacity: 0.3;
   line-height: 1;

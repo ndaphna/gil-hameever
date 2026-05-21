@@ -4,7 +4,7 @@
 .menopause-roadmap-page {
   overflow-x: hidden;
   /* Lock Assistant on the entire roadmap tree */
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
 }
 
 .menopause-roadmap-page * {

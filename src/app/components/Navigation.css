@@ -13,7 +13,7 @@
   border-bottom: 1px solid rgba(140, 120, 130, 0.12);
   /* Lock Assistant on the entire header tree — literal name guards
      against any case where the CSS variable doesn't resolve. */
-  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
 }
 
 /* Signature gold accent line beneath the header */
@@ -52,7 +52,7 @@
    ============================================ */
 
 .nav-brand {
-  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   font-size: 18px;
   font-weight: 800;
   color: var(--brand-black);

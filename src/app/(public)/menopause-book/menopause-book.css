@@ -10,7 +10,7 @@
     width: 100%;
     min-height: 100vh;
     direction: rtl;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    font-family: inherit;
     line-height: 1.7;
     color: #2d3748;
     background: #ffffff;
@@ -30,7 +30,7 @@
 
 /* Main Headline - כותרת ראשית */
 .main-headline {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 4.5rem;
     font-weight: 700;
     color: #E91E8C;
@@ -344,11 +344,11 @@ section {
     margin: 50px auto;
     max-width: 700px;
     box-shadow: 0 20px 60px rgba(194, 24, 91, 0.4);
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
 }
 
 .launch-offer-title {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 2.5rem;
     font-weight: 700;
     color: white;
@@ -357,14 +357,14 @@ section {
 }
 
 .birthday-note {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.3rem;
     color: rgba(255, 255, 255, 0.95);
     margin-bottom: 15px;
 }
 
 .price-box .old-price {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.5rem;
     text-decoration: line-through;
     opacity: 0.8;
@@ -373,7 +373,7 @@ section {
 }
 
 .price-box .new-price {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 4rem;
     font-weight: 800;
     margin: 20px 0;
@@ -382,7 +382,7 @@ section {
 }
 
 .price-box .price-note {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.1rem;
     margin-bottom: 30px;
     color: rgba(255, 255, 255, 0.95);
@@ -399,7 +399,7 @@ section {
 }
 
 .package-title {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 25px;
@@ -408,7 +408,7 @@ section {
 }
 
 .package-item {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.2rem;
     margin: 15px 0;
     color: rgba(255, 255, 255, 0.95);
@@ -426,7 +426,7 @@ section {
 }
 
 .package-total {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.5rem;
     font-weight: 800;
     text-align: center;
@@ -435,7 +435,7 @@ section {
 }
 
 .final-price {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 2rem;
     font-weight: 800;
     color: white;
@@ -445,7 +445,7 @@ section {
 .price-box-button {
     background: white !important;
     color: #E91E8C !important;
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1.4rem;
     font-weight: 700;
     padding: 20px 50px;
@@ -459,14 +459,14 @@ section {
 }
 
 .limited-time {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     margin-top: 30px;
     font-size: 1.1rem;
     color: rgba(255, 255, 255, 0.95);
 }
 
 .guarantee-text {
-    font-family: var(--font-assistant), 'Assistant', sans-serif;
+    font-family: inherit;
     font-size: 1rem;
     margin-top: 15px;
     color: rgba(255, 255, 255, 0.9);

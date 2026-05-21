@@ -22,7 +22,7 @@
   position: relative;
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   color: var(--color-text-primary);
   background: linear-gradient(
     145deg,
@@ -359,7 +359,7 @@
   overflow: hidden;
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  font-family: inherit;
   animation: lmModalSlideUp 0.4s var(--ease-out-quint);
 }
 

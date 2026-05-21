@@ -20,7 +20,7 @@
   background: #ffffff;
   direction: rtl;
   unicode-bidi: isolate;
-  font-family: var(--font-assistant);
+  font-family: inherit;
   color: var(--black);
   position: relative;
   overflow-x: hidden;

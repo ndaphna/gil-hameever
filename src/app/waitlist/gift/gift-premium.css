@@ -34,7 +34,7 @@
    BASE
    ============================================ */
 .gift-premium-page {
-  font-family: var(--font-assistant), 'Assistant', Arial, sans-serif;
+  font-family: inherit;
   background: var(--gift-bg);
   color: var(--gift-text);
   line-height: 1.75;
@@ -125,7 +125,7 @@
 }
 
 .gift-hero-title {
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(2.25rem, 6vw, 3.25rem);
   font-weight: 800;
   line-height: 1.25;
@@ -141,7 +141,7 @@
 }
 
 .gift-hero-author {
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1rem, 2.5vw, 1.125rem);
   font-weight: 500;
   color: var(--gift-gold);
@@ -229,7 +229,7 @@
 
 /* H2 - כותרות משנה ממורכזות */
 .gift-premium-heading {
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1.5rem, 3.8vw, 1.875rem);
   font-weight: 700;
   line-height: 1.35;
@@ -249,7 +249,7 @@ h3.gift-premium-heading {
 
 /* Paragraphs - גדלים נוחים לקריאה */
 .gift-premium-paragraph {
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1.0625rem, 2.6vw, 1.1875rem);
   font-weight: 400;
   line-height: 1.85;
@@ -337,7 +337,7 @@ h3.gift-premium-heading {
   font-size: clamp(4rem, 10vw, 5.5rem);
   color: var(--gift-gold-light);
   line-height: 1;
-  font-family: Georgia, serif;
+  font-family: inherit;
   opacity: 0.2;
   font-weight: 700;
   z-index: 0;
@@ -354,7 +354,7 @@ h3.gift-premium-heading {
 }
 
 .gift-quote-text {
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1.125rem, 2.8vw, 1.3125rem);
   font-weight: 600;
   line-height: 1.65;
@@ -382,7 +382,7 @@ h3.gift-premium-heading {
 
 .gift-list li {
   padding: clamp(0.625rem, 1.6vw, 0.875rem) clamp(1.75rem, 4vw, 2.25rem) clamp(0.625rem, 1.6vw, 0.875rem) 0;
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1.0625rem, 2.6vw, 1.1875rem);
   line-height: 1.7;
   color: var(--gift-text);
@@ -428,7 +428,7 @@ h3.gift-premium-heading {
    ============================================ */
 .gift-cta-button {
   display: inline-block;
-  font-family: var(--font-assistant), 'Assistant', sans-serif;
+  font-family: inherit;
   font-size: clamp(1.0625rem, 2.6vw, 1.125rem);
   font-weight: 600;
   line-height: 1.4;

@@ -125,7 +125,7 @@
 
 /* Headline - Using website's h2 style */
 .exit-intent-headline {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: var(--h2-mobile);
   font-weight: 700;
   color: var(--magenta-dark);
@@ -153,7 +153,7 @@
 
 /* Text - Using website's typography scale */
 .exit-intent-text {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: var(--text-base-mobile);
   font-weight: 400;
   color: var(--black);
@@ -175,7 +175,7 @@
 }
 
 .exit-intent-bonus {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: 0.9rem;
   font-weight: 400;
   color: var(--black);
@@ -224,7 +224,7 @@
 
 /* Email Input - Mobile First */
 .exit-intent-input {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: 16px; /* Prevents zoom on iOS */
   min-height: 48px;
   padding: 14px 1.25rem;
@@ -283,7 +283,7 @@
   text-align: center;
   border: none;
   cursor: pointer;
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   width: 100%;
 }
 
@@ -313,7 +313,7 @@
 
 /* Error Message */
 .exit-intent-error {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: var(--text-small-mobile);
   color: var(--color-error);
   background: rgba(239, 68, 68, 0.1);
@@ -365,7 +365,7 @@
 }
 
 .exit-intent-aliza-text {
-  font-family: var(--font-assistant), sans-serif;
+  font-family: inherit;
   font-size: var(--text-base-mobile);
   font-weight: 400;
   color: var(--gray);
