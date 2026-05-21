@@ -1,15 +1,56 @@
 /* ============================================
    CSS VARIABLES - Design System
+   ============================================
+   See DESIGN.md for the canonical brand spec.
+   Legacy --color-* tokens remap to --brand-* tokens
+   so unrefactored pages stay coherent until rebranded.
    ============================================ */
 
 :root {
-  /* Primary Colors - Magenta/Pink Theme */
-  --color-primary: #FF0080;
-  --color-primary-dark: #E0006E;
-  --color-primary-light: #FFE4F1;
-  --color-primary-soft: #FFF0F7;
-  --color-secondary: #9D4EDD;
-  --color-secondary-light: #C77DFF;
+  /* ============================================
+     BRAND TOKENS (source of truth — see DESIGN.md)
+     ============================================ */
+
+  /* Fuchsia — primary action */
+  --brand-fuchsia:       #D4167A;
+  --brand-fuchsia-dark:  #9E0F5B;
+  --brand-fuchsia-light: #F7C5DF;
+
+  /* Gold — premium / editorial accent */
+  --brand-gold:       #C4922A;
+  --brand-gold-light: #E8C97A;
+  --brand-gold-pale:  #F5EDD8;
+
+  /* Dark neutrals — hero / luxe backgrounds */
+  --brand-black: #1A0A12;
+  --brand-dark:  #2C1420;
+
+  /* Light neutrals — body / editorial backgrounds */
+  --brand-cream:     #FBF6F0;
+  --brand-white:     #FFFFFF;
+  --brand-warm-gray: #8C7882;
+
+  /* Brand gradients */
+  --brand-gradient-fuchsia: linear-gradient(135deg, var(--brand-fuchsia) 0%, var(--brand-fuchsia-dark) 100%);
+  --brand-gradient-dark:    linear-gradient(145deg, var(--brand-dark) 0%, var(--brand-black) 100%);
+  --brand-gradient-warm:    linear-gradient(135deg, var(--brand-cream) 0%, var(--brand-gold-pale) 100%);
+
+  /* Brand shadows — warm fuchsia + gold glows */
+  --brand-glow-fuchsia: 0 0 24px rgba(212, 22, 122, 0.35);
+  --brand-glow-gold:    0 0 22px rgba(196, 146, 42, 0.45);
+  --brand-shadow-luxe:  0 12px 40px rgba(26, 10, 18, 0.18);
+
+  /* ============================================
+     LEGACY ALIASES (point to brand tokens)
+     ============================================ */
+
+  /* Primary Colors — Magenta/Pink (now refined fuchsia) */
+  --color-primary: var(--brand-fuchsia);
+  --color-primary-dark: var(--brand-fuchsia-dark);
+  --color-primary-light: var(--brand-fuchsia-light);
+  --color-primary-soft: var(--brand-gold-pale);
+  --color-secondary: var(--brand-fuchsia-dark);
+  --color-secondary-light: var(--brand-fuchsia-light);
   
   /* Neutral Colors */
   --color-black: #1A1A1A;
@@ -36,10 +77,10 @@
   --color-background-dark: #1A1A1A;
   
   /* Text Colors */
-  --color-text-primary: #1A1A1A;
-  --color-text-secondary: #4A4A4A;
-  --color-text-muted: #6B6B6B;
-  --color-text-inverse: #FFFFFF;
+  --color-text-primary: var(--brand-black);
+  --color-text-secondary: #3A2530;
+  --color-text-muted: var(--brand-warm-gray);
+  --color-text-inverse: var(--brand-white);
   
   /* Border Colors */
   --color-border: #E5E7EB;
@@ -149,8 +190,19 @@
   --shadow-elevation-2: 0 2px 4px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.08);
   --shadow-elevation-3: 0 4px 8px rgba(15, 23, 42, 0.06), 0 12px 32px rgba(15, 23, 42, 0.10);
   --shadow-elevation-4: 0 8px 16px rgba(15, 23, 42, 0.08), 0 24px 64px rgba(15, 23, 42, 0.12);
-  --shadow-brand-soft: 0 8px 32px rgba(255, 0, 128, 0.12);
-  --shadow-brand-strong: 0 12px 40px rgba(255, 0, 128, 0.22);
+  --shadow-brand-soft: 0 8px 32px rgba(212, 22, 122, 0.14);
+  --shadow-brand-strong: 0 12px 40px rgba(212, 22, 122, 0.24);
+
+  /* ============================================
+     BRAND TYPOGRAPHY (see DESIGN.md)
+     - Heebo: body, H1/H2, CTA, captions (the workhorse)
+     - Secular One: oversized display headlines (one per page)
+     - Frank Ruhl Libre: literary moments — quotes, signatures, FAQ
+     Latin fallbacks via 'Segoe UI', Tahoma; Hebrew fallback is system.
+     ============================================ */
+  --font-display:   var(--font-secular), 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-body:      var(--font-heebo), 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-literary:  var(--font-frank-ruhl), 'Georgia', 'Frank Ruhl CLM', serif;
 
   /* Fluid Hebrew type scale (readable for 50+, generous on desktop) */
   --text-display: clamp(2.25rem, 6vw, 4rem);

@@ -59,39 +59,40 @@ body {
    ============================================ */
 
 :root {
-  /* Primary Colors - Magenta/Pink Theme */
-  --magenta: #FF0080;
-  --magenta-dark: #E0006E;
-  --light-pink: #FFE4F1;
-  --soft-pink: #FFF0F7;
-  --purple: #9D4EDD;
-  --purple-light: #C77DFF;
-  
-  /* Neutral Colors */
-  --black: #1A1A1A;
-  --gray: #4A4A4A;
-  --gray-light: #F5F5F5;
-  --white: #FFFFFF;
-  
-  /* Legacy color system (for compatibility) */
-  --color-pink: #FF0080;
-  --color-pink-strong: #E6007E;
-  --color-pink-light: #FFF0F9;
-  --color-pink-light-2: #FFE5F4;
-  --color-black: #000000;
-  --color-gray-900: #171717;
-  --color-gray-800: #1A1A1A;
-  --color-gray-700: #333333;
-  --color-gray-600: #4A4A4A;
-  --color-gray-100: #FAFAFA;
-  --color-gray-50: #F5F5F5;
-  --color-white: #FFFFFF;
-  --color-purple: #8B5CF6;
-  --color-purple-strong: #9333EA;
+  /* Primary Colors — remapped to brand tokens (see DESIGN.md).
+     Legacy names kept for backward compatibility until each page is rebranded. */
+  --magenta: var(--brand-fuchsia);
+  --magenta-dark: var(--brand-fuchsia-dark);
+  --light-pink: var(--brand-fuchsia-light);
+  --soft-pink: var(--brand-gold-pale);
+  --purple: var(--brand-fuchsia-dark);
+  --purple-light: var(--brand-fuchsia-light);
 
-  /* Gradients */
-  --gradient-main: linear-gradient(135deg, var(--magenta) 0%, var(--purple) 100%);
-  --gradient-soft: linear-gradient(180deg, var(--soft-pink) 0%, var(--white) 100%);
+  /* Neutral Colors */
+  --black: var(--brand-black);
+  --gray: #3A2530;
+  --gray-light: var(--brand-cream);
+  --white: var(--brand-white);
+
+  /* Legacy color system (for compatibility) */
+  --color-pink: var(--brand-fuchsia);
+  --color-pink-strong: var(--brand-fuchsia-dark);
+  --color-pink-light: var(--brand-gold-pale);
+  --color-pink-light-2: var(--brand-fuchsia-light);
+  --color-black: var(--brand-black);
+  --color-gray-900: #171717;
+  --color-gray-800: var(--brand-dark);
+  --color-gray-700: #3A2530;
+  --color-gray-600: var(--brand-warm-gray);
+  --color-gray-100: var(--brand-cream);
+  --color-gray-50: var(--brand-cream);
+  --color-white: var(--brand-white);
+  --color-purple: var(--brand-fuchsia-dark);
+  --color-purple-strong: var(--brand-fuchsia-dark);
+
+  /* Gradients — fuchsia-only (no more pink→purple legacy) */
+  --gradient-main: var(--brand-gradient-fuchsia);
+  --gradient-soft: linear-gradient(180deg, var(--brand-gold-pale) 0%, var(--brand-white) 100%);
   
   /* Typography Scale - Mobile First with clamp() for fluid scaling */
   --h1-mobile: clamp(28px, 7vw, 36px);
@@ -142,24 +143,24 @@ body {
   --background: var(--color-white);
   --foreground: var(--color-gray-900);
 
-  /* Typography — explicit fallback chain ensures Assistant wins on every
-     OS/browser even if next/font is still loading or cached badly. */
-  --font-family-base: var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
+  /* Typography — Heebo is the workhorse (see DESIGN.md).
+     Legacy --font-assistant alias keeps unrefactored pages working. */
+  --font-family-base: var(--font-body);
+  --font-assistant: var(--font-heebo);
 
-  /* Buttons */
-  --btn-font-size: 18px;
-  --btn-font-weight: 700;
+  /* Buttons — pill radius, Heebo extrabold (per brand spec) */
+  --btn-font-size: 15px;
+  --btn-font-weight: 800;
   --btn-padding-y: 14px;
   --btn-padding-x: 28px;
-  --btn-radius: 4px;
+  --btn-radius: 32px;
 
-  /* Single-font policy: Assistant is the only typeface site-wide.
-     All historical "handwritten" aliases collapse to Assistant so any
-     legacy CSS rule referencing them keeps working without edits. */
-  --font-handwritten: var(--font-assistant);
-  --font-handwritten-luxury: var(--font-assistant);
-  --font-handwritten-elegant: var(--font-assistant);
-  --font-handwritten-casual: var(--font-assistant);
+  /* All historical "handwritten" aliases collapse to Heebo so legacy
+     CSS keeps working without edits. */
+  --font-handwritten: var(--font-heebo);
+  --font-handwritten-luxury: var(--font-heebo);
+  --font-handwritten-elegant: var(--font-heebo);
+  --font-handwritten-casual: var(--font-heebo);
 }
 
 /* Force light theme */

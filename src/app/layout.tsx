@@ -1,5 +1,5 @@
 ﻿import type { Metadata } from "next";
-import { Assistant } from "next/font/google";
+import { Heebo, Secular_One, Frank_Ruhl_Libre } from "next/font/google";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import "./globals.css";
@@ -9,13 +9,28 @@ import AccessibilityBubble from "../components/AccessibilityBubble";
 import ExitIntentHandler from "../components/ExitIntentHandler";
 import { AuthProvider } from "@/contexts/AuthContext";
 
-// Sole site font. Hebrew + Latin, weights 400/500/600/700 cover body,
-// emphasis, semibold UI, and bold headings. All historical "handwritten"
-// CSS variables alias to this font via globals.css.
-const assistant = Assistant({
-  variable: "--font-assistant",
+// Brand typography (see DESIGN.md):
+// - Heebo: workhorse for body, H1/H2, CTA, captions (95% of text)
+// - Secular One: oversized display headlines (one per page, max)
+// - Frank Ruhl Libre: literary moments — quotes, signatures, FAQ stems
+const heebo = Heebo({
+  variable: "--font-heebo",
   subsets: ["latin", "hebrew"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "700", "800", "900"],
+  display: "swap",
+});
+
+const secularOne = Secular_One({
+  variable: "--font-secular",
+  subsets: ["latin", "hebrew"],
+  weight: ["400"],
+  display: "swap",
+});
+
+const frankRuhl = Frank_Ruhl_Libre({
+  variable: "--font-frank-ruhl",
+  subsets: ["latin", "hebrew"],
+  weight: ["300", "400", "500", "700"],
   display: "swap",
 });
 
@@ -70,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="he" dir="rtl" suppressHydrationWarning data-scroll-behavior="smooth">
       <body
-        className={assistant.variable}
+        className={`${heebo.variable} ${secularOne.variable} ${frankRuhl.variable}`}
         suppressHydrationWarning
       >
         {/* Google Analytics */}
