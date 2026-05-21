@@ -172,7 +172,7 @@
 .quote-decoration {
   position: absolute;
   font-size: clamp(3rem, 8vw, 5rem);
-  font-family: var(--font-handwritten-luxury), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   color: rgba(255, 255, 255, 0.25);
   font-weight: 700;
   line-height: 1;
@@ -194,13 +194,13 @@
 }
 
 .hero-quote-text {
-  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive !important;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif !important;
   font-size: clamp(1.5rem, 4vw, 2.5rem);
   font-weight: 700;
   color: white;
   margin: 0;
   line-height: 1.4;
-  font-style: italic;
+  font-style: normal;
   position: relative;
   z-index: 1;
   text-shadow: 
@@ -213,7 +213,7 @@
 
 /* Hero Subtitle */
 .hero-subtitle {
-  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive !important;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif !important;
   font-size: clamp(1.1rem, 2.5vw, 1.5rem);
   font-weight: 500;
   color: white;
@@ -1164,7 +1164,7 @@
       0 3px 12px rgba(0, 0, 0, 0.35),
       0 1px 4px rgba(0, 0, 0, 0.25),
       0 0 2px rgba(255, 255, 255, 0.15);
-    font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive !important;
+    font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif !important;
   }
 }
 
@@ -1223,7 +1223,7 @@
     margin-bottom: clamp(35px, 7vw, 45px);
     letter-spacing: 0.06em;
     line-height: 1.6;
-    font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive !important;
+    font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif !important;
   }
 }
 

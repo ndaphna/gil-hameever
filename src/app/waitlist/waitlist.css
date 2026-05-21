@@ -480,7 +480,7 @@
   font-size: clamp(1.1875rem, 3vw, 1.4375rem);
   color: var(--black);
   line-height: 1.75;
-  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-style: normal;
   letter-spacing: 0.02em;
   position: relative;

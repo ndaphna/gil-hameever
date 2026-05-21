@@ -163,14 +163,14 @@
 }
 
 .hero-quote-text {
-  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive !important;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif !important;
   font-size: clamp(1.25rem, 6vw, 2.5rem);
   font-weight: 700;
   color: white;
   margin: 0;
   line-height: 1.4;
-  font-style: italic;
-  text-shadow: 
+  font-style: normal;
+  text-shadow:
     0 3px 15px rgba(0, 0, 0, 0.3),
     0 1px 4px rgba(0, 0, 0, 0.2);
   word-wrap: break-word;

@@ -200,9 +200,9 @@
      - Frank Ruhl Libre: literary moments — quotes, signatures, FAQ
      Latin fallbacks via 'Segoe UI', Tahoma; Hebrew fallback is system.
      ============================================ */
-  --font-display:   var(--font-secular), 'Segoe UI', Tahoma, Arial, sans-serif;
-  --font-body:      var(--font-assistant), 'Segoe UI', Tahoma, Arial, sans-serif;
-  --font-literary:  var(--font-frank-ruhl), 'Georgia', 'Frank Ruhl CLM', serif;
+  --font-display:   var(--font-secular), 'Secular One', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-body:      var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+  --font-literary:  var(--font-frank-ruhl), 'Frank Ruhl Libre', 'Georgia', serif;
 
   /* Fluid Hebrew type scale (readable for 50+, generous on desktop) */
   --text-display: clamp(2.25rem, 6vw, 4rem);

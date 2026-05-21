@@ -12,65 +12,65 @@
 
 /* Luxury Handwritten - Premium elegant style */
 .font-handwritten-luxury {
-  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
   letter-spacing: 0.03em;
 }
 
 .font-handwritten-luxury-medium {
-  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 500;
   letter-spacing: 0.02em;
 }
 
 .font-handwritten-luxury-bold {
-  font-family: var(--font-handwritten-luxury), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
 /* Elegant Handwritten - Modern stylish */
 .font-handwritten-elegant {
-  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
   letter-spacing: 0.02em;
 }
 
 .font-handwritten-elegant-medium {
-  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 500;
 }
 
 .font-handwritten-elegant-bold {
-  font-family: var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 600;
 }
 
 /* Casual Handwritten - Friendly and readable */
 .font-handwritten-casual {
-  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
 }
 
 .font-handwritten-casual-light {
-  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 300;
 }
 
 .font-handwritten-casual-bold {
-  font-family: var(--font-handwritten-casual), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 700;
 }
 
 /* Standard Handwritten - Satisfy (default) */
 .font-handwritten {
-  font-family: var(--font-handwritten), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
 }
 
 /* Utility: Auto-select best handwritten font for hero subtitles */
 .handwritten-hero {
-  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-handwritten), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.75;
@@ -78,14 +78,14 @@
 
 /* Utility: Handwritten for decorative elements */
 .handwritten-decorative {
-  font-family: var(--font-handwritten-elegant), var(--font-handwritten-luxury), var(--font-handwritten), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 500;
   letter-spacing: 0.03em;
 }
 
 /* Utility: Handwritten for quotes/testimonials */
 .handwritten-quote {
-  font-family: var(--font-handwritten-luxury), var(--font-handwritten-elegant), var(--font-assistant), cursive;
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
   font-weight: 400;
   letter-spacing: 0.02em;
   line-height: 1.8;

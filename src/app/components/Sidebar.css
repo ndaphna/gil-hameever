@@ -22,7 +22,11 @@
   overflow: hidden;
   visibility: hidden;
   opacity: 0;
-  font-family: var(--font-body);
+  font-family: var(--font-assistant), 'Assistant', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+.sidebar * {
+  font-family: inherit;
 }
 
 .sidebar.open {
