@@ -2,8 +2,29 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState, FormEvent } from 'react';
+import { useEffect, useRef, useState, FormEvent } from 'react';
 import './home.css';
+
+function useInViewOnce<T extends HTMLElement>(amount = 0.2) {
+  const ref = useRef<T | null>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || inView) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: amount }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [amount, inView]);
+  return { ref, inView };
+}
 
 const heartFilled = (
   <svg viewBox="0 0 24 22" aria-hidden="true">
@@ -31,6 +52,9 @@ export default function Home() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [error, setError] = useState('');
   const [consent, setConsent] = useState(false);
+
+  const pain = useInViewOnce<HTMLElement>(0.2);
+  const worlds = useInViewOnce<HTMLElement>(0.2);
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -96,7 +120,7 @@ export default function Home() {
               <Link href="/menopause-roadmap" className="btn btn-primary btn-pulse">
                 קחי את מפת הדרכים
               </Link>
-              <Link href="/menopause-book" className="btn btn-ghost-dark">
+              <Link href="/book-preview" className="btn btn-ghost-dark">
                 ספרי לי על הספר
               </Link>
             </div>
@@ -112,8 +136,8 @@ export default function Home() {
 
           <div className="hero-photo">
             <Image
-              src="/inbal-hero.png"
-              alt="ענבל דפנה, פורטרט"
+              src="/inbal-hero-book-v2.png"
+              alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
               fill
               sizes="(max-width: 900px) 100vw, 50vw"
               priority
@@ -134,7 +158,11 @@ export default function Home() {
       {/* ============================================
           2 · PAIN — "מכירה את הימים האלה ש…"
           ============================================ */}
-      <section className="pain" aria-labelledby="pain-headline">
+      <section
+        ref={pain.ref}
+        className={`pain${pain.inView ? ' is-in' : ''}`}
+        aria-labelledby="pain-headline"
+      >
         <div className="container">
           <div className="eyebrow eyebrow-muted">אולי גם את</div>
           <h2 id="pain-headline" className="section-h2">
@@ -191,7 +219,11 @@ export default function Home() {
       {/* ============================================
           4 · THREE WORLDS — gateways
           ============================================ */}
-      <section className="worlds" aria-labelledby="worlds-headline">
+      <section
+        ref={worlds.ref}
+        className={`worlds${worlds.inView ? ' is-in' : ''}`}
+        aria-labelledby="worlds-headline"
+      >
         <div className="container">
           <div className="eyebrow eyebrow-muted">שלושה שערים להתחיל מהם</div>
           <h2 id="worlds-headline" className="section-h2">
@@ -298,10 +330,14 @@ export default function Home() {
               הצצה לספר
             </Link>
           </div>
-          <div className="book-cover" aria-hidden="true">
-            <div className="book-cover-top">לא &quot;גברת&quot;,</div>
-            <div className="book-cover-title">גיבורה!</div>
-            <div className="book-cover-bottom">ענבל דפנה · גיל המֵעֵבֶר</div>
+          <div className="book-cover">
+            <Image
+              src="/book-mockup-v2.png"
+              alt="לא גברת, גיבורה — ספרה של ענבל דפנה"
+              fill
+              sizes="(max-width: 800px) 70vw, 36vw"
+              className="book-cover-img"
+            />
           </div>
         </div>
       </section>
