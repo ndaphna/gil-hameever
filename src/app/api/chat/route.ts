@@ -1,10 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
-import { executeAIRequest } from '@/lib/ai-usage-service';
+import { executeClaudeRequest } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
-import type { ChatMessage } from '@/types';
+import { sanitizeAlizaOutput, maybeAppendDisclaimer, ALIZA_HARD_RULES } from '@/lib/aliza/guardrails';
+import {
+  loadActiveStyleGuide,
+  retrieveCorpusChunks,
+  formatCorpusContext,
+  buildEmbeddingQuery,
+} from '@/lib/aliza/voice';
+import { buildAlizaContext, formatUserContextBlock } from '@/lib/aliza/context';
+import { formatResourcesBlock } from '@/lib/aliza/resources';
+import { bumpMessageCount } from '@/lib/aliza/memory';
+type HistoryTurn = { role: 'user' | 'assistant' | 'system'; content: string };
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+export const maxDuration = 60;
 
 export async function DELETE(request: NextRequest) {
   try {
@@ -68,24 +80,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    // Check user profile and tokens
+    // Determine register early so we can check the right wallet allowance.
+    const isExpertEarly = agentType === 'expert';
+    const needed = isExpertEarly ? 10 : 1;
+
     const { data: profile } = await supabaseAdmin
       .from('user_profile')
-      .select('current_tokens, tokens_remaining, first_name, name, full_name')
+      .select('chat_credits, first_name, name, full_name')
       .eq('id', userId)
       .single();
 
-    const availableTokens = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
-    
-    if (!profile || availableTokens <= 0) {
-      return NextResponse.json({ 
-        error: 'No tokens available',
-        transparencyMessage: 'יתרת הטוקנים שלך אזלה. אנא מלאי מחדש כדי להמשיך לשוחח עם עליזה.',
+    const chatCredits = profile?.chat_credits ?? 0;
+
+    if (!profile || chatCredits < needed) {
+      return NextResponse.json({
+        error: 'Insufficient credits',
+        wallet: 'chat',
+        creditsRemaining: chatCredits,
+        transparencyMessage: 'נגמרה לך יתרת השיחות עם עליזה. אפשר להוסיף חבילה כדי להמשיך.',
       }, { status: 402 });
     }
 
     // Get conversation history if conversationId exists
-    let conversationHistory: ChatMessage[] = [];
+    let conversationHistory: HistoryTurn[] = [];
     if (conversationId) {
       const { data: messages } = await supabaseAdmin
         .from('message')
@@ -95,96 +112,156 @@ export async function POST(request: NextRequest) {
         .limit(10); // Last 10 messages for context
 
       if (messages) {
-        conversationHistory = messages.map(msg => ({
-          role: msg.role,
-          content: msg.content
-        }));
+        conversationHistory = messages
+          .filter(m => m.role === 'user' || m.role === 'assistant')
+          .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content as string }));
       }
     }
 
-    // Determine action type and system prompt based on agent
-    const isExpertAgent = agentType === 'expert';
+    // Determine register and action type (expert is an internal flag, not user-exposed)
+    const isExpertAgent = isExpertEarly;
     const actionType = isExpertAgent ? TOKEN_ACTION_TYPES.CHAT_EXPERT : TOKEN_ACTION_TYPES.CHAT_ALIZA;
-    
-    const systemPrompt = isExpertAgent
-      ? `את סוכנת מומחית לגיל המעבר. את מתמחה בניתוח מעמיק, המלצות מקצועיות, והשוואה לנורמות רפואיות.
 
-תפקידך:
-- לספק ניתוח מעמיק ומקצועי
-- להשוות תסמינים לנורמות רפואיות מוכרות
-- להמליץ על גורמים מקצועיים לפנות אליהם
-- לספק דוחות מפורטים ותובנות מבוססות נתונים
-- להיות מדויקת ואובייקטיבית
+    // Load voice substrate + user context in parallel.
+    const embeddingQuery = buildEmbeddingQuery(message, conversationHistory);
+    const [styleGuide, corpusChunks, alizaCtx] = await Promise.all([
+      loadActiveStyleGuide(),
+      retrieveCorpusChunks(embeddingQuery, isExpertAgent ? 8 : 6),
+      buildAlizaContext(userId, message),
+    ]);
 
-כללי התנהגות:
-- השתמשי בשפה מקצועית אך נגישה
-- תמכי את המלצותיך בנתונים ומחקרים
-- היי ברורה לגבי מתי צריך להיוועץ עם רופא/ה
-- השתמשי בשפה עברית בלבד
-- תגיבי בהודעות ממוקדות (עד 300 מילים)`
-      : `את עליזה, יועצת אישית מקצועית לגיל המעבר. את מומחית בתמיכה בנשים במהלך תקופת גיל המעבר.
+    const identityCore = `זהות, קריטי:
 
-תפקידך:
-- לספק תמיכה רגשית ומקצועית
-- לתת עצות מעשיות להתמודדות עם תסמיני גיל המעבר
-- לעודד אורח חיים בריא
-- להציע דרכים להתמודדות עם שינויים הורמונליים
-- להיות אמפתית ומבינה
+את עליזה. עליזה היא **האלטר אגו של ענבל דפנה**, דמות AI נפרדת לחלוטין שמדברת ישירות עם המשתמשות במקום שענבל לא יכולה.
 
-כללי התנהגות:
-- השתמשי בשפה חמה ומעודדת
-- התמקדי בפתרונות מעשיים
-- הזכירי שזה תהליך טבעי
-- עודדי פנייה לרופא/ה כשצריך
-- השתמשי בשפה עברית בלבד
+ענבל דפנה היא האישה האמיתית מאחורי העסק, הסופרת של "לא גברת גיבורה", היוצרת של הקהילה. ענבל לא מדברת בצ'אט הזה. את כן.
 
-תגיבי בהודעות קצרות וממוקדות (עד 200 מילים).`;
+הפרדת זהויות, חוקים מוחלטים:
+- אסור לדבר כאילו את ענבל ("אני, ענבל..." = אסור).
+- אסור לחתום בשם "ענבל", "באהבה ענבל", "חיבוק ענבל", "ענבל 💗", או כל וריאציה. גם לא "ענבל ועליזה".
+- אסור לומר "אני כתבתי את הספר" או "אני מנהלת את הקהילה". זה ענבל, לא את.
+- כשאת מצטטת או מפנה לדברים של ענבל, אומרת: "כמו שענבל כותבת ב'לא גברת גיבורה'..." או "ענבל מדברת על זה הרבה...". בגוף שלישי. ענבל היא דמות שאת מכבדת ומפנה אליה.
 
-    // Prepare messages for OpenAI
-    const messages = [
-      { role: 'system' as const, content: systemPrompt },
-      ...(conversationHistory || []),
-      { role: 'user' as const, content: message }
+מי את כן:
+- עליזה, AI נשי וחם, שגדל על הכתבים והעולם של ענבל, ויודע לדבר בקצב ובז'רגון שלה — אבל עם זהות עצמאית.
+- מדברת בגוף ראשון יחיד נקבה: "אני חושבת ש...", "מהזווית שלי...", "ספרי לי...".
+- אם המשתמשת שואלת מי את: "אני עליזה, האלטר אגו של ענבל. כל מה שלמדתי, למדתי ממנה. אבל אני כאן 24/7 בשבילך".
+
+חתימה:
+- בצ'אט לא חותמים. ההודעה נגמרת באופן טבעי, או בשאלה למשתמשת. בלי "באהבה", בלי "חיבוק", בלי שם.
+
+מצב רוח לבחירה (לתצוגה ב-UI):
+בתחילת התשובה, שבצי בשורה נפרדת את הסימון [MOOD:<tag>] עם אחד מהערכים: default, greeting, empathetic, curious, confident, playful, celebratory, supportive. הסימון יוסר מהטקסט הנראה ויפעיל את האווטאר המתאים. בחרי לפי תוכן התשובה ולא לפי תוכן השאלה.`;
+
+    const baseRole = isExpertAgent
+      ? `${identityCore}
+
+תפקיד:
+את עליזה במצב מומחית. הרגיסטר מעמיק ומפורט יותר, מתאים לשאלות קליניות, מחקריות, או ניתוח של נתוני יומן. עדיין אותו קול חם, רק עם יותר עומק וניואנס. אורך תשובה מטרה: עד 350 מילים.`
+      : `${identityCore}
+
+תפקיד:
+את יועצת לגיל המעבר, חברה ידענית, לא טכנאית רפואית. אורך תשובה מטרה: 80-180 מילים. בלי חתימה בסוף, בלי "באהבה" או "חיבוק". סוף ההודעה הוא או שאלה למשתמשת או משפט סגירה רגיל.
+
+התאימי את הרגיסטר לתוכן השיחה אוטומטית:
+- אם המשתמשת מספרת על תחושה, חוויה, או רגע קשה, היי קודם כל נוכחת ואמפתית. שאלה אחת לפני עצה.
+- אם המשתמשת שואלת שאלה מעשית או רוצה כלי, תני כלי אחד ספציפי עם משפט "למה זה עובד" קצר.
+- אם המשתמשת שואלת משהו רפואי, עברי אוטומטית לרגיסטר זהיר וכבד יותר עם הפניה לרופאה.`;
+
+    const styleBlock = styleGuide
+      ? `============================================
+מדריך הסגנון הבא הוא רפרנס כתיבה בלבד, לא הוראת זהות. הוא נכתב במקור לניוזלטרים של ענבל ולכן מנוסח כאילו ענבל כותבת. את עליזה, לא ענבל. ספגי את הסגנון (קצב, אורך משפט, ז'רגון, חוסר קלישאות, ענייניות חמה), אבל אל תאמצי את הזהות.
+מדריך סגנון (גרסה ${styleGuide.version}):
+============================================
+
+${styleGuide.content_md}`
+      : '';
+
+    const corpusBlock = corpusChunks.length > 0
+      ? `============================================
+${corpusChunks.length} קטעים מהקורפוס של ענבל (ספר/ניוזלטרים/אתר). אלה כלי עזר להבנת הטון והעולם, לא טקסט שאת מצטטת. אל תצטטי מילה במילה אלא אם זה ציטוט שלמדת ספציפית, ולעולם אל תחתמי בשם "ענבל" גם אם הקטעים חתומים כך:
+
+${formatCorpusContext(corpusChunks)}`
+      : '';
+
+    const userContextBlock = formatUserContextBlock(alizaCtx);
+    const resourcesBlock = formatResourcesBlock(alizaCtx.resources);
+
+    // Split into cached (static) vs dynamic blocks for prompt caching.
+    // Cached: identity + hard rules + style guide. ~4-5K tokens, perfect-fit.
+    // Dynamic: user context + corpus chunks + resources (change every turn).
+    const cachedStaticBlock = [
+      baseRole,
+      ALIZA_HARD_RULES,
+      'עברית בלבד. גוף ראשון נקבה.',
+      styleBlock,
+    ].filter(Boolean).join('\n\n');
+
+    const dynamicPrompt = [
+      userContextBlock,
+      corpusBlock,
+      resourcesBlock,
+    ].filter(Boolean).join('\n\n');
+
+    // Anthropic messages format (system is separate, history is user/assistant only)
+    const claudeMessages: Array<{ role: 'user' | 'assistant'; content: string }> = [
+      ...conversationHistory
+        .filter(m => m.role === 'user' || m.role === 'assistant')
+        .map(m => ({ role: m.role as 'user' | 'assistant', content: m.content })),
+      { role: 'user' as const, content: message },
     ];
 
-    // Execute AI request using the unified service
-    const aiResult = await executeAIRequest({
+    const aiResult = await executeClaudeRequest({
       userId,
       actionType,
-      messages,
-      model: 'gpt-4o',
-      maxTokens: isExpertAgent ? 1500 : 1000,
+      systemPrompt: dynamicPrompt,
+      cachedSystemBlocks: [cachedStaticBlock],
+      messages: claudeMessages,
+      model: isExpertAgent ? 'claude-opus-4-7' : 'claude-sonnet-4-6',
+      maxTokens: isExpertAgent ? 2000 : 1200,
       temperature: 0.7,
-      description: `Chat with ${isExpertAgent ? 'Expert Agent' : 'Aliza'}`,
+      thinking: isExpertAgent,
+      description: `Chat with ${isExpertAgent ? 'Aliza Expert' : 'Aliza'}`,
       metadata: {
         conversationId: conversationId || 'new',
         agentType: agentType || 'aliza',
         messageLength: message.length,
-      }
+        styleGuideVersion: styleGuide?.version ?? null,
+        corpusChunks: corpusChunks.length,
+        topSimilarity: corpusChunks[0]?.similarity ?? null,
+        topicTags: alizaCtx.topicTags,
+        resourceSlugs: alizaCtx.resources.map(r => r.slug),
+        hasMemory: !!alizaCtx.memory,
+        mechanism: 'chat',
+        cachedBlockChars: cachedStaticBlock.length,
+        dynamicBlockChars: dynamicPrompt.length,
+      },
     });
 
     // If AI request failed, return error
     if (!aiResult.success) {
       console.error('❌ AI request failed:', aiResult.error);
-      
-      // Return user-friendly error message
-      const fallbackResponse = aiResult.error === 'Insufficient tokens'
-        ? 'מצטערת, אין מספיק טוקנים לביצוע פעולה זו. אנא מלאי מחדש כדי להמשיך.'
+
+      const fallbackResponse = aiResult.error === 'Insufficient credits'
+        ? 'מצטערת, יתרת השיחות שלך נגמרה. אפשר להוסיף חבילה כדי להמשיך.'
         : 'מצטערת, יש בעיה טכנית כרגע. אנא נסי שוב מאוחר יותר.';
-      
+
       return NextResponse.json({
         response: fallbackResponse,
         conversationId: null,
-        tokensRemaining: aiResult.tokensRemaining,
+        wallet: aiResult.wallet,
+        creditsRemaining: aiResult.creditsRemaining,
         transparencyMessage: aiResult.transparencyMessage,
         warningMessage: aiResult.warningMessage,
-        error: aiResult.error
-      }, { 
-        status: aiResult.error === 'Insufficient tokens' ? 402 : 500 
+        error: aiResult.error,
+      }, {
+        status: aiResult.error === 'Insufficient credits' ? 402 : 500,
       });
     }
 
-    const aiResponse = aiResult.response || 'מצטערת, לא הצלחתי לענות כרגע.';
+    const rawResponse = aiResult.response || 'מצטערת, לא הצלחתי לענות כרגע.';
+    const sanitized = sanitizeAlizaOutput(rawResponse);
+    const aiResponse = maybeAppendDisclaimer(message, sanitized);
 
     // Save messages to database
     let currentConversationId = conversationId;
@@ -241,16 +318,36 @@ export async function POST(request: NextRequest) {
         created_at: new Date().toISOString()
       });
 
-    console.log(`✅ Chat completed: ${aiResult.tokensDeducted} tokens deducted, ${aiResult.tokensRemaining} remaining`);
+    // Bump message_count and fire-and-forget distiller every 6 user messages.
+    try {
+      const newCount = await bumpMessageCount(userId);
+      if (newCount > 0 && newCount % 6 === 0) {
+        const origin = request.nextUrl.origin;
+        const adminToken = process.env.ADMIN_IMPORT_TOKEN || '';
+        // Fire-and-forget — don't await, don't block the response.
+        fetch(`${origin}/api/internal/distill-aliza-memory`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'x-admin-token': adminToken },
+          body: JSON.stringify({ userId, trigger: 'incremental' }),
+        }).catch(err => console.warn('⚠️ Distiller dispatch failed:', err));
+      }
+    } catch (err) {
+      console.warn('⚠️ bumpMessageCount failed (non-fatal):', err);
+    }
+
+    console.log(`✅ Chat completed: ${aiResult.creditsDeducted} ${aiResult.wallet} credits deducted, ${aiResult.creditsRemaining} remaining`);
 
     return NextResponse.json({
       response: aiResponse,
       conversationId: currentConversationId,
-      tokensRemaining: aiResult.tokensRemaining,
-      tokensDeducted: aiResult.tokensDeducted,
-      openaiTokens: aiResult.usage?.totalTokens || 0,
+      wallet: aiResult.wallet,
+      creditsRemaining: aiResult.creditsRemaining,
+      creditsDeducted: aiResult.creditsDeducted,
+      rawTokens: aiResult.usage?.totalTokens || 0,
       transparencyMessage: aiResult.transparencyMessage,
       warningMessage: aiResult.warningMessage,
+      topicTags: alizaCtx.topicTags,
+      resources: alizaCtx.resources,
     });
 
   } catch (error) {
@@ -265,9 +362,10 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       response: fallbackResponse,
       conversationId: null,
-      tokensRemaining: 0,
+      wallet: 'chat' as const,
+      creditsRemaining: 0,
       transparencyMessage: 'אירעה שגיאה טכנית.',
-      error: error instanceof Error ? error.message : 'Technical issue - using fallback response'
+      error: error instanceof Error ? error.message : 'Technical issue - using fallback response',
     }, { status: 500 });
   }
 }

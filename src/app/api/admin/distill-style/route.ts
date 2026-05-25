@@ -42,12 +42,23 @@ type CorpusRow = {
 };
 
 function formatCorpus(rows: CorpusRow[]): string {
-  const grouped: Record<string, CorpusRow[]> = { book: [], newsletter: [], website: [] };
+  const grouped: Record<string, CorpusRow[]> = { manual: [], book: [], newsletter: [], website: [] };
   for (const r of rows) {
     (grouped[r.source] ?? (grouped[r.source] = [])).push(r);
   }
 
   const sections: string[] = [];
+
+  // Manual docs (canonical voice/character guides authored by Inbal) come
+  // first so the model anchors on them when patterns conflict with the corpus.
+  if (grouped.manual.length > 0) {
+    sections.push(
+      '# מקור: מסמכי המקור של ענבל (אפיון + מדריך סגנון)\n\n' +
+        grouped.manual
+          .map(r => `## ${r.title ?? ''} [${r.source_ref ?? ''}]\n${r.body}`)
+          .join('\n\n---\n\n'),
+    );
+  }
 
   if (grouped.book.length > 0) {
     sections.push(
