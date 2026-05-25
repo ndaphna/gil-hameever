@@ -10,6 +10,7 @@ import {
   LogOut,
   Sparkles,
   Bell,
+  Bot,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import './tokens.css';
@@ -42,6 +43,15 @@ const NAV: NavItem[] = [
     children: [
       { href: '/admin/newsletter', label: 'כל הטיוטות', matchExact: true },
       { href: '/admin/newsletter/new', label: 'טיוטה חדשה' },
+    ],
+  },
+  {
+    href: '/admin/bots',
+    label: 'בוטים',
+    icon: Bot,
+    children: [
+      { href: '/admin/bots', label: 'כל הבריפים', matchExact: true },
+      { href: '/admin/bots/new', label: 'בריף חדש' },
     ],
   },
 ];
