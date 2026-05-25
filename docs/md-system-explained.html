@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>מערכת קבצי ה-MD של קלוד — סדר בבלגן</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: "Segoe UI", "Arial", "David", sans-serif;
+    direction: rtl;
+    text-align: right;
+    color: #1a1a1a;
+    line-height: 1.65;
+    font-size: 11.5pt;
+  }
+  body { margin: 0; padding: 0; }
+  h1 {
+    font-size: 24pt;
+    color: #2a1f5f;
+    margin: 0 0 4px 0;
+    border-bottom: 3px solid #d946a0;
+    padding-bottom: 10px;
+  }
+  .subtitle {
+    color: #666;
+    font-size: 11pt;
+    margin-bottom: 28px;
+  }
+  h2 {
+    font-size: 16pt;
+    color: #2a1f5f;
+    margin-top: 26px;
+    margin-bottom: 10px;
+    padding-right: 12px;
+    border-right: 5px solid #d946a0;
+  }
+  h3 {
+    font-size: 13pt;
+    color: #4a3a8a;
+    margin-top: 18px;
+    margin-bottom: 8px;
+  }
+  p { margin: 8px 0; }
+  ul, ol { margin: 8px 0; padding-right: 22px; }
+  li { margin: 4px 0; }
+  strong { color: #2a1f5f; }
+  code, .path {
+    font-family: "Consolas", "Courier New", monospace;
+    direction: ltr;
+    unicode-bidi: embed;
+    background: #f4f0fa;
+    color: #2a1f5f;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10pt;
+    white-space: nowrap;
+  }
+  a {
+    color: #b8328a;
+    text-decoration: none;
+    border-bottom: 1px dotted #b8328a;
+  }
+  a:hover { color: #d946a0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0;
+    font-size: 10.5pt;
+  }
+  th, td {
+    border: 1px solid #d6d0e8;
+    padding: 8px 10px;
+    text-align: right;
+    vertical-align: top;
+  }
+  th {
+    background: #f4f0fa;
+    color: #2a1f5f;
+    font-weight: bold;
+  }
+  td.path-cell {
+    direction: ltr;
+    text-align: left;
+    font-family: "Consolas", monospace;
+    font-size: 9.5pt;
+  }
+  .callout {
+    background: #fff8e1;
+    border-right: 4px solid #f5c842;
+    padding: 12px 16px;
+    margin: 14px 0;
+    border-radius: 4px;
+  }
+  .callout.warning {
+    background: #fde8f1;
+    border-right-color: #d946a0;
+  }
+  .callout.info {
+    background: #e8f1fd;
+    border-right-color: #4a8ad9;
+  }
+  .layer-box {
+    border: 2px solid #d6d0e8;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 14px 0;
+    background: #fbfafd;
+  }
+  .layer-box.global { border-color: #4a8ad9; }
+  .layer-box.project { border-color: #d946a0; }
+  .layer-box.auto { border-color: #5fa85f; }
+  .layer-tag {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 9.5pt;
+    font-weight: bold;
+    color: white;
+    margin-left: 8px;
+  }
+  .tag-global { background: #4a8ad9; }
+  .tag-project { background: #d946a0; }
+  .tag-auto { background: #5fa85f; }
+  hr {
+    border: none;
+    border-top: 1px solid #e0d8ee;
+    margin: 24px 0;
+  }
+  .footer {
+    margin-top: 36px;
+    padding-top: 12px;
+    border-top: 1px solid #e0d8ee;
+    font-size: 9.5pt;
+    color: #888;
+    text-align: center;
+  }
+  .hierarchy {
+    background: #f4f0fa;
+    padding: 14px 22px;
+    border-radius: 8px;
+    font-family: "Consolas", monospace;
+    direction: ltr;
+    text-align: center;
+    color: #2a1f5f;
+    line-height: 1.9;
+    margin: 12px 0;
+  }
+  .toc {
+    background: #fbfafd;
+    border: 1px solid #d6d0e8;
+    border-radius: 8px;
+    padding: 12px 22px;
+    margin-bottom: 24px;
+  }
+  .toc ol { padding-right: 18px; }
+  .toc a { border: none; }
+</style>
+</head>
+<body>
+
+<h1>מערכת קבצי ה-MD של קלוד</h1>
+<div class="subtitle">סדר בבלגן — איך קלוד יודע מה גלובלי, מה פרויקטי, ומה זיכרון אוטומטי | ניצן דפנה · 2026-05-23</div>
+
+<div class="toc">
+  <strong>תוכן עניינים</strong>
+  <ol>
+    <li><a href="#layers">שלוש השכבות</a></li>
+    <li><a href="#global">שכבה גלובלית</a></li>
+    <li><a href="#project">שכבה פרויקט-ספציפית</a></li>
+    <li><a href="#auto">זיכרון אוטומטי (auto-memory)</a></li>
+    <li><a href="#qa">שאלות נפוצות</a></li>
+    <li><a href="#conflicts">קונפליקטים והיררכיה</a></li>
+    <li><a href="#extras">דברים שלא שאלת אבל כדאי לדעת</a></li>
+    <li><a href="#tldr">TL;DR</a></li>
+  </ol>
+</div>
+
+<h2 id="layers">1. שלוש השכבות</h2>
+<p>קלוד קורא קבצים לפי <strong>היררכיה</strong>. הספציפי גובר על הכללי.</p>
+
+<div class="hierarchy">
+  1. Global (cross-project)<br>
+  ↓<br>
+  2. Project-specific<br>
+  ↓<br>
+  3. Auto-memory (per project)
+</div>
+
+<p>הוא <strong>לא</strong> רואה את כל הפרויקטים בו-זמנית — רק את הגלובלי + את הפרויקט שאתה נמצא בו עכשיו.</p>
+
+<hr>
+
+<h2 id="global">2. שכבה גלובלית <span class="layer-tag tag-global">גלובלי</span></h2>
+<div class="layer-box global">
+<p>קבצים שקלוד קורא בכל סשן — לא משנה איפה אתה. מגדירים את הזהות, חוקי הבטיחות, השפה, וסטאק ברירת המחדל.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:42%">קובץ</th><th>תפקיד</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/.claude/CLAUDE.md">C:\Users\Adva\.claude\CLAUDE.md</a></td>
+      <td>הוראות ליבה — תפקיד, חוקי בטיחות (Compliance Protocol), שפה, סטאק טכנולוגי</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/About%20Me/about-me.md">C:\Users\Adva\About Me\about-me.md</a></td>
+      <td>זהות, העדפות עבודה, פרויקטים פעילים</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/About%20Me/memory.md">C:\Users\Adva\About Me\memory.md</a></td>
+      <td>זיכרונות חוצי-פרויקטים</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout warning">
+<strong>⚠️ חוק הברזל:</strong> ה-Compliance &amp; Safety Protocol שב-<code>CLAUDE.md</code> הגלובלי <strong>אף פעם לא נדרס</strong> — גם אם פרויקט-מקומי אומר אחרת.
+</div>
+</div>
+
+<hr>
+
+<h2 id="project">3. שכבה פרויקט-ספציפית <span class="layer-tag tag-project">פרויקט</span></h2>
+<div class="layer-box project">
+<p>קלוד מזהה את הפרויקט לפי <code>cwd</code> (תיקיית העבודה הנוכחית). הקבצים האלה נטענים <strong>רק</strong> כשאתה עובד בתוך התיקייה של הפרויקט.</p>
+
+<h3>הפרויקט gil-hameever</h3>
+<table>
+  <thead>
+    <tr><th style="width:42%">קובץ</th><th>תפקיד</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/CLAUDE.md">Projects\gil-hameever\CLAUDE.md</a></td>
+      <td>חוקי הפרויקט (Aliza ללא ייעוץ רפואי, ללא Tailwind, וכו')</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/About%20Me/project.md">About Me\project.md</a></td>
+      <td>קונטקסט מלא — מוצר, קהל, החלטות, workstreams</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/About%20Me/writingrules.md">About Me\writingrules.md</a></td>
+      <td>חוקי כתיבה — anti-patterns של AI writing</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/About%20Me/inbal-character.md">About Me\inbal-character.md</a></td>
+      <td>דמות ענבל — קהל, חזון, hooks, קול של עליזה</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/About%20Me/inbal-style-guide.md">About Me\inbal-style-guide.md</a></td>
+      <td>סטייל-גייד — מבנה רטורי, ביטויים אסורים/מומלצים</td>
+    </tr>
+    <tr>
+      <td class="path-cell"><a href="file:///C:/Users/Adva/Projects/gil-hameever/About%20Me/memory.md">About Me\memory.md</a></td>
+      <td>יומן סשנים של הפרויקט (gitignored)</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="callout info">
+<strong>חשוב:</strong> הדמויות ענבל ועליזה קיימות <strong>רק</strong> בפרויקט הזה. בפרויקט אחר, קלוד לא ידע מהן.
+</div>
+</div>
+
+<hr>
+
+<h2 id="auto">4. זיכרון אוטומטי (auto-memory) <span class="layer-tag tag-auto">אוטומטי</span></h2>
+<div class="layer-box auto">
+<p>תיקייה שקלוד מנהל בעצמו — אתה לא עורך אותה ידנית. הוא כותב לשם תובנות, חוקים שלמד ממך, והקשר פרויקט.</p>
+
+<h3>הנתיב — שים לב לקידוד</h3>
+<p class="path">
+  <a href="file:///C:/Users/Adva/.claude/projects/c--Users-Adva-Projects-gil-hameever/memory/">C:\Users\Adva\.claude\projects\c--Users-Adva-Projects-gil-hameever\memory\</a>
+</p>
+<p>השם <code>c--Users-Adva-Projects-gil-hameever</code> הוא הנתיב של הפרויקט מקודד. <strong>לכל פרויקט יש תיקייה משלו</strong> בתוך <code>.claude\projects\</code>.</p>
+
+<h3>מה בפנים?</h3>
+<ul>
+  <li><a href="file:///C:/Users/Adva/.claude/projects/c--Users-Adva-Projects-gil-hameever/memory/MEMORY.md"><code>MEMORY.md</code></a> — <strong>אינדקס</strong> של כל הזיכרונות. נטען אוטומטית בכל סשן. נקטע אחרי 200 שורות, לכן הוא תמציתי.</li>
+  <li>קבצי זיכרון בודדים לפי טיפוס:
+    <ul>
+      <li><code>feedback_*.md</code> — חוקים שלמדתי מתיקונים שלך</li>
+      <li><code>project_*.md</code> — עובדות על הפרויקט</li>
+      <li><code>user_*.md</code> — מידע אישי עליך</li>
+      <li><code>reference_*.md</code> — מצביעים למערכות חיצוניות</li>
+    </ul>
+  </li>
+</ul>
+
+<div class="callout">
+<strong>זאת לא תיקייה גלובלית.</strong> זיכרונות שנוצרו בעבודה על gil-hameever <strong>לא ייטענו</strong> כשתפתח פרויקט אחר.
+</div>
+</div>
+
+<hr>
+
+<h2 id="qa">5. שאלות נפוצות</h2>
+
+<h3>"האם לקלוד יש את כל המידע של כל הפרויקטים שלי?"</h3>
+<p><strong>לא.</strong> בכל סשן הוא רואה רק:</p>
+<ul>
+  <li>שכבה 1 (גלובלי) — תמיד ✅</li>
+  <li>שכבה 2+3 — <strong>רק של הפרויקט שאתה עובד בו</strong> ✅</li>
+  <li>שאר הפרויקטים — שקופים, הוא לא יודע שהם קיימים (אלא אם הזכרת אותם ב-<code>about-me.md</code> הגלובלי).</li>
+</ul>
+
+<h3>"איך קלוד יודע מה גלובלי ומה לא?"</h3>
+<p>לפי <strong>מיקום הקובץ</strong>, לא לפי תוכנו:</p>
+<table>
+  <thead>
+    <tr><th>מיקום</th><th>סוג</th></tr>
+  </thead>
+  <tbody>
+    <tr><td class="path-cell">C:\Users\Adva\.claude\</td><td><span class="layer-tag tag-global">גלובלי</span></td></tr>
+    <tr><td class="path-cell">C:\Users\Adva\About Me\</td><td><span class="layer-tag tag-global">גלובלי</span></td></tr>
+    <tr><td class="path-cell">Projects\&lt;project&gt;\CLAUDE.md</td><td><span class="layer-tag tag-project">פרויקט</span></td></tr>
+    <tr><td class="path-cell">Projects\&lt;project&gt;\About Me\</td><td><span class="layer-tag tag-project">פרויקט</span></td></tr>
+    <tr><td class="path-cell">.claude\projects\&lt;encoded&gt;\memory\</td><td><span class="layer-tag tag-auto">auto-memory</span></td></tr>
+  </tbody>
+</table>
+
+<hr>
+
+<h2 id="conflicts">6. קונפליקטים והיררכיה</h2>
+<p>נניח הגלובלי אומר "אל תשתמש ב-Tailwind" ופרויקט אחר אומר "כן ל-Tailwind". מי גובר?</p>
+
+<div class="hierarchy">
+  Project &gt; Global
+</div>
+
+<p>הפרויקט גובר — חוץ ממקרה אחד:</p>
+
+<div class="callout warning">
+<strong>⚠️ ה-Compliance &amp; Safety Protocol</strong> (סעיפים 1-7 ב-<code>CLAUDE.md</code> הגלובלי) — <strong>אף פעם לא נדרס</strong>. גם אם תכתוב בפרויקט "מותר ל-Aliza לתת ייעוץ רפואי" — קלוד יסרב.
+</div>
+
+<hr>
+
+<h2 id="extras">7. דברים שלא שאלת אבל כדאי לדעת</h2>
+<ol>
+  <li><strong><code>memory.md</code> בכל פרויקט הוא gitignored</strong> — אישי, לא עולה ל-GitHub.</li>
+  <li><strong><code>MEMORY.md</code> (auto-memory) נקטע אחרי 200 שורות</strong> — לכן הוא רק אינדקס, לא תוכן.</li>
+  <li><strong>קבצי About Me כן עולים לגיט</strong> (לפחות <code>project.md</code> ו-<code>writingrules.md</code>) — שיתופיים אם מישהו עוד יעבוד על הפרויקט.</li>
+  <li><strong>אם תעביר פרויקט לתיקייה אחרת — תאבד את ה-auto-memory שלו</strong> (כי שם התיקייה ב-<code>.claude\projects\</code> בנוי מהנתיב). באג קטן, לא קריטי.</li>
+  <li><strong><code>CLAUDE.md</code> הוא לא קוד</strong> — שינוי שלו לא דורש restart. בסשן הבא ייטען מחדש.</li>
+  <li><strong>קישור בין זיכרונות:</strong> בתוך קובץ זיכרון אפשר להפנות לזיכרון אחר עם <code>[[name]]</code> — קלוד פותר את זה אוטומטית.</li>
+</ol>
+
+<hr>
+
+<h2 id="tldr">8. TL;DR</h2>
+<ul>
+  <li><strong>גלובלי</strong> = חוקים שתקפים בכל פרויקט. יושב ב-<code>.claude\</code> ו-<code>About Me\</code> בבית.</li>
+  <li><strong>פרויקט</strong> = כל מה שב-<code>Projects\&lt;name&gt;\</code> — מבודד מהאחרים.</li>
+  <li><strong>auto-memory</strong> = תיקייה לכל פרויקט תחת <code>.claude\projects\&lt;encoded&gt;\memory\</code>. קלוד כותב לבד.</li>
+  <li><strong>היררכיה:</strong> פרויקט &gt; גלובלי, חוץ מ-Compliance Protocol שלא נדרס.</li>
+  <li><strong>בידוד:</strong> קלוד לא רואה פרויקטים אחרים אלא אם רשמת ב-about-me הגלובלי.</li>
+</ul>
+
+<div class="footer">
+מסמך זה הופק אוטומטית ע"י Claude · gil-hameever · 2026-05-23
+</div>
+
+</body>
+</html>
