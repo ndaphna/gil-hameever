@@ -1,331 +1,390 @@
 /**
- * AI Usage Service
- * 
- * Centralized service for all AI operations that consume tokens.
- * This service handles:
- * - OpenAI API calls
- * - Token deduction using TOKEN_MULTIPLIER
- * - Logging to token_ledger
- * - Transparency notifications
- * - Balance validation
- * 
- * CRITICAL: All AI operations must go through this service.
- * No direct OpenAI calls should bypass this layer.
+ * AI Usage Service — wallet-aware credit billing.
+ *
+ * Single entry point for every AI call that should be metered. Responsibilities:
+ *   1. Resolve the action's wallet (chat | analysis | platform) and credit cost.
+ *   2. Verify the user has enough credits in that wallet (platform actions skip).
+ *   3. Call the provider (Anthropic or OpenAI).
+ *   4. Deduct credits from the correct wallet column.
+ *   5. Record raw token usage + real USD cost in `token_ledger` for margin audit.
+ *   6. Return a transparency message plus the post-deduction balance.
+ *
+ * Charging model: fixed credits per action (set in token-engine ACTION_CONFIG),
+ * not multiplier-on-tokens. The USD cost is tracked separately so we can spot
+ * margin regressions when prompts grow or models change.
  */
 
+import Anthropic from '@anthropic-ai/sdk';
 import { supabaseAdmin } from './supabase-server';
 import {
-  TOKEN_MULTIPLIER,
   TOKEN_ACTION_TYPES,
   type TokenActionType,
-  calculateTokenDeduction,
-  hasEnoughTokens,
+  type Wallet,
+  type AnthropicModelId,
+  type OpenAIModelId,
+  ACTION_CONFIG,
+  walletForAction,
+  creditsForAction,
+  computeAnthropicCostUSD,
+  computeOpenAICostUSD,
+  usdToMicros,
   formatDeductionMessage,
-  getTokenWarningMessage,
-  TOKEN_COST_ESTIMATES,
+  getWalletWarningMessage,
 } from '@/config/token-engine';
 
-/**
- * OpenAI Usage Result Interface
- */
-export interface OpenAIUsageResult {
-  /** Total tokens used by OpenAI (prompt + completion) */
-  totalTokens: number;
-  
-  /** Prompt tokens */
-  promptTokens?: number;
-  
-  /** Completion/response tokens */
-  completionTokens?: number;
-  
-  /** Model used */
-  model?: string;
-}
-
-/**
- * AI Request Interface
- */
-export interface AIRequest {
-  /** User ID */
-  userId: string;
-  
-  /** Type of AI action */
-  actionType: TokenActionType;
-  
-  /** Messages for OpenAI */
-  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
-  
-  /** OpenAI model to use */
-  model?: string;
-  
-  /** Max tokens for response */
-  maxTokens?: number;
-  
-  /** Temperature (creativity) */
-  temperature?: number;
-  
-  /** Response format */
-  responseFormat?: { type: 'json_object' } | { type: 'text' };
-  
-  /** Description for logging */
-  description?: string;
-  
-  /** Additional metadata for logging */
-  metadata?: Record<string, any>;
-}
-
-/**
- * AI Response Interface
- */
+// ── shared response shape ─────────────────────────────────────────────────
 export interface AIResponse {
-  /** Success status */
   success: boolean;
-  
-  /** AI-generated response */
   response?: string;
-  
-  /** Parsed response (if JSON) */
-  data?: any;
-  
-  /** OpenAI usage statistics */
-  usage?: OpenAIUsageResult;
-  
-  /** Tokens deducted from user */
-  tokensDeducted: number;
-  
-  /** Remaining token balance */
-  tokensRemaining: number;
-  
-  /** Transparency message for the user */
+  data?: unknown;
+  /** Raw provider usage (informational, for logs/UI). */
+  usage?: {
+    totalTokens: number;
+    promptTokens?: number;
+    completionTokens?: number;
+    model?: string;
+  };
+  /** Credits removed from the wallet that was charged (0 for platform). */
+  creditsDeducted: number;
+  /** Post-deduction balance of the wallet that was charged. */
+  creditsRemaining: number;
+  /** Which wallet was charged. */
+  wallet: Wallet;
+  /** Hebrew transparency line for the user. Empty for platform calls. */
   transparencyMessage: string;
-  
-  /** Warning message (if balance is low) */
+  /** Low-balance warning if applicable. */
   warningMessage?: string;
-  
-  /** Error message (if failed) */
   error?: string;
 }
 
-/**
- * Check if user has sufficient tokens for an operation
- */
+// ── wallet helpers ────────────────────────────────────────────────────────
+
+const WALLET_COLUMN: Record<Wallet, 'chat_credits' | 'analysis_credits' | null> = {
+  chat: 'chat_credits',
+  analysis: 'analysis_credits',
+  platform: null,
+};
+
+async function readWalletBalance(userId: string, wallet: Wallet): Promise<number> {
+  const column = WALLET_COLUMN[wallet];
+  if (!column) return Number.POSITIVE_INFINITY; // platform — never gated by user wallet
+  const { data } = await supabaseAdmin
+    .from('user_profile')
+    .select(column)
+    .eq('id', userId)
+    .single();
+  // Supabase typing for dynamic columns is loose — narrow at the boundary.
+  const raw = (data as Record<string, unknown> | null)?.[column];
+  return typeof raw === 'number' ? raw : 0;
+}
+
+async function deductCredits(
+  userId: string,
+  wallet: Wallet,
+  credits: number,
+): Promise<{ ok: boolean; before: number; after: number }> {
+  const column = WALLET_COLUMN[wallet];
+  if (!column || credits === 0) {
+    // Platform / zero-cost action: read for telemetry, no write.
+    const before = await readWalletBalance(userId, wallet);
+    return { ok: true, before, after: before };
+  }
+
+  const before = await readWalletBalance(userId, wallet);
+  if (before < credits) {
+    return { ok: false, before, after: before };
+  }
+  const after = Math.max(0, before - credits);
+
+  const { error } = await supabaseAdmin
+    .from('user_profile')
+    .update({ [column]: after })
+    .eq('id', userId);
+
+  if (error) {
+    console.error('❌ Wallet deduction failed:', error);
+    throw new Error(`Failed to deduct credits from ${wallet} wallet`);
+  }
+  return { ok: true, before, after };
+}
+
+// ── ledger ───────────────────────────────────────────────────────────────
+
+interface LedgerEntry {
+  userId: string;
+  action: TokenActionType;
+  wallet: Wallet;
+  credits: number;
+  before: number;
+  after: number;
+  provider: 'anthropic' | 'openai';
+  model: string;
+  rawInputTokens: number;
+  rawOutputTokens: number;
+  costUSD: number;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+async function writeLedgerEntry(entry: LedgerEntry): Promise<void> {
+  try {
+    await supabaseAdmin.from('token_ledger').insert({
+      user_id: entry.userId,
+      action_type: entry.action,
+      wallet: entry.wallet,
+      credits_deducted: entry.credits,
+      cost_usd_micros: usdToMicros(entry.costUSD),
+      provider: entry.provider,
+      model: entry.model,
+      openai_tokens: entry.rawInputTokens + entry.rawOutputTokens,
+      tokens_deducted: entry.credits,
+      tokens_before: entry.before,
+      tokens_after: entry.after,
+      metadata: {
+        ...(entry.metadata ?? {}),
+        input_tokens: entry.rawInputTokens,
+        output_tokens: entry.rawOutputTokens,
+      },
+      tokens_used: entry.rawInputTokens + entry.rawOutputTokens,
+      tokens_remaining: entry.after,
+      description: entry.description ?? entry.action,
+    });
+  } catch (err) {
+    // Logging failures must never break the user-facing call.
+    console.error('❌ Ledger write failed:', err);
+  }
+}
+
+// ── balance check (pre-call) ──────────────────────────────────────────────
+
 export async function checkTokenBalance(
   userId: string,
-  actionType: TokenActionType
+  action: TokenActionType,
 ): Promise<{
   hasEnough: boolean;
-  currentBalance: number;
-  estimatedCost: number;
+  balance: number;
+  wallet: Wallet;
+  needed: number;
   warningMessage?: string;
 }> {
-  try {
-    // Get user's current token balance
-    const { data: profile } = await supabaseAdmin
-      .from('user_profile')
-      .select('current_tokens, tokens_remaining')
-      .eq('id', userId)
-      .single();
-    
-    const currentBalance = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
-    const estimatedCost = TOKEN_COST_ESTIMATES[actionType] || 1000;
-    
-    return {
-      hasEnough: currentBalance >= estimatedCost,
-      currentBalance,
-      estimatedCost,
-      warningMessage: getTokenWarningMessage(currentBalance) || undefined,
-    };
-  } catch (error) {
-    console.error('Error checking token balance:', error);
-    return {
-      hasEnough: false,
-      currentBalance: 0,
-      estimatedCost: 0,
-      warningMessage: 'Unable to verify token balance',
-    };
-  }
+  const wallet = walletForAction(action);
+  const needed = creditsForAction(action);
+  const balance = await readWalletBalance(userId, wallet);
+  const warning = wallet === 'platform' ? null : getWalletWarningMessage(wallet, balance);
+  return {
+    hasEnough: wallet === 'platform' || needed === 0 || balance >= needed,
+    balance,
+    wallet,
+    needed,
+    warningMessage: warning ?? undefined,
+  };
 }
 
-/**
- * Log token usage to database
- */
-async function logTokenUsage(
-  userId: string,
-  actionType: TokenActionType,
-  openaiTokens: number,
-  tokensDeducted: number,
-  tokensBefore: number,
-  tokensAfter: number,
-  description?: string,
-  metadata?: Record<string, any>
-): Promise<void> {
-  try {
-    await supabaseAdmin
-      .from('token_ledger')
-      .insert({
-        user_id: userId,
-        action_type: actionType,
-        openai_tokens: openaiTokens,
-        tokens_deducted: tokensDeducted,
-        tokens_before: tokensBefore,
-        tokens_after: tokensAfter,
-        token_multiplier: TOKEN_MULTIPLIER,
-        description: description || `${actionType} operation`,
-        metadata: metadata || {},
-      });
-    
-    console.log(`✅ Token usage logged: ${tokensDeducted} tokens for ${actionType}`);
-  } catch (error) {
-    console.error('❌ Failed to log token usage:', error);
-    // Don't throw - logging failure shouldn't break the operation
-  }
+// ── Anthropic (primary path) ──────────────────────────────────────────────
+
+let _anthropic: Anthropic | null = null;
+function getAnthropic(): Anthropic {
+  if (_anthropic) return _anthropic;
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is not set');
+  _anthropic = new Anthropic({ apiKey });
+  return _anthropic;
 }
 
-/**
- * Deduct tokens from user's balance
- */
-async function deductTokens(
-  userId: string,
-  tokensToDeduct: number
-): Promise<{
-  success: boolean;
-  newBalance: number;
-  oldBalance: number;
-}> {
+export interface ClaudeRequest {
+  userId: string;
+  actionType: TokenActionType;
+  /** Dynamic system text (changes per turn — user context, recent insights). */
+  systemPrompt: string;
+  /**
+   * Static system blocks marked with cache_control: ephemeral. Place identity,
+   * hard rules, style_guide content_md, resources catalog here. Cached blocks
+   * cost 10% of input rate on hit (5min TTL), 25% extra on miss.
+   */
+  cachedSystemBlocks?: string[];
+  messages: Array<{ role: 'user' | 'assistant'; content: string }>;
+  model: AnthropicModelId;
+  maxTokens?: number;
+  temperature?: number;
+  /** Enable Claude adaptive thinking (opus only, recommended for expert mode). */
+  thinking?: boolean;
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export async function executeClaudeRequest(request: ClaudeRequest): Promise<AIResponse> {
+  const {
+    userId,
+    actionType,
+    systemPrompt,
+    cachedSystemBlocks = [],
+    messages,
+    model,
+    maxTokens = 1024,
+    temperature = 0.7,
+    thinking = false,
+    description,
+    metadata,
+  } = request;
+
+  const wallet = walletForAction(actionType);
+  const credits = creditsForAction(actionType);
+
   try {
-    // Get current balance
-    const { data: profile } = await supabaseAdmin
-      .from('user_profile')
-      .select('current_tokens, tokens_remaining')
-      .eq('id', userId)
-      .single();
-    
-    const oldBalance = profile?.current_tokens ?? profile?.tokens_remaining ?? 0;
-    
-    // Check if user has enough tokens
-    if (oldBalance < tokensToDeduct) {
+    console.log(`🤖 Claude ${actionType} (${model}) wallet=${wallet} credits=${credits} user=${userId}`);
+
+    const pre = await checkTokenBalance(userId, actionType);
+    if (!pre.hasEnough) {
       return {
         success: false,
-        newBalance: oldBalance,
-        oldBalance,
+        creditsDeducted: 0,
+        creditsRemaining: pre.balance,
+        wallet,
+        transparencyMessage: `אין מספיק יתרה ב${wallet === 'chat' ? 'שיחות' : 'ניתוחים'}.`,
+        warningMessage: pre.warningMessage,
+        error: 'Insufficient credits',
       };
     }
-    
-    // Deduct tokens
-    const newBalance = Math.max(0, oldBalance - tokensToDeduct);
-    
-    await supabaseAdmin
-      .from('user_profile')
-      .update({
-        current_tokens: newBalance,
-        tokens_remaining: newBalance,
-      })
-      .eq('id', userId);
-    
-    return {
-      success: true,
-      newBalance,
-      oldBalance,
-    };
-  } catch (error) {
-    console.error('❌ Failed to deduct tokens:', error);
-    throw new Error('Failed to deduct tokens');
-  }
-}
 
-/**
- * Call OpenAI API
- */
-async function callOpenAI(
-  messages: AIRequest['messages'],
-  model: string = 'gpt-4o',
-  maxTokens: number = 2000,
-  temperature: number = 0.7,
-  responseFormat?: AIRequest['responseFormat']
-): Promise<{
-  success: boolean;
-  response?: string;
-  usage?: OpenAIUsageResult;
-  error?: string;
-}> {
-  try {
-    const openaiApiKey = process.env.OPENAI_API_KEY;
-    
-    if (!openaiApiKey || openaiApiKey === 'dummy-key') {
-      return {
-        success: false,
-        error: 'OpenAI API key not configured',
-      };
-    }
-    
-    const requestBody: any = {
+    const client = getAnthropic();
+    const systemField: Anthropic.MessageCreateParams['system'] = cachedSystemBlocks.length > 0
+      ? [
+          ...cachedSystemBlocks.map(text => ({
+            type: 'text' as const,
+            text,
+            cache_control: { type: 'ephemeral' as const },
+          })),
+          { type: 'text' as const, text: systemPrompt },
+        ]
+      : systemPrompt;
+
+    const callOptions: Anthropic.MessageCreateParams = {
       model,
-      messages,
       max_tokens: maxTokens,
       temperature,
+      system: systemField,
+      messages,
     };
-    
-    if (responseFormat) {
-      requestBody.response_format = responseFormat;
+    if (thinking) {
+      (callOptions as unknown as Record<string, unknown>).thinking = { type: 'adaptive' };
+      (callOptions as unknown as Record<string, unknown>).output_config = { effort: 'high' };
     }
-    
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    });
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', errorText);
-      
+
+    let response: Anthropic.Message;
+    try {
+      response = await client.messages.create(callOptions);
+    } catch (err) {
+      const errMsg = err instanceof Anthropic.APIError ? `${err.status}: ${err.message}` : String(err);
+      console.error('❌ Anthropic API error:', errMsg);
       return {
         success: false,
-        error: `OpenAI API error: ${response.status}`,
+        creditsDeducted: 0,
+        creditsRemaining: pre.balance,
+        wallet,
+        transparencyMessage: 'הייתה בעיה בשליחת הבקשה ל-AI.',
+        error: errMsg,
       };
     }
-    
-    const data = await response.json();
-    
+
+    const textContent = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('\n\n')
+      .trim();
+
+    const inputTokens   = response.usage.input_tokens ?? 0;
+    const cacheCreation = (response.usage as { cache_creation_input_tokens?: number }).cache_creation_input_tokens ?? 0;
+    const cacheRead     = (response.usage as { cache_read_input_tokens?: number }).cache_read_input_tokens ?? 0;
+    const outputTokens  = response.usage.output_tokens ?? 0;
+
+    const costUSD = computeAnthropicCostUSD(model, {
+      input_tokens: inputTokens,
+      cache_creation_input_tokens: cacheCreation,
+      cache_read_input_tokens: cacheRead,
+      output_tokens: outputTokens,
+    });
+
+    const deduction = await deductCredits(userId, wallet, credits);
+    if (!deduction.ok) {
+      return {
+        success: false,
+        creditsDeducted: 0,
+        creditsRemaining: deduction.before,
+        wallet,
+        transparencyMessage: 'אין מספיק יתרה לביצוע הפעולה.',
+        error: 'Insufficient credits',
+      };
+    }
+
+    await writeLedgerEntry({
+      userId,
+      action: actionType,
+      wallet,
+      credits,
+      before: deduction.before,
+      after: deduction.after,
+      provider: 'anthropic',
+      model,
+      rawInputTokens: inputTokens + cacheCreation + cacheRead,
+      rawOutputTokens: outputTokens,
+      costUSD,
+      description,
+      metadata: {
+        ...(metadata ?? {}),
+        cache_creation_input_tokens: cacheCreation,
+        cache_read_input_tokens: cacheRead,
+        cache_hit_ratio: (cacheRead + cacheCreation + inputTokens) > 0
+          ? Number((cacheRead / (cacheRead + cacheCreation + inputTokens)).toFixed(3))
+          : 0,
+      },
+    });
+
     return {
       success: true,
-      response: data.choices[0]?.message?.content || '',
+      response: textContent,
       usage: {
-        totalTokens: data.usage?.total_tokens || 0,
-        promptTokens: data.usage?.prompt_tokens || 0,
-        completionTokens: data.usage?.completion_tokens || 0,
-        model: data.model,
+        totalTokens: inputTokens + cacheCreation + cacheRead + outputTokens,
+        promptTokens: inputTokens + cacheCreation + cacheRead,
+        completionTokens: outputTokens,
+        model,
       },
+      creditsDeducted: credits,
+      creditsRemaining: deduction.after,
+      wallet,
+      transparencyMessage: formatDeductionMessage(credits, deduction.after, actionType),
+      warningMessage: getWalletWarningMessage(wallet, deduction.after) ?? undefined,
     };
-  } catch (error) {
-    console.error('❌ OpenAI API call failed:', error);
+  } catch (err) {
+    console.error('❌ Claude request failed:', err);
+    // Don't trust 0 here — read live balance so the client doesn't render
+    // a misleading "out of credits" state from a transient failure.
+    const safeRemaining = await readWalletBalance(userId, wallet).catch(() => 0);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      creditsDeducted: 0,
+      creditsRemaining: safeRemaining,
+      wallet,
+      transparencyMessage: 'אירעה שגיאה בביצוע הבקשה.',
+      error: err instanceof Error ? err.message : 'Unknown error',
     };
   }
 }
 
-/**
- * Execute an AI request with full token management
- * 
- * This is the main entry point for all AI operations.
- * It handles:
- * 1. Token balance validation
- * 2. OpenAI API call
- * 3. Token deduction
- * 4. Usage logging
- * 5. Transparency notifications
- * 
- * @param request - AI request configuration
- * @returns AI response with token information
- */
-export async function executeAIRequest(
-  request: AIRequest
-): Promise<AIResponse> {
+// ── OpenAI (legacy path, still used by analysis endpoints) ────────────────
+
+export interface AIRequest {
+  userId: string;
+  actionType: TokenActionType;
+  messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
+  model?: OpenAIModelId;
+  maxTokens?: number;
+  temperature?: number;
+  responseFormat?: { type: 'json_object' } | { type: 'text' };
+  description?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export async function executeAIRequest(request: AIRequest): Promise<AIResponse> {
   const {
     userId,
     actionType,
@@ -337,132 +396,147 @@ export async function executeAIRequest(
     description,
     metadata,
   } = request;
-  
+
+  const wallet = walletForAction(actionType);
+  const credits = creditsForAction(actionType);
+
   try {
-    console.log(`🤖 AI Request: ${actionType} for user ${userId}`);
-    
-    // 1. Check token balance
-    const balanceCheck = await checkTokenBalance(userId, actionType);
-    
-    if (!balanceCheck.hasEnough) {
+    console.log(`🤖 OpenAI ${actionType} (${model}) wallet=${wallet} credits=${credits} user=${userId}`);
+
+    const pre = await checkTokenBalance(userId, actionType);
+    if (!pre.hasEnough) {
       return {
         success: false,
-        tokensDeducted: 0,
-        tokensRemaining: balanceCheck.currentBalance,
-        transparencyMessage: 'אין מספיק טוקנים לביצוע פעולה זו.',
-        warningMessage: 'יתרת הטוקנים שלך אזלה. אנא מלאי מחדש כדי להמשיך.',
-        error: 'Insufficient tokens',
+        creditsDeducted: 0,
+        creditsRemaining: pre.balance,
+        wallet,
+        transparencyMessage: `אין מספיק יתרה ב${wallet === 'chat' ? 'שיחות' : 'ניתוחים'}.`,
+        warningMessage: pre.warningMessage,
+        error: 'Insufficient credits',
       };
     }
-    
-    // 2. Call OpenAI
-    const openaiResult = await callOpenAI(
-      messages,
-      model,
-      maxTokens,
-      temperature,
-      responseFormat
-    );
-    
-    if (!openaiResult.success) {
+
+    const apiKey = process.env.OPENAI_API_KEY;
+    if (!apiKey || apiKey === 'dummy-key') {
       return {
         success: false,
-        tokensDeducted: 0,
-        tokensRemaining: balanceCheck.currentBalance,
+        creditsDeducted: 0,
+        creditsRemaining: pre.balance,
+        wallet,
+        transparencyMessage: 'מפתח OpenAI לא מוגדר.',
+        error: 'OPENAI_API_KEY missing',
+      };
+    }
+
+    const body: Record<string, unknown> = { model, messages, max_tokens: maxTokens, temperature };
+    if (responseFormat) body.response_format = responseFormat;
+
+    const httpRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!httpRes.ok) {
+      const errText = await httpRes.text();
+      console.error('OpenAI API error:', errText);
+      return {
+        success: false,
+        creditsDeducted: 0,
+        creditsRemaining: pre.balance,
+        wallet,
         transparencyMessage: 'הייתה בעיה בשליחת הבקשה ל-AI.',
-        error: openaiResult.error || 'OpenAI API failed',
+        error: `OpenAI API error: ${httpRes.status}`,
       };
     }
-    
-    // 3. Calculate token deduction
-    const openaiTokens = openaiResult.usage?.totalTokens || 0;
-    const tokensToDeduct = calculateTokenDeduction(openaiTokens);
-    
-    console.log(`📊 Token calculation: ${openaiTokens} OpenAI tokens × ${TOKEN_MULTIPLIER} = ${tokensToDeduct} tokens to deduct`);
-    
-    // 4. Deduct tokens
-    const deductionResult = await deductTokens(userId, tokensToDeduct);
-    
-    if (!deductionResult.success) {
+
+    const data = await httpRes.json();
+    const responseText: string = data.choices?.[0]?.message?.content ?? '';
+    const promptTokens: number = data.usage?.prompt_tokens ?? 0;
+    const completionTokens: number = data.usage?.completion_tokens ?? 0;
+
+    const costUSD = computeOpenAICostUSD(model, {
+      prompt_tokens: promptTokens,
+      completion_tokens: completionTokens,
+    });
+
+    const deduction = await deductCredits(userId, wallet, credits);
+    if (!deduction.ok) {
       return {
         success: false,
-        tokensDeducted: 0,
-        tokensRemaining: deductionResult.oldBalance,
-        transparencyMessage: 'אין מספיק טוקנים לביצוע פעולה זו.',
-        error: 'Failed to deduct tokens',
+        creditsDeducted: 0,
+        creditsRemaining: deduction.before,
+        wallet,
+        transparencyMessage: 'אין מספיק יתרה לביצוע הפעולה.',
+        error: 'Insufficient credits',
       };
     }
-    
-    // 5. Log usage
-    await logTokenUsage(
+
+    await writeLedgerEntry({
       userId,
-      actionType,
-      openaiTokens,
-      tokensToDeduct,
-      deductionResult.oldBalance,
-      deductionResult.newBalance,
+      action: actionType,
+      wallet,
+      credits,
+      before: deduction.before,
+      after: deduction.after,
+      provider: 'openai',
+      model,
+      rawInputTokens: promptTokens,
+      rawOutputTokens: completionTokens,
+      costUSD,
       description,
-      metadata
-    );
-    
-    // 6. Generate transparency message
-    const transparencyMessage = formatDeductionMessage(
-      tokensToDeduct,
-      deductionResult.newBalance,
-      actionType,
-      'hebrew'
-    );
-    
-    const warningMessage = getTokenWarningMessage(deductionResult.newBalance) || undefined;
-    
-    // 7. Parse response if JSON
-    let parsedData: any = undefined;
-    if (responseFormat?.type === 'json_object' && openaiResult.response) {
+      metadata: metadata ?? {},
+    });
+
+    let parsedData: unknown = undefined;
+    if (responseFormat?.type === 'json_object' && responseText) {
       try {
-        parsedData = JSON.parse(openaiResult.response);
-      } catch (e) {
-        console.error('Failed to parse JSON response:', e);
+        parsedData = JSON.parse(responseText);
+      } catch (err) {
+        console.error('Failed to parse JSON response:', err);
       }
     }
-    
-    console.log(`✅ AI Request completed: ${tokensToDeduct} tokens deducted, ${deductionResult.newBalance} remaining`);
-    
+
     return {
       success: true,
-      response: openaiResult.response,
+      response: responseText,
       data: parsedData,
-      usage: openaiResult.usage,
-      tokensDeducted: tokensToDeduct,
-      tokensRemaining: deductionResult.newBalance,
-      transparencyMessage,
-      warningMessage,
+      usage: {
+        totalTokens: promptTokens + completionTokens,
+        promptTokens,
+        completionTokens,
+        model,
+      },
+      creditsDeducted: credits,
+      creditsRemaining: deduction.after,
+      wallet,
+      transparencyMessage: formatDeductionMessage(credits, deduction.after, actionType),
+      warningMessage: getWalletWarningMessage(wallet, deduction.after) ?? undefined,
     };
-  } catch (error) {
-    console.error('❌ AI request failed:', error);
-    
+  } catch (err) {
+    console.error('❌ AI request failed:', err);
+    const safeRemaining = await readWalletBalance(userId, wallet).catch(() => 0);
     return {
       success: false,
-      tokensDeducted: 0,
-      tokensRemaining: 0,
+      creditsDeducted: 0,
+      creditsRemaining: safeRemaining,
+      wallet,
       transparencyMessage: 'אירעה שגיאה בביצוע הבקשה.',
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: err instanceof Error ? err.message : 'Unknown error',
     };
   }
 }
 
-/**
- * Get user's token history
- */
+// ── audit endpoints (used by admin dashboards) ────────────────────────────
+
 export async function getTokenHistory(
   userId: string,
-  limit: number = 50,
-  offset: number = 0
-): Promise<{
-  success: boolean;
-  history?: any[];
-  total?: number;
-  error?: string;
-}> {
+  limit = 50,
+  offset = 0,
+): Promise<{ success: boolean; history?: unknown[]; total?: number; error?: string }> {
   try {
     const { data, error, count } = await supabaseAdmin
       .from('token_ledger')
@@ -470,100 +544,28 @@ export async function getTokenHistory(
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
-    
-    if (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-    
-    return {
-      success: true,
-      history: data || [],
-      total: count || 0,
-    };
-  } catch (error) {
-    console.error('Error fetching token history:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
+    if (error) return { success: false, error: error.message };
+    return { success: true, history: data ?? [], total: count ?? 0 };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
-/**
- * Get user's token usage summary
- */
-export async function getTokenUsageSummary(userId: string): Promise<{
-  success: boolean;
-  summary?: any;
-  error?: string;
-}> {
+export async function getTokenUsageSummary(
+  userId: string,
+): Promise<{ success: boolean; summary?: unknown; error?: string }> {
   try {
     const { data, error } = await supabaseAdmin
       .from('token_usage_summary')
       .select('*')
       .eq('user_id', userId);
-    
-    if (error) {
-      return {
-        success: false,
-        error: error.message,
-      };
-    }
-    
-    return {
-      success: true,
-      summary: data || [],
-    };
-  } catch (error) {
-    console.error('Error fetching token usage summary:', error);
-    return {
-      success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
-    };
+    if (error) return { success: false, error: error.message };
+    return { success: true, summary: data ?? [] };
+  } catch (err) {
+    return { success: false, error: err instanceof Error ? err.message : 'Unknown error' };
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+// Re-export the action constants so callers keep a single import.
+export { TOKEN_ACTION_TYPES, ACTION_CONFIG };
+export type { TokenActionType, Wallet };

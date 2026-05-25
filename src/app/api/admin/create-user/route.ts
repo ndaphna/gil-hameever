@@ -106,8 +106,10 @@ export async function POST(request: NextRequest) {
         full_name: full_name || firstName,
         subscription_tier: subscription_tier || 'trial',
         subscription_status: subscription_status || 'active',
-        current_tokens: tokens || 500,
-        tokens_remaining: tokens || 500,
+        // Admin can pass a single `tokens` total — split 75/25 chat/analysis
+        // by default. The trigger keeps current_tokens/tokens_remaining in sync.
+        chat_credits: tokens ? Math.round(tokens * 0.75) : 30,
+        analysis_credits: tokens ? Math.round(tokens * 0.25) : 10,
         is_admin: false,
       })
       .select()

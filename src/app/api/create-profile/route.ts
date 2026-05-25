@@ -79,8 +79,8 @@ export async function POST(request: Request) {
         full_name: fullName, // Keep for backward compatibility
         subscription_tier: 'trial',
         subscription_status: 'active',
-        current_tokens: 500,
-        tokens_remaining: 500,
+        chat_credits: 30,
+        analysis_credits: 10,
         is_admin: isAdmin,
       })
       .select()

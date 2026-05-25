@@ -1,193 +1,122 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 
+/**
+ * useTokens — exposes the two wallet balances (chat + analysis).
+ *
+ * Returns:
+ *   chatCredits     — credits available for Aliza conversations
+ *   analysisCredits — credits available for journal analyses & PDF reports
+ *   tokens          — combined balance (chat + analysis) for legacy displays
+ *
+ * The sidebar and profile page still read `tokens`. Phase 2 will switch to
+ * the dual counter and `tokens` can be deprecated then.
+ */
+
+interface TokensState {
+  chatCredits: number;
+  analysisCredits: number;
+}
+
 export function useTokens() {
-  const [tokens, setTokens] = useState<number>(0);
+  const [state, setState] = useState<TokensState>({ chatCredits: 0, analysisCredits: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
   const loadTokens = async () => {
     try {
       const { data: { user }, error: authError } = await supabase.auth.getUser();
-      
+
       if (authError || !user) {
-        console.log('🔐 No authenticated user, setting tokens to 0');
-        setTokens(0);
+        setState({ chatCredits: 0, analysisCredits: 0 });
         setIsLoading(false);
         return;
       }
 
-      console.log('🔍 Loading tokens for user:', user.id);
-      
-      // Get access token from Supabase session for API call
       const { data: { session } } = await supabase.auth.getSession();
       const accessToken = session?.access_token;
-      
-      // Try using API endpoint first (bypasses RLS)
-      try {
-        const headers: HeadersInit = {
-          'Content-Type': 'application/json',
-        };
-        
-        if (accessToken) {
-          headers['Authorization'] = `Bearer ${accessToken}`;
-        }
-        
-        const response = await fetch('/api/user/profile', {
-          credentials: 'include', // Include cookies for authentication
-          headers
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          console.log('📦 Full API response:', data);
-          const { profile } = data;
-          
-          if (profile) {
-            // Use current_tokens as primary source, fallback to tokens_remaining for backward compatibility
-            const tokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-            console.log('✅ Tokens loaded from API:', { 
-              current_tokens: profile.current_tokens, 
-              tokens_remaining: profile.tokens_remaining,
-              final: tokens,
-              profileKeys: Object.keys(profile)
-            });
-            setTokens(tokens);
-            
-            // Dispatch event to update all components
-            window.dispatchEvent(new CustomEvent('tokensUpdated', { 
-              detail: { tokens } 
-            }));
-            
-            // Sync both fields if they differ (fix any inconsistencies, handle null values)
-            const currentTokensValue = profile.current_tokens ?? null;
-            const tokensRemainingValue = profile.tokens_remaining ?? null;
-            if (currentTokensValue !== tokensRemainingValue) {
-              console.log('🔄 Syncing token fields:', { currentTokensValue, tokensRemainingValue });
-              await supabase
-                .from('user_profile')
-                .update({ 
-                  current_tokens: tokens,
-                  tokens_remaining: tokens
-                })
-                .eq('id', user.id);
-            }
-            setIsLoading(false);
-            return;
-          }
-        } else {
-          console.warn('⚠️ API endpoint returned error:', response.status);
-        }
-      } catch (apiError) {
-        console.warn('⚠️ API endpoint failed, trying direct query:', apiError);
-      }
 
-      // Fallback to direct query (may fail due to RLS)
-      const { data: profile, error: queryError } = await supabase
-        .from('user_profile')
-        .select('current_tokens, tokens_remaining')
-        .eq('id', user.id)
-        .single();
-      
-      if (queryError) {
-        console.error('❌ Direct query failed:', queryError);
-        setTokens(0);
+      const headers: HeadersInit = { 'Content-Type': 'application/json' };
+      if (accessToken) headers['Authorization'] = `Bearer ${accessToken}`;
+
+      const response = await fetch('/api/user/profile', { credentials: 'include', headers });
+      if (!response.ok) {
+        console.warn('⚠️ Profile API returned', response.status);
+        setState({ chatCredits: 0, analysisCredits: 0 });
         setIsLoading(false);
         return;
       }
-      
-      if (profile) {
-        // Use current_tokens as primary source, fallback to tokens_remaining for backward compatibility
-        const tokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-        console.log('✅ Tokens loaded from direct query:', { 
-          current_tokens: profile.current_tokens, 
-          tokens_remaining: profile.tokens_remaining,
-          final: tokens 
-        });
-        setTokens(tokens);
-        
-        // Dispatch event to update all components
-        window.dispatchEvent(new CustomEvent('tokensUpdated', { 
-          detail: { tokens } 
-        }));
-        
-        // Sync both fields if they differ (fix any inconsistencies, handle null values)
-        const currentTokensValue = profile.current_tokens ?? null;
-        const tokensRemainingValue = profile.tokens_remaining ?? null;
-        if (currentTokensValue !== tokensRemainingValue) {
-          console.log('🔄 Syncing token fields:', { currentTokensValue, tokensRemainingValue });
-          await supabase
-            .from('user_profile')
-            .update({ 
-              current_tokens: tokens,
-              tokens_remaining: tokens
-            })
-            .eq('id', user.id);
-        }
-      } else {
-        console.warn('⚠️ Profile not found, setting tokens to 0');
-        setTokens(0);
-        // Dispatch event even for 0 tokens
-        window.dispatchEvent(new CustomEvent('tokensUpdated', { 
-          detail: { tokens: 0 } 
-        }));
-      }
-    } catch (error) {
-      console.error('❌ Token loading failed:', error);
-      setTokens(0);
+
+      const { profile } = (await response.json()) as {
+        profile?: { chat_credits?: number; analysis_credits?: number };
+      };
+
+      const chat = profile?.chat_credits ?? 0;
+      const analysis = profile?.analysis_credits ?? 0;
+      setState({ chatCredits: chat, analysisCredits: analysis });
+
+      window.dispatchEvent(new CustomEvent('tokensUpdated', {
+        detail: { chatCredits: chat, analysisCredits: analysis, tokens: chat + analysis },
+      }));
+    } catch (err) {
+      console.error('❌ Token loading failed:', err);
+      setState({ chatCredits: 0, analysisCredits: 0 });
     } finally {
       setIsLoading(false);
     }
   };
 
-  const updateTokens = async (newTokens: number) => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        await supabase
-          .from('user_profile')
-          .update({ 
-            tokens_remaining: newTokens,
-            current_tokens: newTokens 
-          })
-          .eq('id', user.id);
-      }
-      setTokens(newTokens);
-      
-      // Dispatch custom event for other components to listen
-      window.dispatchEvent(new CustomEvent('tokensUpdated', { 
-        detail: { tokens: newTokens } 
+  /**
+   * Update local display from a trusted server-provided value.
+   * Caller is responsible for only passing post-deduction balances they got
+   * back from the API on a successful (resp.ok) response.
+   */
+  const updateChatCredits = (newValue: number) => {
+    setState(prev => {
+      const next = { ...prev, chatCredits: newValue };
+      window.dispatchEvent(new CustomEvent('tokensUpdated', {
+        detail: { ...next, tokens: next.chatCredits + next.analysisCredits },
       }));
-    } catch (error) {
-      console.error('Failed to update tokens:', error);
-    }
+      return next;
+    });
   };
 
-  const decrementTokens = async (amount: number) => {
-    const newTokens = Math.max(0, tokens - amount);
-    await updateTokens(newTokens);
+  const updateAnalysisCredits = (newValue: number) => {
+    setState(prev => {
+      const next = { ...prev, analysisCredits: newValue };
+      window.dispatchEvent(new CustomEvent('tokensUpdated', {
+        detail: { ...next, tokens: next.chatCredits + next.analysisCredits },
+      }));
+      return next;
+    });
   };
 
   useEffect(() => {
     loadTokens();
-    
-    // Listen for token updates from other components
-    const handleTokensUpdate = (event: CustomEvent) => {
-      console.log('🎯 Hook received token update:', event.detail.tokens);
-      setTokens(event.detail.tokens);
+
+    const handleUpdate = (event: Event) => {
+      const detail = (event as CustomEvent).detail as Partial<TokensState> | undefined;
+      if (!detail) return;
+      setState(prev => ({
+        chatCredits: detail.chatCredits ?? prev.chatCredits,
+        analysisCredits: detail.analysisCredits ?? prev.analysisCredits,
+      }));
     };
-    
-    window.addEventListener('tokensUpdated', handleTokensUpdate as EventListener);
-    
-    return () => {
-      window.removeEventListener('tokensUpdated', handleTokensUpdate as EventListener);
-    };
+
+    window.addEventListener('tokensUpdated', handleUpdate);
+    return () => window.removeEventListener('tokensUpdated', handleUpdate);
   }, []);
 
+  const tokens = state.chatCredits + state.analysisCredits;
+
   return {
+    chatCredits: state.chatCredits,
+    analysisCredits: state.analysisCredits,
     tokens,
     isLoading,
-    updateTokens,
-    decrementTokens,
-    loadTokens
+    updateChatCredits,
+    updateAnalysisCredits,
+    /** Back-compat: legacy callers update the combined display. Prefer updateChat/AnalysisCredits. */
+    updateTokens: updateChatCredits,
+    loadTokens,
   };
 }

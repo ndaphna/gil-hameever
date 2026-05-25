@@ -125,34 +125,32 @@ export async function POST(request: NextRequest) {
         });
     }
 
-    // Deduct tokens for AI-generated insights (same formula as chat: assistant_tokens * 2)
-    if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'dummy-key' && totalAssistantTokens > 0) {
-      const tokensToDeduct = totalAssistantTokens * 2; // Same formula: assistant_tokens * 2
-      
+    // Deduct from the analysis wallet — 1 credit per generated insight.
+    // (Phase 0: this route still does its own OpenAI calls outside ai-usage-service;
+    // future refactor will route everything through executeAIRequest. For now we
+    // honour the wallet split with a direct, fixed-cost deduction.)
+    if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'dummy-key' && insights.length > 0) {
+      const creditsToDeduct = insights.length;
       try {
-        // Get current tokens first
         const { data: profile } = await supabaseAdmin
           .from('user_profile')
-          .select('current_tokens, tokens_remaining')
+          .select('analysis_credits')
           .eq('id', userId)
           .single();
-        
+
         if (profile) {
-          const currentTokens = profile.current_tokens ?? profile.tokens_remaining ?? 0;
-          const newTokenBalance = Math.max(0, currentTokens - tokensToDeduct);
-          
+          const before = (profile as { analysis_credits?: number }).analysis_credits ?? 0;
+          const after = Math.max(0, before - creditsToDeduct);
+
           await supabaseAdmin
             .from('user_profile')
-            .update({ 
-              current_tokens: newTokenBalance,
-              tokens_remaining: newTokenBalance  // Keep both fields in sync
-            })
+            .update({ analysis_credits: after })
             .eq('id', userId);
-          
-          console.log(`✅ Deducted ${tokensToDeduct} tokens (${totalAssistantTokens} assistant tokens * 2) for ${insights.length} insights. New balance: ${newTokenBalance}`);
+
+          console.log(`✅ Deducted ${creditsToDeduct} analysis credits for ${insights.length} insights (raw tokens: ${totalAssistantTokens}). Balance: ${before} → ${after}`);
         }
       } catch (error) {
-        console.error('Error deducting tokens:', error);
+        console.error('Error deducting analysis credits:', error);
       }
     }
 

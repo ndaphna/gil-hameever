@@ -21,10 +21,36 @@ export default function Sidebar({ isOpen = false, onClose }: SidebarProps) {
   const { user, profile, isAdmin, updateProfile } = useAuthContext();
   const [tokenAnimation, setTokenAnimation] = useState<'decrease' | null>(null);
   
-  // Use profile values first but fall back to auth user metadata and email
-  const tokens = profile?.current_tokens ?? (profile as any)?.tokens_remaining ?? 0;
-  const tokensLoading = !profile;
+  // Use profile values first but fall back to auth user metadata and email.
+  // Live override: other parts of the app (chat, etc.) dispatch a
+  // `tokensUpdated` CustomEvent on success. We listen for it so the Sidebar
+  // reflects the new balance immediately, without waiting for AuthContext to
+  // refetch the profile.
+  const profileTokens = profile?.current_tokens ?? (profile as any)?.tokens_remaining ?? 0;
+  const [liveTokens, setLiveTokens] = useState<number | null>(null);
+  const tokens = liveTokens ?? profileTokens;
+  const tokensLoading = !profile && liveTokens === null;
   const [prevTokens, setPrevTokens] = useState<number | null>(null);
+
+  // Reset live override when AuthContext profile changes to a fresher value.
+  useEffect(() => {
+    if (liveTokens !== null && profileTokens !== liveTokens) {
+      setLiveTokens(null);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileTokens]);
+
+  // Listen for cross-component token updates.
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { tokens?: number } | undefined;
+      if (detail && typeof detail.tokens === 'number') {
+        setLiveTokens(detail.tokens);
+      }
+    };
+    window.addEventListener('tokensUpdated', handler as EventListener);
+    return () => window.removeEventListener('tokensUpdated', handler as EventListener);
+  }, []);
 
   // Derive display name and image from shared context profile OR user
   const userName = profile?.first_name

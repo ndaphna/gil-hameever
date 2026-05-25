@@ -38,11 +38,11 @@ export async function GET() {
       );
     }
 
-    // Log token values for debugging
+    // Log credit values for debugging
     console.log('Profile loaded:', {
       userId: user.id,
-      current_tokens: profile.current_tokens,
-      tokens_remaining: profile.tokens_remaining
+      chat_credits: profile.chat_credits,
+      analysis_credits: profile.analysis_credits,
     });
 
     return NextResponse.json({

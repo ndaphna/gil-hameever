@@ -184,12 +184,13 @@ export async function POST(request: NextRequest) {
     };
     
     let generatedMessage: string;
-    let tokensDeducted: number = 0;
-    let tokensRemaining: number = 0;
+    let creditsDeducted: number = 0;
+    let creditsRemaining: number = 0;
+    let wallet: 'chat' | 'analysis' | 'platform' = 'chat';
 
     // Use the unified AI service to generate the message
     console.log('🤖 Calling executeAIRequest for Aliza message...');
-    
+
     const aiResult = await executeAIRequest({
       userId,
       actionType: TOKEN_ACTION_TYPES.ALIZA_MESSAGE,
@@ -208,19 +209,21 @@ export async function POST(request: NextRequest) {
         hotFlashesCount,
         sleepIssuesCount,
         moodIssuesCount,
-      }
+      },
     });
-    
+
     if (aiResult.success && aiResult.response) {
       generatedMessage = aiResult.response;
-      tokensDeducted = aiResult.tokensDeducted;
-      tokensRemaining = aiResult.tokensRemaining;
-      console.log(`✅ Generated message using ${tokensDeducted} tokens, ${tokensRemaining} remaining`);
+      creditsDeducted = aiResult.creditsDeducted;
+      creditsRemaining = aiResult.creditsRemaining;
+      wallet = aiResult.wallet;
+      console.log(`✅ Generated message using ${creditsDeducted} ${wallet} credits, ${creditsRemaining} remaining`);
     } else {
       console.warn('⚠️ AI request failed, using fallback message');
       generatedMessage = generateFallbackMessage();
-      tokensDeducted = 0;
-      tokensRemaining = aiResult.tokensRemaining || 0;
+      creditsDeducted = 0;
+      creditsRemaining = aiResult.creditsRemaining || 0;
+      wallet = aiResult.wallet;
     }
 
     // Save message to database (if not mock user)
@@ -258,10 +261,11 @@ export async function POST(request: NextRequest) {
         message: generatedMessage,
         emoji: emoji,
         action_url: actionUrl || null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
-      tokensDeducted,
-      tokensRemaining,
+      wallet,
+      creditsDeducted,
+      creditsRemaining,
     });
 
   } catch (error: unknown) {
@@ -297,11 +301,12 @@ export async function POST(request: NextRequest) {
         message: fallbackMessage,
         emoji: '💙',
         action_url: null,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
       },
-      tokensDeducted: 0,
-      tokensRemaining: 0,
-      warning: 'Used fallback message due to technical issue'
+      wallet: 'chat' as const,
+      creditsDeducted: 0,
+      creditsRemaining: 0,
+      warning: 'Used fallback message due to technical issue',
     });
   }
 }

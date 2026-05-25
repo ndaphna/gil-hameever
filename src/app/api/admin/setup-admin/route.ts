@@ -67,7 +67,7 @@ export async function POST(request: Request) {
     // Check if profile exists
     const { data: existingProfile } = await supabaseAdmin
       .from('user_profile')
-      .select('is_admin, full_name, subscription_tier, subscription_status, current_tokens, tokens_remaining')
+      .select('is_admin, full_name, subscription_tier, subscription_status, chat_credits, analysis_credits')
       .eq('id', userId)
       .single();
 
@@ -81,8 +81,8 @@ export async function POST(request: Request) {
         full_name: existingProfile?.full_name || 'מנהל מערכת',
         subscription_tier: existingProfile?.subscription_tier || 'trial',
         subscription_status: existingProfile?.subscription_status || 'active',
-        current_tokens: existingProfile?.current_tokens || 500,
-        tokens_remaining: existingProfile?.tokens_remaining || 500,
+        chat_credits: existingProfile?.chat_credits ?? 100,
+        analysis_credits: existingProfile?.analysis_credits ?? 30,
       })
       .select()
       .single();

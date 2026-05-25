@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase-server';
 import { executeAIRequest } from '@/lib/ai-usage-service';
-import { TOKEN_ACTION_TYPES } from '@/config/token-engine';
+import { TOKEN_ACTION_TYPES, type TokenActionType } from '@/config/token-engine';
 
 export const runtime = 'edge';
 
@@ -40,15 +40,17 @@ export async function POST(request: NextRequest) {
     
     console.log('✅ API: AI service returned:', {
       insightsCount: result.insights?.length || 0,
-      tokensDeducted: result.tokensDeducted || 0,
-      tokensRemaining: result.tokensRemaining || 0
+      creditsDeducted: result.creditsDeducted || 0,
+      creditsRemaining: result.creditsRemaining || 0,
+      wallet: result.wallet,
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       insights: result.insights,
-      tokensDeducted: result.tokensDeducted || 0,
-      tokensRemaining: result.tokensRemaining || 0,
+      wallet: result.wallet,
+      creditsDeducted: result.creditsDeducted || 0,
+      creditsRemaining: result.creditsRemaining || 0,
       transparencyMessage: result.transparencyMessage,
       warningMessage: result.warningMessage,
     });
@@ -71,8 +73,9 @@ async function generateInsightsWithAI(
   data: AnalysisRequest['data']
 ): Promise<{
   insights: any[];
-  tokensDeducted: number;
-  tokensRemaining: number;
+  wallet: 'chat' | 'analysis' | 'platform';
+  creditsDeducted: number;
+  creditsRemaining: number;
   transparencyMessage?: string;
   warningMessage?: string;
 }> {
@@ -87,7 +90,7 @@ async function generateInsightsWithAI(
     trends: TOKEN_ACTION_TYPES.TRENDS_ANALYSIS,
   };
   
-  const actionType = actionTypeMap[analysisType] || TOKEN_ACTION_TYPES.COMPREHENSIVE_ANALYSIS;
+  const actionType = (actionTypeMap[analysisType] || TOKEN_ACTION_TYPES.COMPREHENSIVE_ANALYSIS) as TokenActionType;
   
   const systemPrompt = `את עליזה, מומחית רפואית ומנטורית לנשים בגיל המעבר. את מתמחה בניתוח נתונים רפואיים, השוואה לנורמות, ומתן המלצות מעשיות ומקצועיות.
 
@@ -228,15 +231,17 @@ async function generateInsightsWithAI(
         },
         alizaMessage: `היי ${userName}, אני כאן כדי לעזור לך!`
       }],
-      tokensDeducted: 0,
-      tokensRemaining: aiResult.tokensRemaining,
+      wallet: aiResult.wallet,
+      creditsDeducted: 0,
+      creditsRemaining: aiResult.creditsRemaining,
       transparencyMessage: aiResult.transparencyMessage,
       warningMessage: aiResult.warningMessage,
     };
   }
   
-  // Parse insights from response
-  const insights = aiResult.data?.insights || [];
+  // Parse insights from response (data is typed as unknown — narrow at boundary).
+  const parsed = (aiResult.data ?? {}) as { insights?: unknown[] };
+  const insights = parsed.insights ?? [];
   
   // Ensure we always have at least one insight
   if (insights.length === 0) {
@@ -262,12 +267,13 @@ async function generateInsightsWithAI(
     });
   }
   
-  console.log(`✅ Generated ${insights.length} insights using ${aiResult.tokensDeducted} tokens`);
-  
+  console.log(`✅ Generated ${insights.length} insights using ${aiResult.creditsDeducted} credits from ${aiResult.wallet} wallet`);
+
   return {
     insights,
-    tokensDeducted: aiResult.tokensDeducted,
-    tokensRemaining: aiResult.tokensRemaining,
+    wallet: aiResult.wallet,
+    creditsDeducted: aiResult.creditsDeducted,
+    creditsRemaining: aiResult.creditsRemaining,
     transparencyMessage: aiResult.transparencyMessage,
     warningMessage: aiResult.warningMessage,
   };

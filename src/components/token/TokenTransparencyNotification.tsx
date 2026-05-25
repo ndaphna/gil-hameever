@@ -6,8 +6,12 @@ import './TokenTransparencyNotification.css';
 export interface TokenTransparencyNotificationProps {
   message: string;
   warningMessage?: string;
-  tokensDeducted?: number;
-  tokensRemaining?: number;
+  /** Credits charged for the action that triggered this notification. */
+  creditsDeducted?: number;
+  /** Post-deduction balance of the wallet that was charged. */
+  creditsRemaining?: number;
+  /** Which wallet was charged ('chat' | 'analysis'). Drives the label text. */
+  wallet?: 'chat' | 'analysis';
   autoHide?: boolean;
   duration?: number;
 }
@@ -27,8 +31,9 @@ export interface TokenTransparencyNotificationProps {
 export function TokenTransparencyNotification({
   message,
   warningMessage,
-  tokensDeducted,
-  tokensRemaining,
+  creditsDeducted,
+  creditsRemaining,
+  wallet = 'chat',
   autoHide = true,
   duration = 5000,
 }: TokenTransparencyNotificationProps) {
@@ -59,9 +64,14 @@ export function TokenTransparencyNotification({
   }
 
   const hasWarning = !!warningMessage;
-  const severity = tokensRemaining !== undefined && tokensRemaining < 100 ? 'critical' : 
-                   tokensRemaining !== undefined && tokensRemaining < 1000 ? 'warning' : 
+  // Credit-scale thresholds: chat uses CRITICAL=5/LOW=20, analysis uses 1/3.
+  // Mirror token-engine.CHAT_WARNING_THRESHOLDS / ANALYSIS_WARNING_THRESHOLDS.
+  const critical = wallet === 'chat' ? 5 : 1;
+  const low = wallet === 'chat' ? 20 : 3;
+  const severity = creditsRemaining !== undefined && creditsRemaining <= critical ? 'critical' :
+                   creditsRemaining !== undefined && creditsRemaining <= low ? 'warning' :
                    'info';
+  const walletLabel = wallet === 'chat' ? 'שיחות' : 'ניתוחים';
 
   return (
     <div 
@@ -80,16 +90,16 @@ export function TokenTransparencyNotification({
           {message}
         </div>
         
-        {tokensDeducted !== undefined && (
+        {creditsDeducted !== undefined && (
           <div className="notification-details">
             <span className="tokens-deducted">
-              נוצלו: {tokensDeducted.toLocaleString()}
+              ניצול: {creditsDeducted.toLocaleString()} {walletLabel}
             </span>
-            {tokensRemaining !== undefined && (
+            {creditsRemaining !== undefined && (
               <>
                 <span className="separator">•</span>
                 <span className="tokens-remaining">
-                  יתרה: {tokensRemaining.toLocaleString()}
+                  יתרה: {creditsRemaining.toLocaleString()}
                 </span>
               </>
             )}

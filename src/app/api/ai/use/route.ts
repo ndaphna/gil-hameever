@@ -83,21 +83,22 @@ export async function POST(request: NextRequest) {
     }
     
     // Validate action type
-    const validActionTypes = Object.values(TOKEN_ACTION_TYPES);
+    const validActionTypes = Object.values(TOKEN_ACTION_TYPES) as string[];
     if (!validActionTypes.includes(actionType)) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid action type',
-          validTypes: validActionTypes 
+          validTypes: validActionTypes,
         },
         { status: 400 }
       );
     }
-    
+
+
     // Check if user exists
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('user_profile')
-      .select('id, subscription_tier, subscription_status, current_tokens')
+      .select('id, subscription_tier, subscription_status, chat_credits, analysis_credits')
       .eq('id', userId)
       .single();
     
@@ -133,8 +134,8 @@ export async function POST(request: NextRequest) {
     });
     
     // Return appropriate status code
-    const statusCode = result.success ? 200 : (result.error === 'Insufficient tokens' ? 402 : 500);
-    
+    const statusCode = result.success ? 200 : (result.error === 'Insufficient credits' ? 402 : 500);
+
     return NextResponse.json(result, { status: statusCode });
     
   } catch (error) {
@@ -174,28 +175,29 @@ export async function GET(request: NextRequest) {
     }
     
     // Validate action type
-    const validActionTypes = Object.values(TOKEN_ACTION_TYPES);
+    const validActionTypes = Object.values(TOKEN_ACTION_TYPES) as string[];
     if (!validActionTypes.includes(actionType)) {
       return NextResponse.json(
-        { 
+        {
           error: 'Invalid action type',
-          validTypes: validActionTypes 
+          validTypes: validActionTypes,
         },
         { status: 400 }
       );
     }
-    
-    // Check token balance
+
+    // Check wallet balance for the relevant action
     const balanceCheck = await checkTokenBalance(
       userId,
-      actionType as TokenActionType
+      actionType as TokenActionType,
     );
-    
+
     return NextResponse.json({
       success: true,
-      hasEnoughTokens: balanceCheck.hasEnough,
-      currentBalance: balanceCheck.currentBalance,
-      estimatedCost: balanceCheck.estimatedCost,
+      hasEnoughCredits: balanceCheck.hasEnough,
+      wallet: balanceCheck.wallet,
+      balance: balanceCheck.balance,
+      needed: balanceCheck.needed,
       warningMessage: balanceCheck.warningMessage,
     });
     

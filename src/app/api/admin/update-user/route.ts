@@ -54,19 +54,15 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // If updating tokens, ensure both fields are synced
+    // Admin "tokens" input maps to the chat wallet by default. To touch the
+    // analysis wallet, the UI must pass `analysis_credits` explicitly.
+    // The DB trigger derives current_tokens/tokens_remaining from the wallets.
     if (updates.tokens_remaining !== undefined || updates.current_tokens !== undefined) {
-      const tokenValue = updates.current_tokens ?? updates.tokens_remaining ?? 0;
-      updates.current_tokens = tokenValue;
-      updates.tokens_remaining = tokenValue;
-      console.log('🔄 Syncing token fields in admin update:', { 
-        tokenValue, 
-        userId,
-        originalUpdates: { 
-          tokens_remaining: updates.tokens_remaining, 
-          current_tokens: updates.current_tokens 
-        }
-      });
+      const legacyValue = updates.current_tokens ?? updates.tokens_remaining ?? 0;
+      updates.chat_credits = legacyValue;
+      delete updates.current_tokens;
+      delete updates.tokens_remaining;
+      console.log('🔄 Admin update: legacy token input routed to chat_credits', { userId, value: legacyValue });
     }
 
     console.log('📝 Updating user profile:', { userId, updates });
@@ -87,10 +83,10 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    console.log('✅ User updated successfully:', { 
-      userId, 
-      current_tokens: data?.current_tokens, 
-      tokens_remaining: data?.tokens_remaining 
+    console.log('✅ User updated successfully:', {
+      userId,
+      chat_credits: data?.chat_credits,
+      analysis_credits: data?.analysis_credits,
     });
 
     return NextResponse.json({
