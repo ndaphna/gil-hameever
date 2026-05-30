@@ -42,7 +42,7 @@ import { executeAIRequest, checkTokenBalance } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES, type TokenActionType } from '@/config/token-engine';
 import { supabaseAdmin } from '@/lib/supabase-server';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {
