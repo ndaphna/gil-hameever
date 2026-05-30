@@ -5,6 +5,8 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
 
+  serverExternalPackages: ['@anthropic-ai/sdk'],
+
   turbopack: {
     root: __dirname,
   },
