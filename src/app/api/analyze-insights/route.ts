@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase-server';
 import { executeAIRequest } from '@/lib/ai-usage-service';
 import { TOKEN_ACTION_TYPES, type TokenActionType } from '@/config/token-engine';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 interface AnalysisRequest {
   userId: string;
