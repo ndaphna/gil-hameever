@@ -8,6 +8,7 @@ export default function ConditionalNavigation() {
   
   // Don't show navigation on landing pages
   const hideNavigationPaths = [
+    '/menopause-book',
     '/gibora',
     '/gibora/coming-soon',
     '/emergency-map-access',
