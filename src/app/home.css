@@ -228,20 +228,23 @@
 
 @media (max-width: 900px) {
   .hero-grid {
-    grid-template-columns: 1.1fr 1fr;
-    min-height: 400px;
+    grid-template-columns: 1fr;
+    min-height: auto;
   }
   .hero-text {
-    padding-inline-start: clamp(14px, 4vw, 24px);
-    padding-inline-end: clamp(10px, 2vw, 16px);
-    padding-block: clamp(24px, 6vw, 40px);
+    padding-inline: clamp(20px, 5vw, 36px);
+    padding-block: clamp(32px, 7vw, 52px) 28px;
+    order: 1;
   }
-  .hero-line-plain { font-size: clamp(18px, 4.5vw, 32px); }
-  .hero-gibora { font-size: clamp(48px, 11vw, 80px); padding: 5px 12px 8px; border-radius: 8px; }
-  .hero-sub { font-size: 22px; margin-bottom: 20px; }
+  .hero-photo {
+    order: 2;
+    min-height: 300px;
+  }
+  .hero-line-plain { font-size: clamp(28px, 7vw, 44px); }
+  .hero-gibora { font-size: clamp(72px, 18vw, 110px); padding: 6px 16px 10px; border-radius: 10px; }
+  .hero-sub { font-size: 22px; margin-bottom: 24px; }
   .hero-trust { font-size: 18px; }
-  .hero-ctas { flex-direction: column; align-items: center; gap: 8px; }
-  .hero-photo { min-height: 360px; }
+  .hero-ctas { flex-direction: column; align-items: center; gap: 10px; }
 }
 
 /* ============================================
