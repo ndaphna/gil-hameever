@@ -195,7 +195,7 @@ img{max-width:100%;height:auto;}
 .about-name{font-family:'Secular One',sans-serif;font-size:28px;color:#fff;margin-bottom:4px;}
 .about-role-label{font-size:12px;color:var(--gold);letter-spacing:1px;margin-bottom:24px;}
 .about-body{font-size:15px;color:var(--on-dark);line-height:1.9;text-align:right;}
-.about-body p{margin-bottom:14px;}
+.about-body p{margin-bottom:14px;color:var(--on-dark);}
 .about-body strong{color:#F7C5DF;}
 
 /* ─── REVIEWS ────────────────────────────── */
