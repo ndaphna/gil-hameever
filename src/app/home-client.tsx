@@ -90,17 +90,6 @@ export default function Home() {
           ============================================ */}
       <section className="home-hero" aria-labelledby="hero-headline">
         <div className="hero-grid">
-          <div className="hero-photo">
-            <Image
-              src="/inbal-hero-book-v2.png"
-              alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
-              fill
-              sizes="(max-width: 900px) 45vw, 42vw"
-              priority
-              className="hero-photo-img"
-            />
-          </div>
-
           <div className="hero-text">
             <h1 id="hero-headline" className="hero-headline">
               <span className="hero-line-plain">לא ״גברת״,</span>
@@ -123,6 +112,17 @@ export default function Home() {
               <span className="hero-trust-sep">·</span>
               ללא ספאם
             </div>
+          </div>
+
+          <div className="hero-photo">
+            <Image
+              src="/inbal-hero-book-v2.png"
+              alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
+              fill
+              sizes="(max-width: 900px) 45vw, 42vw"
+              priority
+              className="hero-photo-img"
+            />
           </div>
         </div>
       </section>
