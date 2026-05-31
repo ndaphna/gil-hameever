@@ -90,32 +90,23 @@ export default function Home() {
           ============================================ */}
       <section className="home-hero" aria-labelledby="hero-headline">
         <div className="hero-grid">
+          <div className="hero-photo">
+            <Image
+              src="/inbal-hero-book-v2.png"
+              alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
+              fill
+              sizes="(max-width: 900px) 45vw, 42vw"
+              priority
+              className="hero-photo-img"
+            />
+          </div>
+
           <div className="hero-text">
-            <div className="hero-badge">
-              <span className="hero-badge-dot" aria-hidden="true" />
-              לא גברת. גיבורה.
-            </div>
             <h1 id="hero-headline" className="hero-headline">
-              את לא משתגעת.
-              <br />
-              את{' '}
-              <span className="hero-ink">
-                במעבר
-                <svg
-                  className="hero-scribble"
-                  viewBox="0 0 200 16"
-                  preserveAspectRatio="none"
-                  aria-hidden="true"
-                >
-                  <path d="M3,11 C20,5 40,9 60,7 S100,13 120,8 S160,4 180,9 L196,7" />
-                </svg>
-              </span>
-              .
+              <span className="hero-line-plain">לא ״גברת״,</span>
+              <span className="hero-gibora">גי-<br />בו-<br />רה!</span>
             </h1>
-            <p className="hero-sub">
-              ואת לא לבד. הגעת לבית של נשים שעוברות בדיוק את זה, עם מילים, עם מפה, עם הומור, ועם
-              מישהי שמבינה מבפנים.
-            </p>
+            <p className="hero-sub">סיפור מסע אל גיל המעבר</p>
             <div className="hero-ctas">
               <Link href="/menopause-roadmap" className="btn btn-primary btn-pulse">
                 קחי את מפת הדרכים
@@ -131,25 +122,6 @@ export default function Home() {
               חינמי
               <span className="hero-trust-sep">·</span>
               ללא ספאם
-            </div>
-          </div>
-
-          <div className="hero-photo">
-            <Image
-              src="/inbal-hero-book-v2.png"
-              alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
-              fill
-              sizes="(max-width: 900px) 100vw, 50vw"
-              priority
-              className="hero-photo-img"
-            />
-            <div className="hero-photo-badge">
-              <span className="hero-photo-badge-num">52</span>
-              <span className="hero-photo-badge-label">
-                מנופאוזית
-                <br />
-                וטוב לה
-              </span>
             </div>
           </div>
         </div>
