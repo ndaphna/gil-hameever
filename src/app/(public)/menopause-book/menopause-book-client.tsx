@@ -92,12 +92,14 @@ export default function MenopauseBookPage() {
           <div className="hero-img-wrap">
             <img src="/menopause-book/hero-woman-book.png" alt="ענבל דפנה עם הספר" />
           </div>
-          <div className="hero-sub">
-            <div className="hero-sub-upper">סיפור מסע אל גיל המעבר</div>
-            <div className="hero-sub-main">איך לעבור מהישרדות לפריחה<br />ולהיזכר באישה שאת באמת</div>
+          <div className="hero-middle">
+            <div className="hero-sub">
+              <div className="hero-sub-upper">סיפור מסע אל גיל המעבר</div>
+              <div className="hero-sub-main">איך לעבור מהישרדות לפריחה<br />ולהיזכר באישה שאת באמת</div>
+            </div>
+            <a href={BUY_URL} className="btn-cta"><span>אני רוצה את הספר</span><span className="btn-arrow">&#8592;</span></a>
+            <p className="hero-price">89 &#8362; &#8226; ספר מודפס &#8226; משלוח מספרי ניב</p>
           </div>
-          <a href={BUY_URL} className="btn-cta"><span>אני רוצה את הספר</span><span className="btn-arrow">&#8592;</span></a>
-          <p className="hero-price">89 &#8362; &#8226; ספר מודפס &#8226; משלוח מספרי ניב</p>
         </div>
         <div className="hero-wave">
           <svg viewBox="0 0 1440 80" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
