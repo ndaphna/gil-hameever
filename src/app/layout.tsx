@@ -46,8 +46,8 @@ export const metadata: Metadata = {
   },
   description: defaultDescription,
   icons: {
-    icon: '/favicon.ico',
-    apple: '/favicon.png',
+    icon: [{ url: '/favicon-main.ico', type: 'image/x-icon' }],
+    apple: '/favicon-main.png',
   },
   openGraph: {
     type: 'website',
