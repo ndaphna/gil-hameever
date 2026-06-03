@@ -131,7 +131,7 @@ export default function Navigation() {
           {/* Logo/Brand */}
           <div className="nav-brand">
             <Link href="/" onClick={closeMenu} aria-label="מנופאוזית וטוב לה - דף הבית" className="nav-brand-link">
-              <img src="/logo.png" alt="גיל המעבר" className="nav-logo" />
+              <img src="/logo-main.png" alt="גיל המעבר" className="nav-logo" />
               <span className="nav-brand-text">מנופאוזית וטוב לה</span>
             </Link>
           </div>

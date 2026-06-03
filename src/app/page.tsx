@@ -20,7 +20,7 @@ const organizationSchema = {
   url: siteUrl,
   description: 'המקום של נשים בגיל המעבר, מידע, כלים ותמיכה',
   inLanguage: 'he',
-  logo: `${siteUrl}/logo.png`,
+  logo: `${siteUrl}/logo-main.png`,
 }
 
 const websiteSchema = {

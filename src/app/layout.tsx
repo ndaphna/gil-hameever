@@ -58,7 +58,7 @@ export const metadata: Metadata = {
     description: defaultDescription,
     images: [
       {
-        url: '/logo.png',
+        url: '/logo-main.png',
         width: 800,
         height: 800,
         alt: 'מנופאוזית וטוב לה',
@@ -69,7 +69,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: defaultTitle,
     description: defaultDescription,
-    images: ['/logo.png'],
+    images: ['/logo-main.png'],
   },
   robots: {
     index: true,
