@@ -164,7 +164,7 @@ export default function HonestCommunicationPage() {
                 ובסוף – אנחנו ביחד בזה.<br />
                 ללמוד לדבר בקול רך אבל יציב,<br />
                 להפסיק להתנצל על מה שאנחנו מרגישות,<br />
-                ולהביןשאנחנו אומרות אמת – זה לא עימות. זה ריפוי.&quot; 💗
+                ולהבין שכשאנחנו אומרות אמת – זה לא עימות. זה ריפוי.&quot; 💗
               </p>
             </blockquote>
             <div className="image-container">
