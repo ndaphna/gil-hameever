@@ -125,7 +125,7 @@ export default function EmotionalRegulationPage() {
           <div className="content-card fade-in">
             <h2><span className="emoji-icon">💡</span><span className="text-content">זכרי:</span></h2>
             <ul className="styled-list">
-              <li>את לא חלשה – את אנושית. הגוף שלך רגיש יותר, והלב שלך פתוח יותר.</li>
+              <li>את לא חלשה – את אנושית.</li>
               <li>הרגשות שלך מבקשים הקשבה, לא הדחקה.</li>
               <li>לא צריך &quot;להיות בשליטה&quot; כל הזמן – רק להיות עם עצמך ברגע.</li>
             </ul>
@@ -151,7 +151,7 @@ export default function EmotionalRegulationPage() {
               <p>
                 ובסוף – אנחנו ביחד בזה.<br />
                 עם הבכי על הפרסומת, עם הצעקות על הכביסה,<br />
-                ועם הידיעה שאם כבר נפל לי הפיוז – לפחות שיהיה זיקוקי דינור.&quot; ✨
+                ועם הידיעה שאם כבר נשרף לי הפיוז – לפחות שיהיו זיקוקי דינור.&quot; ✨
               </p>
             </blockquote>
             <div className="image-container" style={{marginTop: '30px', marginBottom: '20px'}}>
