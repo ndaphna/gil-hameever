@@ -313,17 +313,6 @@ export default function MenopausalSleepPage() {
             </p>
           </div>
 
-          {/* Downloads */}
-          <div className="content-card downloads-card fade-in">
-            <h2><span className="emoji-icon">📥</span><span className="text-content">בונוסים:</span></h2>
-            <ul className="download-list">
-              <li>📊 &quot;יומן שינה שבועי&quot; להורדה</li>
-              <li>🎧 מדיטציית שינה מוקלטת להאזנה לפני השינה (בקרוב...)</li>
-              <li>📄 <a href="https://www.gilhameever.com/good-sleep-menopause" target="_blank" rel="noopener noreferrer">לילה טוב (באמת!): מדריך השורדת לשינה בגיל המעבר</a></li>
-              <li>🛍️ מוצרים ומאמרים - מניפה, מאוורר נייד, סדינים מקררים, קרחוניות צבעוניות למצב רוח, ספרים רלוונטיים</li>
-            </ul>
-          </div>
-
           {/* Aliza's Story */}
           <div className="content-card story-card fade-in">
             <h2><span className="emoji-icon">🌀</span><span className="text-content">עליזה שנקין מתפרצת</span></h2>
