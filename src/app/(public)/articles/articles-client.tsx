@@ -15,6 +15,41 @@ interface Article {
 // Articles list - add new articles here
 const articles: Article[] = [
   {
+    id: 'hrt-hormone-therapy-menopause',
+    title: 'טיפול הורמונלי (HRT) בגיל המעבר: מה שלא סיפרו לנו ומה שכדאי לדעת',
+    url: '/hrt-hormone-therapy-menopause',
+    teaser: 'פעם המילה HRT עשתה לי כיווץ קטן בבטן. שמעתי "טיפול הורמונלי" ומיד חשבתי: סרטן, סיכונים, ניסויים. ואז ישבתי עם רופאה שאמרה לי משפט אחד ששינה לי את הזווית. מה שלמדתי שינה את כל הדרך שבה הסתכלתי על הגיל הזה...',
+    imageUrl: '/articles/hrt-hormone-therapy.jpg'
+  },
+  {
+    id: 'perimenopause-40s-early-signs',
+    title: 'את 42 ומרגישה שמשהו השתנה? ייתכן שזו הפרימנופאוזה שמקדימה לבוא',
+    url: '/perimenopause-40s-early-signs',
+    teaser: 'בגיל 43 עמדתי מול המראה בבוקר ושאלתי את עצמי שאלה שלא הצלחתי לנסח: מה השתנה? חיפשתי "גיל המעבר" ביוטיוב ומצאתי ש"זה לא בגיל הזה". שנתיים אחר כך הרופאה אמרה לי: "את בפרימנופאוזה כבר תקופה." גיל המעבר לא מתחיל ב-50...',
+    imageUrl: '/articles/perimenopause-40s.jpg'
+  },
+  {
+    id: 'menopause-nutrition-weight-truth',
+    title: 'למה הדיאטה לא עובדת בגיל המעבר (ומה כן עובד): האמת על תזונה ומשקל',
+    url: '/menopause-nutrition-weight-truth',
+    teaser: 'ששה חודשים שבהם אכלתי סלטים. ירדתי בפחמימות. הפסקתי את הנשנושים של הערב. עשיתי "הכול נכון". ובסוף הגשת המאזניים, עליתי קילו וחצי. אז הבנתי שאני שואלת את השאלה הלא נכונה...',
+    imageUrl: '/articles/menopause-nutrition.jpg'
+  },
+  {
+    id: 'mental-health-mood-menopause',
+    title: 'כשבכיתי על שקית קפה שנשפכה: בריאות נפשית, מצבי רוח וחרדה בגיל המעבר',
+    url: '/mental-health-mood-menopause',
+    teaser: 'היה יום שבכיתי על שקית קפה שנשפכה. לא כי הייתי עצובה במיוחד. הקפה פשוט נשפך, ובכיתי. ואז הרגשתי את עצמי מתביישת על הבכי. זה היה השלב הכי לא נוח: לבכות, ואז להתבייש על הבכי...',
+    imageUrl: '/articles/mental-health-menopause.jpg'
+  },
+  {
+    id: 'natural-menopause-relief-sage-herbs',
+    title: 'מרווה, לבנדר ומה שביניהן: פתרונות טבעיים שבאמת עוזרים בגיל המעבר',
+    url: '/natural-menopause-relief-sage-herbs',
+    teaser: 'לפני שמדברות על גדולות, בואי נדבר על הדברים הקטנים. לא על הצלה מדרמטית. לא על "ריפוי". על יום טיפה יותר נסבל. על לילה שבו נרדמים קצת יותר מהר. הטבע יש בו כמה כלים ששווה להכיר...',
+    imageUrl: '/articles/natural-remedies-sage.jpg'
+  },
+  {
     id: 'walking-medicine-menopause',
     title: 'למה הליכה היא ה"תרופה" שהגוף שלך צורח שהוא צריך (וזה לא קשור לקלוריות)',
     url: '/walking-medicine-menopause',
