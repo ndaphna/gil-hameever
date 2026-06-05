@@ -16,3 +16,4 @@ All compliance, safety, language, and tech-stack rules from the global config (`
 - **Frontend CSS:** Custom CSS / CSS Modules only. **No Tailwind, no utility classes** unless explicitly asked.
 - **AI Agent constraint:** Aliza NEVER gives medical advice. Always include disclaimer + recommend consulting a doctor.
 - **Newsletters:** Brevo system. See `NEWSLETTER_*.md` in repo root for design + refactor guides.
+- **Images:** Every site image follows [`./IMAGE_GENERATION.md`](./IMAGE_GENERATION.md) — GPT Image 2 via the `codex` CLI, then sharp to the target spec (article heroes: 800×500 JPG in `public/articles/`). **Never ship a flat gradient/placeholder; if generation fails, report and stop — do not fake an asset.**

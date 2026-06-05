@@ -24,10 +24,15 @@ def find_best_image_blob(session_paths: list[pathlib.Path]) -> tuple[str, str] |
     best: tuple[str, str, int] | None = None
     for session_path in session_paths:
         try:
-            text = session_path.read_text(errors="replace")
+            text = session_path.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        for line in text.splitlines():
+        # Split on \n only. Do NOT use str.splitlines(): it also breaks on
+        # Unicode line boundaries (NEL U+0085, LS U+2028, etc.), which can
+        # appear mid-payload and shatter the giant single-line JSON, losing
+        # the base64 image. Reading as UTF-8 (not the Windows locale codepage)
+        # is also required so multibyte bytes aren't mis-decoded.
+        for line in text.split("\n"):
             try:
                 obj = json.loads(line)
             except ValueError:

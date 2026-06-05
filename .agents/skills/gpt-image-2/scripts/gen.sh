@@ -16,7 +16,7 @@
 # Exit codes:
 #   0 success (path printed on stdout)
 #   2 bad args
-#   3 required CLI missing (codex / python)
+#   3 required CLI missing (codex / python3)
 #   4 reference image not found
 #   5 codex exec failed
 #   6 no new session file detected
@@ -49,7 +49,7 @@ command -v codex >/dev/null 2>&1 || {
   echo "codex CLI not found. Install Codex CLI and run 'codex login' first." >&2
   exit 3
 }
-command -v python >/dev/null 2>&1 || { echo "python not found" >&2; exit 3; }
+command -v python3 >/dev/null 2>&1 || { echo "python3 not found" >&2; exit 3; }
 
 SESSIONS_ROOT="$HOME/.codex/sessions"
 mkdir -p "$SESSIONS_ROOT"
@@ -115,10 +115,23 @@ if [[ ! -s "$new_sessions_file" ]]; then
   exit 6
 fi
 
+# Windows/Git-Bash: the session paths above are MSYS-style (e.g. /c/Users/...).
+# The Python extractor runs under native Windows Python, which reads these
+# paths literally from the file (MSYS only auto-converts argv, not file
+# contents) and resolves /c/Users as C:\c\Users — which does not exist.
+# Convert each path to a native Windows path so the extractor can open it.
+if command -v cygpath >/dev/null 2>&1; then
+  win_sessions_file="$(mktemp)"
+  while IFS= read -r _p; do
+    [[ -n "$_p" ]] && cygpath -w "$_p"
+  done < "$new_sessions_file" > "$win_sessions_file"
+  mv -f "$win_sessions_file" "$new_sessions_file"
+fi
+
 # Extract the image from the new session rollout(s). Extraction logic lives
 # in a separate Python module; see scripts/extract_image.py for details.
 set +e
-python "$SCRIPT_DIR/extract_image.py" "$OUT" "$new_sessions_file"
+python3 "$SCRIPT_DIR/extract_image.py" "$OUT" "$new_sessions_file"
 py_rc=$?
 set -e
 
