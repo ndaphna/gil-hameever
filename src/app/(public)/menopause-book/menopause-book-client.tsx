@@ -73,7 +73,7 @@ export default function MenopauseBookPage() {
     };
   }, []);
 
-  const BUY_URL = 'https://nivbook.co.il/product/%D7%9C%D7%90-%D7%92%D7%91%D7%A8%D7%AA-%D7%92%D7%99%D7%91%D7%95%D7%A8%D7%94/?lp';
+  const BUY_URL = '/sefer?utm_source=website&utm_medium=menopause-book-page';
   const CANCEL_URL = 'https://nivbook.co.il/%d7%91%d7%99%d7%98%d7%95%d7%9c-%d7%94%d7%96%d7%9e%d7%a0%d7%94/';
 
   return (

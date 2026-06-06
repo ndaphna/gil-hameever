@@ -73,6 +73,31 @@ export default async function LinksPage() {
     .sort((a, b) => b.count - a.count);
   const maxSource = Math.max(...sources.map(s => s.count), 1);
 
+  // Channel grouping: social / website / email / direct
+  const channelMap = new Map<string, number>([
+    ['רשתות חברתיות', 0],
+    ['דף האתר', 0],
+    ['אימייל', 0],
+    ['ישיר', 0],
+  ]);
+  clicks.forEach(c => {
+    const src = c.utm_source?.toLowerCase() ?? '';
+    if (['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'].includes(src)) {
+      channelMap.set('רשתות חברתיות', (channelMap.get('רשתות חברתיות') ?? 0) + 1);
+    } else if (src === 'website') {
+      channelMap.set('דף האתר', (channelMap.get('דף האתר') ?? 0) + 1);
+    } else if (['email', 'newsletter', 'brevo'].includes(src)) {
+      channelMap.set('אימייל', (channelMap.get('אימייל') ?? 0) + 1);
+    } else {
+      channelMap.set('ישיר', (channelMap.get('ישיר') ?? 0) + 1);
+    }
+  });
+  const channels = Array.from(channelMap.entries())
+    .map(([name, count]) => ({ name, count }))
+    .filter(c => c.count > 0)
+    .sort((a, b) => b.count - a.count);
+  const maxChannel = Math.max(...channels.map(c => c.count), 1);
+
   // Campaign breakdown (top 5, non-null)
   const campaignMap = new Map<string, number>();
   clicks.forEach(c => {
@@ -122,6 +147,31 @@ export default async function LinksPage() {
         <KpiCard label="7 ימים"       value={weekCount}        sub="שבוע אחרון" accent="info"  icon={<TrendingUp size={16} strokeWidth={2.25} />} />
         <KpiCard label="30 ימים"      value={monthCount}       sub="חודש אחרון" accent="warning" icon={<Activity size={16} strokeWidth={2.25} />} />
       </section>
+
+      {/* CHANNEL SUMMARY */}
+      {channels.length > 0 && (
+        <article className={styles.panel}>
+          <header className={styles.panelHeader}>
+            <h2 className={styles.panelTitle}>ערוצים — 30 יום</h2>
+            <span className={styles.panelSub}>social / אתר / אימייל / ישיר</span>
+          </header>
+          <ul className={styles.channelList}>
+            {channels.map((ch, i) => {
+              const pct = Math.round((ch.count / monthCount) * 100);
+              return (
+                <li key={i} className={styles.channelItem}>
+                  <span className={styles.channelName}>{ch.name}</span>
+                  <span className={styles.channelBarTrack}>
+                    <span className={styles.channelBarFill} style={{ width: `${Math.round((ch.count / maxChannel) * 100)}%` }} />
+                  </span>
+                  <span className={styles.channelCount}>{ch.count}</span>
+                  <span className={styles.channelPct}>{pct}%</span>
+                </li>
+              );
+            })}
+          </ul>
+        </article>
+      )}
 
       {/* SOURCES + TREND */}
       <section className={styles.twoCol}>
