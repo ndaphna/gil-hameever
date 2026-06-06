@@ -338,7 +338,7 @@ export default function BookPreviewPage() {
           <div className="preview-cta-content">
             <h2 className="preview-cta-title">מוכנה להתחיל את המסע?</h2>
             <p className="preview-cta-description">
-              הרשמי לגלי ההשראה וקבלי עדכון כשהספר יהיה זמין
+              הרשמי לגלי השראה ולקהילת הגיבורות של ענבל
             </p>
             
             {/* Registration Form */}
@@ -396,7 +396,7 @@ export default function BookPreviewPage() {
                           disabled={isSubmitting}
                         />
                         <span className="waitlist-consent-text">
-                          אני מאשרת להצטרף לרשימת ההמתנה ולקבל עדכונים על הספר ומתנות בלעדיות.
+                          אני מאשרת להצטרף לרשימת גלי השראה - טיפים, השראה ועדכונים - ישר למייל
                         </span>
                       </label>
                     </div>
@@ -406,7 +406,7 @@ export default function BookPreviewPage() {
                       className="waitlist-form-submit-button"
                       disabled={isSubmitting}
                     >
-                      {isSubmitting ? 'שולח...' : '🎁 הרשמי לגלי ההשראה'}
+                      {isSubmitting ? 'שולח...' : 'להצטרפות'}
                     </button>
                   </form>
                 </div>
