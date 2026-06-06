@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, Archive, Check, Pencil, Send, Download, Calendar, Zap, X, Clock, Repeat, ListPlus, ImagePlus, RefreshCw, Trash2, Mail, Eye, Lightbulb } from 'lucide-react';
+import { Save, Archive, Check, Pencil, Send, Download, Calendar, Zap, X, Clock, Repeat, ListPlus, ImagePlus, RefreshCw, Trash2, Mail, Eye, Lightbulb, Upload, Link2 } from 'lucide-react';
 import { renderPreviewHtml } from '@/lib/newsletter/render-preview';
 import styles from './edit.module.css';
 
@@ -123,6 +123,8 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
   const [isImageBusy, setIsImageBusy] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
   const [imageSuccess, setImageSuccess] = useState<string | null>(null);
+  const [uploadUrl, setUploadUrl] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   type PromptSuggestion = { angle: string; prompt: string };
   const [promptSuggestions, setPromptSuggestions] = useState<PromptSuggestion[] | null>(null);
@@ -601,6 +603,52 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
     }
   }
 
+  async function postUpload(init: RequestInit) {
+    setIsImageBusy(true);
+    setImageError(null);
+    setImageSuccess(null);
+    try {
+      const res = await fetch(
+        `/api/admin/newsletter/${initial.id}/upload-image`,
+        init,
+      );
+      const json = await res.json();
+      if (!res.ok || !json.ok) {
+        setImageError(json.detail ? `${json.error}: ${json.detail}` : json.error);
+        return;
+      }
+      setHeaderImageUrl(json.url);
+      setHeaderImagePrompt('');
+      setHeaderImageProvider(json.provider);
+      setUploadUrl('');
+      setImageSuccess('התמונה הותאמה והועלתה. אם פורסם ל-Brevo, סנכרני שוב.');
+      router.refresh();
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setIsImageBusy(false);
+    }
+  }
+
+  async function uploadImageFile(file: File) {
+    const form = new FormData();
+    form.append('file', file);
+    await postUpload({ method: 'POST', body: form });
+  }
+
+  async function uploadImageFromUrl() {
+    const url = uploadUrl.trim();
+    if (!url) {
+      setImageError('הדביקי קישור לתמונה');
+      return;
+    }
+    await postUpload({
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+  }
+
   async function deleteHeaderImage() {
     if (!window.confirm('להסיר את תמונת הראש?')) return;
     setIsImageBusy(true);
@@ -848,6 +896,74 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
           )}
         </>
       )}
+
+      <div className={styles.uploadBlock}>
+        <div className={styles.subSectionTitle}>העלאת תמונה קיימת</div>
+        <p style={{ margin: '0 0 0.75rem 0', color: 'var(--nl-gray-600)', fontSize: 'var(--nl-text-sm)' }}>
+          כל תמונה תותאם אוטומטית — חיתוך למילוי לרוחב הנכון (1536×1024).
+        </p>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: 'none' }}
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) uploadImageFile(file);
+            e.target.value = ''; // allow re-selecting the same file
+          }}
+        />
+
+        <div className={styles.actions} style={{ marginBottom: 'var(--nl-space-3)' }}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isImageBusy || isSaving || isPulling || isBroadcasting || isAutomating}
+          >
+            <Upload size={14} strokeWidth={2.25} />
+            העלי תמונה מהמחשב
+          </button>
+        </div>
+
+        <div className={styles.fieldsRow}>
+          <div className={styles.field}>
+            <label className={styles.label} htmlFor="upload-url">
+              או הדביקי קישור (כולל קישור שיתוף מ-Google Drive)
+            </label>
+            <input
+              id="upload-url"
+              type="text"
+              className={styles.input}
+              value={uploadUrl}
+              onChange={(e) => setUploadUrl(e.target.value)}
+              placeholder="https://…"
+              dir="ltr"
+              disabled={isImageBusy}
+            />
+          </div>
+          <div className={styles.field} style={{ display: 'flex', alignItems: 'flex-end' }}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={uploadImageFromUrl}
+              disabled={isImageBusy || isSaving || isPulling || isBroadcasting || isAutomating || !uploadUrl.trim()}
+              style={{ width: '100%' }}
+            >
+              {isImageBusy ? (
+                <><span className={styles.spinner} aria-hidden="true" />מעלה</>
+              ) : (
+                <><Link2 size={14} strokeWidth={2.25} />העלי מקישור / דרייב</>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.subSectionTitle} style={{ marginTop: 'var(--nl-space-4)' }}>
+        או יצירת תמונה ב-AI
+      </div>
 
       <div className={styles.field}>
         <label className={styles.label} htmlFor="header-image-prompt">
