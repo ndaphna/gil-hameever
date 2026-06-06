@@ -10,9 +10,12 @@
  *
  * Pipeline:
  *   1. Load the bytes (multipart file, or fetch the URL).
- *   2. Normalize with sharp: honor EXIF rotation, resize 1536x1024 (fit cover —
- *      same canonical dimensions as the AI-generated images), flatten onto white,
- *      encode JPEG q85.
+ *   2. Normalize with sharp: honor EXIF rotation, resize to fit the newsletter
+ *      hero band (1536x672 — the same 640:280 ratio the email template displays)
+ *      with fit:contain so the whole image is kept, padding any leftover margin
+ *      with white. Encode JPEG q85. Because the stored ratio already matches the
+ *      template's hero band, the template's object-fit:cover is a no-op and the
+ *      image never gets cropped.
  *   3. Upload to the public Supabase Storage bucket `newsletter-images`.
  *   4. Persist header_image_url / header_image_provider='upload' /
  *      header_image_prompt=null on the draft row.
@@ -30,8 +33,10 @@ export const maxDuration = 60;
 
 const BUCKET = 'newsletter-images';
 const PROVIDER = 'upload';
+// Match the email template's hero band (640px wide, max-height 280px → 640:280).
+// Storing at this exact ratio means the template's object-fit:cover never crops.
 const TARGET_W = 1536;
-const TARGET_H = 1024;
+const TARGET_H = 672;
 const MAX_BYTES = 15 * 1024 * 1024; // 15MB
 const FETCH_TIMEOUT_MS = 15_000;
 
@@ -154,7 +159,9 @@ export async function POST(
   try {
     jpeg = await sharp(input)
       .rotate() // honor EXIF orientation (phone photos)
-      .resize(TARGET_W, TARGET_H, { fit: 'cover' })
+      // fit:contain keeps the whole image and pads the leftover margin (sides or
+      // top/bottom) with white, so nothing is cropped in the hero.
+      .resize(TARGET_W, TARGET_H, { fit: 'contain', background: '#ffffff' })
       .flatten({ background: '#ffffff' }) // transparent PNG → white, not black
       .jpeg({ quality: 85 })
       .toBuffer();
