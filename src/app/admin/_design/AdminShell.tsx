@@ -11,6 +11,7 @@ import {
   Sparkles,
   Bell,
   Bot,
+  Activity,
 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import './tokens.css';
@@ -53,6 +54,12 @@ const NAV: NavItem[] = [
       { href: '/admin/bots', label: 'כל הבריפים', matchExact: true },
       { href: '/admin/bots/new', label: 'בריף חדש' },
     ],
+  },
+  {
+    href: '/admin/links',
+    label: 'קישורים',
+    icon: Activity,
+    matchExact: true,
   },
 ];
 
