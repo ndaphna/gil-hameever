@@ -997,6 +997,22 @@
   white-space: nowrap;
 }
 
+.hero-purchase-btn {
+  font-size: clamp(1.05rem, 2.5vw, 1.2rem) !important;
+  padding: clamp(16px, 3vw, 22px) clamp(40px, 8vw, 56px) !important;
+  letter-spacing: 0.04em;
+  box-shadow:
+    0 8px 32px rgba(255, 0, 128, 0.45),
+    0 2px 8px rgba(0, 0, 0, 0.2) !important;
+  animation: fadeIn 0.8s ease-out 0.5s both;
+}
+
+.hero-purchase-btn:hover {
+  box-shadow:
+    0 16px 48px rgba(255, 0, 128, 0.55),
+    0 6px 20px rgba(0, 0, 0, 0.25) !important;
+}
+
 @keyframes lineGlow {
   0%, 100% {
     opacity: 0.5;

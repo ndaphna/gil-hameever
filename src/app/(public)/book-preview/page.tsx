@@ -88,9 +88,14 @@ export default function BookPreviewPage() {
           </div>
           
           <div className="hero-exclusive">
-            <span className="exclusive-line"></span>
-            <span className="exclusive-text">יצא לאור בקרוב</span>
-            <span className="exclusive-line"></span>
+            <a
+              href="https://nivbook.co.il/product/%d7%9c%d7%90-%d7%92%d7%91%d7%a8%d7%aa-%d7%92%d7%99%d7%91%d7%95%d7%a8%d7%94/"
+              className="preview-cta-button primary-cta hero-purchase-btn"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              לרכישת הספר
+            </a>
           </div>
         </div>
       </section>
