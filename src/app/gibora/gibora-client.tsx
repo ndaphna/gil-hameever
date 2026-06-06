@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import './menopause-book.css';
 
-export default function MenopauseBookPage() {
+export default function GiboraBookClient() {
   useEffect(() => {
     // Google Fonts
     if (!document.getElementById('mb-fonts')) {
@@ -73,7 +73,7 @@ export default function MenopauseBookPage() {
     };
   }, []);
 
-  const BUY_URL = '/sefer?utm_source=website&utm_medium=menopause-book-page';
+  const BUY_URL = '/sefer?utm_source=website&utm_medium=gibora';
   const CANCEL_URL = 'https://nivbook.co.il/%d7%91%d7%99%d7%98%d7%95%d7%9c-%d7%94%d7%96%d7%9e%d7%a0%d7%94/';
 
   return (
@@ -139,7 +139,7 @@ export default function MenopauseBookPage() {
         </div>
       </div>
 
-      {/* BOOK REVEAL — dark surprise */}
+      {/* BOOK REVEAL */}
       <div className="book-section">
         <div className="book-section-inner container">
           <span className="eyebrow eyebrow--dark fade-in">הספר</span>

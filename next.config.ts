@@ -1,6 +1,16 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/menopause-book',
+        destination: '/gibora',
+        permanent: true,
+      },
+    ];
+  },
+
   typescript: {
     ignoreBuildErrors: true,
   },
