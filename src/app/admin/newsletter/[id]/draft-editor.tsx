@@ -900,7 +900,7 @@ export default function DraftEditor({ initial }: { initial: InitialDraft }) {
       <div className={styles.uploadBlock}>
         <div className={styles.subSectionTitle}>העלאת תמונה קיימת</div>
         <p style={{ margin: '0 0 0.75rem 0', color: 'var(--nl-gray-600)', fontSize: 'var(--nl-text-sm)' }}>
-          כל תמונה תותאם אוטומטית — חיתוך למילוי לרוחב הנכון (1536×1024).
+          כל תמונה תותאם אוטומטית לגודל ההירו — התמונה המלאה נשמרת בלי חיתוך, והשוליים מתמלאים בלבן.
         </p>
 
         <input
