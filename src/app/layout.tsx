@@ -36,7 +36,7 @@ const frankRuhl = Frank_Ruhl_Libre({
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://gilhameever.com'
 const defaultTitle = 'מנופאוזית וטוב לה'
-const defaultDescription = 'המקום של נשים בגיל המעבר, מידע, כלים ותמיכה לחיות טוב יותר בגיל 50 ומעלה'
+const defaultDescription = 'הבית לנשים באמצע החיים שרוצות להבין את גיל המעבר, לקבל מילים למה שעובר עליהן, לצחוק קצת בדרך ולהיזכר בעצמן מחדש.'
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
