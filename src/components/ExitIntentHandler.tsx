@@ -36,6 +36,7 @@ export default function ExitIntentHandler() {
       '/heroine-checklist-thank-you',
       '/heroine-checklist-valuable-content',
       '/thank-you',
+      '/sefer',
     ]);
 
     const prefixSkip = ['/admin', '/api'];

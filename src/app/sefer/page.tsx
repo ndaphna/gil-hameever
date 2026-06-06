@@ -24,9 +24,6 @@ function RedirectCore() {
       if (val) utmParams[key] = val;
     });
 
-    const destUrl = new URL(DESTINATION);
-    Object.entries(utmParams).forEach(([k, v]) => destUrl.searchParams.set(k, v));
-
     // Meta Pixel — ViewContent on the book
     if (typeof window.fbq === 'function') {
       window.fbq('track', 'ViewContent', {
@@ -45,24 +42,16 @@ function RedirectCore() {
       });
     }
 
-    // Log to Supabase (fire-and-forget)
-    fetch('/api/track-redirect', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        slug: SLUG,
-        destination: destUrl.href,
-        referrer: document.referrer,
-        ...utmParams,
-      }),
-    }).catch(() => {});
+    // sendBeacon survives navigation — zero delay needed
+    const payload = JSON.stringify({
+      slug: SLUG,
+      destination: DESTINATION,
+      referrer: document.referrer,
+      ...utmParams,
+    });
+    navigator.sendBeacon('/api/track-redirect', new Blob([payload], { type: 'application/json' }));
 
-    // Short delay so pixel has time to fire before navigation
-    const timer = setTimeout(() => {
-      window.location.href = destUrl.href;
-    }, 300);
-
-    return () => clearTimeout(timer);
+    window.location.href = DESTINATION;
   }, [searchParams]);
 
   return null;

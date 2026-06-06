@@ -37,6 +37,7 @@ export default function ConditionalNavigation() {
     '/second-half-guide-landing',
     '/relationship-guide-landing',
     '/courage-guide-landing',
+    '/sefer',
   ];
   
   const shouldHideNavigation =

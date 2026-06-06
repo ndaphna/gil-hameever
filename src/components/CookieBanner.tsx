@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import './CookieBanner.css';
 
@@ -16,8 +17,13 @@ const defaultPreferences: CookiePreferences = {
   marketing: false,
 };
 
+const SKIP_PATHS = new Set(['/sefer']);
+
 export default function CookieBanner() {
+  const pathname = usePathname();
   const [showBanner, setShowBanner] = useState(false);
+
+  if (SKIP_PATHS.has(pathname)) return null;
   const [showSettings, setShowSettings] = useState(false);
   const [preferences, setPreferences] = useState<CookiePreferences>(defaultPreferences);
 
