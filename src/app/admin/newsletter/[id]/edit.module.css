@@ -121,6 +121,21 @@
   margin-bottom: var(--nl-space-4);
 }
 
+.uploadBlock {
+  background: var(--nl-gray-50, #fafafa);
+  border: 1px solid var(--nl-gray-200);
+  border-radius: var(--nl-radius);
+  padding: var(--nl-space-4);
+  margin-bottom: var(--nl-space-2);
+}
+
+.subSectionTitle {
+  font-size: var(--nl-text-sm);
+  font-weight: var(--nl-weight-semibold);
+  color: var(--nl-gray-700);
+  margin-bottom: var(--nl-space-2);
+}
+
 .label {
   display: block;
   font-weight: var(--nl-weight-medium);
