@@ -173,7 +173,7 @@
 }
 .hero-gibora {
   display: block;
-  font-size: clamp(64px, 7vw, 108px);
+  font-size: clamp(74px, 8.05vw, 124px);
   line-height: 1.0;
   background: var(--brand-fuchsia);
   color: #fff;
