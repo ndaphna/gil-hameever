@@ -100,8 +100,8 @@ export default function Home() {
               <Link href="/menopause-roadmap" className="btn btn-primary btn-pulse">
                 קחי את מפת הדרכים
               </Link>
-              <Link href="/book-preview" className="btn btn-ghost-dark">
-                ספרי לי על הספר
+              <Link href="/gibora" className="btn btn-ghost-dark">
+                הצצה לספר
               </Link>
             </div>
             <div className="hero-trust">
