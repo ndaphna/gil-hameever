@@ -101,14 +101,6 @@ export default function Home() {
                 הצצה לספר
               </Link>
             </div>
-            <div className="hero-trust">
-              <span className="hero-trust-dot" aria-hidden="true" />
-              מאות נשים כבר במסע
-              <span className="hero-trust-sep">·</span>
-              חינמי
-              <span className="hero-trust-sep">·</span>
-              ללא ספאם
-            </div>
           </div>
 
           <div className="hero-photo">
