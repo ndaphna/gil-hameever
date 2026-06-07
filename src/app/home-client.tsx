@@ -97,9 +97,6 @@ export default function Home() {
             </h1>
             <p className="hero-sub">סיפור מסע אל גיל המעבר</p>
             <div className="hero-ctas">
-              <Link href="/menopause-roadmap" className="btn btn-primary btn-pulse">
-                קחי את מפת הדרכים
-              </Link>
               <Link href="/gibora" className="btn btn-ghost-dark">
                 הצצה לספר
               </Link>
