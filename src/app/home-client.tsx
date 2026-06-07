@@ -116,7 +116,7 @@ export default function Home() {
 
           <div className="hero-photo">
             <Image
-              src="/inbal-hero-book-v2.png"
+              src="/inbal_hero_nobg.png"
               alt="ענבל דפנה עם הספר 'לא גברת, גיבורה'"
               fill
               sizes="(max-width: 900px) 45vw, 42vw"

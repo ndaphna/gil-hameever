@@ -521,14 +521,20 @@
   .nav-auth {
     position: fixed;
     top: 60px;
-    right: -100%;
+    right: 0;
     width: 280px;
+    max-width: 85%;
     background: var(--brand-cream);
     flex-direction: column;
     align-items: stretch;
     gap: 0;
     padding: 0;
-    transition: right 0.35s var(--ease-out-quint);
+    /* Off-canvas via transform + visibility:hidden so the closed drawer
+       never adds to document width (prevents horizontal scroll on iOS Safari,
+       which counts off-screen fixed elements positioned with right:-100%). */
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.35s var(--ease-out-quint), visibility 0.35s var(--ease-out-quint);
     box-shadow: -8px 0 32px rgba(26, 10, 18, 0.12);
     z-index: 1000;
   }
@@ -541,7 +547,8 @@
 
   .nav-links.active,
   .nav-auth.active {
-    right: 0;
+    transform: translateX(0);
+    visibility: visible;
   }
 
   .nav-auth {
