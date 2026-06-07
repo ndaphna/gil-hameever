@@ -76,6 +76,7 @@ export default async function LinksPage() {
   // Channel grouping: social / website / email / direct
   const channelMap = new Map<string, number>([
     ['רשתות חברתיות', 0],
+    ['וואטסאפ', 0],
     ['דף האתר', 0],
     ['אימייל', 0],
     ['ישיר', 0],
@@ -84,6 +85,8 @@ export default async function LinksPage() {
     const src = c.utm_source?.toLowerCase() ?? '';
     if (['instagram', 'facebook', 'tiktok', 'youtube', 'linkedin'].includes(src)) {
       channelMap.set('רשתות חברתיות', (channelMap.get('רשתות חברתיות') ?? 0) + 1);
+    } else if (src === 'whatsapp') {
+      channelMap.set('וואטסאפ', (channelMap.get('וואטסאפ') ?? 0) + 1);
     } else if (src === 'website') {
       channelMap.set('דף האתר', (channelMap.get('דף האתר') ?? 0) + 1);
     } else if (['email', 'newsletter', 'brevo'].includes(src)) {
