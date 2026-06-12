@@ -407,8 +407,16 @@ export default function Home() {
               מיילים קצרים, חכמים ומרימים. לפעמים תובנה, לפעמים סיפור, לפעמים תזכורת שאת לא לבד.
             </p>
             <div className="aliza-bubble">
-              <span className="aliza-bubble-label">💬 בועה של עליזה</span>
-              &quot;אל תדאגי, מאמי. לא שולחת לך כלום לפני הקפה.&quot;
+              <Image
+                src="/aliza_profile.jpg"
+                alt="עליזה"
+                width={64}
+                height={64}
+                className="aliza-bubble-avatar"
+              />
+              <p className="aliza-bubble-text">
+                &quot;אל תדאגי, מאמי. לא שולחת לך כלום לפני הקפה.&quot;
+              </p>
             </div>
           </div>
 

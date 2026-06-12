@@ -905,24 +905,41 @@
   margin: 0 0 24px;
 }
 .aliza-bubble {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.aliza-bubble-avatar {
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--brand-fuchsia-light);
+  box-shadow: 0 4px 14px rgba(212, 22, 122, 0.18);
+}
+.aliza-bubble-text {
+  position: relative;
+  margin: 0;
   background: var(--brand-fuchsia-light);
   border-radius: var(--radius-2xl);
-  padding: 22px 24px;
+  padding: 18px 22px;
   font-family: var(--font-literary);
   font-style: italic;
   font-size: 17px;
   line-height: 1.5;
   color: var(--brand-dark);
 }
-.aliza-bubble-label {
-  font-family: var(--font-body);
-  font-style: normal;
-  font-weight: 800;
-  color: var(--brand-fuchsia-dark);
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  letter-spacing: 0.3px;
+/* Speech-bubble tail pointing toward the avatar (RTL: avatar on the right) */
+.aliza-bubble-text::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -9px;
+  transform: translateY(-50%);
+  border-style: solid;
+  border-width: 8px 0 8px 10px;
+  border-color: transparent transparent transparent var(--brand-fuchsia-light);
 }
 
 .newsletter-form-wrap {
