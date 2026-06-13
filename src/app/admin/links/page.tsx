@@ -28,12 +28,19 @@ function shortenReferrer(ref: string): string {
   }
 }
 
+const TZ = 'Asia/Jerusalem';
+
 function formatDateTime(iso: string) {
   const d = new Date(iso);
   return {
-    date: d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit' }),
-    time: d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' }),
+    date: d.toLocaleDateString('he-IL', { day: '2-digit', month: '2-digit', timeZone: TZ }),
+    time: d.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit', timeZone: TZ }),
   };
+}
+
+// "YYYY-MM-DD" for a given instant, in Israel time (sv-SE gives ISO-like order).
+function israelDayKey(d: Date): string {
+  return d.toLocaleDateString('sv-SE', { timeZone: TZ });
 }
 
 export default async function LinksPage() {
@@ -55,10 +62,10 @@ export default async function LinksPage() {
 
   const clicks: ClickRow[] = (raw as ClickRow[] | null) ?? [];
 
-  // Period counts
-  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+  // Period counts (today = Israel calendar day)
+  const todayIsrael = israelDayKey(new Date());
   const sevenDaysAgo = new Date(Date.now() - 7 * 86_400_000);
-  const todayCount = clicks.filter(c => new Date(c.created_at) >= todayStart).length;
+  const todayCount = clicks.filter(c => israelDayKey(new Date(c.created_at)) === todayIsrael).length;
   const weekCount  = clicks.filter(c => new Date(c.created_at) >= sevenDaysAgo).length;
   const monthCount = clicks.length;
 
@@ -117,15 +124,15 @@ export default async function LinksPage() {
   const dayMap = new Map<string, number>();
   for (let i = 29; i >= 0; i--) {
     const d = new Date(Date.now() - i * 86_400_000);
-    dayMap.set(d.toISOString().slice(0, 10), 0);
+    dayMap.set(israelDayKey(d), 0);
   }
   clicks.forEach(c => {
-    const key = c.created_at.slice(0, 10);
+    const key = israelDayKey(new Date(c.created_at));
     if (dayMap.has(key)) dayMap.set(key, (dayMap.get(key) ?? 0) + 1);
   });
   const days = Array.from(dayMap.entries()).map(([date, count]) => ({ date, count }));
   const maxDay = Math.max(...days.map(d => d.count), 1);
-  const todayKey = new Date().toISOString().slice(0, 10);
+  const todayKey = israelDayKey(new Date());
 
   const recentClicks = clicks.slice(0, 20);
 
